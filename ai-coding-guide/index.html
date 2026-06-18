@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 寫程式工具指南 — 給已經在用 AI 的開發者</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* =====================
+       DESIGN TOKENS
+    ===================== */
+    :root {
+      --bg:        #0D1117;
+      --bg-2:      #161B22;
+      --bg-3:      #1C2128;
+      --border:    rgba(48, 54, 61, 0.8);
+      --cyan:      #39D0D8;
+      --cyan-dim:  rgba(57, 208, 216, 0.12);
+      --cyan-glow: rgba(57, 208, 216, 0.06);
+      --green:     #3FB950;
+      --amber:     #D29922;
+      --ink:       #E6EDF3;
+      --ink-2:     #8B949E;
+      --ink-3:     #484F58;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Inter', sans-serif;
+      --radius:    6px;
+      --radius-lg: 12px;
+    }
+
+    /* =====================
+       RESET & BASE
+    ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    img { max-width: 100%; display: block; }
+
+    /* =====================
+       LAYOUT
+    ===================== */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 80px 0;
+    }
+
+    /* =====================
+       NAV
+    ===================== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-2);
+      font-family: var(--mono);
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--cyan); text-decoration: none; }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    .nav-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-3);
+      letter-spacing: 0.08em;
+    }
+
+    /* =====================
+       HERO
+    ===================== */
+    .hero {
+      padding: 160px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 掃描線背景 */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(57, 208, 216, 0.015) 2px,
+        rgba(57, 208, 216, 0.015) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* 右側裝飾光暈 */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 10%; right: -20%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(57, 208, 216, 0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--cyan);
+    }
+
+    .hero h1 {
+      font-family: var(--mono);
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .hero h1 .accent {
+      color: var(--cyan);
+    }
+
+    .hero-sub {
+      font-family: var(--mono);
+      font-size: clamp(14px, 2.5vw, 18px);
+      font-weight: 300;
+      color: var(--ink-2);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    .hero-body {
+      font-size: 17px;
+      color: var(--ink-2);
+      max-width: 640px;
+      margin-bottom: 48px;
+      line-height: 1.8;
+    }
+
+    .hero-body strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* Terminal prompt 裝飾 */
+    .hero-terminal {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      max-width: 540px;
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .hero-terminal::before {
+      content: '● ● ●';
+      position: absolute;
+      top: 12px; left: 16px;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--ink-3);
+    }
+
+    .terminal-lines {
+      margin-top: 16px;
+    }
+
+    .t-line {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 2;
+      color: var(--ink-2);
+    }
+
+    .t-line .prompt { color: var(--green); }
+    .t-line .cmd    { color: var(--ink); }
+    .t-line .comment{ color: var(--ink-3); }
+    .t-line .out    { color: var(--cyan); }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--cyan);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+      margin-left: 2px;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* CTA 按鈕 */
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cyan);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      letter-spacing: 0.05em;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      color: var(--ink-2);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    /* =====================
+       SECTION HEADERS
+    ===================== */
+    .section-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--ink-2);
+      max-width: 600px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    /* 分隔線 */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* =====================
+       CONCEPT BLOCK（開眼界區）
+    ===================== */
+    .concept-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .concept-card {
+      background: var(--bg-2);
+      padding: 32px;
+    }
+
+    .concept-card-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 16px;
+    }
+
+    .concept-card-title {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .concept-card.highlight .concept-card-title {
+      color: var(--cyan);
+    }
+
+    .concept-card-body {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.75;
+    }
+
+    .concept-card-body li {
+      list-style: none;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .concept-card-body li:last-child { border-bottom: none; }
+
+    .concept-card-body li::before {
+      content: '—';
+      color: var(--ink-3);
+      font-family: var(--mono);
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .concept-card.highlight .concept-card-body li::before {
+      content: '→';
+      color: var(--cyan);
+    }
+
+    /* =====================
+       TOOLS ACCORDION
+    ===================== */
+    .tools-section {
+      background: var(--bg);
+    }
+
+    .tool-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .tool-item {
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+    }
+    .tool-item:last-child { border-bottom: none; }
+
+    .tool-header {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s;
+    }
+    .tool-header:hover { background: var(--bg-3); }
+    .tool-item.open .tool-header { background: var(--bg-3); }
+
+    .tool-index {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-3);
+      letter-spacing: 0.1em;
+      min-width: 24px;
+    }
+
+    .tool-header-main { flex: 1; }
+
+    .tool-name {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tool-badge {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 100px;
+      border: 1px solid;
+      vertical-align: middle;
+    }
+
+    .badge-ide    { color: #79C0FF; border-color: rgba(121,192,255,0.3); }
+    .badge-cli    { color: var(--green); border-color: rgba(63,185,80,0.3); }
+    .badge-ext    { color: var(--amber); border-color: rgba(210,153,34,0.3); }
+    .badge-open   { color: #D2A8FF; border-color: rgba(210,168,255,0.3); }
+
+    .tool-tagline {
+      font-size: 13px;
+      color: var(--ink-2);
+      font-family: var(--sans);
+      font-weight: 400;
+    }
+
+    .tool-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tool-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .tool-chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--ink-3);
+      transition: transform 0.3s ease, color 0.2s;
+      flex-shrink: 0;
+    }
+    .tool-item.open .tool-chevron {
+      transform: rotate(180deg);
+      color: var(--cyan);
+    }
+
+    /* accordion body */
+    .tool-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tool-item.open .tool-body {
+      max-height: 1000px;
+    }
+
+    .tool-body-inner {
+      padding: 0 32px 36px 76px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tool-section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin: 28px 0 10px;
+    }
+
+    .tool-body-text {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.85;
+      margin-bottom: 8px;
+    }
+
+    .tool-body-text strong { color: var(--ink); font-weight: 500; }
+
+    .tool-feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tool-feature-list li {
+      font-size: 14px;
+      color: var(--ink-2);
+      padding-left: 18px;
+      position: relative;
+      line-height: 1.7;
+    }
+
+    .tool-feature-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .tool-who {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tool-who-row {
+      display: flex;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .who-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .who-yes  { background: rgba(63,185,80,0.12);  color: var(--green); }
+    .who-no   { background: rgba(255,85,85,0.10);  color: #F47067; }
+
+    .tool-body-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tool-official-link {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tool-official-link:hover { text-decoration: underline; }
+
+    .tool-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-3);
+    }
+
+    @media (max-width: 640px) {
+      .tool-header {
+        grid-template-columns: auto 1fr auto;
+        padding: 20px;
+        gap: 12px;
+      }
+      .tool-tags { display: none; }
+      .tool-body-inner { padding: 0 20px 28px 20px; }
+    }
+
+    /* =====================
+       SCROLL REVEAL
+    ===================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =====================
+       FOOTER
+    ===================== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-3);
+      line-height: 2;
+    }
+
+    footer a {
+      color: var(--ink-2);
+    }
+    footer a:hover { color: var(--cyan); }
+
+    /* =====================
+       RESPONSIVE
+    ===================== */
+    @media (max-width: 640px) {
+      section { padding: 60px 0; }
+      .hero { padding: 120px 0 80px; }
+      .concept-grid { grid-template-columns: 1fr; }
+      .hero-cta { flex-direction: column; }
+      .btn-primary, .btn-ghost { justify-content: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .cursor-blink { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="../" class="nav-back">
+        <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        返回首頁
+      </a>
+      <span class="nav-label">AI Coding Tools / 2026</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">開發者工具指南</div>
+
+      <h1>
+        你已經在用 AI 寫 code 了。<br>
+        但<span class="accent">專門為這件事設計</span>的工具，<br>
+        你知道嗎？
+      </h1>
+
+      <p class="hero-sub">// 給已經起步、想走更快的開發者</p>
+
+      <p class="hero-body">
+        用 AI 問答介面寫程式沒有什麼問題。很多人都這樣開始。<br>
+        但這些工具有個共同的天花板：<strong>它們不知道你的程式碼長什麼樣</strong>。<br><br>
+        有一批工具從一開始就是為了「住在你的開發環境裡」而設計的。它們讀你的 codebase、理解你的專案結構、自己跑指令、自己測試、自己修錯。你不用一直複製貼上。
+      </p>
+
+      <div class="hero-terminal">
+        <div class="terminal-lines">
+          <div class="t-line"><span class="prompt">$</span> <span class="cmd">claude "重構這個 API，加上錯誤處理"</span></div>
+          <div class="t-line"><span class="comment"># 它讀了你的整個 repo</span></div>
+          <div class="t-line"><span class="comment"># 它找到了 12 個相關的檔案</span></div>
+          <div class="t-line"><span class="comment"># 它修改、測試、然後告訴你結果</span></div>
+          <div class="t-line"><span class="out">✓ 完成。你不在的時候它一直在工作。</span><span class="cursor-blink"></span></div>
+        </div>
+      </div>
+
+      <div class="hero-cta">
+        <a href="#tools" class="btn-primary">看看有哪些工具 →</a>
+        <a href="#compare" class="btn-ghost">直接看比較表</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CONCEPT：開眼界區 -->
+  <section class="concept-section">
+    <div class="container">
+      <div class="section-eyebrow">先搞清楚差在哪</div>
+      <h2 class="section-title">你習慣的方式 vs 這些工具做的事</h2>
+      <p class="section-desc">不是誰好誰壞，是設計目的不一樣。知道差異，你才能判斷值不值得換。</p>
+
+      <div class="concept-grid reveal">
+        <div class="concept-card">
+          <div class="concept-card-label">你現在的方式</div>
+          <div class="concept-card-title">AI 問答介面</div>
+          <ul class="concept-card-body">
+            <li>你把程式碼複製進去，它回答你</li>
+            <li>每次對話都要重新給脈絡</li>
+            <li>它不知道你的其他檔案長什麼樣</li>
+            <li>你負責把答案貼回去、跑看看</li>
+            <li>出錯了再貼回來問</li>
+          </ul>
+        </div>
+        <div class="concept-card highlight">
+          <div class="concept-card-label">這些工具做的事</div>
+          <div class="concept-card-title">AI Coding 專用工具</div>
+          <ul class="concept-card-body">
+            <li>它直接讀你的整個專案</li>
+            <li>它知道你的檔案結構和依賴關係</li>
+            <li>它可以同時修改多個檔案</li>
+            <li>它自己跑指令、看結果、修錯</li>
+            <li>你只要說要做什麼，它自己搞定</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS SECTION -->
+  <section id="tools" class="tools-section">
+    <div class="container">
+      <div class="section-eyebrow">工具介紹</div>
+      <h2 class="section-title">五個值得認識的工具</h2>
+      <p class="section-desc">點開每個工具看完整介紹。沒興趣的跳過，有感覺的深讀。</p>
+
+      <div class="tool-list reveal">
+
+        <!-- 01 Cursor -->
+        <div class="tool-item" data-tool="cursor">
+          <button class="tool-header" aria-expanded="false">
+            <span class="tool-index">01</span>
+            <div class="tool-header-main">
+              <div class="tool-name">
+                Cursor
+                <span class="tool-badge badge-ide">IDE</span>
+              </div>
+              <div class="tool-tagline">把你的 VS Code 升級成會自己動的編輯器</div>
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">日常開發</span>
+              <span class="tool-tag">多檔編輯</span>
+              <span class="tool-tag">社群最大</span>
+            </div>
+            <svg class="tool-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="tool-body">
+            <div class="tool-body-inner">
+              <div class="tool-section-label">它是什麼</div>
+              <p class="tool-body-text">
+                Cursor 是目前市場上社群最大、採用率最高的 AI 編輯器。它的本體是一個 VS Code 的 fork，如果你原本就在用 VS Code，切換過去的學習成本幾乎是零——你的插件、設定、快捷鍵全部帶得走。
+              </p>
+              <p class="tool-body-text">
+                它跟一般 AI 問答最大的差異是 <strong>Composer 模式</strong>。你告訴它「我要做什麼」，它自己去讀相關的檔案，計劃修改的範圍，然後一次改好多個地方。改完之前它會讓你預覽 diff，你決定接受還是拒絕。整個流程像是跟一個懂你專案的工程師結對。
+              </p>
+
+              <div class="tool-section-label">它解決了什麼問題</div>
+              <ul class="tool-feature-list">
+                <li>跨檔案修改：你說「把所有 API 呼叫統一加上 error handling」，它找到全部相關的地方，一次處理完</li>
+                <li>Tab 補全比一般 IDE 聰明得多：它預測的不是你下一個字，而是你下一步想做的事</li>
+                <li>它理解你的整個 codebase，不只是你目前打開的那個檔案</li>
+                <li>背景 agent 可以在你做別的事情的時候跑任務</li>
+              </ul>
+
+              <div class="tool-section-label">適合 / 不適合</div>
+              <div class="tool-who">
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>習慣 VS Code 工作流、想要 AI 深度整合進編輯器的開發者</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>需要每天大量寫 code、重構、feature 開發的人</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>用 JetBrains 系列（IntelliJ、PyCharm 等）且不想換編輯器的開發者</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>偶爾才寫 code、不需要全功能 AI 編輯器的人</span>
+                </div>
+              </div>
+
+              <div class="tool-body-footer">
+                <a href="https://cursor.com" target="_blank" rel="noopener" class="tool-official-link">官網 / 定價 →</a>
+                <span class="tool-note">// 有免費方案可以先試</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 GitHub Copilot -->
+        <div class="tool-item" data-tool="copilot">
+          <button class="tool-header" aria-expanded="false">
+            <span class="tool-index">02</span>
+            <div class="tool-header-main">
+              <div class="tool-name">
+                GitHub Copilot
+                <span class="tool-badge badge-ext">插件</span>
+              </div>
+              <div class="tool-tagline">最多人第一個用的 AI coding 工具，理由很充分</div>
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">GitHub 整合</span>
+              <span class="tool-tag">多編輯器</span>
+              <span class="tool-tag">入門首選</span>
+            </div>
+            <svg class="tool-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="tool-body">
+            <div class="tool-body-inner">
+              <div class="tool-section-label">它是什麼</div>
+              <p class="tool-body-text">
+                GitHub Copilot 是這個領域歷史最久的工具，也是目前滲透率最高的。它不是獨立的編輯器，而是一個<strong>插件</strong>——VS Code、JetBrains 系列、Neovim、Visual Studio，幾乎你用什麼它就能裝在哪裡。這是它最大的優勢：你不用換開發環境。
+              </p>
+              <p class="tool-body-text">
+                它跟 GitHub 生態的整合是其他工具目前沒辦法複製的。PR review、issue 處理、Actions 整合，這些在 Copilot 裡是原生支援，不是外掛加上去的感覺。
+              </p>
+
+              <div class="tool-section-label">它解決了什麼問題</div>
+              <ul class="tool-feature-list">
+                <li>不用換編輯器就能用上 AI 輔助，學習成本最低</li>
+                <li>Code 補全成熟度高，日常寫 code 的節奏感很好</li>
+                <li>Agent 模式可以做多檔案修改，雖然深度比 Cursor 稍淺</li>
+                <li>GitHub 上的 PR、code review 流程可以直接 AI 介入</li>
+              </ul>
+
+              <div class="tool-section-label">注意這件事</div>
+              <p class="tool-body-text">
+                2026 年 6 月起，GitHub Copilot 把 agent 和進階功能改成 <strong>token 計費</strong>。如果你主要用補全功能，費用變化不大。但如果你常跑 agent 做大範圍修改，建議先確認新的計費方式是否在你的預算範圍內。
+              </p>
+
+              <div class="tool-section-label">適合 / 不適合</div>
+              <div class="tool-who">
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>不想換編輯器、想在現有環境裡加 AI 能力的開發者</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>重度使用 GitHub 的團隊，PR review 和 issue 管理想 AI 化</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>想要深度 agentic 體驗（讓 AI 大範圍自主執行）的開發者，這方面 Cursor 或 Claude Code 更強</span>
+                </div>
+              </div>
+
+              <div class="tool-body-footer">
+                <a href="https://github.com/features/copilot/plans" target="_blank" rel="noopener" class="tool-official-link">官網 / 定價 →</a>
+                <span class="tool-note">// 有免費方案，學生免費</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 Claude Code -->
+        <div class="tool-item" data-tool="claude-code">
+          <button class="tool-header" aria-expanded="false">
+            <span class="tool-index">03</span>
+            <div class="tool-header-main">
+              <div class="tool-name">
+                Claude Code
+                <span class="tool-badge badge-cli">終端機</span>
+              </div>
+              <div class="tool-tagline">住在你的終端機裡，讀整個 repo，自己決定怎麼動</div>
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">深度推理</span>
+              <span class="tool-tag">大型 codebase</span>
+              <span class="tool-tag">自主執行</span>
+            </div>
+            <svg class="tool-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="tool-body">
+            <div class="tool-body-inner">
+              <div class="tool-section-label">它是什麼</div>
+              <p class="tool-body-text">
+                Claude Code 是 Anthropic 做的終端機 agent。它不住在 IDE 裡，它住在你的 terminal。你在專案目錄跑它，它讀整個 repo 的結構，然後你用自然語言告訴它要做什麼，它自己計劃、自己改 code、自己跑測試、自己修錯，一路執行到完成。
+              </p>
+              <p class="tool-body-text">
+                它的設計哲學是<strong>最大化自主性</strong>。不是「幫你補完這行 code」，而是「你說要做什麼 feature，它自己把整件事做完」。在需要跨多個檔案的大型重構、或是你理解需求但懶得自己動手的場景，這個特性特別有價值。
+              </p>
+
+              <div class="tool-section-label">它解決了什麼問題</div>
+              <ul class="tool-feature-list">
+                <li>超大 context window，可以同時理解幾千個檔案的關係</li>
+                <li>真正的自主執行：跑指令、看輸出、根據結果調整，不用你在旁邊盯</li>
+                <li>不綁 IDE，任何編輯器都可以搭配用</li>
+                <li>對複雜邏輯的推理能力在這類工具裡公認最強</li>
+              </ul>
+
+              <div class="tool-section-label">適合 / 不適合</div>
+              <div class="tool-who">
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>需要大範圍重構、框架遷移、或跨多檔案複雜任務的開發者</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>不想被綁在特定 IDE、想要最大自主性的人</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>喜歡在 IDE 裡看著 AI 即時補全、視覺 diff 的開發者，Cursor 的體驗更好</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>不熟悉終端機操作的人，它的工作環境是 terminal</span>
+                </div>
+              </div>
+
+              <div class="tool-body-footer">
+                <a href="https://claude.ai/download" target="_blank" rel="noopener" class="tool-official-link">官網 / 定價 →</a>
+                <span class="tool-note">// 需要 Claude Pro 以上方案</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 Windsurf / Devin Desktop -->
+        <div class="tool-item" data-tool="windsurf">
+          <button class="tool-header" aria-expanded="false">
+            <span class="tool-index">04</span>
+            <div class="tool-header-main">
+              <div class="tool-name">
+                Windsurf <span style="color:var(--ink-3);font-weight:300;font-size:14px;">→ Devin Desktop</span>
+                <span class="tool-badge badge-ide">IDE</span>
+              </div>
+              <div class="tool-tagline">Cursor 的強勁對手，正在經歷一場品牌大地震</div>
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">Cascade Agent</span>
+              <span class="tool-tag">自有模型</span>
+              <span class="tool-tag">改名注意</span>
+            </div>
+            <svg class="tool-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="tool-body">
+            <div class="tool-body-inner">
+              <div class="tool-section-label">先說清楚這件事</div>
+              <p class="tool-body-text">
+                Windsurf 在 2026 年經歷了一場矽谷級別的收購風波。原本 OpenAI 要買它，後來 Google 插進來搶走了核心團隊，最後 Cognition（做 Devin 的公司）接手，在 2026 年 6 月把 Windsurf 正式改名為 <strong>Devin Desktop</strong>。如果你在網路上搜到的文章還在叫它 Windsurf，內容通常還是有效的，只是名字變了。
+              </p>
+
+              <div class="tool-section-label">它是什麼</div>
+              <p class="tool-body-text">
+                它是 Cursor 最常被拿來比較的競爭對手，同樣是 VS Code fork 架構的 AI 編輯器。它的核心亮點是 <strong>Cascade</strong>——一個在多檔案編輯方面被很多開發者評價比 Cursor Composer 更流暢的 agent 模式。它還有自家訓練的 SWE-1 系列模型，專門針對軟體工程任務調教。
+              </p>
+
+              <div class="tool-section-label">它解決了什麼問題</div>
+              <ul class="tool-feature-list">
+                <li>Cascade agent 在持續性任務和上下文保持方面表現穩定</li>
+                <li>自有 SWE 模型針對 coding 任務特化，不完全依賴第三方 LLM</li>
+                <li>現在整合了 Devin 雲端 agent，可以把任務丟給遠端 VM 去跑</li>
+                <li>Tab 補全免費，不吃 quota</li>
+              </ul>
+
+              <div class="tool-section-label">適合 / 不適合</div>
+              <div class="tool-who">
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>想要跟 Cursor 類似體驗但想多一個選擇比較的開發者</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>對 agent 持續性任務有需求、想試試 Devin 雲端整合的人</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>需要非常穩定長期支援的場景——它的品牌和方向剛剛大改，長期走向有一定不確定性</span>
+                </div>
+              </div>
+
+              <div class="tool-body-footer">
+                <a href="https://windsurf.com" target="_blank" rel="noopener" class="tool-official-link">官網 / 定價 →</a>
+                <span class="tool-note">// 有免費方案</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 OpenCode -->
+        <div class="tool-item" data-tool="opencode">
+          <button class="tool-header" aria-expanded="false">
+            <span class="tool-index">05</span>
+            <div class="tool-header-main">
+              <div class="tool-name">
+                OpenCode
+                <span class="tool-badge badge-open">開源</span>
+              </div>
+              <div class="tool-tagline">不想被任何廠商綁死？這條路是為你開的</div>
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">MIT 授權</span>
+              <span class="tool-tag">75+ 模型</span>
+              <span class="tool-tag">自己付 API</span>
+            </div>
+            <svg class="tool-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="tool-body">
+            <div class="tool-body-inner">
+              <div class="tool-section-label">它是什麼</div>
+              <p class="tool-body-text">
+                OpenCode 是目前最受歡迎的開源 AI coding agent，MIT 授權，160K+ GitHub stars，每個月有超過 750 萬開發者在用。它的設計哲學跟所有上面那些工具都不一樣：<strong>工具本身免費，你自己選模型、自己付 API 費</strong>。
+              </p>
+              <p class="tool-body-text">
+                它支援 75 個以上的 LLM 提供商——Claude、GPT、Gemini、DeepSeek、或是你用 Ollama 跑在本機的任何開源模型。你不被任何一家廠商綁住，想換模型就換，而且還跑在你自己的終端機裡。
+              </p>
+
+              <div class="tool-section-label">它解決了什麼問題</div>
+              <ul class="tool-feature-list">
+                <li>完全的模型自由度：今天用 Claude，明天想試 DeepSeek，一行設定換掉</li>
+                <li>資料不經過任何中間商，直接打你選的 API</li>
+                <li>可以跑完全離線的本機模型，零資料外洩風險</li>
+                <li>GitHub Copilot 訂閱者可以直接用 Copilot 授權登入，不用另外付費</li>
+                <li>開源代表你可以 fork、自己改、完全掌控</li>
+              </ul>
+
+              <div class="tool-section-label">成本怎麼算</div>
+              <p class="tool-body-text">
+                工具本身 $0。你付的是你選的模型的 API 費用。用 Claude Sonnet 的話，一般日常使用大概每個月 $10–20 美金的 API 費；如果搭配便宜的開源模型（像 DeepSeek），可以壓到更低。想完全免費？跑本機模型，成本是你的電費。
+              </p>
+
+              <div class="tool-section-label">適合 / 不適合</div>
+              <div class="tool-who">
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>不想被訂閱費綁住、想自己控制成本的開發者</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>有資料安全顧慮、需要完全掌控資料流向的場景</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-yes">✓ 適合</span>
+                  <span>想要實驗不同模型、比較各家輸出品質的人</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>想要開箱即用、不想自己設定 API key 和管理費用的人</span>
+                </div>
+                <div class="tool-who-row">
+                  <span class="who-label who-no">✗ 不適合</span>
+                  <span>喜歡視覺化 IDE 介面的開發者，它是純終端機 TUI</span>
+                </div>
+              </div>
+
+              <div class="tool-body-footer">
+                <a href="https://opencode.ai" target="_blank" rel="noopener" class="tool-official-link">官網 →</a>
+                <a href="https://github.com/sst/opencode" target="_blank" rel="noopener" class="tool-official-link">GitHub →</a>
+                <span class="tool-note">// 工具本身完全免費</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tool-list -->
+    </div>
+  </section>
+
+  <!-- CLOSED ENV NOTE -->
+  <section style="padding: 48px 0;">
+    <div class="container">
+      <div style="
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--cyan);
+        border-radius: var(--radius-lg);
+        padding: 28px 32px;
+        max-width: 720px;
+      ">
+        <div class="section-eyebrow" style="margin-bottom:10px;">特殊場景注意</div>
+        <p style="font-size:15px;color:var(--ink-2);line-height:1.85;">
+          如果你在<strong style="color:var(--ink);">金融、醫療、政府</strong>這類封閉網路環境工作，上面介紹的大多數工具對你來說可能根本不是選項——它們都需要連外部 API。這個限制不是工具的問題，是環境決定的。
+          <br><br>
+          這頁介紹的工具裡，<strong style="color:var(--ink);">OpenCode + 本機模型（Ollama）</strong>是目前最接近可落地的方向：工具開源、模型跑在自己的機器或內網伺服器上、零資料外洩。
+          <br><br>
+          至於企業級的本地化部署方案——有專門針對這類需求設計的企業平台，涵蓋私有雲部署、合規認證和組織級管理，那是另一個完全不同的評估框架，不在這頁的討論範疇。之後另開一篇。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE SECTION -->
+  <section id="compare" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="section-eyebrow">快速比較</div>
+      <h2 class="section-title">一張表看清楚</h2>
+      <p class="section-desc">主軸是使用場景，不是功能列表。價格以官網為準。</p>
+
+      <div class="compare-wrap reveal">
+        <div class="compare-scroll">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th class="col-dim">比較維度</th>
+                <th>Cursor</th>
+                <th>GitHub Copilot</th>
+                <th>Claude Code</th>
+                <th>Windsurf</th>
+                <th>OpenCode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">工作模式</td>
+                <td><span class="ct ide">AI IDE</span></td>
+                <td><span class="ct ext">編輯器插件</span></td>
+                <td><span class="ct cli">終端機</span></td>
+                <td><span class="ct ide">AI IDE</span></td>
+                <td><span class="ct cli">終端機</span></td>
+              </tr>
+              <tr>
+                <td class="row-label">不用換編輯器</td>
+                <td class="val-no">✗ 要換</td>
+                <td class="val-yes">✓ 裝插件</td>
+                <td class="val-mid">△ 搭配用</td>
+                <td class="val-no">✗ 要換</td>
+                <td class="val-mid">△ 搭配用</td>
+              </tr>
+              <tr>
+                <td class="row-label">讀整個 codebase</td>
+                <td class="val-yes">✓</td>
+                <td class="val-mid">△ 部分</td>
+                <td class="val-yes">✓ 最深</td>
+                <td class="val-yes">✓</td>
+                <td class="val-yes">✓</td>
+              </tr>
+              <tr>
+                <td class="row-label">自主執行指令</td>
+                <td class="val-mid">△ 有限</td>
+                <td class="val-mid">△ 有限</td>
+                <td class="val-yes">✓ 最強</td>
+                <td class="val-mid">△</td>
+                <td class="val-yes">✓</td>
+              </tr>
+              <tr>
+                <td class="row-label">多檔同時編輯</td>
+                <td class="val-yes">✓ Composer</td>
+                <td class="val-mid">△</td>
+                <td class="val-yes">✓</td>
+                <td class="val-yes">✓ Cascade</td>
+                <td class="val-yes">✓</td>
+              </tr>
+              <tr>
+                <td class="row-label">可用免費方案</td>
+                <td class="val-yes">✓</td>
+                <td class="val-yes">✓</td>
+                <td class="val-no">✗ 需付費</td>
+                <td class="val-yes">✓</td>
+                <td class="val-yes">✓ 工具免費</td>
+              </tr>
+              <tr>
+                <td class="row-label">封閉網路可用</td>
+                <td class="val-no">✗</td>
+                <td class="val-no">✗</td>
+                <td class="val-no">✗</td>
+                <td class="val-no">✗</td>
+                <td class="val-yes">✓ 本機模型</td>
+              </tr>
+              <tr>
+                <td class="row-label">模型自由選擇</td>
+                <td class="val-mid">△ 多模型</td>
+                <td class="val-mid">△ 多模型</td>
+                <td class="val-no">✗ 僅 Claude</td>
+                <td class="val-mid">△ 多模型</td>
+                <td class="val-yes">✓ 75+ 供應商</td>
+              </tr>
+              <tr>
+                <td class="row-label">學習門檻</td>
+                <td>低</td>
+                <td>最低</td>
+                <td>中（需熟終端機）</td>
+                <td>低</td>
+                <td>中（需設 API key）</td>
+              </tr>
+              <tr>
+                <td class="row-label">最適合的場景</td>
+                <td>日常 feature 開發、快速迭代</td>
+                <td>現有工作流加 AI、GitHub 整合</td>
+                <td>大型重構、複雜任務、自主執行</td>
+                <td>類 Cursor 體驗、agent 持續任務</td>
+                <td>封閉環境、控制成本、模型實驗</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="compare-note">// 向右滑動可查看完整表格 · 功能以各工具官網現況為準</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .compare-wrap {
+      position: relative;
+    }
+    .compare-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .compare-table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .compare-table thead tr {
+      background: var(--bg-3);
+      border-bottom: 2px solid var(--border);
+    }
+    .compare-table th {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      padding: 16px 18px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .compare-table th.col-dim {
+      color: var(--ink-3);
+      min-width: 140px;
+    }
+    .compare-table th:not(.col-dim) {
+      color: var(--cyan);
+      min-width: 130px;
+    }
+    .compare-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .compare-table tbody tr:last-child { border-bottom: none; }
+    .compare-table tbody tr:hover { background: var(--bg-3); }
+    .compare-table td {
+      padding: 14px 18px;
+      color: var(--ink-2);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .compare-table td.row-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-3);
+      white-space: nowrap;
+    }
+    .val-yes { color: var(--green) !important; font-weight: 500; }
+    .val-no  { color: #F47067 !important; }
+    .val-mid { color: var(--amber) !important; }
+
+    .ct {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .ct.ide { background: rgba(121,192,255,0.1); color: #79C0FF; }
+    .ct.ext { background: rgba(210,153,34,0.1);  color: var(--amber); }
+    .ct.cli { background: rgba(63,185,80,0.1);   color: var(--green); }
+
+    .compare-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-top: 12px;
+      text-align: right;
+    }
+  </style>
+
+  <!-- QUIZ SECTION -->
+  <section id="quiz" style="padding-bottom: 100px;">
+    <div class="container">
+      <div class="section-eyebrow">互動問答</div>
+      <h2 class="section-title">還沒決定？讓我踹你一把</h2>
+      <p class="section-desc">四個問題，給你一個夠用的起點。入坑之後死活自負。</p>
+
+      <div class="quiz-wrap reveal">
+
+        <!-- 問題區 -->
+        <div class="quiz-steps" id="quizSteps">
+
+          <div class="quiz-step active" data-step="0">
+            <div class="quiz-q">你現在主要用什麼編輯器？</div>
+            <div class="quiz-options">
+              <button class="quiz-opt" data-next="1" data-val="vscode">VS Code</button>
+              <button class="quiz-opt" data-next="1" data-val="jetbrains">JetBrains 系列（IntelliJ、PyCharm 等）</button>
+              <button class="quiz-opt" data-next="1" data-val="vim">Vim / Neovim</button>
+              <button class="quiz-opt" data-next="1" data-val="other">其他 / 沒有特別偏好</button>
+            </div>
+          </div>
+
+          <div class="quiz-step" data-step="1">
+            <div class="quiz-q">你最常做的工作是？</div>
+            <div class="quiz-options">
+              <button class="quiz-opt" data-next="2" data-val="daily">日常 feature 開發、debug、小改動</button>
+              <button class="quiz-opt" data-next="2" data-val="refactor">大型重構、跨檔案改動、框架遷移</button>
+              <button class="quiz-opt" data-next="2" data-val="explore">探索新 codebase、讀別人的 code</button>
+              <button class="quiz-opt" data-next="2" data-val="auto">想讓 AI 自己跑、我去做別的事</button>
+            </div>
+          </div>
+
+          <div class="quiz-step" data-step="2">
+            <div class="quiz-q">你的開發環境是？</div>
+            <div class="quiz-options">
+              <button class="quiz-opt" data-next="3" data-val="cloud">一般環境，可以連外部網路</button>
+              <button class="quiz-opt" data-next="3" data-val="closed">封閉網路、內網、資安管制環境</button>
+            </div>
+          </div>
+
+          <div class="quiz-step" data-step="3">
+            <div class="quiz-q">對訂閱費用的態度？</div>
+            <div class="quiz-options">
+              <button class="quiz-opt" data-next="result" data-val="free">先免費用看看，有感再付</button>
+              <button class="quiz-opt" data-next="result" data-val="pay">願意付費，要的是穩定好用</button>
+              <button class="quiz-opt" data-next="result" data-val="control">想自己控制成本，不想被月費綁</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 進度條 -->
+        <div class="quiz-progress" id="quizProgress">
+          <div class="quiz-progress-bar" id="quizBar"></div>
+        </div>
+        <div class="quiz-progress-label" id="quizLabel">問題 1 / 4</div>
+
+        <!-- 結果區 -->
+        <div class="quiz-result" id="quizResult" style="display:none;">
+          <div class="result-eyebrow">根據你的回答</div>
+          <div class="result-title" id="resultTitle"></div>
+          <div class="result-desc" id="resultDesc"></div>
+          <div class="result-also" id="resultAlso"></div>
+          <div class="result-actions">
+            <a id="resultLink" href="#" target="_blank" rel="noopener" class="btn-primary">去官網看看 →</a>
+            <button class="btn-ghost" id="quizReset">重新回答</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .quiz-wrap {
+      max-width: 640px;
+    }
+
+    .quiz-steps { margin-bottom: 20px; }
+
+    .quiz-step { display: none; }
+    .quiz-step.active { display: block; }
+
+    .quiz-q {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    .quiz-q::before {
+      content: '> ';
+      color: var(--cyan);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      color: var(--ink-2);
+      font-size: 14px;
+      font-family: var(--sans);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      line-height: 1.5;
+    }
+    .quiz-opt:hover {
+      border-color: var(--cyan);
+      color: var(--ink);
+      background: var(--bg-3);
+    }
+    .quiz-opt.selected {
+      border-color: var(--cyan);
+      background: var(--cyan-dim);
+      color: var(--ink);
+    }
+
+    /* 進度 */
+    .quiz-progress {
+      height: 3px;
+      background: var(--border);
+      border-radius: 100px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .quiz-progress-bar {
+      height: 100%;
+      background: var(--cyan);
+      border-radius: 100px;
+      transition: width 0.4s ease;
+      width: 25%;
+    }
+    .quiz-progress-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-bottom: 32px;
+    }
+
+    /* 結果 */
+    .quiz-result {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+    }
+
+    .result-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .result-title {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .result-desc {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.85;
+      margin-bottom: 16px;
+    }
+
+    .result-also {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-family: var(--mono);
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 640px) {
+      .quiz-result { padding: 24px 20px; }
+      .result-title { font-size: 20px; }
+    }
+  </style>
+
+  <script>
+    // ── Quiz Logic ──
+    const answers = {};
+    let currentStep = 0;
+    const totalSteps = 4;
+
+    function updateProgress(step) {
+      const pct = ((step + 1) / totalSteps) * 100;
+      document.getElementById('quizBar').style.width = pct + '%';
+      document.getElementById('quizLabel').textContent = `問題 ${step + 1} / ${totalSteps}`;
+    }
+
+    function goToStep(nextStep) {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+      const next = document.querySelector(`[data-step="${nextStep}"]`);
+      if (next) {
+        next.classList.add('active');
+        currentStep = nextStep;
+        updateProgress(nextStep);
+      }
+    }
+
+    function getRecommendation() {
+      const { q0, q1, q2, q3 } = answers;
+
+      // 封閉網路 → 一定推 OpenCode
+      if (q2 === 'closed') {
+        return {
+          title: 'OpenCode + 本機模型',
+          desc: '你的環境需要封閉網路，這是唯一真正可行的選項。OpenCode 本身免費開源，搭配 Ollama 跑本機模型，資料完全不離開你的機器。設定有一點門檻，但一旦跑起來，沒有任何雲端工具能在你的環境裡取代它。',
+          also: '// 推薦模型：Qwen2.5 Coder 或 DeepSeek Coder（Ollama 可直接下載）',
+          link: 'https://opencode.ai',
+        };
+      }
+
+      // 想自己控制成本 → OpenCode
+      if (q3 === 'control') {
+        return {
+          title: 'OpenCode',
+          desc: '你不想被月費綁，這個選擇最乾淨。工具本身免費，你付的是你選的模型的 API 費，用多少算多少。搭配 DeepSeek 可以把成本壓得很低，想升級就換 Claude 或 GPT，沒有任何鎖定。',
+          also: '// 也可以考慮：Windsurf 免費方案（如果你比較喜歡 IDE 介面）',
+          link: 'https://opencode.ai',
+        };
+      }
+
+      // JetBrains 用戶 → Copilot
+      if (q0 === 'jetbrains') {
+        return {
+          title: 'GitHub Copilot',
+          desc: '你用 JetBrains，這個選擇幾乎沒有懸念。Copilot 是少數在 IntelliJ、PyCharm 這些 IDE 上有完整支援的工具，你不用換環境，直接裝插件就能用。對於日常開發的節奏感提升非常明顯。',
+          also: '// 注意：2026 年 6 月起 agent 功能改成 token 計費，先確認你的使用場景',
+          link: 'https://github.com/features/copilot/plans',
+        };
+      }
+
+      // 想自主執行 or 大型重構 → Claude Code
+      if (q1 === 'auto' || q1 === 'refactor') {
+        return {
+          title: 'Claude Code',
+          desc: '你需要的是真正的自主執行能力，這個場景 Claude Code 是目前最強的選擇。它住在終端機，讀整個 repo，自己計劃、自己改、自己測試。你說要做什麼，它自己把事情做完。大型重構、框架遷移、跨多檔案的複雜任務，這就是它設計的舞台。',
+          also: '// 需要 Claude Pro 以上方案 · 不熟終端機的話建議先試試 Cursor',
+          link: 'https://claude.ai/download',
+        };
+      }
+
+      // 免費優先 → Windsurf 或 Copilot
+      if (q3 === 'free') {
+        if (q0 === 'vscode' || q0 === 'other') {
+          return {
+            title: 'Windsurf',
+            desc: '你想先免費試試看再決定，Windsurf 的免費方案是這幾個工具裡體驗相對完整的。Cascade agent 模式可以做多檔案編輯，不只是補全。試個幾週，有感覺再決定要不要升級。',
+            also: '// 備選：GitHub Copilot 免費方案（如果你重度使用 GitHub）',
+            link: 'https://windsurf.com',
+          };
+        }
+      }
+
+      // 預設：VS Code 用戶日常開發 → Cursor
+      return {
+        title: 'Cursor',
+        desc: '你的情況最適合 Cursor。它是目前市場上最成熟的 AI 編輯器，社群最大、資源最多。如果你本來用 VS Code，切換成本幾乎是零。Composer 模式做多檔案修改、Tab 補全猜你下一步——日常開發的體驗會有感提升。',
+        also: '// 有免費方案可以先試 · 進階功能需要付費',
+        link: 'https://cursor.com',
+      };
+    }
+
+    function showResult() {
+      document.getElementById('quizSteps').style.display = 'none';
+      document.getElementById('quizProgress').style.display = 'none';
+      document.getElementById('quizLabel').style.display = 'none';
+
+      const rec = getRecommendation();
+      document.getElementById('resultTitle').textContent = rec.title;
+      document.getElementById('resultDesc').textContent = rec.desc;
+      document.getElementById('resultAlso').textContent = rec.also;
+      document.getElementById('resultLink').href = rec.link;
+
+      const result = document.getElementById('quizResult');
+      result.style.display = 'block';
+      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // 選項點擊
+    document.querySelectorAll('.quiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.closest('.quiz-step').dataset.step;
+        const next = btn.dataset.next;
+        const val  = btn.dataset.val;
+
+        // 標記選中
+        btn.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        answers[`q${step}`] = val;
+
+        setTimeout(() => {
+          if (next === 'result') {
+            showResult();
+          } else {
+            goToStep(parseInt(next));
+          }
+        }, 220);
+      });
+    });
+
+    // 重設
+    document.getElementById('quizReset').addEventListener('click', () => {
+      Object.keys(answers).forEach(k => delete answers[k]);
+      document.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
+      document.getElementById('quizResult').style.display = 'none';
+      document.getElementById('quizSteps').style.display = 'block';
+      document.getElementById('quizProgress').style.display = 'block';
+      document.getElementById('quizLabel').style.display = 'block';
+      goToStep(0);
+    });
+
+    updateProgress(0);
+  </script>
+
+  <!-- MADE WITH CLAUDE -->
+  <section style="padding: 80px 0; border-top: 1px solid var(--border); background: var(--bg-2);">
+    <div class="container">
+      <div class="section-eyebrow">製作說明</div>
+      <h2 class="section-title">這頁是怎麼做出來的</h2>
+
+      <div style="max-width: 640px;">
+        <div class="tool-list reveal">
+          <div class="tool-item" data-tool="meta">
+            <button class="tool-header" aria-expanded="false">
+              <span class="tool-index" style="color:var(--cyan);">✦</span>
+              <div class="tool-header-main">
+                <div class="tool-name" style="font-size:16px;">
+                  Claude Sonnet 4.6 協助製作
+                </div>
+                <div class="tool-tagline">點開了解它是什麼，以及它跟 Claude Code 差在哪</div>
+              </div>
+              <svg class="tool-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="tool-body">
+              <div class="tool-body-inner">
+                <div class="tool-section-label">這頁是怎麼做出來的</div>
+                <p class="tool-body-text">
+                  這整頁的文案、結構、程式碼，是網站作者和 <strong>Claude Sonnet 4.6</strong>（Anthropic 目前的主力模型）透過對話協作完成的。作者負責方向、定調、和每一個設計決策；Claude 負責把想法轉成實際跑得動的東西。
+                </p>
+                <p class="tool-body-text">
+                  用的工具就是你現在可能已經在用的那種：<strong>claude.ai 網頁介面</strong>。沒有終端機，沒有 API，就是開著對話視窗一段一段做出來的。這本身就是這頁想說的事情的一個示範——AI 工具能做到什麼，你自己看到了。
+                </p>
+
+                <div class="tool-section-label">Claude Sonnet 4.6 是什麼</div>
+                <p class="tool-body-text">
+                  Claude 是 Anthropic 開發的 AI 模型系列。Sonnet 4.6 是目前 claude.ai 的主力版本，定位是在能力和速度之間取得平衡的日常使用模型。它擅長長篇寫作、結構化思考、和程式碼生成，也就是這頁需要的那些事。
+                </p>
+
+                <div class="tool-section-label">它和這頁介紹的 Claude Code 差在哪裡</div>
+                <p class="tool-body-text">兩個都叫 Claude，但用法完全不同：</p>
+                <ul class="tool-feature-list">
+                  <li><strong style="color:var(--ink);">claude.ai（這頁用的）</strong>：網頁對話介面。你貼程式碼給它、它回答你、你把答案複製出去用。它不知道你的專案長什麼樣，每次對話都要重新給脈絡。</li>
+                  <li><strong style="color:var(--ink);">Claude Code（這頁介紹的）</strong>：終端機 agent。它住在你的開發環境裡，直接讀你的整個 repo，自己跑指令、自己改檔案、自己測試。你不用複製貼上，它自己搞定。</li>
+                </ul>
+                <p class="tool-body-text" style="margin-top:12px;">
+                  同樣的 Claude 模型在背後驅動，但一個是你問它、它回答；一個是它主動在你的環境裡工作。差別就是這頁第一張對比表說的那件事。
+                </p>
+
+                <div class="tool-body-footer">
+                  <a href="https://claude.ai" target="_blank" rel="noopener" class="tool-official-link">試試 Claude →</a>
+                  <a href="https://www.anthropic.com" target="_blank" rel="noopener" class="tool-official-link">Anthropic 官網 →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>這份指南由 <a href="../">505kaichen</a> 整理製作。</p>
+      <p>工具功能與定價隨時可能異動，請以各工具官網為準。</p>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => revealObserver.observe(el));
+
+    // Accordion
+    document.querySelectorAll('.tool-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.tool-item');
+        const isOpen = item.classList.contains('open');
+
+        // 關閉其他
+        document.querySelectorAll('.tool-item.open').forEach(openItem => {
+          openItem.classList.remove('open');
+          openItem.querySelector('.tool-header').setAttribute('aria-expanded', 'false');
+        });
+
+        // 切換目前
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+
+          // 稍微捲到看得到
+          setTimeout(() => {
+            const rect = item.getBoundingClientRect();
+            if (rect.top < 70) {
+              window.scrollBy({ top: rect.top - 80, behavior: 'smooth' });
+            }
+          }, 50);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
