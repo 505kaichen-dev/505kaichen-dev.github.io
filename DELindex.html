@@ -399,11 +399,23 @@
     color: #fff;
   }
 
-  /* Featured card - same as normal card */
+  /* Featured card (span 2 cols) */
   .work-card.featured {
-    grid-column: span 1;
-    flex-direction: column;
+    grid-column: span 2;
+    flex-direction: row;
   }
+
+  .work-card.featured .card-thumb {
+    width: 45%;
+    height: auto;
+    min-height: 100%;
+    aspect-ratio: unset;
+    flex-shrink: 0;
+  }
+
+  .work-card.featured .card-body { padding: 32px; }
+
+  .work-card.featured .card-title { font-size: 1.4rem; margin-bottom: 14px; }
 
   /* ── ABOUT STRIP ── */
   .about-strip {
@@ -656,6 +668,8 @@
     .nav-inner { padding: 0 24px; }
     .hero-inner { padding: 100px 24px 60px; }
     .section { padding: 60px 24px; }
+    .work-card.featured { grid-column: span 1; flex-direction: column; }
+    .work-card.featured .card-thumb { width: 100%; height: 200px; }
     .about-strip { padding: 60px 24px; }
     .about-inner { grid-template-columns: 1fr; gap: 40px; }
     footer { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
@@ -755,16 +769,18 @@
           <img src="./opensource-story/image/opensource-story.png" alt="開源運動的誕生">
           <span class="card-tag">科技故事</span>
         </div>
-        <div class="card-body" style="flex:1;">
-          <div class="card-title">開源運動的誕生——當程式碼成為一種信仰</div>
-          <div class="card-desc">從 Richard Stallman 的憤怒出發，到 Linux 如何改變整個世界的軟體生態，這是一場關於自由、合作與反抗的史詩。</div>
-        </div>
-        <div class="card-footer">
-          <span class="card-date">2025</span>
-          <div class="card-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M2 6h8M6 2l4 4-4 4"/>
-            </svg>
+        <div style="display:flex;flex-direction:column;flex:1;">
+          <div class="card-body" style="flex:1;">
+            <div class="card-title">開源運動的誕生——當程式碼成為一種信仰</div>
+            <div class="card-desc">從 Richard Stallman 的憤怒出發，到 Linux 如何改變整個世界的軟體生態，這是一場關於自由、合作與反抗的史詩。</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">2025</span>
+            <div class="card-arrow">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2 6h8M6 2l4 4-4 4"/>
+              </svg>
+            </div>
           </div>
         </div>
       </a>
@@ -775,8 +791,6 @@
           <img src="./claude-web-guide/image/claude-web-guide.png" alt="Claude 網頁開發指南">
           <span class="card-tag">AI 指南</span>
         </div>
-        <div class="card-body">
-          <div class="card-title">Claude 網頁開發指南</div>
           <div class="card-desc">如何用 AI 協作建出有質感的靜態網頁，從設計思維到部署的完整實戰筆記。</div>
         </div>
         <div class="card-footer">
