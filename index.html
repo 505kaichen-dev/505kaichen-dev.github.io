@@ -460,26 +460,30 @@
     line-height: 1.75;
   }
 
-  .about-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+  .about-qa {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  .stat { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-
-  .stat-num {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #fff;
+  .qa-item {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
   }
 
-  .stat-label {
+  .qa-q {
     font-size: 0.8rem;
     color: rgba(255,255,255,0.4);
-    margin-top: 4px;
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .qa-a {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.4;
   }
 
   /* ── FOOTER ── */
@@ -689,8 +693,6 @@
     .hero-inner { padding: 90px 20px 48px; }
     .category-tabs { gap: 6px; }
     .tab-btn { padding: 6px 14px; font-size: 0.8rem; }
-    .about-stats { grid-template-columns: 1fr 1fr; gap: 20px; }
-    .stat-num { font-size: 2rem; }
     .admin-bar { bottom: 16px; right: 16px; }
     .pw-modal { width: calc(100% - 40px); padding: 28px 24px; }
     .card-thumb { height: 220px; }
@@ -929,22 +931,22 @@
         科技怎麼改變世界、AI 到底能幹嘛、某個商業決策背後的邏輯——這些事我覺得很有趣，所以做成網頁分享出來。喜歡就看，不喜歡就算了。
       </p>
     </div>
-    <div class="about-stats">
-      <div class="stat">
-        <div class="stat-num">4+</div>
-        <div class="stat-label">發布作品</div>
+    <div class="about-qa">
+      <div class="qa-item">
+        <div class="qa-q">我是誰？</div>
+        <div class="qa-a">還在搞清楚中</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">2</div>
-        <div class="stat-label">內容分類</div>
+      <div class="qa-item">
+        <div class="qa-q">為什麼做這個網站？</div>
+        <div class="qa-a">因為我閒著想操爆我 Claude 的 Token</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">100%</div>
-        <div class="stat-label">純 HTML5 靜態</div>
+      <div class="qa-item">
+        <div class="qa-q">我的專業是什麼？</div>
+        <div class="qa-a">真的有興趣發信來，可開發票打統編</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">∞</div>
-        <div class="stat-label">還有更多故事</div>
+      <div class="qa-item">
+        <div class="qa-q">第四題我想不到了，</div>
+        <div class="qa-a">我是個沒創意的 IT 機器人。</div>
       </div>
     </div>
   </div>
