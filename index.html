@@ -272,7 +272,7 @@
   /* ── WORK GRID ── */
   .work-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
     gap: 32px;
   }
 
@@ -311,7 +311,7 @@
 
   .card-thumb {
     width: 100%;
-    height: 260px;
+    height: 300px;
     background: var(--blue-light);
     display: flex;
     align-items: center;
@@ -674,6 +674,12 @@
     .stat-num { font-size: 2rem; }
     .admin-bar { bottom: 16px; right: 16px; }
     .pw-modal { width: calc(100% - 40px); padding: 28px 24px; }
+    .card-thumb { height: 220px; }
+  }
+
+  @media (max-width: 900px) and (min-width: 601px) {
+    .work-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+    .card-thumb { height: 240px; }
   }
 
   /* ── REVEAL ANIMATION ── */
