@@ -490,6 +490,157 @@
     background: var(--line);
   }
 
+  /* ── ADMIN MODE ── */
+  .admin-bar {
+    position: fixed; bottom: 24px; right: 24px; z-index: 200;
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .admin-bar .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .admin-toggle-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .admin-toggle-btn:hover { background: rgba(255,255,255,0.1); }
+  .admin-toggle-btn.hidden-active { border-color: #f87171; color: #f87171; }
+
+  .card-admin-btn {
+    display: none;
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+  }
+
+  .admin-mode .card-admin-btn { display: block; }
+
+  .card-lock-badge {
+    position: absolute;
+    bottom: 16px; right: 56px;
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+
+  /* Password modal */
+  .pw-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+
+  .pw-overlay.open { display: flex; }
+
+  .pw-modal {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 36px 40px;
+    width: 360px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+  }
+
+  .pw-modal h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .pw-modal p {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    margin-bottom: 20px;
+  }
+
+  .pw-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .pw-input:focus { border-color: var(--blue); }
+  .pw-input.error { border-color: #f87171; }
+
+  .pw-error {
+    font-size: 0.8rem;
+    color: #f87171;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .pw-error.show { display: block; }
+
+  .pw-actions { display: flex; gap: 8px; }
+
+  .pw-submit {
+    flex: 1;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .pw-submit:hover { background: #1d4ed8; }
+
+  .pw-cancel {
+    background: none;
+    border: 1px solid var(--line);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: var(--ink-muted);
+    transition: border-color 0.2s;
+  }
+
+  .pw-cancel:hover { border-color: var(--ink-muted); }
+
   /* ── HIDDEN / FILTERED ── */
   .work-card[data-hidden="true"] {
     display: none;
@@ -583,7 +734,7 @@
     <div class="work-grid" id="workGrid">
 
       <!-- Featured: opensource story -->
-      <a class="work-card featured reveal" href="./opensource-story/" data-category="tech-story">
+      <a class="work-card featured reveal" href="./opensource-story/" data-category="tech-story" data-card-id="opensource-story">
         <div class="card-thumb">
           <div class="card-thumb-placeholder">⚙</div>
           <span class="card-tag">科技故事</span>
@@ -605,7 +756,7 @@
       </a>
 
       <!-- Card: Claude web guide -->
-      <a class="work-card reveal" href="./claude-web-guide/" data-category="ai-guide">
+      <a class="work-card reveal" href="./claude-web-guide/" data-category="ai-guide" data-card-id="claude-web-guide">
         <div class="card-thumb">
           <div class="card-thumb-placeholder">✦</div>
           <span class="card-tag">AI 指南</span>
@@ -624,8 +775,8 @@
         </div>
       </a>
 
-      <!-- Card: dradvice01 -->
-      <a class="work-card reveal" href="./dradvice01/" data-category="works">
+      <!-- Card: dradvice01 (password protected) -->
+      <a class="work-card reveal" href="./dradvice01/" data-category="works" data-card-id="dradvice01" data-password="health2025">
         <div class="card-thumb">
           <div class="card-thumb-placeholder">◈</div>
           <span class="card-tag">作品分享</span>
@@ -642,10 +793,11 @@
             </svg>
           </div>
         </div>
+        <div class="card-lock-badge">🔒</div>
       </a>
 
       <!-- Card: LocalAI Image -->
-      <a class="work-card reveal" href="./localai-image/" data-category="ai-guide">
+      <a class="work-card reveal" href="./localai-image/" data-category="ai-guide" data-card-id="localai-image">
         <div class="card-thumb">
           <div class="card-thumb-placeholder">◉</div>
           <span class="card-tag">AI 指南</span>
@@ -665,7 +817,7 @@
       </a>
 
       <!-- Card: AI Guide -->
-      <a class="work-card reveal" href="./ai-guide/" data-category="ai-guide">
+      <a class="work-card reveal" href="./ai-guide/" data-category="ai-guide" data-card-id="ai-guide">
         <div class="card-thumb">
           <div class="card-thumb-placeholder">✦</div>
           <span class="card-tag">AI 指南</span>
@@ -736,6 +888,26 @@
   </div>
 </section>
 
+<!-- ADMIN BAR (only visible in admin mode) -->
+<div class="admin-bar" id="adminBar" style="display:none;">
+  <div class="dot"></div>
+  管理模式
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-modal">
+    <h3>🔒 受保護的內容</h3>
+    <p>請輸入密碼以繼續瀏覽</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="輸入密碼">
+    <div class="pw-error" id="pwError">密碼錯誤，請再試一次</div>
+    <div class="pw-actions">
+      <button class="pw-cancel" id="pwCancel">取消</button>
+      <button class="pw-submit" id="pwSubmit">確認</button>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">Kai<span>.</span></div>
@@ -743,26 +915,122 @@
 </footer>
 
 <script>
-  // Tab filter
+  // ── TAB FILTER ──
   const tabs = document.querySelectorAll('.tab-btn');
-  const cards = document.querySelectorAll('.work-card[data-category]');
+  const allCards = document.querySelectorAll('.work-card[data-category]');
+
+  function applyFilter(filter) {
+    allCards.forEach(card => {
+      const hidden = localStorage.getItem('hidden_' + card.dataset.cardId);
+      const isAdminMode = document.body.classList.contains('admin-mode');
+      if (hidden === 'true' && !isAdminMode) {
+        card.setAttribute('data-hidden', 'true');
+        return;
+      }
+      card.removeAttribute('data-hidden');
+      if (filter !== 'all' && card.dataset.category !== filter) {
+        card.setAttribute('data-hidden', 'true');
+      }
+    });
+  }
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      const filter = tab.dataset.filter;
-      cards.forEach(card => {
-        if (filter === 'all' || card.dataset.category === filter) {
-          card.removeAttribute('data-hidden');
-        } else {
-          card.setAttribute('data-hidden', 'true');
-        }
-      });
+      applyFilter(tab.dataset.filter);
     });
   });
 
-  // Scroll reveal
+  // ── ADMIN MODE ──
+  const isAdmin = location.search.includes('admin');
+  const adminBar = document.getElementById('adminBar');
+
+  if (isAdmin) {
+    document.body.classList.add('admin-mode');
+    adminBar.style.display = 'flex';
+
+    // Add hide/show buttons to each card
+    allCards.forEach(card => {
+      if (!card.dataset.cardId) return;
+      const btn = document.createElement('button');
+      const isHidden = localStorage.getItem('hidden_' + card.dataset.cardId) === 'true';
+      btn.className = 'card-admin-btn' + (isHidden ? ' hidden-active' : '');
+      btn.textContent = isHidden ? '已隱藏 · 點擊顯示' : '點擊隱藏';
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const key = 'hidden_' + card.dataset.cardId;
+        const nowHidden = localStorage.getItem(key) === 'true';
+        localStorage.setItem(key, (!nowHidden).toString());
+        btn.textContent = !nowHidden ? '已隱藏 · 點擊顯示' : '點擊隱藏';
+        btn.classList.toggle('hidden-active', !nowHidden);
+        card.style.opacity = !nowHidden ? '0.4' : '1';
+      });
+      card.style.position = 'relative';
+      card.style.opacity = isHidden ? '0.4' : '1';
+      card.appendChild(btn);
+    });
+  } else {
+    // Hide cards marked as hidden
+    allCards.forEach(card => {
+      if (!card.dataset.cardId) return;
+      if (localStorage.getItem('hidden_' + card.dataset.cardId) === 'true') {
+        card.setAttribute('data-hidden', 'true');
+      }
+    });
+  }
+
+  // ── PASSWORD PROTECTION ──
+  const pwOverlay = document.getElementById('pwOverlay');
+  const pwInput = document.getElementById('pwInput');
+  const pwError = document.getElementById('pwError');
+  const pwSubmit = document.getElementById('pwSubmit');
+  const pwCancel = document.getElementById('pwCancel');
+  let pendingUrl = '';
+  let pendingPassword = '';
+
+  allCards.forEach(card => {
+    if (!card.dataset.password) return;
+    card.addEventListener('click', e => {
+      e.preventDefault();
+      pendingUrl = card.getAttribute('href');
+      pendingPassword = card.dataset.password;
+      pwInput.value = '';
+      pwInput.classList.remove('error');
+      pwError.classList.remove('show');
+      pwOverlay.classList.add('open');
+      setTimeout(() => pwInput.focus(), 100);
+    });
+  });
+
+  pwSubmit.addEventListener('click', () => {
+    if (pwInput.value === pendingPassword) {
+      pwOverlay.classList.remove('open');
+      window.location.href = pendingUrl;
+    } else {
+      pwInput.classList.add('error');
+      pwError.classList.add('show');
+      pwInput.value = '';
+      pwInput.focus();
+    }
+  });
+
+  pwInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') pwSubmit.click();
+    pwInput.classList.remove('error');
+    pwError.classList.remove('show');
+  });
+
+  pwCancel.addEventListener('click', () => {
+    pwOverlay.classList.remove('open');
+  });
+
+  pwOverlay.addEventListener('click', e => {
+    if (e.target === pwOverlay) pwOverlay.classList.remove('open');
+  });
+
+  // ── SCROLL REVEAL ──
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, i) => {
