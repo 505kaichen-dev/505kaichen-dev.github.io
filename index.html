@@ -155,20 +155,39 @@
   .hero-cta {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     background: var(--ink);
     color: #fff;
-    padding: 14px 28px;
+    padding: 18px 40px;
     border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 700;
     text-decoration: none;
-    transition: background 0.2s, transform 0.2s;
+    letter-spacing: -0.01em;
+    border: 2px solid transparent;
+    box-shadow: 0 0 0 rgba(37,99,235,0);
+    transition: background 0.2s, box-shadow 0.3s, border-color 0.3s, transform 0.2s;
+    position: relative;
   }
 
-  .hero-cta:hover { background: var(--blue); transform: translateY(-1px); }
+  .hero-cta:hover {
+    background: #0D0F14;
+    border-color: var(--blue);
+    box-shadow: 0 0 20px rgba(37,99,235,0.5), 0 0 40px rgba(37,99,235,0.25), inset 0 0 20px rgba(37,99,235,0.05);
+    animation: shake 0.4s ease;
+  }
 
-  .hero-cta svg { width: 16px; height: 16px; }
+  @keyframes shake {
+    0%   { transform: translateX(0); }
+    15%  { transform: translateX(-6px) rotate(-1deg); }
+    30%  { transform: translateX(6px) rotate(1deg); }
+    45%  { transform: translateX(-4px); }
+    60%  { transform: translateX(4px); }
+    75%  { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+  }
+
+  .hero-cta svg { width: 20px; height: 20px; }
 
   .hero-scroll {
     position: absolute;
@@ -712,15 +731,15 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
-  <div class="hero-eyebrow">Designer & Storyteller</div>
+  <div class="hero-eyebrow">Kai 的個人基地</div>
   <h1 class="hero-title">
-    用設計說<em>有深度</em><br>的故事
+    不是部落格。不是作品集。<br><em>就是我覺得很酷所以做了。</em>
   </h1>
   <p class="hero-desc">
-    這裡是 Kai 的創作空間。科技故事、作品分享——每一頁都是一次設計與敘事的實驗。
+    從 AI 到歷史，從商業到設計——好奇心驅動，沒有主題限制。
   </p>
   <a href="#works" class="hero-cta">
-    瀏覽作品
+    👉 用力點這裡
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
       <path d="M3 8h10M9 4l4 4-4 4"/>
     </svg>
@@ -750,6 +769,7 @@
       <button class="tab-btn" data-filter="tech-story">科技故事</button>
       <button class="tab-btn" data-filter="works">作品分享</button>
       <button class="tab-btn" data-filter="ai-guide">AI 指南</button>
+      <button class="tab-btn" data-filter="gallery">創作圖集</button>
     </div>
 
     <!-- GRID -->
@@ -856,6 +876,29 @@
         </div>
       </a>
 
+      <!-- Card: Gallery -->
+      <a class="work-card reveal" href="./gallery/" data-category="gallery" data-card-id="gallery">
+        <div class="card-thumb" style="background: linear-gradient(135deg, #0D0F14 0%, #1a1f35 50%, #0D0F14 100%); display:flex; align-items:center; justify-content:center; gap: 12px; flex-wrap:wrap; padding: 20px;">
+          <img src="./dradvice01/image/dradvice01.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
+          <img src="./opensource-story/image/opensource-story.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
+          <img src="./ai-guide/image/ai-guide.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
+          <img src="./LocalAI_Image/image/LocalAI_Image.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
+          <span class="card-tag" style="color:#fff; background:rgba(37,99,235,0.8);">創作圖集</span>
+        </div>
+        <div class="card-body">
+          <div class="card-title">AI 圖像創作集</div>
+          <div class="card-desc">用 AI 工具生成的視覺創作，探索提示詞與圖像之間的無限可能。</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-date">持續更新</span>
+          <div class="card-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 6h8M6 2l4 4-4 4"/>
+            </svg>
+          </div>
+        </div>
+      </a>
+
       <!-- Placeholder: Coming soon -->
       <div class="work-card reveal" style="border-style:dashed;cursor:default;opacity:0.5;" data-category="tech-story">
         <div class="card-thumb" style="background:#f3f4f6;">
@@ -881,10 +924,10 @@
 <section class="about-strip" id="about">
   <div class="about-inner">
     <div>
-      <h2 class="about-title">設計是<em>觀點</em>，<br>故事是<em>媒介</em></h2>
+      <h2 class="about-title">好奇心是<em>唯一</em>的<br>入場券</h2>
       <p class="about-desc">
-        我相信一個設計精良的頁面，本身就是內容的一部分。<br><br>
-        這裡分享的不是懶人包，也不是技術文件——而是有觀點、有溫度的敘事。科技、商業、人物，每個大時代的決策背後都藏著值得細讀的故事。
+        我不是專家，我只是個對很多事都好奇、然後忍不住要研究一遍的人。<br><br>
+        科技怎麼改變世界、AI 到底能幹嘛、某個商業決策背後的邏輯——這些事我覺得很有趣，所以做成網頁分享出來。喜歡就看，不喜歡就算了。
       </p>
     </div>
     <div class="about-stats">
