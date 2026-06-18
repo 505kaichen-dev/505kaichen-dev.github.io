@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宇宙指南 — 找到你的智慧夥伴</title>
+<style>
+  :root {
+    --bg: #080B14;
+    --surface: #0E1220;
+    --surface2: #141828;
+    --border: rgba(255,255,255,0.07);
+    --text: #E8EAF0;
+    --muted: #7B82A0;
+    --accent: #4FC3F7;
+    --accent2: #7C6FF7;
+
+    /* AI brand colors */
+    --gemini: #4285F4;
+    --grok: #1A1A1A;
+    --grok-accent: #FF6B35;
+    --deepseek: #2563EB;
+    --chatgpt: #10A37F;
+    --copilot: #7C6FF7;
+    --quark: #0EA5E9;
+    --meta: #0866FF;
+    --claude: #D97757;
+    --doubao: #FF4757;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 16px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(8,11,20,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size: 18px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 100px 24px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-canvas {
+    position: absolute; inset: 0; z-index: 0;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 780px; }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(79,195,247,0.1);
+    border: 1px solid rgba(79,195,247,0.25);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px; color: var(--accent); letter-spacing: 0.5px;
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 .grad {
+    background: linear-gradient(135deg, #4FC3F7 0%, #7C6FF7 50%, #FF6B35 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px; color: var(--muted); line-height: 1.7;
+    max-width: 560px; margin: 0 auto 40px;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent);
+    color: #080B14;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-weight: 700; font-size: 15px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 40px rgba(79,195,247,0.3);
+  }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(79,195,247,0.5); }
+
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 12px; letter-spacing: 1px;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollAnim 2s ease-in-out infinite;
+  }
+  @keyframes scrollAnim {
+    0%, 100% { transform: scaleY(1); opacity: 0.5; }
+    50% { transform: scaleY(1.3); opacity: 1; }
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 100px 24px; }
+  .section-header { text-align: center; margin-bottom: 64px; }
+  .section-label { font-size: 12px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+  .section-title { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -1px; line-height: 1.2; }
+  .section-desc { font-size: 16px; color: var(--muted); margin-top: 12px; line-height: 1.7; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+  /* ── AI CARDS ── */
+  .ai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  .ai-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+  .ai-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--card-color, var(--accent));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .ai-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+  .ai-card:hover { border-color: var(--card-color, var(--accent)); }
+  .ai-card:hover::before { opacity: 1; }
+
+  .ai-card-glow {
+    position: absolute; top: -60px; right: -60px;
+    width: 180px; height: 180px;
+    background: var(--card-color, var(--accent));
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .ai-card:hover .ai-card-glow { opacity: 0.08; }
+
+  .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .card-title-wrap {}
+  .card-name { font-size: 18px; font-weight: 700; }
+  .card-maker { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .tag {
+    font-size: 11px; padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+  .tag.hot {
+    background: rgba(255,107,53,0.12);
+    border-color: rgba(255,107,53,0.3);
+    color: #FF6B35;
+  }
+  .tag.cool {
+    background: rgba(79,195,247,0.1);
+    border-color: rgba(79,195,247,0.25);
+    color: var(--accent);
+  }
+  .tag.special {
+    background: rgba(124,111,247,0.1);
+    border-color: rgba(124,111,247,0.25);
+    color: var(--accent2);
+  }
+
+  .card-desc { font-size: 14px; line-height: 1.75; color: var(--muted); margin-bottom: 20px; }
+
+  .card-strengths { border-top: 1px solid var(--border); padding-top: 16px; }
+  .strength-title { font-size: 11px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .strength-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; margin-bottom: 6px; color: var(--text);
+  }
+  .strength-item::before { content: '✦'; color: var(--card-color, var(--accent)); font-size: 8px; }
+
+  .card-rating {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .rating-label { font-size: 11px; color: var(--muted); flex: 1; }
+  .rating-bars { display: flex; gap: 3px; }
+  .rating-bar {
+    width: 20px; height: 4px; border-radius: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .rating-bar.filled { background: var(--card-color, var(--accent)); }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-section { background: var(--surface); }
+  .compare-table {
+    max-width: 1100px; margin: 0 auto;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 14px 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  thead th {
+    color: var(--muted); font-weight: 500; font-size: 12px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td:first-child { text-align: left; font-weight: 600; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  .check { color: #4ADE80; font-size: 16px; }
+  .cross { color: #F87171; font-size: 16px; }
+  .partial { color: #FBBF24; font-size: 14px; }
+
+  /* ── QUIZ SECTION ── */
+  .quiz-section {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 50%, var(--bg) 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+
+  .quiz-container { max-width: 680px; width: 100%; margin: 0 auto; }
+
+  .quiz-progress {
+    display: flex; gap: 6px; margin-bottom: 40px; justify-content: center;
+  }
+  .progress-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .progress-dot.active { background: var(--accent); transform: scale(1.3); }
+  .progress-dot.done { background: rgba(79,195,247,0.4); }
+
+  .quiz-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    min-height: 380px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+
+  .quiz-q-num { font-size: 12px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .quiz-question { font-size: clamp(20px, 3vw, 26px); font-weight: 700; line-height: 1.4; margin-bottom: 32px; }
+  .quiz-emoji { font-size: 40px; margin-bottom: 16px; display: block; }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 12px; }
+  .quiz-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.02);
+    font-size: 15px;
+  }
+  .quiz-option:hover { border-color: var(--accent); background: rgba(79,195,247,0.05); transform: translateX(4px); }
+  .quiz-option.selected { border-color: var(--accent); background: rgba(79,195,247,0.1); }
+  .option-emoji { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+
+  .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
+  .quiz-btn {
+    padding: 12px 28px; border-radius: 100px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; transition: all 0.2s;
+  }
+  .quiz-btn-primary { background: var(--accent); color: #080B14; }
+  .quiz-btn-primary:hover { box-shadow: 0 0 30px rgba(79,195,247,0.4); transform: translateY(-1px); }
+  .quiz-btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .quiz-btn-secondary:hover { border-color: var(--text); color: var(--text); }
+  .quiz-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  /* ── RESULT ── */
+  .result-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: resultBounce 0.6s ease; }
+  @keyframes resultBounce {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .result-match { font-size: 13px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .result-name {
+    font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .result-tagline { font-size: 16px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+  .result-reasons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; text-align: left; }
+  .result-reason {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 16px;
+    background: rgba(79,195,247,0.05);
+    border: 1px solid rgba(79,195,247,0.1);
+    border-radius: 12px;
+    font-size: 14px; line-height: 1.5;
+  }
+  .result-reason span:first-child { font-size: 18px; flex-shrink: 0; }
+  .result-secondary { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+  .result-secondary strong { color: var(--text); }
+  .retry-btn {
+    padding: 12px 28px; border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text);
+    cursor: pointer; font-size: 14px; transition: all 0.2s;
+  }
+  .retry-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 40px;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 13px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .ai-grid { grid-template-columns: 1fr; }
+    .quiz-card { padding: 28px 24px; }
+    section { padding: 70px 16px; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  .stagger-1 { transition-delay: 0.1s; }
+  .stagger-2 { transition-delay: 0.2s; }
+  .stagger-3 { transition-delay: 0.3s; }
+  .stagger-4 { transition-delay: 0.4s; }
+  .stagger-5 { transition-delay: 0.5s; }
+
+  /* intro tagline box */
+  .intro-box {
+    max-width: 860px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+  .intro-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+  }
+  .intro-stat-num { font-size: 36px; font-weight: 800; color: var(--accent); }
+  .intro-stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  @media (max-width: 600px) { .intro-box { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">✦ AI 宇宙指南</div>
+  <div class="nav-links">
+    <a href="#cards">認識 AI</a>
+    <a href="#compare">比較一覽</a>
+    <a href="#quiz">找到你的 AI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span></span> 2025 年度 AI 工具全攻略</div>
+    <h1>AI 這麼多，<br>哪一個<span class="grad">真的適合你</span>？</h1>
+    <p class="hero-sub">從 ChatGPT 到 Claude，從 Gemini 到 DeepSeek——每個 AI 都有自己的個性。讀完這篇，你就知道誰是你的智慧夥伴。</p>
+    <a href="#quiz" class="hero-cta">開始測驗，找到你的 AI ✦</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    SCROLL
+  </div>
+</section>
+
+<!-- INTRO STATS -->
+<section style="padding: 40px 24px 80px;">
+  <div class="intro-box">
+    <div class="intro-stat fade-up stagger-1">
+      <div class="intro-stat-num">9</div>
+      <div class="intro-stat-label">主流 AI 工具<br>深度解析</div>
+    </div>
+    <div class="intro-stat fade-up stagger-2">
+      <div class="intro-stat-num">5</div>
+      <div class="intro-stat-label">互動問題<br>精準配對</div>
+    </div>
+    <div class="intro-stat fade-up stagger-3">
+      <div class="intro-stat-num">∞</div>
+      <div class="intro-stat-label">可能性<br>等你探索</div>
+    </div>
+  </div>
+</section>
+
+<!-- AI CARDS -->
+<section id="cards">
+  <div class="section-header">
+    <div class="section-label">認識每一位 AI</div>
+    <h2 class="section-title">九大 AI 工具，逐一解密</h2>
+    <p class="section-desc">它們來自不同星球，說著不同語言，但都想幫助你。</p>
+  </div>
+
+  <div class="ai-grid" id="aiGrid">
+
+    <!-- ChatGPT -->
+    <div class="ai-card fade-up" style="--card-color: #10A37F;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🤖</div>
+        <div class="card-title-wrap">
+          <div class="card-name">ChatGPT</div>
+          <div class="card-maker">OpenAI</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag hot">最多人用</span>
+        <span class="tag cool">GPT-4o</span>
+        <span class="tag">外掛生態豐富</span>
+      </div>
+      <div class="card-desc">AI 世界的「老大哥」。2022 年底橫空出世、一夕間改變了世界對 AI 的認知。它的生態系是最完整的——有 GPTs、有 Canvas 文件編輯、有記憶功能、還能搜尋網路。就像 iPhone 之於智慧型手機，ChatGPT 定義了現代 AI 助理的樣貌。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">外掛與 GPTs 商店，可高度客製化</div>
+        <div class="strength-item">DALL-E 圖像生成無縫整合</div>
+        <div class="strength-item">記憶功能，越用越懂你</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">中文理解</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claude -->
+    <div class="ai-card fade-up stagger-1" style="--card-color: #D97757;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🌟</div>
+        <div class="card-title-wrap">
+          <div class="card-name">Claude</div>
+          <div class="card-maker">Anthropic</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag special">長文本之王</span>
+        <span class="tag cool">200K context</span>
+        <span class="tag">安全第一</span>
+      </div>
+      <div class="card-desc">如果 ChatGPT 是理工男，Claude 就是那位哲學系高材生。它能一口氣讀完整本書，分析你的論文、合約或程式碼，並給出細緻入微的回饋。Anthropic 以「負責任的 AI」為核心理念，Claude 的回答特別注重準確、謹慎、不誇大。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">20 萬字超長上下文，處理長文件無壓力</div>
+        <div class="strength-item">寫作品質細膩，語感自然不像機器</div>
+        <div class="strength-item">拒絕胡說八道，不確定時坦承告知</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">寫作品質</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gemini -->
+    <div class="ai-card fade-up stagger-2" style="--card-color: #4285F4;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">✨</div>
+        <div class="card-title-wrap">
+          <div class="card-name">Google Gemini</div>
+          <div class="card-maker">Google DeepMind</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag hot">Google 整合</span>
+        <span class="tag cool">多模態</span>
+        <span class="tag">即時搜尋</span>
+      </div>
+      <div class="card-desc">Google 把自家最強的搜尋引擎、Gmail、Google Docs 全都打通了。Gemini 不只是聊天，它是整個 Google 生態的智慧大腦。如果你的生活離不開 Google 全家桶，Gemini 會讓你感覺「工具終於有了靈魂」。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">深度整合 Gmail、Drive、Docs、YouTube</div>
+        <div class="strength-item">即時網路搜尋，資訊最新鮮</div>
+        <div class="strength-item">圖片、音訊、影片多模態理解</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">即時資訊</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copilot -->
+    <div class="ai-card fade-up" style="--card-color: #7C6FF7;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🪟</div>
+        <div class="card-title-wrap">
+          <div class="card-name">Microsoft Copilot</div>
+          <div class="card-maker">Microsoft × OpenAI</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag special">Office 整合</span>
+        <span class="tag cool">免費入門</span>
+        <span class="tag">企業首選</span>
+      </div>
+      <div class="card-desc">微軟把幾百億美元投進 OpenAI，然後直接把 GPT-4 塞進 Windows 和 Office。Copilot 的核心優勢是「在你原本的工作環境裡」幫你——你不需要切換視窗，在 Word、Excel、Teams 裡就能直接用 AI，是職場人士的絕佳夥伴。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">Word/Excel/PowerPoint 直接內嵌 AI</div>
+        <div class="strength-item">以 GPT-4 驅動，免費版即可體驗</div>
+        <div class="strength-item">Bing 搜尋加持，有引用來源</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">企業辦公</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DeepSeek -->
+    <div class="ai-card fade-up stagger-1" style="--card-color: #2563EB;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🔭</div>
+        <div class="card-title-wrap">
+          <div class="card-name">DeepSeek</div>
+          <div class="card-maker">深度求索（中國）</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag hot">開源震撼彈</span>
+        <span class="tag cool">R1 推理模型</span>
+        <span class="tag">CP 值極高</span>
+      </div>
+      <div class="card-desc">2025 年初橫空出世，用極低的成本打出了媲美 GPT-4 的成績，震驚了整個矽谷。DeepSeek-R1 的「思維鏈」推理能力尤其出色——它會像人類一樣「先想清楚再回答」，數學和邏輯問題的表現讓業界重新認識了中國 AI 的實力。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">開源模型，可自行部署，隱私有保障</div>
+        <div class="strength-item">推理能力強，數學/程式碼表現頂尖</div>
+        <div class="strength-item">免費版即可使用 R1 旗艦模型</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">數學推理</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grok -->
+    <div class="ai-card fade-up stagger-2" style="--card-color: #FF6B35;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🚀</div>
+        <div class="card-title-wrap">
+          <div class="card-name">Grok</div>
+          <div class="card-maker">xAI（Elon Musk）</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag hot">X 即時動態</span>
+        <span class="tag">敢說真話</span>
+        <span class="tag">幽默感十足</span>
+      </div>
+      <div class="card-desc">馬斯克打造的 AI，反映了他的個性——直接、不政治正確、有點叛逆。Grok 能即時存取 X（Twitter）上的所有公開貼文，是追蹤時事、看輿論風向的最佳工具。它還刻意設計成「敢說其他 AI 不敢說的話」，帶點反主流的性格魅力。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">即時讀取 X 平台推文與熱門話題</div>
+        <div class="strength-item">有幽默感，對話風格更像朋友</div>
+        <div class="strength-item">Aurora 圖像生成，風格大膽</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">即時社群</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meta AI -->
+    <div class="ai-card fade-up" style="--card-color: #0866FF;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🌐</div>
+        <div class="card-title-wrap">
+          <div class="card-name">Meta AI</div>
+          <div class="card-maker">Meta（Facebook）</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag special">Llama 開源</span>
+        <span class="tag cool">社群整合</span>
+        <span class="tag">免費使用</span>
+      </div>
+      <div class="card-desc">Meta 選擇了一條和 OpenAI 完全不同的路：開源。Llama 模型免費讓全世界的開發者使用，背後的哲學是「AI 應該屬於所有人」。Meta AI 本身則整合在 WhatsApp、Instagram、Messenger 裡，你可能不知不覺已經在用了。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">Llama 完全開源，開發者最愛</div>
+        <div class="strength-item">整合在 IG/WhatsApp，零學習成本</div>
+        <div class="strength-item">強大的影像生成與理解能力</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">開發自由度</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 夸克 -->
+    <div class="ai-card fade-up stagger-1" style="--card-color: #0EA5E9;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">⚛️</div>
+        <div class="card-title-wrap">
+          <div class="card-name">夸克 AI</div>
+          <div class="card-maker">阿里巴巴集團</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag hot">繁體中文優化</span>
+        <span class="tag">搜尋+AI</span>
+        <span class="tag">學術研究</span>
+      </div>
+      <div class="card-desc">夸克是阿里巴巴旗下的搜尋引擎搖身一變，深度融合了 AI 能力。對繁體中文用戶來說，它的中文理解相當出色，特別適合用來查學術資料、摘要整理文章、或是做學生報告。介面簡潔，沒有廢話，開門見山。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">中文搜尋與 AI 理解深度融合</div>
+        <div class="strength-item">學術論文搜尋與摘要能力強</div>
+        <div class="strength-item">介面乾淨，適合學生與研究者</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">中文搜尋</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 豆包 -->
+    <div class="ai-card fade-up stagger-2" style="--card-color: #FF4757;">
+      <div class="ai-card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">🫘</div>
+        <div class="card-title-wrap">
+          <div class="card-name">豆包</div>
+          <div class="card-maker">字節跳動（ByteDance）</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag hot">TikTok 背後</span>
+        <span class="tag special">語音對話</span>
+        <span class="tag">角色扮演</span>
+      </div>
+      <div class="card-desc">TikTok 母公司字節跳動打造的 AI，繼承了字節最擅長的推薦演算法基因。豆包特別強在「陪伴感」——語音對話自然流暢，有多種個性角色可選，很多人用它來練習語言、做角色扮演，或是單純找個 AI 朋友聊天。</div>
+      <div class="card-strengths">
+        <div class="strength-title">三大亮點</div>
+        <div class="strength-item">語音對話品質高，情感表達自然</div>
+        <div class="strength-item">角色扮演場景豐富，陪伴感強</div>
+        <div class="strength-item">中文口語理解能力出色</div>
+      </div>
+      <div class="card-rating">
+        <div class="rating-label">語音陪伴</div>
+        <div class="rating-bars">
+          <div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div><div class="rating-bar filled"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARE TABLE -->
+<section id="compare" class="compare-section">
+  <div class="section-header">
+    <div class="section-label">一目了然</div>
+    <h2 class="section-title">功能比較一覽表</h2>
+  </div>
+  <div class="compare-table fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>AI 工具</th>
+          <th>免費可用</th>
+          <th>即時搜尋</th>
+          <th>圖像生成</th>
+          <th>中文能力</th>
+          <th>長文本</th>
+          <th>最適合</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>🤖 ChatGPT</td><td><span class="partial">△ 限制</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="partial">★★★★</span></td><td><span class="partial">128K</span></td><td>全能型用戶</td></tr>
+        <tr><td>🌟 Claude</td><td><span class="partial">△ 限制</span></td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="partial">★★★★</span></td><td><span class="check">200K ✓</span></td><td>寫作 / 分析</td></tr>
+        <tr><td>✨ Gemini</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="partial">★★★★</span></td><td><span class="check">✓</span></td><td>Google 用戶</td></tr>
+        <tr><td>🪟 Copilot</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="partial">★★★</span></td><td><span class="partial">△</span></td><td>Office 用戶</td></tr>
+        <tr><td>🔭 DeepSeek</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="check">★★★★★</span></td><td><span class="check">✓</span></td><td>技術 / 數學</td></tr>
+        <tr><td>🚀 Grok</td><td><span class="partial">△ 限制</span></td><td><span class="check">✓ (X)</span></td><td><span class="check">✓</span></td><td><span class="partial">★★★</span></td><td><span class="partial">△</span></td><td>追蹤時事</td></tr>
+        <tr><td>🌐 Meta AI</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="partial">★★★</span></td><td><span class="partial">△</span></td><td>開發者</td></tr>
+        <tr><td>⚛️ 夸克</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="check">★★★★★</span></td><td><span class="partial">△</span></td><td>學術研究</td></tr>
+        <tr><td>🫘 豆包</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">★★★★★</span></td><td><span class="partial">△</span></td><td>語音陪伴</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- QUIZ SECTION -->
+<section id="quiz" class="quiz-section">
+  <div class="section-header fade-up">
+    <div class="section-label">互動測驗</div>
+    <h2 class="section-title">找到你的 AI 夥伴</h2>
+    <p class="section-desc">5 個問題，幫你精準配對最適合你的 AI 工具</p>
+  </div>
+
+  <div class="quiz-container">
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div id="quizArea"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>✦ AI 宇宙指南 · 資訊僅供參考，各平台功能持續更新</p>
+  <p style="margin-top:8px; font-size:12px;">用心整理，希望幫你少走彎路 🌟</p>
+</footer>
+
+<script>
+// ── CANVAS HERO ANIMATION ──
+const canvas = document.getElementById('heroCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.1;
+    this.color = ['#4FC3F7','#7C6FF7','#FF6B35','#10A37F','#D97757'][Math.floor(Math.random()*5)];
+  }
+  update() {
+    this.x += this.speedX; this.y += this.speedY;
+    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+  }
+  draw() {
+    ctx.globalAlpha = this.opacity;
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function initParticles() {
+  particles = [];
+  for (let i = 0; i < 120; i++) particles.push(new Particle());
+}
+
+function animateCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1;
+  particles.forEach(p => { p.update(); p.draw(); });
+
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 80) {
+        ctx.globalAlpha = (1 - dist / 80) * 0.08;
+        ctx.strokeStyle = '#4FC3F7';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateCanvas);
+}
+
+resizeCanvas(); initParticles(); animateCanvas();
+window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ── QUIZ LOGIC ──
+const questions = [
+  {
+    emoji: '💼',
+    q: '你最常在哪個場景需要 AI 幫忙？',
+    options: [
+      { emoji: '📝', text: '寫作、整理、分析文件', values: { claude: 3, chatgpt: 2, copilot: 2 } },
+      { emoji: '💻', text: '寫程式、解數學、解決技術問題', values: { deepseek: 3, chatgpt: 2, claude: 1 } },
+      { emoji: '📊', text: '工作報告、Excel、Office 文件', values: { copilot: 3, gemini: 2, chatgpt: 1 } },
+      { emoji: '🎨', text: '創作、聊天、娛樂探索', values: { grok: 2, doubao: 2, chatgpt: 2 } },
+    ]
+  },
+  {
+    emoji: '🌏',
+    q: '你主要用哪種語言和 AI 溝通？',
+    options: [
+      { emoji: '🇹🇼', text: '中文為主（繁體）', values: { deepseek: 2, quark: 2, doubao: 2 } },
+      { emoji: '🇺🇸', text: '英文為主', values: { chatgpt: 2, claude: 2, grok: 2 } },
+      { emoji: '🔀', text: '中英混合，視情況切換', values: { gemini: 2, chatgpt: 2, claude: 1 } },
+      { emoji: '🗣️', text: '我喜歡語音對話多過打字', values: { doubao: 3, gemini: 1 } },
+    ]
+  },
+  {
+    emoji: '🔍',
+    q: '你最重視 AI 的哪個特質？',
+    options: [
+      { emoji: '🎯', text: '答案準確、不亂說、有引用', values: { claude: 3, gemini: 2, copilot: 1 } },
+      { emoji: '⚡', text: '即時資訊、追蹤最新消息', values: { grok: 3, gemini: 2, copilot: 1 } },
+      { emoji: '🔓', text: '開放、敢說真話、有個性', values: { grok: 3, deepseek: 2 } },
+      { emoji: '🔒', text: '資料隱私與安全', values: { deepseek: 3, claude: 2, copilot: 1 } },
+    ]
+  },
+  {
+    emoji: '🛠️',
+    q: '你有在使用哪些數位服務？',
+    options: [
+      { emoji: '📧', text: 'Gmail、Google Docs、Google 全家桶', values: { gemini: 3, chatgpt: 1 } },
+      { emoji: '🪟', text: 'Outlook、Teams、Office 365', values: { copilot: 3, chatgpt: 1 } },
+      { emoji: '📱', text: 'Instagram、WhatsApp、Facebook', values: { meta: 3, doubao: 1 } },
+      { emoji: '🚀', text: '我是獨立使用者，不依賴特定平台', values: { chatgpt: 2, claude: 2, deepseek: 2 } },
+    ]
+  },
+  {
+    emoji: '💰',
+    q: '你願意為 AI 訂閱付費嗎？',
+    options: [
+      { emoji: '💸', text: '是的，我願意付費用最好的', values: { chatgpt: 2, claude: 2, copilot: 2 } },
+      { emoji: '🆓', text: '希望免費版就能滿足需求', values: { gemini: 2, deepseek: 2, quark: 2, doubao: 1 } },
+      { emoji: '🧪', text: '先試用，好用再說', values: { chatgpt: 1, gemini: 1, copilot: 1 } },
+      { emoji: '🧑‍💻', text: '我是開發者，想自己架設模型', values: { deepseek: 3, meta: 3 } },
+    ]
+  }
+];
+
+const results = {
+  chatgpt: {
+    emoji: '🤖', name: 'ChatGPT', url: 'https://chat.openai.com',
+    tagline: '最全能的 AI 夥伴，適合什麼都想試試的你',
+    reasons: [
+      { icon: '🌟', text: '生態系最完整，外掛和 GPTs 無限擴充' },
+      { icon: '🎨', text: '一個工具搞定寫作、畫圖、程式碼' },
+      { icon: '🧠', text: '有記憶功能，越用越懂你的習慣' },
+    ],
+    secondary: '也可以試試 <strong>Claude</strong>（更精準的寫作分析）'
+  },
+  claude: {
+    emoji: '🌟', name: 'Claude', url: 'https://claude.ai',
+    tagline: '深度思考、精準表達，最懂寫作與分析的 AI',
+    reasons: [
+      { icon: '📄', text: '超長上下文，讀整份合約或論文不是問題' },
+      { icon: '✍️', text: '寫作品質細膩，語感自然不生硬' },
+      { icon: '🎯', text: '不確定的事不亂說，誠實又可靠' },
+    ],
+    secondary: '如果需要即時搜尋，可搭配 <strong>Gemini</strong>'
+  },
+  gemini: {
+    emoji: '✨', name: 'Google Gemini', url: 'https://gemini.google.com',
+    tagline: '活在 Google 生態裡的你，這就是你的 AI',
+    reasons: [
+      { icon: '📧', text: '跟 Gmail、Docs、Drive 完美整合' },
+      { icon: '🌐', text: '即時網路搜尋，資訊永遠最新' },
+      { icon: '🆓', text: '強大免費版，不需要額外訂閱' },
+    ],
+    secondary: '深度分析文件可以試試 <strong>Claude</strong>'
+  },
+  copilot: {
+    emoji: '🪟', name: 'Microsoft Copilot', url: 'https://copilot.microsoft.com',
+    tagline: '職場人士的 AI 助理，就在你的 Office 裡',
+    reasons: [
+      { icon: '📊', text: 'Word/Excel/PowerPoint 直接嵌入 AI' },
+      { icon: '💼', text: '企業環境首選，符合資安需求' },
+      { icon: '🆓', text: '免費版即可用，無需額外安裝' },
+    ],
+    secondary: '創意寫作方面可以嘗試 <strong>Claude</strong>'
+  },
+  deepseek: {
+    emoji: '🔭', name: 'DeepSeek', url: 'https://chat.deepseek.com',
+    tagline: '技術控和數學狂人的最愛，推理能力頂尖',
+    reasons: [
+      { icon: '🔢', text: '數學推理和程式碼能力業界頂尖' },
+      { icon: '🔓', text: '開源模型，可自行部署保護隱私' },
+      { icon: '🆓', text: '免費版就能使用旗艦 R1 模型' },
+    ],
+    secondary: '一般寫作和文件分析可以試試 <strong>Claude</strong>'
+  },
+  grok: {
+    emoji: '🚀', name: 'Grok', url: 'https://grok.x.ai',
+    tagline: '愛追時事、不怕爭議的你，Grok 懂你',
+    reasons: [
+      { icon: '🐦', text: '即時存取 X 平台所有公開動態' },
+      { icon: '😄', text: '有幽默感，對話風格輕鬆像朋友' },
+      { icon: '🗽', text: '敢說其他 AI 不敢說的話' },
+    ],
+    secondary: '需要精確分析時推薦 <strong>Claude</strong>'
+  },
+  meta: {
+    emoji: '🌐', name: 'Meta AI', url: 'https://www.meta.ai',
+    tagline: '開發者和開源愛好者的理想選擇',
+    reasons: [
+      { icon: '🔓', text: 'Llama 完全開源，自由度最高' },
+      { icon: '📱', text: 'IG/WhatsApp 內建，隨手可用' },
+      { icon: '🆓', text: '完全免費，無訂閱壓力' },
+    ],
+    secondary: '日常寫作和搜尋可搭配 <strong>Gemini</strong>'
+  },
+  quark: {
+    emoji: '⚛️', name: '夸克 AI', url: 'https://ai.quark.cn',
+    tagline: '學生和研究者的中文 AI 好夥伴',
+    reasons: [
+      { icon: '📚', text: '學術論文搜尋與摘要能力出色' },
+      { icon: '🇹🇼', text: '中文理解深度，繁體用戶友善' },
+      { icon: '🎯', text: '介面乾淨，專注於獲取知識' },
+    ],
+    secondary: '深度分析和寫作推薦 <strong>Claude</strong>'
+  },
+  doubao: {
+    emoji: '🫘', name: '豆包', url: 'https://www.doubao.com',
+    tagline: '喜歡語音對話和陪伴感的你，豆包最懂你',
+    reasons: [
+      { icon: '🎙️', text: '語音對話品質高，情感表達自然' },
+      { icon: '🎭', text: '角色扮演豐富，陪伴感強' },
+      { icon: '💬', text: '中文口語理解一流' },
+    ],
+    secondary: '工作任務和深度分析可以試試 <strong>ChatGPT</strong>'
+  }
+};
+
+let currentQ = 0;
+let scores = {};
+let answers = [];
+
+function initQuiz() {
+  scores = {};
+  Object.keys(results).forEach(k => scores[k] = 0);
+  answers = [];
+  currentQ = 0;
+  renderQuiz();
+}
+
+function renderProgress() {
+  const prog = document.getElementById('quizProgress');
+  prog.innerHTML = questions.map((_, i) => {
+    let cls = 'progress-dot';
+    if (i < currentQ) cls += ' done';
+    else if (i === currentQ) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+}
+
+function renderQuiz() {
+  renderProgress();
+  const area = document.getElementById('quizArea');
+  if (currentQ >= questions.length) {
+    showResult(); return;
+  }
+  const q = questions[currentQ];
+  area.innerHTML = `
+    <div class="quiz-card fade-up visible">
+      <div>
+        <div class="quiz-q-num">問題 ${currentQ + 1} / ${questions.length}</div>
+        <span class="quiz-emoji">${q.emoji}</span>
+        <div class="quiz-question">${q.q}</div>
+        <div class="quiz-options" id="opts">
+          ${q.options.map((o, i) => `
+            <div class="quiz-option ${answers[currentQ] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+              <span class="option-emoji">${o.emoji}</span>
+              <span>${o.text}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="quiz-nav">
+        <button class="quiz-btn quiz-btn-secondary" onclick="prevQ()" ${currentQ === 0 ? 'disabled' : ''}>← 上一題</button>
+        <button class="quiz-btn quiz-btn-primary" id="nextBtn" onclick="nextQ()" ${answers[currentQ] === undefined ? 'disabled' : ''}>
+          ${currentQ === questions.length - 1 ? '查看結果 ✦' : '下一題 →'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectOption(i) {
+  answers[currentQ] = i;
+  document.querySelectorAll('.quiz-option').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQ() {
+  if (answers[currentQ] === undefined) return;
+  // Add scores
+  const chosen = questions[currentQ].options[answers[currentQ]];
+  Object.entries(chosen.values).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+  currentQ++;
+  renderQuiz();
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuiz(); }
+}
+
+function showResult() {
+  const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const r = results[top];
+  const area = document.getElementById('quizArea');
+  area.innerHTML = `
+    <div class="result-card fade-up visible">
+      <span class="result-emoji">${r.emoji}</span>
+      <div class="result-match">你的 AI 配對結果</div>
+      <div class="result-name">${r.name}</div>
+      <div class="result-tagline">${r.tagline}</div>
+      <div class="result-reasons">
+        ${r.reasons.map(reason => `
+          <div class="result-reason">
+            <span>${reason.icon}</span>
+            <span>${reason.text}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="result-secondary">備選推薦：${r.secondary}</div>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="${r.url}" target="_blank" class="hero-cta" style="display:inline-flex; font-size:14px; padding:12px 24px;">
+          立即試試 ${r.name} →
+        </a>
+        <button class="retry-btn" onclick="initQuiz()">重新測驗</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('quizProgress').innerHTML = questions.map(() => '<div class="progress-dot done"></div>').join('');
+}
+
+initQuiz();
+</script>
+</body>
+</html>
