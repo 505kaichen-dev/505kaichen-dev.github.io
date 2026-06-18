@@ -114,36 +114,6 @@
     line-height: 1.7;
   }
 
-  /* ── FILTER TABS ── */
-  .filter-bar {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 48px 40px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .filter-btn {
-    padding: 7px 18px;
-    border-radius: 100px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    font-size: 0.825rem;
-    font-weight: 500;
-    color: var(--ink-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
-  .filter-btn.active {
-    background: var(--blue);
-    border-color: var(--blue);
-    color: #fff;
-  }
-
   /* ── MASONRY GRID ── */
   .gallery-wrap {
     max-width: 1280px;
@@ -414,14 +384,6 @@
   <p class="page-desc">用 AI 工具生成的視覺創作，探索提示詞與圖像之間的無限可能。</p>
 </div>
 
-<!-- FILTER -->
-<div class="filter-bar">
-  <button class="filter-btn active" data-filter="all">全部</button>
-  <button class="filter-btn" data-filter="chatgpt">ChatGPT</button>
-  <button class="filter-btn" data-filter="midjourney">Midjourney</button>
-  <button class="filter-btn" data-filter="stablediffusion">Stable Diffusion</button>
-</div>
-
 <!-- GALLERY -->
 <div class="gallery-wrap">
   <div class="gallery-count" id="galleryCount"></div>
@@ -430,10 +392,9 @@
 
     <!-- ★ 範例圖片區塊開始 — 之後新增圖片只要複製下面這個區塊 ★ -->
 
-    <div class="gallery-item reveal" data-tool="chatgpt" data-caption="益暢敏益生菌品牌封面">
+    <div class="gallery-item reveal" data-caption="益暢敏益生菌品牌封面">
       <img src="../dradvice01/image/dradvice01.png" alt="益暢敏益生菌品牌封面">
       <div class="gallery-overlay">
-        <span class="gallery-tool">ChatGPT</span>
         <div class="gallery-caption">益暢敏益生菌品牌封面</div>
       </div>
       <div class="gallery-expand">
@@ -443,10 +404,9 @@
       </div>
     </div>
 
-    <div class="gallery-item reveal" data-tool="chatgpt" data-caption="本地 AI 商業圖片生成教材封面">
+    <div class="gallery-item reveal" data-caption="本地 AI 商業圖片生成教材封面">
       <img src="../LocalAI_Image/image/LocalAI_Image.png" alt="本地 AI 圖像封面">
       <div class="gallery-overlay">
-        <span class="gallery-tool">ChatGPT</span>
         <div class="gallery-caption">本地 AI 商業圖片生成教材封面</div>
       </div>
       <div class="gallery-expand">
@@ -456,10 +416,9 @@
       </div>
     </div>
 
-    <div class="gallery-item reveal" data-tool="chatgpt" data-caption="代碼烏托邦 — 開源故事封面">
+    <div class="gallery-item reveal" data-caption="代碼烏托邦 — 開源故事封面">
       <img src="../opensource-story/image/opensource-story.png" alt="代碼烏托邦封面">
       <div class="gallery-overlay">
-        <span class="gallery-tool">ChatGPT</span>
         <div class="gallery-caption">代碼烏托邦 — 開源故事封面</div>
       </div>
       <div class="gallery-expand">
@@ -469,10 +428,9 @@
       </div>
     </div>
 
-    <div class="gallery-item reveal" data-tool="chatgpt" data-caption="AI 宇宙指南封面">
+    <div class="gallery-item reveal" data-caption="AI 宇宙指南封面">
       <img src="../ai-guide/image/ai-guide.png" alt="AI 宇宙指南封面">
       <div class="gallery-overlay">
-        <span class="gallery-tool">ChatGPT</span>
         <div class="gallery-caption">AI 宇宙指南封面</div>
       </div>
       <div class="gallery-expand">
@@ -482,10 +440,9 @@
       </div>
     </div>
 
-    <div class="gallery-item reveal" data-tool="chatgpt" data-caption="用 Claude 做網站封面">
+    <div class="gallery-item reveal" data-caption="用 Claude 做網站封面">
       <img src="../claude-web-guide/image/claude-web-guide.png" alt="Claude 網頁開發封面">
       <div class="gallery-overlay">
-        <span class="gallery-tool">ChatGPT</span>
         <div class="gallery-caption">用 Claude 做網站封面</div>
       </div>
       <div class="gallery-expand">
@@ -510,7 +467,6 @@
   <div class="lightbox-inner">
     <img class="lightbox-img" id="lightboxImg" src="" alt="">
     <div class="lightbox-info">
-      <span class="lightbox-tool" id="lightboxTool"></span>
       <span class="lightbox-caption" id="lightboxCaption"></span>
     </div>
   </div>
@@ -538,65 +494,31 @@
 </footer>
 
 <script>
-  // ── FILTER ──
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  let currentFilter = 'all';
-  let visibleItems = [];
+  // ── LIGHTBOX ──
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxCaption = document.getElementById('lightboxCaption');
+  let currentIndex = 0;
+  let allItems = [];
 
   function getItems() {
     return Array.from(document.querySelectorAll('.gallery-item'));
   }
 
-  function applyFilter(filter) {
-    currentFilter = filter;
-    const items = getItems();
-    visibleItems = [];
-
-    items.forEach(item => {
-      const tool = item.dataset.tool;
-      const show = filter === 'all' || tool === filter;
-      item.style.display = show ? 'block' : 'none';
-      if (show) visibleItems.push(item);
-    });
-
-    const count = visibleItems.length;
-    document.getElementById('galleryCount').textContent = count > 0 ? `共 ${count} 張` : '';
-    document.getElementById('emptyState').classList.toggle('show', count === 0);
-  }
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      applyFilter(btn.dataset.filter);
-    });
-  });
-
-  // Init count
-  applyFilter('all');
-
-  // ── LIGHTBOX ──
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxTool = document.getElementById('lightboxTool');
-  const lightboxCaption = document.getElementById('lightboxCaption');
-  let currentIndex = 0;
-
   function openLightbox(item) {
-    visibleItems = getItems().filter(i => i.style.display !== 'none');
-    currentIndex = visibleItems.indexOf(item);
+    allItems = getItems();
+    currentIndex = allItems.indexOf(item);
     showLightboxItem(currentIndex);
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
   function showLightboxItem(index) {
-    const item = visibleItems[index];
+    const item = allItems[index];
     if (!item) return;
     const img = item.querySelector('img');
     lightboxImg.src = img.src;
     lightboxImg.alt = img.alt;
-    lightboxTool.textContent = item.dataset.tool?.toUpperCase() || '';
     lightboxCaption.textContent = item.dataset.caption || '';
     currentIndex = index;
   }
@@ -606,7 +528,11 @@
     document.body.style.overflow = '';
   }
 
-  getItems().forEach(item => {
+  // Init
+  allItems = getItems();
+  document.getElementById('galleryCount').textContent = `共 ${allItems.length} 張`;
+
+  allItems.forEach(item => {
     item.addEventListener('click', () => openLightbox(item));
   });
 
@@ -614,12 +540,12 @@
 
   document.getElementById('lightboxPrev').addEventListener('click', e => {
     e.stopPropagation();
-    showLightboxItem((currentIndex - 1 + visibleItems.length) % visibleItems.length);
+    showLightboxItem((currentIndex - 1 + allItems.length) % allItems.length);
   });
 
   document.getElementById('lightboxNext').addEventListener('click', e => {
     e.stopPropagation();
-    showLightboxItem((currentIndex + 1) % visibleItems.length);
+    showLightboxItem((currentIndex + 1) % allItems.length);
   });
 
   lightbox.addEventListener('click', e => {
@@ -629,8 +555,8 @@
   document.addEventListener('keydown', e => {
     if (!lightbox.classList.contains('open')) return;
     if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') showLightboxItem((currentIndex - 1 + visibleItems.length) % visibleItems.length);
-    if (e.key === 'ArrowRight') showLightboxItem((currentIndex + 1) % visibleItems.length);
+    if (e.key === 'ArrowLeft') showLightboxItem((currentIndex - 1 + allItems.length) % allItems.length);
+    if (e.key === 'ArrowRight') showLightboxItem((currentIndex + 1) % allItems.length);
   });
 
   // ── SCROLL REVEAL ──
