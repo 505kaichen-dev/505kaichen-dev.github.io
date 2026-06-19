@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FDM 入坑指南：這些坑你早晚要踩</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FDFAF4;
+    --paper: #FFF8EC;
+    --ink: #2C1A0E;
+    --ink-light: #6B4C35;
+    --orange: #E85D2F;
+    --orange-light: #F5935A;
+    --yellow: #F5C842;
+    --yellow-bg: #FFF3C4;
+    --green: #3A7D44;
+    --green-bg: #E8F5EA;
+    --red: #C0392B;
+    --red-bg: #FDECEA;
+    --border: #D4B896;
+    --shadow: rgba(44,26,14,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* 手繪紙張質感背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(212,184,150,0.15) 28px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 回首頁 */
+  .back-home {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: var(--ink-light);
+    text-decoration: none;
+    background: var(--paper);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    transition: all 0.2s;
+    box-shadow: 2px 2px 0 var(--border);
+  }
+  .back-home:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--border);
+    color: var(--orange);
+  }
+
+  /* ========== HERO ========== */
+  .hero {
+    padding: 100px 0 60px;
+    text-align: center;
+  }
+
+  .hero-printer {
+    font-size: 72px;
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(2px 3px 0 var(--border));
+  }
+
+  .hero h1 {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 12px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .hero h1 .highlight {
+    color: var(--orange);
+    position: relative;
+  }
+
+  .hero h1 .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--yellow);
+    border-radius: 2px;
+    z-index: -1;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--yellow-bg);
+    border: 2px dashed var(--yellow);
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-top: 8px;
+  }
+
+  /* ========== 靈魂測驗 ========== */
+  .quiz-section {
+    margin: 40px 0 60px;
+  }
+
+  .quiz-card {
+    background: var(--paper);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 4px 4px 0 var(--border);
+    position: relative;
+  }
+
+  .quiz-card::before {
+    content: '📋';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 36px;
+    filter: drop-shadow(1px 2px 0 var(--border));
+  }
+
+  .quiz-title {
+    font-family: 'Caveat', cursive;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 28px;
+    color: var(--ink);
+  }
+
+  .quiz-question {
+    margin-bottom: 24px;
+  }
+
+  .quiz-question h3 {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .q-num {
+    background: var(--orange);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+    background: white;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .quiz-opt:hover {
+    border-color: var(--orange-light);
+    background: #FFF5EE;
+    transform: translateX(3px);
+  }
+
+  .quiz-opt.selected {
+    border-color: var(--orange);
+    background: #FFF0E8;
+    font-weight: 500;
+  }
+
+  .opt-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+
+  .quiz-opt.selected .opt-letter {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: white;
+  }
+
+  .quiz-submit {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 3px 3px 0 #B84520;
+  }
+
+  .quiz-submit:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 #B84520;
+  }
+
+  .quiz-result {
+    display: none;
+    margin-top: 24px;
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 2px solid;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .quiz-result.show { display: block; }
+
+  .quiz-result.deep {
+    background: var(--green-bg);
+    border-color: var(--green);
+  }
+  .quiz-result.curious {
+    background: #FFF3C4;
+    border-color: var(--yellow);
+  }
+  .quiz-result.middle {
+    background: #EEF4FF;
+    border-color: #6699EE;
+  }
+
+  .result-title {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .result-title.deep { color: var(--green); }
+  .result-title.curious { color: #9A7D00; }
+  .result-title.middle { color: #3355AA; }
+
+  /* ========== 階段跳轉 ========== */
+  .stage-nav {
+    margin: 0 0 60px;
+    padding: 24px;
+    background: var(--paper);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 3px 3px 0 var(--border);
+  }
+
+  .stage-nav h2 {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: var(--ink-light);
+    text-align: center;
+  }
+
+  .stage-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .stage-btn {
+    padding: 8px 20px;
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    background: white;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: var(--ink);
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .stage-btn:hover {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* ========== 坑區塊 ========== */
+  .station {
+    margin-bottom: 64px;
+  }
+
+  .station-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .station-header::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 6px, transparent 6px, transparent 12px);
+  }
+
+  .station-num {
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-light);
+    white-space: nowrap;
+    background: var(--paper);
+    padding: 4px 12px;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+  }
+
+  .station-title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .traps-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .trap-card {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 3px 3px 0 var(--border);
+    transition: transform 0.18s;
+  }
+
+  .trap-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--border);
+  }
+
+  .trap-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--paper);
+    border-bottom: 2px solid var(--border);
+    cursor: pointer;
+  }
+
+  .trap-num {
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    background: var(--ink-light);
+    padding: 2px 10px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .trap-title {
+    font-family: 'Caveat', cursive;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .trap-severity {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .trap-toggle {
+    font-size: 18px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .trap-card.open .trap-toggle {
+    transform: rotate(180deg);
+  }
+
+  .trap-body {
+    display: none;
+    padding: 20px;
+  }
+
+  .trap-card.open .trap-body {
+    display: block;
+  }
+
+  .trap-warn {
+    background: var(--red-bg);
+    border-left: 4px solid var(--red);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .trap-warn strong {
+    color: var(--red);
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .trap-fix {
+    background: var(--green-bg);
+    border-left: 4px solid var(--green);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .trap-fix strong {
+    color: var(--green);
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* 特別警告 */
+  .trap-special {
+    background: #FFF3C4;
+    border: 2px dashed var(--yellow);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #7A5C00;
+  }
+
+  /* ========== 建模門票 ========== */
+  .modeling-section {
+    margin: 20px 0 60px;
+    padding: 36px;
+    background: var(--ink);
+    border-radius: 16px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 var(--ink-light);
+  }
+
+  .modeling-section::before {
+    content: '🎫';
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.15;
+  }
+
+  .modeling-section h2 {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--yellow);
+  }
+
+  .modeling-section p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #D4C5B0;
+    max-width: 580px;
+    margin-bottom: 20px;
+  }
+
+  .software-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .software-pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 14px;
+    color: white;
+  }
+
+  /* ========== Q&A ========== */
+  .qa-section {
+    margin: 0 0 60px;
+  }
+
+  .section-title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 700;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .qa-item {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .qa-question {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Caveat', cursive;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .qa-question:hover { background: #FFF8EE; }
+
+  .qa-q-label {
+    background: var(--orange);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .qa-toggle {
+    margin-left: auto;
+    font-size: 16px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .qa-item.open .qa-toggle { transform: rotate(180deg); }
+
+  .qa-answer {
+    display: none;
+    padding: 0 20px 18px 60px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    border-top: 1px dashed var(--border);
+    padding-top: 14px;
+  }
+
+  .qa-item.open .qa-answer { display: block; }
+
+  /* ========== 結尾 ========== */
+  .ending {
+    text-align: center;
+    padding: 60px 0 80px;
+  }
+
+  .quote-rotator {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(24px, 5vw, 40px);
+    font-weight: 700;
+    color: var(--ink);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    position: relative;
+    padding: 0 20px;
+  }
+
+  .quote-rotator::before,
+  .quote-rotator::after {
+    content: '"';
+    font-size: 60px;
+    color: var(--yellow);
+    line-height: 1;
+    position: absolute;
+  }
+
+  .quote-rotator::before { top: -10px; left: 0; }
+  .quote-rotator::after { bottom: -20px; right: 0; }
+
+  .quote-text {
+    opacity: 1;
+    transition: opacity 0.4s;
+  }
+
+  .quote-text.fade { opacity: 0; }
+
+  .ending-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: var(--ink-light);
+    text-decoration: none;
+    border: 2px solid var(--border);
+    padding: 10px 24px;
+    border-radius: 10px;
+    background: var(--paper);
+    box-shadow: 3px 3px 0 var(--border);
+    transition: all 0.18s;
+    margin-top: 20px;
+  }
+
+  .ending-back:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--border);
+    color: var(--orange);
+  }
+
+  /* ========== RWD ========== */
+  @media (max-width: 600px) {
+    .quiz-card { padding: 24px 18px; }
+    .modeling-section { padding: 28px 20px; }
+    .modeling-section::before { display: none; }
+    .station-header { flex-wrap: wrap; }
+    .station-header::after { display: none; }
+    .back-home { font-size: 15px; padding: 5px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<a href="../" class="back-home">← 回首頁</a>
+
+<!-- ========== HERO ========== -->
+<div class="hero">
+  <div class="container">
+    <span class="hero-printer">🖨️</span>
+    <h1>FDM 入坑指南：<br>這些坑你<span class="highlight">早晚要踩</span></h1>
+    <p class="hero-sub">熔融沉積成型，就是那台會一層一層堆料的機器</p>
+    <span class="hero-badge">⚠️ 本頁僅討論 FDM 工法，不含 SLA 光固化或 SLS</span>
+  </div>
+</div>
+
+<!-- ========== 靈魂測驗 ========== -->
+<div class="quiz-section">
+  <div class="container">
+    <div class="quiz-card">
+      <div class="quiz-title">你有那個魂嗎？先問問自己</div>
+
+      <div class="quiz-question">
+        <h3><span class="q-num">1</span>你為什麼想玩3D列印？</h3>
+        <div class="quiz-options" data-q="1">
+          <button class="quiz-opt" data-val="A"><span class="opt-letter">A</span>看到網路上有很酷的模型，想自己印</button>
+          <button class="quiz-opt" data-val="B"><span class="opt-letter">B</span>生活中有些問題想自己動手解決</button>
+          <button class="quiz-opt" data-val="C"><span class="opt-letter">C</span>腦子裡有想法，買不到現成的，想把它做出來</button>
+        </div>
+      </div>
+
+      <div class="quiz-question">
+        <h3><span class="q-num">2</span>印出來的東西壞了或不對，你的反應是？</h3>
+        <div class="quiz-options" data-q="2">
+          <button class="quiz-opt" data-val="A"><span class="opt-letter">A</span>算了，重印一個或直接買現成的</button>
+          <button class="quiz-opt" data-val="B"><span class="opt-letter">B</span>想搞清楚為什麼壞，然後想辦法修掉</button>
+          <button class="quiz-opt" data-val="C"><span class="opt-letter">C</span>已經在想怎麼改設計了</button>
+        </div>
+      </div>
+
+      <div class="quiz-question">
+        <h3><span class="q-num">3</span>你願意花時間學一套建模軟體嗎？</h3>
+        <div class="quiz-options" data-q="3">
+          <button class="quiz-opt" data-val="A"><span class="opt-letter">A</span>不太想，感覺太麻煩了</button>
+          <button class="quiz-opt" data-val="B"><span class="opt-letter">B</span>如果有需要的話可以考慮</button>
+          <button class="quiz-opt" data-val="C"><span class="opt-letter">C</span>我已經會了，或是我真的很想學</button>
+        </div>
+      </div>
+
+      <button class="quiz-submit" onclick="calcQuiz()">看看我是哪種人 →</button>
+
+      <div class="quiz-result deep" id="result-deep">
+        <div class="result-title deep">🔥 你準備好了，快往下滑</div>
+        你不只是好奇，你是那種會想搞清楚「為什麼」的人。3D列印對你來說不只是工具，是延伸想法的方式。這頁的內容是為你寫的——少踩幾個坑，多省幾捲料。
+      </div>
+
+      <div class="quiz-result middle" id="result-middle">
+        <div class="result-title middle">🤔 你可以玩，但先有個心理準備</div>
+        你有潛力玩深，但還在觀望。建議先想清楚你想「做什麼」，再決定要不要買機器。如果只是想試試看，也可以先找代印服務——確認自己真的有需求再入坑。
+      </div>
+
+      <div class="quiz-result curious" id="result-curious">
+        <div class="result-title curious">💡 你可能不需要買機器</div>
+        好奇心很好，但機器買回去三個月後可能就在吃灰了。網路上有大量免費模型可以印，新鮮感過了之後，沒有建模能力的話很快會覺得沒什麼好玩的。建議先找代印服務試試，確認真的有需求再說。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 階段跳轉 ========== -->
+<div class="stage-nav">
+  <div class="container">
+    <h2>📍 你現在在哪個階段？</h2>
+    <div class="stage-btns">
+      <a href="#station-1" class="stage-btn">🛒 還沒買</a>
+      <a href="#station-2" class="stage-btn">📦 機器剛到</a>
+      <a href="#station-3" class="stage-btn">🧵 材料這關</a>
+      <a href="#station-4" class="stage-btn">✂️ 第一次切片</a>
+      <a href="#station-5" class="stage-btn">▶️ 開始列印</a>
+      <a href="#station-6" class="stage-btn">🔧 用了一陣子</a>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 坑區 ========== -->
+<div class="container">
+
+  <!-- 第一站 -->
+  <div class="station" id="station-1">
+    <div class="station-header">
+      <span class="station-num">第一站</span>
+      <span class="station-title">🛒 還沒買之前</span>
+    </div>
+    <div class="traps-grid">
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#01</span>
+          <span class="trap-title">被價格吸引，買了雜牌機</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>網路上一堆「CP值超高」的雜牌機，看規格感覺差不多，結果買回來才發現：零件買不到、韌體更新停了、社群沒人用過、出問題只能靠自己。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>選有成熟社群的品牌（Bambu Lab、Prusa、Creality 主流型號）。零件好不好買、有沒有人遇過同樣問題、出了新韌體會不會修 bug——這些比規格表重要得多。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#02</span>
+          <span class="trap-title">買了封閉式機器，但不知道為什麼要封閉</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>看到封閉式機器感覺很厲害就買了，但只是拿來印 PLA。或是反過來，買了開放式機器，結果想印 ABS 翹邊翹個沒完。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>PLA / PETG 開放式就夠了。ABS / ASA / PA 這類材料需要穩定艙溫，才需要封閉式。先想清楚你要印什麼材料，再決定要不要封閉。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#03</span>
+          <span class="trap-title">沒想好要放哪裡</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>機器到了才發現沒有合適的地方擺。3D印表機不小，運作時有噪音，印 ABS 時有刺鼻氣味，而且要求桌面穩定、不能震動。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>事先確認：空間夠不夠、通風好不好、旁邊有沒有電源插座、長時間列印時環境溫度穩不穩定。印功能性材料的話，排風/抽風幾乎是必要的。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#04</span>
+          <span class="trap-title">以為3D印表機什麼都印得出來</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>以為是萬能機器，結果發現有精度極限、壁厚最小值、懸空結構需要支撐、某些細節根本印不出來。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>FDM 是有限制的工藝。層厚通常 0.1–0.3mm，太細的結構印不到。懸空角度超過 45° 就需要支撐。了解這些限制，才能設計出「印得出來的東西」。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第二站 -->
+  <div class="station" id="station-2">
+    <div class="station-header">
+      <span class="station-num">第二站</span>
+      <span class="station-title">📦 機器到了，先別急</span>
+    </div>
+    <div class="traps-grid">
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#05</span>
+          <span class="trap-title">第一次開機就跳過測試件</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>機器來了超興奮，直接載自己的模型就開印。結果出問題也不知道是模型問題、機器問題，還是設定問題。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>先跑廠商附的測試件。測試件是為了讓你確認機器狀況正常、首層貼合良好。有了這個基準，之後出問題才知道要從哪裡查起。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#06</span>
+          <span class="trap-title">不做首層校準就開印</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>首層太高黏不住，模型印到一半飄走；首層太低噴頭刮板，嚴重的話板子直接毀掉。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>首層是一切的地基。出廠校準不代表到你家還準。每次換打印板或移動機器後都要重新校準。現在的機器大多有自動校準，善用它。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#07</span>
+          <span class="trap-title">組裝說明看一半就開始裝</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>某些機器需要自行組裝。螺絲沒鎖緊、皮帶沒調好、導軌沒對齊，印出來的成品歪歪的，找了半天才發現是組裝問題。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>組裝說明從頭看到尾再動手。特別注意：皮帶張力、XYZ 軸的垂直度、螺絲力矩。組好後先跑一次軸的移動測試，確認都順暢再開印。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第三站 -->
+  <div class="station" id="station-3">
+    <div class="station-header">
+      <span class="station-num">第三站</span>
+      <span class="station-title">🧵 材料這關</span>
+    </div>
+    <div class="traps-grid">
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#08</span>
+          <span class="trap-title">台灣濕度是隱形殺手</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>材料開封後放著沒管，幾週後印出來表面全是氣泡、拉絲嚴重、強度下降。台灣平均濕度高，PLA 受潮比你想的快很多。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>開封後儘快用完，或存放在密封收納箱搭配大量乾燥劑。長期不用的料先烘乾再收。有條件的話加個除濕機控制環境濕度，尤其是北部。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#09</span>
+          <span class="trap-title">便宜料＝爛料？錯</span>
+          <span class="trap-severity">💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>以為一定要買貴的料才印得好，結果花了大錢，但料受潮沒烘、參數沒調，一樣印得很爛。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>便宜料不等於爛料，關鍵是：烘乾＋針對那卷料調整參數。只要不是庫存太久劣化的料，基本上都可以有不錯的品質。找幾個固定品牌，熟悉它的特性比一直換品牌重要。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#10</span>
+          <span class="trap-title">同材質不同廠牌，參數直接套用</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>網路上查到 PETG 印溫 240°C，直接套上去結果拉絲嚴重或黏層不夠。各家廠商配方不同，差個 5–10°C 效果可以差很多。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>切片軟體裡為每個品牌的每種材料建立自訂設定檔，記錄你測試出來最好用的參數。這件事做一次，之後省的時間和料遠超過值得。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#11</span>
+          <span class="trap-title">只買 PLA，不知道其他材料能解決什麼問題</span>
+          <span class="trap-severity">💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>PLA 印的零件放到車上，夏天一曬軟掉變形。或是需要有彈性的東西，結果印出來一折就斷。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>至少了解幾種常見材料的特性：PETG 耐熱耐衝擊、TPU 軟性有彈性、ABS 強度高但難搞、ASA 戶外耐候。選對材料，比調參重要。</div>
+          <div class="trap-special">🌟 特別警告：不明來歷的舊料（尤其是放了好幾年、品牌都消失的那種）千萬不要直接丟進 AMS 自動送料系統。材料脆化在管線裡碎掉，那個清潔工程非常精彩。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第四站 -->
+  <div class="station" id="station-4">
+    <div class="station-header">
+      <span class="station-num">第四站</span>
+      <span class="station-title">✂️ 第一次切片</span>
+    </div>
+    <div class="traps-grid">
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#13</span>
+          <span class="trap-title">支撐主體設定反了</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>設定多材料支撐時，把支撐專用料設成了主體，主體材料變成支撐。結果每一層都在換料，AMS 狂跑，時間和材料雙倍燒，印完才發現整個搞反了。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>設定前仔細確認哪個料槽對應哪個角色。切片預覽裡顏色要看清楚。多材料列印前最好先做小模型測試，確認設定正確再印大件。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#14</span>
+          <span class="trap-title">不知道材料不相容可以當支撐介面</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>支撐拆不掉，或拆掉後模型表面凹凸不平、留下痕跡。用同種材料做支撐，接觸面黏得太好，強拆容易傷到模型。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>PLA 和 PETG 互相不黏是可以利用的特性——用一種材料印主體，支撐介面換另一種，拆的時候乾淨俐落。普通支撐和樹狀支撐都要嘗試，不同模型形狀效果不同。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#15</span>
+          <span class="trap-title">預設參數直接印，速度沒調低</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>切片預設值是理想環境下的設定，現實環境溫度、濕度、料的狀態都不一樣。直接套用預設跑，失敗率比你預期的高很多。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>遇到不確定的情況，保守一點沒什麼損失。速度調低個 20–30%，溫度確認好，多觀察前幾層的狀況。省下來的時間和料遠超過跑慢一點的代價。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#16</span>
+          <span class="trap-title">不知道擺放方向影響強度</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>印出來的零件輕輕一掰就沿著層間斷掉。FDM 的層間黏合是最弱的地方，如果受力方向垂直於層間，強度會大幅下降。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>切片前想清楚這個零件的受力方向，讓層堆疊方向平行於主要受力方向。有時候把模型轉個方向擺，強度可以差到幾倍。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#17</span>
+          <span class="trap-title">填充率越高越好的迷思</span>
+          <span class="trap-severity">💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>以為填充率 100% 最強，每次都跑滿。結果印時間超長、用料超多，強度其實沒有比 20–30% 強太多。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>一般用途 15–20% 填充率已經足夠。需要強度的功能件用 30–40%，搭配適合的填充圖案（陀螺、蜂巢）。100% 只有特殊需求才用，大多數時候是在浪費時間和料。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第五站 -->
+  <div class="station" id="station-5">
+    <div class="station-header">
+      <span class="station-num">第五站</span>
+      <span class="station-title">▶️ 開始列印</span>
+    </div>
+    <div class="traps-grid">
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#18</span>
+          <span class="trap-title">打印板沒清潔就開印</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>手摸過打印板、板子上有油脂殘留，第一層黏不住，模型印到一半直接飄走。油脂是黏著力的天敵。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>每次印前用酒精擦一遍打印板，不要用手直接觸摸板面。黏性不夠的時候薄塗一層膠棒（推薦 3M 6521R）是 CP 值最高的解法，還能幫助冷卻後取模。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#19</span>
+          <span class="trap-title">前幾層速度太快，沒等黏好</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>前幾層沒黏好就繼續往上堆，每層翹一點點，幾層之後累積起來直接掀板。黏得不好的狀況下，翹曲的力量是很驚人的。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>前幾層速度一定要保守，確定每一層都有扎實地附著在板子上再繼續。多花幾分鐘等前幾層好，比印到一半全毀重來划算太多。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#20</span>
+          <span class="trap-title">長時間列印沒任何保護</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>跑個 10 小時的列印任務，結果跳電，全毀重來。台灣電壓不穩的情況比你想的常見。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>長時間列印建議配一台 UPS 不斷電系統。現在的機器大多有斷電續印功能，但供電穩定才是根本解法。另外，不要在無人看管的狀況下讓機器跑整夜。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#21</span>
+          <span class="trap-title">艙體環境沒切換就換材料</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>ABS 印完艙體還是高溫，沒開門散熱、玻璃蓋沒拿掉，直接切換印 PLA CF。高溫環境讓 PLA 在噴頭裡過熱降解，直接堵死，擠出機整組拆下來清。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>換材料前確認艙體溫度已經降下來，尤其是從高溫材料切換到 PLA 這類低溫材料。關閉加熱、打開艙門、等待降溫，是切換前必做的三件事。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#22</span>
+          <span class="trap-title">印完馬上強拔模型</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>印完等不及，板子還熱就強拔。模型底部變形，板子表面受傷，下次黏性大幅下降。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>等板子冷卻到室溫，大多數模型會自然翹起來好拆。如果還是難拆，薄塗膠棒可以讓冷卻後更好取模，而不是讓你更難拆。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第六站 -->
+  <div class="station" id="station-6">
+    <div class="station-header">
+      <span class="station-num">第六站</span>
+      <span class="station-title">🔧 用了一陣子之後</span>
+    </div>
+    <div class="traps-grid">
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#23</span>
+          <span class="trap-title">進料管和熱端是消耗品，不是永久零件</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>某天突然印出來品質變差、進料異常，查了半天才發現是材料管磨損或熱端堵塞。這些東西是有壽命的，不是裝了就不用管。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>定期檢查進料管的磨損程度，確認熱端沒有料的殘留結焦。列印量大的話更要定期更換，這些零件都不貴，但出問題的時候很麻煩。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#24</span>
+          <span class="trap-title">從不做機器維護</span>
+          <span class="trap-severity">💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>用了幾個月發現印出來的東西開始有奇怪的紋路、精度跑掉。導軌缺油、皮帶鬆弛，這些都是慢慢累積的問題，不會突然壞，但會慢慢變差。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>定期給導軌加潤滑油、檢查皮帶張力、清潔噴嘴周邊的料渣。每個月花 15 分鐘做一次基本保養，比等到出問題再修省事得多。</div>
+        </div>
+      </div>
+
+      <div class="trap-card" onclick="toggleTrap(this)">
+        <div class="trap-header">
+          <span class="trap-num">#25</span>
+          <span class="trap-title">只印免費模型，三個月後覺得沒意思</span>
+          <span class="trap-severity">💀💀💀</span>
+          <span class="trap-toggle">▼</span>
+        </div>
+        <div class="trap-body">
+          <div class="trap-warn"><strong>⚠️ 踩坑情境</strong>下載免費模型、印、放著，下載免費模型、印、放著。新鮮感過了三個月，開始覺得「這東西好像也沒那麼有用」，機器開始吃灰。</div>
+          <div class="trap-fix"><strong>✅ 正確做法</strong>會建模，才是真正入坑的門票。能自己把想法畫出來、印出來驗證——這才是讓人玩五年還在玩的理由。從 Fusion 360 或 Bambu Studio 的建模功能開始學都是好選擇。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 建模門票 -->
+  <div class="modeling-section">
+    <h2>🎫 會建模，才是真正入坑的門票</h2>
+    <p>免費模型印一印新鮮感過了就結束。但能自己把腦子裡的想法畫出來，印出來驗證，改，再印——這才是讓人玩五年還在玩的理由。如果你認真想玩長期，學建模不是選項，是必要。</p>
+    <div class="software-pills">
+      <span class="software-pill">🔧 Fusion 360 — 工程零件首選</span>
+      <span class="software-pill">🎨 Blender — 有機造型創作</span>
+      <span class="software-pill">📐 Bambu Studio — 入門簡單操作</span>
+      <span class="software-pill">🏗️ OpenSCAD — 程式碼驅動建模</span>
+    </div>
+  </div>
+
+  <!-- Q&A -->
+  <div class="qa-section">
+    <div class="section-title">❓ 常見問題</div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        FDM、SLA、SLS 差在哪？我該買哪種？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">FDM 是熔融堆料，最普及、最便宜、耗材選擇多，但精度有限、有層紋。SLA 是光固化樹脂，精度高、細節好，但材料有毒、後處理麻煩。SLS 是粉末燒結，強度高、不需支撐，但機器和材料都很貴，一般玩家碰不到。入門首選 FDM，沒有之一。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        第一台機器推薦買哪個價位？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">不建議買太便宜的入門機——社群小、零件難買、韌體更新少，踩坑機率高。選有成熟社群的主流機型，初學者建議選自動校準功能完整的機器，省掉大量手動調整的麻煩。預算夠的話直上有 AMS 自動換料的機型，之後玩起來更流暢。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        材料一定要烘乾嗎？放著不行嗎？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">台灣濕度高，料放著真的會受潮，尤其是 PETG、PA、TPU 這類吸濕性強的材料。受潮的料印出來會有氣泡、拉絲、表面粗糙、強度下降。PLA 相對耐放，但放超過幾個月還是建議烘一下再用。乾燥機不貴，入手一台是值得的投資。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        PLA、PETG、ABS 我該先玩哪個？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">先從 PLA 開始。列印溫度低、不需要加熱床、容錯率高，是最適合新手的材料。等熟悉基本流程之後再嘗試 PETG——耐熱耐衝擊，是進階功能件的首選。ABS 比較難搞，需要封閉艙體、通風排氣，不建議一開始就碰。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        翹邊一直發生，怎麼解決？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">翹邊通常是幾個原因：打印板沒清潔乾淨（油脂）、首層黏著力不夠、前幾層速度太快、環境溫度變化大。解法：酒精擦板、薄塗膠棒、調低前幾層速度、如果是 ABS 就確保艙體加熱穩定。大面積底部的模型特別容易翹，可以在切片時加 Brim 邊緣補強。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        支撐拆不掉怎麼辦？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">支撐和主體之間的「介面距離」設定太近就會黏死。在切片軟體裡調整支撐接觸面的 Z 距離，或改用不相容材料做支撐介面（PLA 主體配 PETG 支撐，或反過來）。另外，樹狀支撐通常比格狀支撐好拆，可以試試看。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        切片軟體要學哪個？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">用什麼機器就先用對應的官方切片軟體，Bambu Lab 用 Bambu Studio，Prusa 用 PrusaSlicer。功能都很完整，官方參數也做得好。熟悉之後想要更多控制的話再考慮 OrcaSlicer，功能更細膩。</div>
+    </div>
+
+    <div class="qa-item" onclick="toggleQA(this)">
+      <div class="qa-question">
+        <span class="qa-q-label">Q</span>
+        不會建模可以玩多久？
+        <span class="qa-toggle">▼</span>
+      </div>
+      <div class="qa-answer">老實說，三個月到半年。免費模型網站資源很豐富，但你很快會發現想要的東西找不到，或是找到了但不符合你的需求。到了這個點，要嘛學建模，要嘛機器就開始吃灰了。建模能力是這個領域的分水嶺。</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ========== 結尾 ========== -->
+<div class="ending">
+  <div class="container">
+    <div class="quote-rotator">
+      <span class="quote-text" id="quote-display">坑踩完了，才算真的入坑了。歡迎加入。</span>
+    </div>
+    <a href="../" class="ending-back">← 回首頁</a>
+  </div>
+</div>
+
+<script>
+  // 靈魂測驗
+  const answers = { 1: null, 2: null, 3: null };
+
+  document.querySelectorAll('.quiz-options').forEach(group => {
+    group.querySelectorAll('.quiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = parseInt(group.dataset.q);
+        group.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        answers[q] = btn.dataset.val;
+      });
+    });
+  });
+
+  function calcQuiz() {
+    if (!answers[1] || !answers[2] || !answers[3]) {
+      alert('請先回答所有問題！');
+      return;
+    }
+    const vals = Object.values(answers);
+    const aCount = vals.filter(v => v === 'A').length;
+    const cCount = vals.filter(v => v === 'C').length;
+
+    document.querySelectorAll('.quiz-result').forEach(r => r.classList.remove('show'));
+
+    if (cCount >= 2) {
+      document.getElementById('result-deep').classList.add('show');
+    } else if (aCount >= 2) {
+      document.getElementById('result-curious').classList.add('show');
+    } else {
+      document.getElementById('result-middle').classList.add('show');
+    }
+
+    document.querySelector('.quiz-result.show').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // 坑卡片展開
+  function toggleTrap(card) {
+    card.classList.toggle('open');
+  }
+
+  // Q&A 展開
+  function toggleQA(item) {
+    item.classList.toggle('open');
+  }
+
+  // 結尾金句輪播
+  const quotes = [
+    '坑踩完了，才算真的入坑了。歡迎加入。',
+    '每個高手都是從一堆失敗件堆出來的。',
+    '印壞不可怕，不知道為什麼印壞才可怕。'
+  ];
+  let qi = 0;
+  const qDisplay = document.getElementById('quote-display');
+
+  setInterval(() => {
+    qDisplay.classList.add('fade');
+    setTimeout(() => {
+      qi = (qi + 1) % quotes.length;
+      qDisplay.textContent = quotes[qi];
+      qDisplay.classList.remove('fade');
+    }, 400);
+  }, 4000);
+
+  // 平滑捲動
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>讓網頁會收資料｜AI 做網頁進階課</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/white.min.css">
+<style>
+/* ── ROOT TOKENS ── */
+:root {
+  --g-blue: #4285F4;
+  --g-blue-dark: #1a73e8;
+  --g-blue-deeper: #185abc;
+  --g-red: #EA4335;
+  --g-yellow: #FBBC05;
+  --g-green: #34A853;
+  --g-blue-light: #E8F0FE;
+  --g-red-light: #FCE8E6;
+  --g-yellow-light: #FEF7E0;
+  --g-green-light: #E6F4EA;
+  --bg: #FFFFFF;
+  --bg-soft: #F8F9FA;
+  --ink: #202124;
+  --ink-mid: #5F6368;
+  --ink-soft: #9AA0A6;
+  --border: #DADCE0;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --font-display: 'Google Sans', 'Noto Sans TC', sans-serif;
+  --font-body: 'Noto Sans TC', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+}
+
+/* ── REVEAL OVERRIDES ── */
+.reveal-viewport { background: var(--bg-soft); }
+.reveal .slides { font-family: var(--font-body); }
+.reveal .slides section {
+  text-align: left;
+  color: var(--ink);
+  padding: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+  font-family: var(--font-display);
+  text-transform: none !important;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+.reveal h1 { font-size: 2.4em; line-height: 1.15; }
+.reveal h2 { font-size: 1.6em; line-height: 1.25; }
+.reveal h3 { font-size: 1.15em; }
+.reveal p { font-size: 0.82em; line-height: 1.7; color: var(--ink-mid); margin: 0; }
+.reveal a { color: var(--g-blue); }
+
+/* ── SLIDE WRAPPER ── */
+.slide {
+  width: 100%;
+  height: 720px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── SLIDE HEADER BAR ── */
+.slide-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 52px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.slide-header .ch-badge {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: white;
+  background: var(--g-blue);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.slide-header h2 {
+  font-size: 1.05em !important;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+/* ── SLIDE BODY ── */
+.slide-body {
+  flex: 1;
+  padding: 28px 52px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+.slide-body.two-col {
+  flex-direction: row;
+  gap: 20px;
+}
+.slide-body .col { flex: 1; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+
+/* ── FOOTER ── */
+.slide-footer {
+  border-top: 1px solid var(--border);
+  padding: 8px 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.slide-footer a {
+  font-size: 10px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-family: var(--font-display);
+}
+.slide-footer .course-tag {
+  font-size: 10px;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+}
+
+/* ── COVER PAGE ── */
+.cover-slide {
+  background: linear-gradient(135deg, #4285F4 0%, #1a73e8 55%, #185abc 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center !important;
+  position: relative;
+  overflow: hidden;
+  padding: 60px 80px;
+  box-sizing: border-box;
+  height: 720px;
+}
+.cover-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.cover-slide .cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 12px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: white;
+  margin-bottom: 24px;
+  position: relative;
+}
+.cover-slide h1 {
+  color: white !important;
+  font-size: 3em !important;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  position: relative;
+}
+.cover-slide .cover-sub {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95em;
+  line-height: 1.65;
+  max-width: 480px;
+  margin-bottom: 36px;
+  position: relative;
+}
+.cover-meta {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  position: relative;
+}
+.cover-meta span {
+  color: rgba(255,255,255,0.75);
+  font-size: 12px;
+  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+/* Shortcut card bottom-right */
+.shortcut-card {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,0.72);
+  line-height: 1.7;
+  backdrop-filter: blur(4px);
+}
+.shortcut-card div { white-space: nowrap; }
+.shortcut-card span { color: rgba(255,255,255,0.5); margin-right: 5px; }
+
+/* ── CHAPTER COVER ── */
+.ch-cover {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left !important;
+  padding: 60px 80px;
+  height: 720px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+.ch-cover::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  opacity: 0.06;
+}
+.ch-cover.blue-cover { border-left: 6px solid var(--g-blue); }
+.ch-cover.blue-cover::after { background: var(--g-blue); }
+.ch-cover.red-cover { border-left: 6px solid var(--g-red); }
+.ch-cover.red-cover::after { background: var(--g-red); }
+.ch-cover.green-cover { border-left: 6px solid var(--g-green); }
+.ch-cover.green-cover::after { background: var(--g-green); }
+.ch-cover.yellow-cover { border-left: 6px solid var(--g-yellow); }
+.ch-cover.yellow-cover::after { background: var(--g-yellow); }
+.ch-cover .ch-num-big {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.ch-cover .ch-eyebrow-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.ch-cover h2 {
+  font-size: 2.2em !important;
+  line-height: 1.2;
+  color: var(--ink) !important;
+  max-width: 680px;
+  margin-bottom: 16px;
+}
+.ch-cover .ch-desc {
+  font-size: 0.88em;
+  color: var(--ink-mid);
+  max-width: 580px;
+  line-height: 1.65;
+}
+.ch-cover .slide-footer-cover {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  border-top: 1px solid var(--border);
+  padding: 10px 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ch-cover .slide-footer-cover a,
+.ch-cover .slide-footer-cover span {
+  font-size: 10px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-family: var(--font-display);
+}
+
+/* ── COURSE MAP (四象限) ── */
+.four-quad {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.quad-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left !important;
+}
+.quad-card .quad-icon { font-size: 22px; }
+.quad-card h4 {
+  font-family: var(--font-display);
+  font-size: 0.82em !important;
+  font-weight: 700;
+  color: var(--ink) !important;
+  text-transform: none !important;
+  margin: 0;
+}
+.quad-card p {
+  font-size: 0.72em !important;
+  color: var(--ink-mid);
+  line-height: 1.5;
+  margin: 0;
+}
+.quad-card.blue { border-top: 3px solid var(--g-blue); }
+.quad-card.red { border-top: 3px solid var(--g-red); }
+.quad-card.green { border-top: 3px solid var(--g-green); }
+.quad-card.yellow { border-top: 3px solid var(--g-yellow); }
+
+/* ── AGENDA ── */
+.agenda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.agenda-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: left !important;
+}
+.agenda-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.agenda-item .a-title {
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 180px;
+  text-transform: none !important;
+}
+.agenda-item .a-desc {
+  font-size: 0.72em;
+  color: var(--ink-mid);
+  line-height: 1.4;
+}
+
+/* ── STEP CARDS ── */
+.step-list { display: flex; flex-direction: column; gap: 11px; }
+.step-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  text-align: left !important;
+}
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--g-blue);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.step-body { flex: 1; }
+.step-body h4 {
+  font-family: var(--font-display) !important;
+  font-size: 0.82em !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  text-transform: none !important;
+  margin: 0 0 3px;
+}
+.step-body p { font-size: 0.73em !important; color: var(--ink-mid); margin: 0; line-height: 1.55; }
+.step-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--g-green);
+  font-weight: 600;
+  background: var(--g-green-light);
+  padding: 2px 9px;
+  border-radius: 10px;
+}
+
+/* ── FLOW DIAGRAM ── */
+.flow-wrap {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px 14px;
+}
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+.flow-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.flow-label {
+  font-size: 11px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--ink-mid);
+  max-width: 65px;
+  line-height: 1.3;
+  text-align: center;
+}
+.flow-arrow { font-size: 18px; color: var(--ink-soft); flex-shrink: 0; }
+.flow-arrow.red { color: var(--g-red); font-size: 22px; }
+.flow-caption {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* ── HIGHLIGHT BOX ── */
+.hbox {
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left !important;
+}
+.hbox .hb-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.hbox .hb-body { flex: 1; }
+.hbox .hb-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8em;
+  margin-bottom: 4px;
+  text-transform: none !important;
+}
+.hbox p { font-size: 0.72em !important; margin: 0; line-height: 1.6; }
+.hbox.blue { background: var(--g-blue-light); border-left: 3px solid var(--g-blue); }
+.hbox.blue .hb-title { color: var(--g-blue); }
+.hbox.green { background: var(--g-green-light); border-left: 3px solid var(--g-green); }
+.hbox.green .hb-title { color: var(--g-green); }
+.hbox.yellow { background: var(--g-yellow-light); border-left: 3px solid var(--g-yellow); }
+.hbox.yellow .hb-title { color: #B06000; }
+.hbox.red { background: var(--g-red-light); border-left: 3px solid var(--g-red); }
+.hbox.red .hb-title { color: var(--g-red); }
+
+/* ── COMPARE CARDS ── */
+.ccard-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ccard {
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  border: 2px solid;
+  text-align: left !important;
+}
+.ccard.bad { border-color: var(--g-red); background: var(--g-red-light); }
+.ccard.good { border-color: var(--g-green); background: var(--g-green-light); }
+.ccard h4 {
+  font-family: var(--font-display) !important;
+  font-size: 0.78em !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.ccard.bad h4 { color: var(--g-red) !important; }
+.ccard.good h4 { color: var(--g-green) !important; }
+.ccard ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.ccard ul li { font-size: 0.72em; color: var(--ink-mid); }
+.ccard.bad ul li::before { content: '✗ '; color: var(--g-red); }
+.ccard.good ul li::before { content: '✓ '; color: var(--g-green); }
+
+/* ── ICARD (icon cards horizontal) ── */
+.icard {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left !important;
+}
+.icard .ic-icon {
+  font-size: 26px;
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icard .ic-body { flex: 1; }
+.icard .ic-body h4 {
+  font-family: var(--font-display) !important;
+  font-size: 0.82em !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  text-transform: none !important;
+  margin-bottom: 3px;
+}
+.icard .ic-body p { font-size: 0.72em !important; color: var(--ink-mid); margin: 0; line-height: 1.55; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.78em;
+  padding: 10px 14px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  text-align: left !important;
+}
+.check-circle {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--g-green);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.checklist li .li-body strong { color: var(--ink); display: block; font-size: 1em; margin-bottom: 2px; }
+.checklist li .li-body span { color: var(--ink-mid); font-size: 0.9em; }
+
+/* ── DSTEP (danger step) ── */
+.dstep-list { display: flex; flex-direction: column; gap: 11px; }
+.dstep {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  background: var(--g-red-light);
+  border: 1px solid var(--g-red);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--g-red);
+  text-align: left !important;
+}
+.dstep .ds-icon { font-size: 22px; flex-shrink: 0; }
+.dstep .ds-body h4 {
+  font-family: var(--font-display) !important;
+  font-size: 0.8em !important;
+  font-weight: 700 !important;
+  color: var(--g-red) !important;
+  text-transform: none !important;
+  margin-bottom: 4px;
+}
+.dstep .ds-body p { font-size: 0.71em !important; color: var(--ink-mid); margin: 0; line-height: 1.55; }
+
+/* ── PROMPT BOX ── */
+.prompt-box {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 14px;
+  background: #202124;
+}
+.prompt-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #9AA0A6;
+}
+.prompt-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.2); }
+.copy-btn.copied { background: var(--g-green); border-color: var(--g-green); }
+.prompt-body {
+  background: #2D2D2D;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: #E8EAED;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 210px;
+  overflow-y: auto;
+}
+.prompt-body .kw { color: #FBBC05; }
+.prompt-body .val { color: #81C995; }
+
+/* ── TWO COL CARD ── */
+.two-col-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.col-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.col-card-header {
+  padding: 11px 16px;
+  font-family: var(--font-display);
+  font-size: 0.78em;
+  font-weight: 700;
+  color: white;
+  display: flex; align-items: center; gap: 7px;
+}
+.col-card-body {
+  padding: 14px 16px;
+  background: var(--bg-soft);
+  flex: 1;
+}
+.col-card-body ol {
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 0.72em;
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+.col-card-body ol li strong { color: var(--ink); display: block; margin-bottom: 1px; }
+
+/* ── CHAT BUBBLE ── */
+.chat-demo { display: flex; flex-direction: column; gap: 10px; }
+.bubble-wrap { display: flex; flex-direction: column; gap: 3px; }
+.bubble-label {
+  font-size: 10px;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+.bubble-label.right { text-align: right; }
+.bubble {
+  max-width: 78%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 0.72em;
+  line-height: 1.6;
+}
+.bubble.user {
+  align-self: flex-end;
+  background: var(--g-blue);
+  color: white;
+  border-bottom-right-radius: 3px;
+}
+.bubble.ai {
+  align-self: flex-start;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  border-bottom-left-radius: 3px;
+}
+
+/* ── RECAP PILLS ── */
+.recap-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.recap-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  padding: 8px 18px;
+  font-family: var(--font-display);
+  font-size: 0.78em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.recap-pill .pill-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── END SLIDE ── */
+.end-slide {
+  background: linear-gradient(135deg, #185abc 0%, #1a73e8 50%, #4285F4 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center !important;
+  padding: 52px 80px;
+  height: 720px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+.end-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.end-slide h2 {
+  color: white !important;
+  font-size: 1.9em !important;
+  margin-bottom: 8px;
+  position: relative;
+}
+.end-slide .end-sub {
+  color: rgba(255,255,255,0.78);
+  font-size: 0.85em;
+  margin-bottom: 32px;
+  position: relative;
+}
+.end-slide .recap-grid { position: relative; max-width: 760px; }
+.end-slide .recap-pill { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: white; }
+.end-slide .end-link {
+  margin-top: 28px;
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  font-family: var(--font-display);
+  position: relative;
+}
+.end-slide .end-link a { color: rgba(255,255,255,0.8); }
+
+/* ── SLIDE TITLE DISPLAY ── */
+.slide-title-block { margin-bottom: 4px; }
+.slide-title-block h2 {
+  font-size: 1.25em !important;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.slide-title-block p {
+  font-size: 0.75em !important;
+  color: var(--ink-mid);
+}
+
+/* ── LABEL TAG ── */
+.label-tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.label-tag.blue { background: var(--g-blue-light); color: var(--g-blue); }
+.label-tag.red { background: var(--g-red-light); color: var(--g-red); }
+.label-tag.green { background: var(--g-green-light); color: var(--g-green); }
+.label-tag.yellow { background: var(--g-yellow-light); color: #B06000; }
+
+/* ── ANIMATION ── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.auto-seq {
+  opacity: 0;
+}
+.seq-playing .auto-seq {
+  animation: fadeSlideIn 0.4s ease forwards;
+}
+
+/* hide controls in print */
+@media print { .reveal .controls { display: none; } }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ══════════════════════════════════════════
+  SLIDE 1 — COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="cover-slide">
+  <div class="auto-seq" style="animation-delay:0s">
+    <div class="cover-badge">⚡ 進階課程</div>
+  </div>
+  <h1 class="auto-seq" style="animation-delay:0.15s">讓你的網頁<br>會收資料</h1>
+  <p class="cover-sub auto-seq" style="animation-delay:0.3s">靜態網頁 × Google Sheets<br>不需要伺服器，不需要後端工程師，行銷人員自己搞定</p>
+  <div class="cover-meta auto-seq" style="animation-delay:0.45s">
+    <span>📖 預計閱讀 15 分鐘</span>
+    <span>🔧 動手實作約 30 分鐘</span>
+    <span>✅ 前置：會用 AI 做 HTML 網頁</span>
+  </div>
+  <div class="shortcut-card">
+    <div><span>F</span>全螢幕</div>
+    <div><span>ESC</span>總覽</div>
+    <div><span>→</span>下一頁</div>
+    <div><span>←</span>上一頁</div>
+    <div><span>S</span>備忘錄</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 2 — COURSE MAP
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge">課程概覽</span>
+    <h2>今天要學的四件事</h2>
+  </div>
+  <div class="slide-body">
+    <div class="four-quad">
+      <div class="quad-card red auto-seq" style="animation-delay:0.05s">
+        <div class="quad-icon">🤔</div>
+        <h4>理解問題</h4>
+        <p>靜態網頁為什麼沒辦法收資料？傳統後端有哪些麻煩？</p>
+      </div>
+      <div class="quad-card blue auto-seq" style="animation-delay:0.2s">
+        <div class="quad-icon">🛠️</div>
+        <h4>認識工具</h4>
+        <p>用 Google Sheets + Apps Script 當免費後端，整套在 Google 生態內完成。</p>
+      </div>
+      <div class="quad-card green auto-seq" style="animation-delay:0.35s">
+        <div class="quad-icon">⚙️</div>
+        <h4>動手實作</h4>
+        <p>準備帳號、叫 AI 寫程式、GAS 部署、HTML 完成、本地測試一條龍。</p>
+      </div>
+      <div class="quad-card yellow auto-seq" style="animation-delay:0.5s">
+        <div class="quad-icon">🧹</div>
+        <h4>善後與 Debug</h4>
+        <p>實作結束後怎麼收尾、個資法注意事項，以及出問題時怎麼問 GPT。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 3 — AGENDA
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge">Agenda</span>
+    <h2>課程大綱</h2>
+  </div>
+  <div class="slide-body">
+    <div class="agenda-list">
+      <div class="agenda-item auto-seq" style="animation-delay:0.05s">
+        <span class="agenda-num" style="background:var(--g-red)">1</span>
+        <span class="a-title">為什麼靜態網頁收不了資料？</span>
+        <span class="a-desc">問題根源 + 傳統後端 vs 我們的方案</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.15s">
+        <span class="agenda-num" style="background:var(--g-blue)">2</span>
+        <span class="a-title">認識這套組合：Sheets + GAS</span>
+        <span class="a-desc">兩個工具的角色與完整資料流</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.25s">
+        <span class="agenda-num" style="background:var(--g-green)">3</span>
+        <span class="a-title">準備工作：帳號與試算表</span>
+        <span class="a-desc">三步到位，AI 要用到的資訊先準備好</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.35s">
+        <span class="agenda-num" style="background:var(--g-yellow)">4</span>
+        <span class="a-title">怎麼跟 GPT 說才能拿到對的程式碼？</span>
+        <span class="a-desc">可直接複製的 Prompt 範本</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.45s">
+        <span class="agenda-num" style="background:var(--g-blue)">5</span>
+        <span class="a-title">兩步走：GAS 部署 → HTML 完成</span>
+        <span class="a-desc">完整實作流程，今天就能上線</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.55s">
+        <span class="agenda-num" style="background:var(--g-green)">6</span>
+        <span class="a-title">本地測試：不用上架就能驗證</span>
+        <span class="a-desc">四步驗收，確認資料有進 Sheets</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.65s">
+        <span class="agenda-num" style="background:var(--g-red)">7</span>
+        <span class="a-title">實作結束後：清除收尾</span>
+        <span class="a-desc">保持帳號整潔 + 個資法注意事項</span>
+      </div>
+      <div class="agenda-item auto-seq" style="animation-delay:0.75s">
+        <span class="agenda-num" style="background:var(--g-yellow)">8</span>
+        <span class="a-title">出問題了？這樣問 GPT Debug</span>
+        <span class="a-desc">CORS 問題示範 + 三個關鍵資訊</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 4 — CH1 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover red-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-red);animation-delay:0.05s">1</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 01</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">為什麼靜態網頁<br>收不了資料？</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">用 AI 做出來的網頁很漂亮，但它只是一份文件。要讓資料能被「存起來」，需要一個中間人。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 5 — CH1 CONTENT A：流程圖 + 傳統後端的麻煩
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-red)">Ch.1</span>
+    <h2>靜態網頁：資料沒有地方去</h2>
+  </div>
+  <div class="slide-body">
+    <p class="auto-seq" style="animation-delay:0.05s">靜態網頁就像印出來的報名表——客人可以填，但它自己不會把資料傳回給你。</p>
+    <div class="flow-wrap auto-seq" style="animation-delay:0.18s">
+      <div class="flow-row">
+        <div class="flow-node">
+          <div class="flow-icon" style="background:var(--g-blue-light)">👤</div>
+          <span class="flow-label">訪客填表</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-icon" style="background:var(--g-blue-light)">📄</div>
+          <span class="flow-label">HTML 網頁</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-icon" style="background:var(--g-red-light)">❓</div>
+          <span class="flow-label">資料要去哪？</span>
+        </div>
+        <div class="flow-arrow red">✗</div>
+        <div class="flow-node">
+          <div class="flow-icon" style="background:#F1F3F4">🗄️</div>
+          <span class="flow-label" style="color:var(--ink-soft)">沒有地方接</span>
+        </div>
+      </div>
+      <p class="flow-caption">靜態網頁就像一個漂亮的盒子，但沒有底部——東西放進去就掉出去了</p>
+    </div>
+    <div class="hbox red auto-seq" style="animation-delay:0.32s">
+      <div class="hb-icon">⚠️</div>
+      <div class="hb-body">
+        <div class="hb-title">傳統後端方案：麻煩事一大堆</div>
+        <p>架伺服器需要 IT 部門介入，涉及資安審核、維護費用、資料庫管理……光是要讓 IT 點頭就可能花掉好幾個禮拜。行銷部門自己根本推不動。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 6 — CH1 CONTENT B：比較卡
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-red)">Ch.1</span>
+    <h2>傳統後端 vs 我們選的方案</h2>
+  </div>
+  <div class="slide-body">
+    <div class="ccard-row">
+      <div class="ccard bad auto-seq" style="animation-delay:0.08s">
+        <h4>❌ 傳統後端方案</h4>
+        <ul>
+          <li>需要向 IT 申請伺服器</li>
+          <li>等資安審核（可能幾週）</li>
+          <li>需要工程師寫後端程式</li>
+          <li>有維護成本與費用</li>
+          <li>上線流程複雜</li>
+        </ul>
+      </div>
+      <div class="ccard good auto-seq" style="animation-delay:0.22s">
+        <h4>✅ 我們選的方案</h4>
+        <ul>
+          <li>用 Google 的伺服器當中繼</li>
+          <li>資料直接進 Google Sheets</li>
+          <li>行銷人員自己可以搞定</li>
+          <li>完全免費</li>
+          <li>今天就能上線</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hbox blue auto-seq" style="animation-delay:0.38s">
+      <div class="hb-icon">💡</div>
+      <div class="hb-body">
+        <div class="hb-title">把 Google 自家的工具當成你的「後端」</div>
+        <p>不需要自己架任何東西。接下來介紹這套組合的兩個核心工具。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 7 — CH2 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover blue-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-blue);animation-delay:0.05s">2</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 02</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">認識這套組合：<br>Sheets + GAS</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">兩個 Google 的免費服務，拼在一起就是你的「免費後端」。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 8 — CH2 CONTENT：兩工具 + 流程圖 + 上限
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-blue)">Ch.2</span>
+    <h2>Sheets 是資料庫，GAS 是傳遞員</h2>
+  </div>
+  <div class="slide-body">
+    <div style="display:flex;gap:12px;" class="auto-seq" style="animation-delay:0.05s">
+      <div class="icard" style="flex:1">
+        <div class="ic-icon" style="background:var(--g-green-light)">📊</div>
+        <div class="ic-body">
+          <h4>Google Sheets（試算表）</h4>
+          <p>你的「資料庫」。每一筆報名資料都會自動新增一行進來，打開來就能看到所有人的資訊。</p>
+        </div>
+      </div>
+      <div class="icard" style="flex:1">
+        <div class="ic-icon" style="background:var(--g-yellow-light)">⚙️</div>
+        <div class="ic-body">
+          <h4>Google Apps Script（GAS）</h4>
+          <p>自動化小幫手。有人送出表單時，它負責把資料寫進 Sheets。你不需要懂它怎麼運作。</p>
+        </div>
+      </div>
+    </div>
+    <div class="flow-wrap auto-seq" style="animation-delay:0.22s">
+      <div class="flow-row">
+        <div class="flow-node"><div class="flow-icon" style="background:var(--g-blue-light)">👤</div><span class="flow-label">訪客填表</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="flow-icon" style="background:var(--g-blue-light)">📄</div><span class="flow-label">HTML 網頁</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="flow-icon" style="background:var(--g-yellow-light)">⚙️</div><span class="flow-label">Google Apps Script</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="flow-icon" style="background:var(--g-green-light)">📊</div><span class="flow-label">Google Sheets</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="flow-icon" style="background:var(--g-green-light)">👀</div><span class="flow-label">你來看資料</span></div>
+      </div>
+      <p class="flow-caption">整條路都是 Google 的服務，穩定、免費、不需要自己架伺服器</p>
+    </div>
+    <div class="hbox blue auto-seq" style="animation-delay:0.38s">
+      <div class="hb-icon">💡</div>
+      <div class="hb-body">
+        <div class="hb-title">免費版夠用嗎？</div>
+        <p>GAS 免費版每天可處理 6 萬次執行。活動報名收幾百筆資料，連零頭都用不到。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 9 — CH3 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover green-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-green);animation-delay:0.05s">3</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 03</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">準備工作：<br>帳號與試算表</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">請 AI 寫程式之前，先把這兩樣東西備好。三步可以在五分鐘內完成。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 10 — CH3 CONTENT：三步準備
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-green)">Ch.3</span>
+    <h2>三步備好，等一下 AI 會用到</h2>
+  </div>
+  <div class="slide-body">
+    <div class="step-list">
+      <div class="step-card auto-seq" style="animation-delay:0.08s">
+        <div class="step-num" style="background:var(--g-green)">1</div>
+        <div class="step-body">
+          <h4>準備一個 Google 帳號</h4>
+          <p>建議用公司或活動專用帳號，不要用私人帳號收業務資料，比較乾淨也比較安全。</p>
+          <span class="step-confirm">✓ 做完確認：可以登入 Google</span>
+        </div>
+      </div>
+      <div class="step-card auto-seq" style="animation-delay:0.22s">
+        <div class="step-num" style="background:var(--g-green)">2</div>
+        <div class="step-body">
+          <h4>建立一份 Google Sheets，設定欄位標題</h4>
+          <p>打開 sheets.google.com，新建空白試算表。第一行填入欄位名稱，例如：<code style="background:#f1f3f4;padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:11px">姓名 ｜ 手機 ｜ Email ｜ 收件地址 ｜ 送出時間</code></p>
+          <span class="step-confirm">✓ 做完確認：試算表有第一行標題</span>
+        </div>
+      </div>
+      <div class="step-card auto-seq" style="animation-delay:0.36s">
+        <div class="step-num" style="background:var(--g-green)">3</div>
+        <div class="step-body">
+          <h4>複製試算表的 ID</h4>
+          <p>看瀏覽器網址列：<code style="background:#f1f3f4;padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:11px">docs.google.com/spreadsheets/d/<strong>這一段就是ID</strong>/edit</code><br>把中間那段複製起來，等一下 AI 會需要用到。</p>
+          <span class="step-confirm">✓ 做完確認：已複製 ID 備用</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 11 — CH4 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover yellow-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-yellow);animation-delay:0.05s">4</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 04</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">怎麼跟 GPT 說<br>才能拿到對的程式碼？</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">這是最關鍵的一步。你要跟 AI 要兩樣東西：一段 GAS 程式碼，以及一個 HTML 表單頁面。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 12 — CH4 CONTENT A：兩步策略
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-yellow);color:var(--ink)">Ch.4</span>
+    <h2>分兩步驟跟 GPT 要程式碼</h2>
+  </div>
+  <div class="slide-body">
+    <div class="step-list">
+      <div class="step-card auto-seq" style="animation-delay:0.08s">
+        <div class="step-num" style="background:var(--g-yellow);color:var(--ink)">1</div>
+        <div class="step-body">
+          <h4>第一步：要 GAS 程式碼</h4>
+          <p>告訴 GPT 你的 Sheets ID、工作表名稱、表單欄位。GPT 會給你一段要貼到 script.google.com 的程式碼。</p>
+        </div>
+      </div>
+      <div class="step-card auto-seq" style="animation-delay:0.22s">
+        <div class="step-num" style="background:var(--g-yellow);color:var(--ink)">2</div>
+        <div class="step-body">
+          <h4>部署 GAS → 拿到 Web App URL</h4>
+          <p>把程式碼貼進去、部署成 Web App，Google 會給你一串很長的網址（Web App URL）。</p>
+        </div>
+      </div>
+      <div class="step-card auto-seq" style="animation-delay:0.36s">
+        <div class="step-num" style="background:var(--g-yellow);color:var(--ink)">3</div>
+        <div class="step-body">
+          <h4>第二步：要 HTML 表單，並填入 URL</h4>
+          <p>把 URL 告訴 GPT，請它做 HTML 表單頁面並把 URL 填進去。這樣表單送出時才知道要傳到哪裡。</p>
+        </div>
+      </div>
+    </div>
+    <div class="hbox yellow auto-seq" style="animation-delay:0.5s">
+      <div class="hb-icon">💡</div>
+      <div class="hb-body">
+        <div class="hb-title">為什麼要分兩步驟？</div>
+        <p>GAS 的 Web App URL 要先部署才會有。你沒辦法在問 HTML 的時候就把 URL 填進去，所以順序是：先 GAS → 部署 → 拿 URL → 再叫 GPT 做 HTML。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 13 — CH4 CONTENT B：Prompt 範本
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-yellow);color:var(--ink)">Ch.4</span>
+    <h2>可直接複製的 Prompt 範本</h2>
+  </div>
+  <div class="slide-body">
+    <p class="auto-seq" style="animation-delay:0.05s">把下面這段複製給 GPT，<strong style="color:var(--g-red)">紅色部分</strong>換成你自己的內容：</p>
+    <div class="prompt-box auto-seq" style="animation-delay:0.18s">
+      <div class="prompt-header">
+        <div class="prompt-header-left">
+          <span class="prompt-dot" style="background:#EA4335"></span>
+          <span class="prompt-dot" style="background:#FBBC05"></span>
+          <span class="prompt-dot" style="background:#34A853"></span>
+          <span>給 GPT 的 Prompt</span>
+        </div>
+        <button class="copy-btn" onclick="copySlidePrompt(this)" id="slide-prompt-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          複製
+        </button>
+      </div>
+      <div class="prompt-body" id="slide-prompt-text">請幫我做兩件事：
+
+【第一步：Google Apps Script 程式碼】
+幫我寫一段 GAS 程式碼，功能是接收表單資料並寫入 Google Sheets。
+表單欄位有：姓名、手機、Email、收件地址
+Google Sheets ID：<span class="kw">[在這裡貼上你的 Sheets ID]</span>
+工作表名稱：<span class="kw">[工作表1]</span>
+請把「送出時間」也一起寫進去，格式用台灣時區。
+程式碼要用 doPost(e) 函式，部署成 Web App 使用。
+
+【第二步：HTML 表單頁面】
+幫我做一個漂亮的報名頁面，主題：<span class="kw">[你的活動名稱]</span>
+顏色風格：<span class="kw">[清爽白底藍色按鈕]</span>
+表單欄位：姓名、手機、Email、收件地址，加送出按鈕。
+送出後用 fetch() 把資料傳到 GAS 的 Web App URL（URL 我之後會貼給你）。
+送出成功要顯示感謝訊息，失敗要顯示錯誤提示。
+
+請先給我 GAS 程式碼，我設定好後會把 Web App URL 告訴你，
+你再把 URL 填進 HTML 裡。</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 14 — CH5 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover blue-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-blue);animation-delay:0.05s">5</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 05</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">兩步走：<br>GAS 部署 → HTML 完成</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">拿到 AI 給的程式碼之後，照這個順序走一遍，今天就能讓表單正常運作。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 15 — CH5 CONTENT：雙欄實作步驟
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-blue)">Ch.5</span>
+    <h2>GAS 部署五步 + HTML 完成四步</h2>
+  </div>
+  <div class="slide-body two-col">
+    <div class="col auto-seq" style="animation-delay:0.08s">
+      <div class="col-card">
+        <div class="col-card-header" style="background:var(--g-yellow)">⚙️ 步驟一：部署 GAS</div>
+        <div class="col-card-body">
+          <ol>
+            <li><strong>打開 script.google.com</strong>登入 Google，點「新增專案」</li>
+            <li><strong>貼上 AI 給的程式碼</strong>全選貼進去，覆蓋空白內容</li>
+            <li><strong>點「部署」→「新增部署作業」</strong>類型選「網頁應用程式」</li>
+            <li><strong>存取權限設定「所有人」</strong>這樣訪客送出時才能成功傳資料</li>
+            <li><strong>點「部署」，複製 Web App URL</strong>這串網址很長，完整複製備用</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="col auto-seq" style="animation-delay:0.25s">
+      <div class="col-card">
+        <div class="col-card-header" style="background:var(--g-blue)">📄 步驟二：完成 HTML</div>
+        <div class="col-card-body">
+          <ol>
+            <li><strong>回到 GPT 對話</strong>告訴 GPT：「GAS 已部署，Web App URL 是：[貼上 URL]，請把 URL 填進 HTML 裡」</li>
+            <li><strong>GPT 會給你最終版 HTML</strong>把完整的 HTML 程式碼複製下來</li>
+            <li><strong>存成 .html 檔案</strong>新建文字檔，貼上程式碼，副檔名改成 .html</li>
+            <li><strong>用瀏覽器打開</strong>雙擊那個 .html 檔案，就能看到你的表單頁面了</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 16 — CH6 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover green-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-green);animation-delay:0.05s">6</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 06</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">本地測試：<br>不用上架就能驗證</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">網頁不需要上傳到 GitHub 或伺服器才能測試。在你的電腦上直接開 HTML 就能正常運作。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 17 — CH6 CONTENT：測試 checklist
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-green)">Ch.6</span>
+    <h2>四步驗收，確認資料有進 Sheets</h2>
+  </div>
+  <div class="slide-body">
+    <ul class="checklist">
+      <li class="auto-seq" style="animation-delay:0.08s">
+        <span class="check-circle">1</span>
+        <div class="li-body">
+          <strong>在電腦上雙擊打開 .html 檔案</strong>
+          <span>瀏覽器網址列會顯示 <code style="background:#f1f3f4;padding:1px 5px;border-radius:3px;font-family:var(--font-mono);font-size:11px">file:///Users/...</code>，這是正常的</span>
+        </div>
+      </li>
+      <li class="auto-seq" style="animation-delay:0.2s">
+        <span class="check-circle">2</span>
+        <div class="li-body">
+          <strong>填寫一筆測試資料送出</strong>
+          <span>用假資料測試，例如姓名填「測試001」，這樣等一下在 Sheets 看到就知道是測試資料</span>
+        </div>
+      </li>
+      <li class="auto-seq" style="animation-delay:0.32s">
+        <span class="check-circle">3</span>
+        <div class="li-body">
+          <strong>確認頁面出現成功訊息</strong>
+          <span>網頁應該會顯示「感謝您的報名」或類似的提示</span>
+        </div>
+      </li>
+      <li class="auto-seq" style="animation-delay:0.44s">
+        <span class="check-circle">4</span>
+        <div class="li-body">
+          <strong>去 Google Sheets 確認資料有進來</strong>
+          <span>打開試算表，應該可以看到剛才填的那筆資料出現在第二行</span>
+        </div>
+      </li>
+    </ul>
+    <div class="hbox green auto-seq" style="animation-delay:0.58s">
+      <div class="hb-icon">🎉</div>
+      <div class="hb-body">
+        <div class="hb-title">看到資料進 Sheets 了？恭喜你成功了！</div>
+        <p>接下來就可以把 HTML 檔案交給負責上架的人，或是直接丟到 GitHub Pages，功能完全一樣。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 18 — CH7 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover red-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-red);animation-delay:0.05s">7</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 07</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">實作結束後：<br>清除收尾</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">測試完成或活動結束後，記得做這幾件事，保持帳號整潔，也避免個資外洩風險。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 19 — CH7 CONTENT：清除三步 + 個資法
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-red)">Ch.7</span>
+    <h2>三件事不能忘，避免個資風險</h2>
+  </div>
+  <div class="slide-body">
+    <div class="dstep-list">
+      <div class="dstep auto-seq" style="animation-delay:0.08s">
+        <div class="ds-icon">🗑️</div>
+        <div class="ds-body">
+          <h4>清除 Google Sheets 裡的測試資料</h4>
+          <p>打開試算表，選取所有測試用的資料行，右鍵 → 刪除列。保留標題行就好。</p>
+        </div>
+      </div>
+      <div class="dstep auto-seq" style="animation-delay:0.22s">
+        <div class="ds-icon">🔌</div>
+        <div class="ds-body">
+          <h4>關閉 GAS 的 Web App 部署</h4>
+          <p>script.google.com → 找到你的專案 → 部署 → 管理部署作業 → 封存或刪除。關掉後那個 URL 就失效了。</p>
+        </div>
+      </div>
+      <div class="dstep auto-seq" style="animation-delay:0.36s">
+        <div class="ds-icon">📋</div>
+        <div class="ds-body">
+          <h4>活動真實資料的處理</h4>
+          <p>和公司確認資料要保留多久、由誰管理，依台灣個資法規定處理，不需要的資料要刪除。</p>
+        </div>
+      </div>
+    </div>
+    <div class="hbox yellow auto-seq" style="animation-delay:0.5s">
+      <div class="hb-icon">⚖️</div>
+      <div class="hb-body">
+        <div class="hb-title">記得在網頁上加一行隱私權說明</div>
+        <p>請 AI 在表單下方加小字：「本活動蒐集之個人資料僅供本次體驗活動使用，不對外提供第三方。」</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 20 — CH8 COVER
+══════════════════════════════════════════ -->
+<section>
+<div class="ch-cover yellow-cover">
+  <div class="ch-num-big auto-seq" style="background:var(--g-yellow);animation-delay:0.05s">8</div>
+  <div class="ch-eyebrow-label auto-seq" style="animation-delay:0.15s">Chapter 08</div>
+  <h2 class="auto-seq" style="animation-delay:0.25s">出問題了？<br>這樣問 GPT Debug</h2>
+  <p class="ch-desc auto-seq" style="animation-delay:0.38s">最常見的狀況是填表送出後，資料沒有進 Sheets。不要慌，直接把狀況描述給 GPT 就好。</p>
+  <div class="slide-footer-cover">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span>AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 21 — CH8 CONTENT A：對話示範
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-yellow);color:var(--ink)">Ch.8</span>
+    <h2>CORS 問題示範對話</h2>
+  </div>
+  <div class="slide-body">
+    <div class="chat-demo">
+      <div class="bubble-wrap auto-seq" style="animation-delay:0.08s">
+        <div class="bubble-label right">你說</div>
+        <div class="bubble user">我照你的步驟做了，但是填表送出之後 Google Sheets 沒有出現任何資料，網頁顯示的是「送出失敗」。GAS 的部署我選的是「所有人可以存取」。</div>
+      </div>
+      <div class="bubble-wrap auto-seq" style="animation-delay:0.22s">
+        <div class="bubble-label">GPT 通常會回</div>
+        <div class="bubble ai">好的，我來幫你檢查幾個常見原因：<br>1. 請確認你的 Sheets ID 有沒有貼對……<br>2. 部署時有沒有點到「更新」……<br>3. 可以打開開發者工具（F12）→ Console，告訴我紅色錯誤訊息寫什麼……</div>
+      </div>
+      <div class="bubble-wrap auto-seq" style="animation-delay:0.36s">
+        <div class="bubble-label right">你說</div>
+        <div class="bubble user">Console 有一行紅色的：CORS policy: No 'Access-Control-Allow-Origin'</div>
+      </div>
+      <div class="bubble-wrap auto-seq" style="animation-delay:0.5s">
+        <div class="bubble-label">GPT 通常會回</div>
+        <div class="bubble ai">找到問題了！這是因為 GAS 需要加一個回應標頭，請把 doPost 函式裡的 return 改成這樣……（附上修正後的程式碼）</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 22 — CH8 CONTENT B：Debug 三要素
+══════════════════════════════════════════ -->
+<section>
+<div class="slide">
+  <div class="slide-header">
+    <span class="ch-badge" style="background:var(--g-yellow);color:var(--ink)">Ch.8</span>
+    <h2>問 GPT Debug 的三個關鍵資訊</h2>
+  </div>
+  <div class="slide-body">
+    <p class="auto-seq" style="animation-delay:0.05s">有這三樣，GPT 幾乎都能幫你找出問題：</p>
+    <div class="step-list">
+      <div class="step-card auto-seq" style="animation-delay:0.18s">
+        <div class="step-num" style="background:var(--g-blue)">①</div>
+        <div class="step-body">
+          <h4>你做了什麼</h4>
+          <p>照哪些步驟操作？GAS 的部署設定是什麼？</p>
+        </div>
+      </div>
+      <div class="step-card auto-seq" style="animation-delay:0.3s">
+        <div class="step-num" style="background:var(--g-blue)">②</div>
+        <div class="step-body">
+          <h4>你看到什麼</h4>
+          <p>網頁顯示什麼訊息？是「送出失敗」、「感謝」還是頁面沒有反應？</p>
+        </div>
+      </div>
+      <div class="step-card auto-seq" style="animation-delay:0.42s">
+        <div class="step-num" style="background:var(--g-blue)">③</div>
+        <div class="step-body">
+          <h4>Console 的錯誤訊息</h4>
+          <p>按 F12 → Console 標籤，截圖或複製紅色文字。這是最關鍵的線索。</p>
+        </div>
+      </div>
+    </div>
+    <div class="hbox blue auto-seq" style="animation-delay:0.56s">
+      <div class="hb-icon">🔍</div>
+      <div class="hb-body">
+        <div class="hb-title">Debug 心法</div>
+        <p>不要只說「沒有用」或「出錯了」。給 GPT 上面三樣，它才能幫你精準定位問題所在。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io — 原始網頁</a>
+    <span class="course-tag">AI 做網頁進階課</span>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 23 — END
+══════════════════════════════════════════ -->
+<section>
+<div class="end-slide">
+  <h2 class="auto-seq" style="animation-delay:0.05s">🎉 今天學到的</h2>
+  <p class="end-sub auto-seq" style="animation-delay:0.15s">從問題到上線，一條龍搞定</p>
+  <div class="recap-grid auto-seq" style="animation-delay:0.28s">
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-red)"></span>靜態網頁 ≠ 能收資料</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-blue)"></span>Sheets + GAS = 免費後端</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-green)"></span>準備帳號 + Sheets ID</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-yellow)"></span>兩步驟問 GPT 拿程式碼</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-blue)"></span>GAS 部署 → HTML 完成</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-green)"></span>本地就能測試，不用上架</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-red)"></span>結束後記得清除 + 個資法</div>
+    <div class="recap-pill"><span class="pill-dot" style="background:var(--g-yellow)"></span>Debug 給 GPT 三個關鍵資訊</div>
+  </div>
+  <p class="end-link auto-seq" style="animation-delay:0.45s">原始教學網頁：<a href="https://505kaichen-dev.github.io" target="_blank">505kaichen-dev.github.io</a></p>
+</div>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script>
+Reveal.initialize({
+  width: 1280,
+  height: 720,
+  margin: 0,
+  minScale: 0.2,
+  maxScale: 2.0,
+  hash: true,
+  keyboard: true,
+  touch: true,
+  controls: true,
+  controlsLayout: 'bottom-right',
+  progress: true,
+  slideNumber: 'c/t',
+  transition: 'fade',
+  transitionSpeed: 'fast',
+});
+
+// Auto sequential animation on slide change
+function triggerSeqAnimation(slideEl) {
+  if (!slideEl) return;
+  const seqs = slideEl.querySelectorAll('.auto-seq');
+  seqs.forEach(el => {
+    el.style.animation = 'none';
+    el.classList.remove('seq-playing-dummy');
+    void el.offsetWidth; // reflow
+  });
+  slideEl.classList.remove('seq-playing');
+  void slideEl.offsetWidth;
+  slideEl.classList.add('seq-playing');
+  seqs.forEach(el => {
+    el.style.animation = '';
+  });
+}
+
+Reveal.on('slidechanged', event => {
+  triggerSeqAnimation(event.currentSlide);
+});
+Reveal.on('ready', event => {
+  triggerSeqAnimation(event.currentSlide);
+});
+
+// Click navigation: right half = next, left half = prev
+document.querySelector('.reveal').addEventListener('click', function(e) {
+  const w = window.innerWidth;
+  if (e.clientX > w * 0.5) {
+    Reveal.next();
+  } else {
+    Reveal.prev();
+  }
+});
+
+// Prompt copy button
+function copySlidePrompt(btn) {
+  const text = document.getElementById('slide-prompt-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '✓ 已複製！';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> 複製';
+    }, 2500);
+  }).catch(() => {
+    btn.innerHTML = '請手動複製';
+  });
+}
+</script>
+</body>
+</html>
