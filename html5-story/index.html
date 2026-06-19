@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML5 的故事與創作可能性</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Serif+TC:wght@400;600;700&family=Space+Grotesk:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0F1A;
+    --bg2: #111827;
+    --bg3: #1a2236;
+    --amber: #F5A623;
+    --amber-dim: #c47d0e;
+    --amber-glow: rgba(245,166,35,0.15);
+    --teal: #2DD4BF;
+    --red: #EF4444;
+    --ink: #E8EAF0;
+    --ink-dim: #8892A4;
+    --border: rgba(255,255,255,0.07);
+    --max: 860px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    line-height: 1.85;
+    overflow-x: hidden;
+  }
+
+  /* ── 回首頁 ── */
+  .back-home {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  .back-home:hover { color: var(--amber); }
+  .back-home svg { width: 16px; height: 16px; }
+
+  /* ── 進度條 ── */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--amber);
+    width: 0%;
+    z-index: 998;
+    transition: width 0.1s linear;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,166,35,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,166,35,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 10vw, 110px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero h1 span {
+    color: var(--amber);
+    display: block;
+  }
+
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 15px;
+    color: var(--ink-dim);
+    max-width: 480px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-scroll {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-dim);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--amber), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  /* ── 主內容容器 ── */
+  .container {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── 章節 ── */
+  .chapter {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .chapter.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .chapter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chapter-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 120px;
+  }
+
+  .chapter h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    margin-bottom: 36px;
+  }
+
+  .chapter h2 em {
+    color: var(--amber);
+    font-style: normal;
+  }
+
+  .chapter p {
+    color: var(--ink-dim);
+    margin-bottom: 20px;
+    max-width: 680px;
+  }
+
+  .chapter p strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ── 時間軸卡片（第一章用） ── */
+  .timeline {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 32px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 8px; bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--amber), transparent);
+  }
+
+  .tl-item {
+    position: relative;
+    padding: 0 0 36px 28px;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -5px; top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 10px var(--amber);
+  }
+
+  .tl-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--amber);
+    margin-bottom: 4px;
+  }
+
+  .tl-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .tl-desc {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.7;
+  }
+
+  /* ── Flash 消逝動畫區塊 ── */
+  .flash-death {
+    margin: 40px 0;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flash-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: #E8001D;
+    line-height: 1;
+    margin-bottom: 8px;
+    display: inline-block;
+    transition: all 0.5s ease;
+  }
+
+  .flash-logo.dying {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.8);
+  }
+
+  .flash-quote {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    border-left: 2px solid var(--red);
+    padding-left: 16px;
+    margin-top: 16px;
+  }
+
+  .flash-trigger {
+    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .flash-trigger:hover {
+    background: rgba(239,68,68,0.1);
+  }
+
+  /* ── 攻擊流程圖 ── */
+  .attack-flow {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .flow-node {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+
+  .flow-node.danger {
+    border-color: rgba(239,68,68,0.4);
+    color: #fca5a5;
+    background: rgba(239,68,68,0.05);
+  }
+
+  .flow-arrow {
+    color: var(--ink-dim);
+    font-size: 18px;
+    padding: 0 4px;
+  }
+
+  /* ── Newgrounds 區塊 ── */
+  .ng-grid {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .ng-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .ng-card:hover {
+    border-color: var(--amber-dim);
+    transform: translateY(-2px);
+  }
+
+  .ng-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .ng-card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .ng-card-desc {
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+  }
+
+  /* ── 商業案例卡片 ── */
+  .case-list {
+    margin-top: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .case-card {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    align-items: start;
+    transition: border-color 0.2s;
+  }
+
+  .case-card:hover {
+    border-color: rgba(245,166,35,0.3);
+  }
+
+  .case-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--amber);
+    line-height: 1;
+  }
+
+  .case-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  .case-body {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.7;
+  }
+
+  .case-body strong { color: var(--teal); font-weight: 500; }
+
+  /* ── 遊戲可能性 ── */
+  .tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+    margin-bottom: 32px;
+  }
+
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--ink-dim);
+    background: var(--bg3);
+  }
+
+  .pill.highlight {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: var(--amber-glow);
+  }
+
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #e6edf3;
+    overflow-x: auto;
+    margin-top: 24px;
+  }
+
+  .code-block .kw { color: #ff7b72; }
+  .code-block .str { color: #a5d6ff; }
+  .code-block .key { color: #79c0ff; }
+  .code-block .val { color: #ffa657; }
+  .code-block .cmt { color: #8b949e; }
+
+  /* ── 互動電影 ── */
+  .movie-demo {
+    margin-top: 36px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 16/9;
+    max-width: 600px;
+    border: 1px solid var(--border);
+  }
+
+  .movie-bars {
+    position: absolute;
+    left: 0; right: 0;
+    height: 12%;
+    background: #000;
+    z-index: 2;
+  }
+  .movie-bars.top { top: 0; }
+  .movie-bars.bottom { bottom: 0; }
+
+  .movie-scene {
+    position: absolute;
+    inset: 12% 0;
+    background: linear-gradient(135deg, #1a2a4a 0%, #0d1a2e 60%, #1a0d2e 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px 24px;
+  }
+
+  .movie-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 14px;
+    min-height: 20px;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .movie-choices {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .movie-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .movie-btn:hover {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #000;
+  }
+
+  .movie-char {
+    position: absolute;
+    right: 15%;
+    bottom: 15%;
+    width: 80px;
+    height: 120px;
+    opacity: 0.7;
+  }
+
+  /* ── Live2D 區塊 ── */
+  .live2d-demo {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 600px;
+  }
+
+  .live2d-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .live2d-card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .live2d-card p {
+    font-size: 13px !important;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+
+  /* ── 結尾 ── */
+  .ending {
+    padding: 100px 0;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .ending h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 5vw, 56px);
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .ending p {
+    color: var(--ink-dim);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .ending-line {
+    width: 60px;
+    height: 1px;
+    background: var(--amber);
+    margin: 32px auto 0;
+  }
+
+  /* ── 動畫 ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(1.15); }
+  }
+
+  @keyframes glitch {
+    0%   { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
+    20%  { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+    40%  { clip-path: inset(60% 0 20% 0); transform: translate(-1px, 0); }
+    60%  { clip-path: inset(80% 0 5% 0); transform: translate(1px, 0); }
+    80%  { clip-path: inset(10% 0 75% 0); transform: translate(-2px, 0); }
+    100% { clip-path: inset(0 0 95% 0); transform: translate(0, 0); }
+  }
+
+  /* ── RWD ── */
+  @media (max-width: 640px) {
+    .ng-grid { grid-template-columns: 1fr; }
+    .case-card { grid-template-columns: 1fr; }
+    .live2d-demo { grid-template-columns: 1fr; }
+    .attack-flow { flex-direction: column; align-items: flex-start; }
+    .flow-arrow { transform: rotate(90deg); }
+    .hero h1 { font-size: 52px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chapter { opacity: 1; transform: none; transition: none; }
+    .scroll-line { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<a href="../" class="back-home">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M10 12L6 8l4-4"/>
+  </svg>
+  回首頁
+</a>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <p class="hero-eyebrow">A Brief History</p>
+  <h1>HTML5 的故事<span>與創作可能性</span></h1>
+  <p class="hero-sub">從一場標準委員會的叛變，到一個人就能做出完整遊戲的時代——這是一段比你想的更精彩的技術史。</p>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    往下看
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- ── CH1 ── -->
+  <section class="chapter" id="ch1">
+    <p class="chapter-label">Chapter 01</p>
+    <h2>HTML5<em>怎麼來的</em></h2>
+    <p>HTML 最初是 Tim Berners-Lee 在 1991 年為了分享物理論文發明的東西，設計非常簡單。到了 1999 年，W3C 推出 HTML 4.01，但這時候 Web 已經開始商業化，大家發現 HTML 根本不夠用——沒有原生影片、沒有音效、沒有複雜互動。</p>
+    <p>W3C 決定用 XML 的嚴格規則重寫 HTML，叫做 <strong>XHTML</strong>。理論上很美，實際上呢？一個標籤沒關閉，整頁白屏報錯。開發者怨聲載道，瀏覽器廠商根本不買單。W3C 還在繼續搞 XHTML 2.0，完全不向下相容，這條路走死了。</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <p class="tl-year">1991</p>
+        <p class="tl-title">HTML 誕生</p>
+        <p class="tl-desc">Berners-Lee 在 CERN 發明，用來分享論文。極度簡單，只有幾個標籤。</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-year">1999</p>
+        <p class="tl-title">HTML 4.01</p>
+        <p class="tl-desc">W3C 正式定案。但 Web 已商業化，HTML 的能力追不上需求，Flash 趁虛而入。</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-year">2000</p>
+        <p class="tl-title">XHTML 的理想主義實驗</p>
+        <p class="tl-desc">W3C 用 XML 嚴格規則重寫 HTML。開發者與瀏覽器廠商都不買單，走入死路。</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-year">2004</p>
+        <p class="tl-title">WHATWG 叛變</p>
+        <p class="tl-desc">Apple、Mozilla、Opera 受夠了，私自成立 WHATWG，核心哲學：向下相容、容錯設計、以現實需求為準。</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-year">2014</p>
+        <p class="tl-title">HTML5 正式定案</p>
+        <p class="tl-desc">W3C 妥協，採納 WHATWG 草稿，HTML5 成為正式標準，帶來 Canvas、Video、WebSocket 等核心能力。</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-year">2019 →</p>
+        <p class="tl-title">Living Standard</p>
+        <p class="tl-desc">兩個組織達成協議，由 WHATWG 統一維護。沒有 HTML6，只有一個永遠在演進的標準。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CH2 ── -->
+  <section class="chapter" id="ch2">
+    <p class="chapter-label">Chapter 02</p>
+    <h2>Flash<em>的死亡</em></h2>
+    <p>2010 年 Steve Jobs 發表那封著名的公開信，打的是「開放 vs 封閉」的旗號。但 Flash 棺材上釘得最密的那排釘子，其實是<strong>安全性</strong>——而且是結構性的、修不完的那種。</p>
+
+    <div class="flash-death">
+      <div class="flash-logo" id="flashLogo">FLASH</div>
+      <p style="font-size:13px; color: var(--ink-dim); margin-top: 8px;">2021 年 1 月 12 日，Adobe 在 Flash Player 內建的自毀機制啟動。</p>
+      <div class="flash-quote">
+        "Adobe will be removing Flash Player download pages from its site and Flash-based content will be blocked from running in Adobe Flash Player after the EOL Date."<br>
+        <span style="color: var(--ink-dim); font-size: 11px;">— Adobe 官方聲明，2020</span>
+      </div>
+      <button class="flash-trigger" id="flashBtn" onclick="killFlash()">▶ 模擬 Flash 終止</button>
+    </div>
+
+    <p style="margin-top: 36px;"><strong>為什麼無法修？</strong> Flash 裝機率極高，攻擊一個漏洞等於攻擊全世界。更根本的問題是：漏洞發生在 SWF 檔案的<strong>解析階段</strong>，網頁載入瞬間就觸發，使用者不需要點任何東西。</p>
+
+    <p>最惡劣的組合是 <strong>Malvertising（惡意廣告）</strong>——攻擊者買廣告版位，把惡意 SWF 塞進去，透過正規廣告網路散佈到全世界的正常網站。你只是去查個食譜就中鏢，完全沒有任何「危險行為」。</p>
+
+    <div class="attack-flow">
+      <div class="flow-node">正規廣告網路</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node danger">惡意 SWF 植入</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">出現在任意網站</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node danger">瀏覽器載入瞬間中鏢</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node danger">使用者零操作</div>
+    </div>
+
+    <p style="margin-top: 28px;">Flash 是<strong>封閉原始碼</strong>，安全研究員沒辦法主動審計，只能等漏洞被發現——通常是被駭客先發現、先利用，研究員再追著跑。某幾年 Flash 幾乎是年度漏洞數量排行榜的常客。</p>
+  </section>
+
+  <!-- ── CH3 ── -->
+  <section class="chapter" id="ch3">
+    <p class="chapter-label">Chapter 03</p>
+    <h2>Newgrounds<em>與那個創作自由的年代</em></h2>
+    <p>在 Flash 還活著的時候，有一個地方幾乎沒有邊界——<strong>Newgrounds</strong>。暴力、政治諷刺、NSFW 全部共存，是早期網路反主流創作的重要據點，也是孵化了大量真實人才的奇異溫床。</p>
+    <p>最特殊的地方是那種<strong>單兵作戰的完整性</strong>——Flash 工具整合度高，一個人同時是動畫師、程式設計師、音效設計師。這種創作型態在後來的工具生態裡反而很難複製。</p>
+
+    <div class="ng-grid">
+      <div class="ng-card">
+        <div class="ng-icon">⚔️</div>
+        <p class="ng-card-title">Madness Combat</p>
+        <p class="ng-card-desc">極度暴力的動作系列，但動作設計有真實水準，在平台上引爆風潮。</p>
+      </div>
+      <div class="ng-card">
+        <div class="ng-icon">🎵</div>
+        <p class="ng-card-title">音樂區</p>
+        <p class="ng-card-desc">大量獨立音樂人在此起家，部分後來成為業界知名創作者。</p>
+      </div>
+      <div class="ng-card">
+        <div class="ng-icon">🎮</div>
+        <p class="ng-card-title">互動遊戲</p>
+        <p class="ng-card-desc">從兒童向到成人向，Flash 遊戲生態包山包海，技術力從業餘到驚人都有。</p>
+      </div>
+      <div class="ng-card">
+        <div class="ng-icon">🎬</div>
+        <p class="ng-card-title">動畫創作</p>
+        <p class="ng-card-desc">向量圖縮放不失真、檔案小，在寬頻未普及的年代是完美解法。</p>
+      </div>
+      <div class="ng-card">
+        <div class="ng-icon">🔞</div>
+        <p class="ng-card-title">NSFW 作品</p>
+        <p class="ng-card-desc">技術力爐火純青，把 Flash 動態、物理模擬玩到極致的創作者，放進專業公司都是可用人才。</p>
+      </div>
+      <div class="ng-card">
+        <div class="ng-icon">💡</div>
+        <p class="ng-card-title">那種氛圍</p>
+        <p class="ng-card-desc">工具限制和創作自由同時存在才產生的化學反應，這個配方之後沒有再重現過。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CH4 ── -->
+  <section class="chapter" id="ch4">
+    <p class="chapter-label">Chapter 04</p>
+    <h2>HTML5<em>神級商業案例</em></h2>
+    <p>與其問「哪些網站用了 HTML5」，不如看哪些網站把這套技術<strong>發揮到極致，同時商業上也大成功</strong>。</p>
+
+    <div class="case-list">
+      <div class="case-card">
+        <div>
+          <p class="case-name">Stripe</p>
+          <p class="case-tag">FINTECH</p>
+        </div>
+        <p class="case-body">官網本身就是前端技術標竿。動態漸層背景、滾動觸發動畫、互動式 3D 圖形，全部純 <strong>WebGL + CSS</strong>，載入速度還極快。很多前端工程師去研究 Stripe 官網純粹是為了學技術。</p>
+      </div>
+      <div class="case-card">
+        <div>
+          <p class="case-name">Figma</p>
+          <p class="case-tag">DESIGN TOOL</p>
+        </div>
+        <p class="case-body">最極端的案例。整個設計工具跑在瀏覽器裡，用 <strong>WebAssembly + WebGL</strong> 實現，效能逼近原生應用。直接打趴 Sketch 的商業模式，Adobe 最後花 200 億美元想買它（被監管擋下）。</p>
+      </div>
+      <div class="case-card">
+        <div>
+          <p class="case-name">Apple</p>
+          <p class="case-tag">PRODUCT PAGE</p>
+        </div>
+        <p class="case-body">iPhone 每次發表的產品頁，滾動視差、<strong>3D 模型旋轉</strong>、文字淡入——全是 HTML5 + JavaScript 做的，而且要在全球各種裝置上跑順，工程難度極高。</p>
+      </div>
+      <div class="case-card">
+        <div>
+          <p class="case-name">Spotify</p>
+          <p class="case-tag">STREAMING</p>
+        </div>
+        <p class="case-body">Web Player 整個是 HTML5 應用，Canvas 做音波視覺化，WebSocket 做即時同步。年度回顧 <strong>Wrapped</strong> 的互動體驗每年都變成社群話題。</p>
+      </div>
+      <div class="case-card">
+        <div>
+          <p class="case-name">Google Maps</p>
+          <p class="case-tag">MAPS</p>
+        </div>
+        <p class="case-body">2013 年從 Flash 完全遷移到 <strong>HTML5 + WebGL</strong>，地圖渲染、街景、3D 建築全部重寫。這個規模的遷移本身就是歷史事件。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CH5 ── -->
+  <section class="chapter" id="ch5">
+    <p class="chapter-label">Chapter 05</p>
+    <h2>純前端<em>能做完整遊戲嗎？</em></h2>
+    <p>答案是可以，而且有真實案例佐證。單人劇情遊戲需要的一切——邏輯、渲染、音效、存檔——純 JavaScript 全包，不需要任何後端。</p>
+
+    <div class="tech-pills">
+      <span class="pill highlight">Canvas 2D / WebGL</span>
+      <span class="pill highlight">Web Audio API</span>
+      <span class="pill highlight">localStorage 存檔</span>
+      <span class="pill">requestAnimationFrame</span>
+      <span class="pill">CSS Animation</span>
+      <span class="pill">鍵盤 / 觸控輸入</span>
+      <span class="pill highlight">零後端部署</span>
+    </div>
+
+    <p><strong>Twine</strong> 是最直接的例子——專門做互動式敘事遊戲的工具，輸出就是單一 HTML 檔案。沒有資料庫、沒有伺服器，整個遊戲就是一個 .html，可以直接用瀏覽器開，有作品在 Steam 上架販售。</p>
+    <p><strong>js13kGames</strong> 競賽更極端：遊戲壓縮後不能超過 13KB，純 HTML5 + JS，不能用任何外部函式庫。在這個限制下有人做出賽車遊戲、射擊遊戲、平台跳躍遊戲。</p>
+
+    <p style="margin-top: 8px;">劇情資料可以直接寫成 JS 物件，結構清晰，劇本填進去就能跑：</p>
+
+    <div class="code-block">
+<span class="kw">const</span> story = {<br>
+&nbsp;&nbsp;<span class="key">scene_01</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">bg</span>: <span class="str">"assets/bg/forest.webp"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">char</span>: <span class="str">"assets/char/hero_normal.png"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">text</span>: <span class="str">"你站在森林入口，前方一片漆黑..."</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">choices</span>: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">text</span>: <span class="str">"走進去"</span>, <span class="key">next</span>: <span class="str">"scene_02a"</span> },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">text</span>: <span class="str">"轉身離開"</span>, <span class="key">next</span>: <span class="str">"scene_02b"</span> }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;}<br>
+} <span class="cmt">// 整個遊戲世界，就是一個 JS 物件</span>
+    </div>
+  </section>
+
+  <!-- ── CH6 ── -->
+  <section class="chapter" id="ch6">
+    <p class="chapter-label">Chapter 06</p>
+    <h2>互動式電影<em>遊戲的可能性</em></h2>
+    <p>有完整劇本的話，電影感其實是 CSS + JS 的強項。黑色寬銀幕遮罩、場景淡入淡出、打字機文字效果、音樂交叉淡化——這些技術加在一起，視覺效果比你想的更接近真正的互動電影。</p>
+    <p>美術資源最務實的路線是 <strong>AI 生圖</strong>：鎖定風格批量產出場景背景和角色立繪，壓縮成 WebP 格式，整個遊戲就是一個資料夾、一個 index.html，GitHub Pages 零成本部署。</p>
+
+    <div class="movie-demo" id="movieDemo">
+      <div class="movie-bars top"></div>
+      <div class="movie-scene">
+        <div class="movie-text" id="movieText">你來到了一個陌生的城市，街燈在雨中搖曳...</div>
+        <div class="movie-choices">
+          <button class="movie-btn" onclick="movieChoice('a')">走進路邊的酒吧</button>
+          <button class="movie-btn" onclick="movieChoice('b')">繼續沿著街道走</button>
+        </div>
+      </div>
+      <div class="movie-bars bottom"></div>
+    </div>
+    <p style="margin-top: 12px; font-size: 13px; color: var(--ink-dim);">↑ 這個互動示範本身就是純 HTML + CSS + JS 做的</p>
+  </section>
+
+  <!-- ── CH7 ── -->
+  <section class="chapter" id="ch7">
+    <p class="chapter-label">Chapter 07</p>
+    <h2>Live2D 風格<em>互動角色</em></h2>
+    <p>Live2D 的核心技術是把一張 2D 插圖<strong>分層切割</strong>，對每個部件做即時變形、旋轉、位移，造成「立體感呼吸」的錯覺。瀏覽器上完全可以做——Live2D 官方就有出 Web SDK，輸出跑在 Canvas + WebGL 上。</p>
+    <p>不一定要用官方工具。開源社群的 <strong>pixi-live2d-display</strong> 整合了滑鼠追蹤、點擊互動、表情切換，直接 HTML 引入就能用。就算不用現成模型，純 CSS + JS 分層視差也能做出相當有感的效果——滑鼠追蹤眼神，大概十幾行程式碼。</p>
+
+    <div class="live2d-demo">
+      <div class="live2d-card">
+        <p class="live2d-card-title">官方 Live2D Web SDK</p>
+        <p>最正宗路線，需要 Cubism Editor 製作模型，輸出 .moc3 格式，JS SDK 載入渲染。VTuber 網頁展示多用此方案。</p>
+      </div>
+      <div class="live2d-card">
+        <p class="live2d-card-title">pixi-live2d-display</p>
+        <p>開源套件，把 Live2D 整合進 PixiJS，支援滑鼠追蹤、點擊觸發表情，GitHub 文件完整，直接引入可用。</p>
+      </div>
+      <div class="live2d-card">
+        <p class="live2d-card-title">純 CSS 分層視差</p>
+        <p>AI 生圖分層（頭、眼、嘴、髮），JS 控制位移，滑鼠移動時各層微偏，不需任何外部套件。</p>
+      </div>
+      <div class="live2d-card">
+        <p class="live2d-card-title">眼球追蹤示範</p>
+        <p>監聽 mousemove，計算角度與距離，translate 眼部元素。效果直覺，十幾行 JS 就有感。</p>
+      </div>
+    </div>
+
+    <p style="margin-top: 28px; font-size: 14px; color: var(--ink-dim);">完整的 Live2D 是一個獨立的技術坑，值得另開專題深挖。</p>
+  </section>
+
+  <!-- ── 結尾 ── -->
+  <div class="ending chapter">
+    <h2>技術演進從不停歇</h2>
+    <p>從 W3C 的理想主義失敗，到一群人私自叛變建立新標準——HTML5 的誕生本身就是一個關於「現實主義贏過完美主義」的故事。而它開啟的創作可能性，到現在都還沒被用盡。</p>
+    <div class="ending-line"></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── 進度條 ──
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+  document.getElementById('progress').style.width = scrolled + '%';
+});
+
+// ── 滾動顯示章節 ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.chapter').forEach(el => observer.observe(el));
+
+// ── Flash 死亡動畫 ──
+function killFlash() {
+  const logo = document.getElementById('flashLogo');
+  const btn = document.getElementById('flashBtn');
+  logo.classList.add('dying');
+  btn.disabled = true;
+  btn.textContent = '已終止';
+  btn.style.opacity = '0.4';
+  btn.style.cursor = 'default';
+}
+
+// ── 互動電影 Demo ──
+const scenes = {
+  start: {
+    text: '你來到了一個陌生的城市，街燈在雨中搖曳...',
+    choices: [
+      { label: '走進路邊的酒吧', next: 'bar' },
+      { label: '繼續沿著街道走', next: 'street' }
+    ]
+  },
+  bar: {
+    text: '酒吧裡有一個人在角落獨自喝酒，他抬頭看了你一眼...',
+    choices: [
+      { label: '走過去搭話', next: 'talk' },
+      { label: '坐到吧台點一杯', next: 'drink' }
+    ]
+  },
+  street: {
+    text: '雨越下越大，你在一棟建築的屋簷下躲雨，旁邊有個信封...',
+    choices: [
+      { label: '撿起信封', next: 'letter' },
+      { label: '不管它，繼續走', next: 'end' }
+    ]
+  },
+  talk: { text: '「你也是第一次來這個城市嗎？」他問。故事，從這裡展開。', choices: [] },
+  drink: { text: '調酒師遞來一杯不知名的飲料，說：「今晚特別免費。」', choices: [] },
+  letter: { text: '信封裡只有一張紙，上面寫著你的名字。', choices: [] },
+  end:   { text: '雨停了。你繼續走，城市在遠方等著你。', choices: [] }
+};
+
+function movieChoice(next) {
+  if (!next) return;
+  const scene = scenes[next];
+  if (!scene) return;
+  const textEl = document.getElementById('movieText');
+  const demo = document.getElementById('movieDemo');
+  const choiceArea = demo.querySelector('.movie-choices');
+
+  textEl.style.opacity = '0';
+  setTimeout(() => {
+    textEl.textContent = scene.text;
+    textEl.style.opacity = '1';
+    choiceArea.innerHTML = '';
+    scene.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'movie-btn';
+      btn.textContent = c.label;
+      btn.onclick = () => movieChoice(c.next);
+      choiceArea.appendChild(btn);
+    });
+    if (scene.choices.length === 0) {
+      const note = document.createElement('p');
+      note.style.cssText = 'font-size:12px; color:rgba(255,255,255,0.4); font-family: Space Grotesk, sans-serif;';
+      note.textContent = '— 完 —';
+      choiceArea.appendChild(note);
+    }
+  }, 300);
+}
+
+// 綁定初始選項
+document.querySelectorAll('.movie-btn').forEach((btn, i) => {
+  btn.onclick = () => movieChoice(i === 0 ? 'bar' : 'street');
+});
+</script>
+</body>
+</html>
