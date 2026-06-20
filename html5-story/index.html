@@ -87,6 +87,16 @@
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
   }
 
+  .hero-cover {
+    position: absolute;
+    inset: 0;
+    background-image: url('image/cover.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.18;
+    z-index: 0;
+  }
+
   .hero-eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -671,6 +681,7 @@
 
 <!-- ── HERO ── -->
 <section class="hero">
+  <div class="hero-cover"></div>
   <div class="hero-grid"></div>
   <p class="hero-eyebrow">A Brief History</p>
   <h1>HTML5 的故事<span>與創作可能性</span></h1>
@@ -724,7 +735,9 @@
     </div>
   </section>
 
-  <!-- [IMAGE] 800x600 HTML5 標準演進時間軸插圖，從 1991 年到 2019 年 Living Standard，暗色背景（#0B0F1A），琥珀色（#F5A623）時間線與節點發光效果，每個年份標記搭配簡短說明，科技感數位風格 -->
+  <figure style="margin: -40px 0 0;">
+    <img src="image/image01.png" alt="HTML5 標準演進時間軸示意圖" style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;">
+  </figure>
 
   <!-- ── CH2 ── -->
   <section class="chapter" id="ch2">
@@ -761,7 +774,9 @@
     <p style="margin-top: 28px;">Flash 是<strong>封閉原始碼</strong>，安全研究員沒辦法主動審計，只能等漏洞被發現——通常是被駭客先發現、先利用，研究員再追著跑。某幾年 Flash 幾乎是年度漏洞數量排行榜的常客。</p>
   </section>
 
-  <!-- [CHART] Malvertising 惡意廣告攻擊流程圖，從「正規廣告網路」→「惡意 SWF 植入」→「任意網站」→「瀏覽器載入中鏢」→「使用者零操作」，暗色背景（#0B0F1A），危險節點使用紅色（#EF4444）強調，箭頭流程圖風格，科技感扁平設計 -->
+  <figure style="margin: 36px 0 0;">
+    <img src="image/chart01.png" alt="Malvertising 惡意廣告攻擊流程圖" style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;">
+  </figure>
 
   <!-- ── CH3 ── -->
   <section class="chapter" id="ch3">
@@ -804,7 +819,9 @@
     </div>
   </section>
 
-  <!-- [IMAGE] 800x600 Newgrounds 創作自由年代情境插圖，復古網路論壇佈告欄風格，Flash 動畫、格鬥遊戲、音樂、NSFW 等類別以分區卡片呈現，橘色主色調（#F5A623），暗色背景（#0B0F1A），帶有早期網路像素質感 -->
+  <figure style="margin: 36px 0 0;">
+    <img src="image/image02.png" alt="Newgrounds 創作自由年代情境插圖" style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;">
+  </figure>
 
   <!-- ── CH4 ── -->
   <section class="chapter" id="ch4">
@@ -887,7 +904,9 @@
     </div>
   </section>
 
-  <!-- [IMAGE] 800x600 純前端遊戲架構示意圖，中央是一個 HTML 檔案圖示，四周發散出 Canvas / Web Audio / localStorage / requestAnimationFrame 等技術標籤，連線示意整合關係，暗色背景（#0B0F1A），琥珀色（#F5A623）與藍綠色（#2DD4BF）標籤配色，科技感扁平風格 -->
+  <figure style="margin: 36px 0 0;">
+    <img src="image/image03.png" alt="純前端遊戲架構示意圖" style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;">
+  </figure>
 
   <!-- ── CH6 ── -->
   <section class="chapter" id="ch6">
@@ -910,7 +929,9 @@
     <p style="margin-top: 12px; font-size: 13px; color: var(--ink-dim);">↑ 這個互動示範本身就是純 HTML + CSS + JS 做的</p>
   </section>
 
-  <!-- [IMAGE] 800x600 互動電影遊戲畫面概念圖，電影寬銀幕比例黑邊、夜晚城市雨街場景、角色立繪在右側半透明呈現、下方有對話框與選項按鈕 UI，深藍暗色（#1a2a4a / #0d1a2e）電影感配色，寫實插畫風格 -->
+  <figure style="margin: 36px 0 0;">
+    <img src="image/image04.png" alt="互動電影遊戲畫面概念圖" style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;">
+  </figure>
 
   <!-- ── CH7 ── -->
   <section class="chapter" id="ch7">
@@ -941,7 +962,9 @@
     <p style="margin-top: 28px; font-size: 14px; color: var(--ink-dim);">完整的 Live2D 是一個獨立的技術坑，值得另開專題深挖。</p>
   </section>
 
-  <!-- [IMAGE] 800x600 Live2D 風格角色分層結構示意圖，一個 2D 動漫角色被分解為頭、眼、嘴、髮、身體等獨立圖層，圖層間有連線標示，旁邊有滑鼠游標與眼球追蹤動態箭頭示意，暗色背景（#0B0F1A），琥珀色（#F5A623）標籤，科技感分解爆炸圖風格 -->
+  <figure style="margin: 36px 0 0;">
+    <img src="image/image05.png" alt="Live2D 風格角色分層結構示意圖" style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;">
+  </figure>
 
   <!-- ── 結尾 ── -->
   <div class="ending chapter">
