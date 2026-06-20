@@ -289,6 +289,109 @@
     color: #fff;
   }
 
+  /* ── LATEST SECTION ── */
+  .latest-section {
+    margin-bottom: 48px;
+  }
+
+  .latest-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .latest-label-bar {
+    width: 3px;
+    height: 16px;
+    background: var(--blue);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .latest-label-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  .latest-card {
+    display: flex;
+    flex-direction: row;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    position: relative;
+  }
+
+  .latest-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--blue);
+    transition: width 0.4s ease;
+    z-index: 1;
+  }
+
+  .latest-card:hover::before { width: 100%; }
+
+  .latest-card:hover {
+    border-color: var(--blue-mid);
+    box-shadow: 0 8px 32px rgba(37,99,235,0.1);
+    transform: translateY(-3px);
+  }
+
+  .latest-card-thumb {
+    flex: 0 0 60%;
+    aspect-ratio: 1200 / 630;
+    position: relative;
+    overflow: hidden;
+    background: var(--blue-light);
+  }
+
+  .latest-card-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .latest-card-body {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+  }
+
+  .latest-card-body .card-title {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+  }
+
+  .latest-card-body .card-desc {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .latest-card-body .card-arrow {
+    margin-top: 20px;
+    align-self: flex-start;
+  }
+
+  .latest-card:hover .card-arrow {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+
   /* ── WORK GRID ── */
   .work-grid {
     display: grid;
@@ -331,7 +434,7 @@
 
   .card-thumb {
     width: 100%;
-    height: 300px;
+    aspect-ratio: 1200 / 630;
     background: var(--blue-light);
     display: flex;
     align-items: center;
@@ -677,6 +780,11 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
+    .latest-card { flex-direction: column; }
+    .latest-card-thumb { width: 100%; height: 240px; }
+    .latest-card-body { padding: 20px; }
+    .latest-card-body .card-title { font-size: 1.15rem; }
+  }
     .nav-inner { padding: 0 24px; }
     .hero-inner { padding: 100px 24px 60px; }
     .section { padding: 60px 24px; }
@@ -696,12 +804,12 @@
     .tab-btn { padding: 6px 14px; font-size: 0.8rem; }
     .admin-bar { bottom: 16px; right: 16px; }
     .pw-modal { width: calc(100% - 40px); padding: 28px 24px; }
-    .card-thumb { height: 220px; }
+    .card-thumb { aspect-ratio: 1200 / 630; }
   }
 
   @media (max-width: 900px) and (min-width: 601px) {
     .work-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
-    .card-thumb { height: 240px; }
+    .card-thumb { aspect-ratio: 1200 / 630; }
   }
 
   /* ── REVEAL ANIMATION ── */
@@ -765,6 +873,29 @@
       </div>
     </div>
 
+    <!-- LATEST -->
+    <div class="latest-section">
+      <div class="latest-label">
+        <div class="latest-label-bar"></div>
+        <span class="latest-label-text">最新發布</span>
+      </div>
+      <a class="latest-card reveal" id="latestCard" href="#">
+        <div class="latest-card-thumb" id="latestThumb">
+          <img id="latestImg" src="" alt="">
+          <span class="card-tag" id="latestTag"></span>
+        </div>
+        <div class="latest-card-body">
+          <div class="card-title" id="latestTitle"></div>
+          <div class="card-desc" id="latestDesc"></div>
+          <div class="card-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 6h8M6 2l4 4-4 4"/>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+
     <!-- TABS -->
     <div class="category-tabs">
       <button class="tab-btn active" data-filter="all">全部</button>
@@ -779,7 +910,7 @@
     <div class="work-grid" id="workGrid">
 
       <!-- Featured: opensource story -->
-      <a class="work-card featured reveal" href="./opensource-story/" data-category="story" data-card-id="opensource-story">
+      <a class="work-card reveal" href="./opensource-story/" data-category="story" data-card-id="opensource-story" data-order="001">
         <div class="card-thumb">
           <img src="./opensource-story/image/opensource-story.png" alt="開源運動的誕生">
           <span class="card-tag">隨筆雜談</span>
@@ -798,7 +929,7 @@
       </a>
 
       <!-- Card: Claude web guide -->
-      <a class="work-card reveal" href="./claude-web-guide/" data-category="ai-guide" data-card-id="claude-web-guide">
+      <a class="work-card reveal" href="./claude-web-guide/" data-category="ai-guide" data-card-id="claude-web-guide" data-order="002">
         <div class="card-thumb">
           <img src="./claude-web-guide/image/claude-web-guide.png" alt="Claude 網頁開發指南">
           <span class="card-tag">AI 指南</span>
@@ -817,7 +948,7 @@
       </a>
 
       <!-- Card: dradvice01 (password protected) -->
-      <a class="work-card reveal" href="./dradvice01/" data-category="works" data-card-id="dradvice01" data-password="health2025">
+      <a class="work-card reveal" href="./dradvice01/" data-category="works" data-card-id="dradvice01" data-password="health2025" data-order="003">
         <div class="card-thumb">
           <img src="./dradvice01/image/dradvice01.png" alt="健康力益生菌品牌落地頁">
           <span class="card-tag">作品分享</span>
@@ -837,7 +968,7 @@
       </a>
 
       <!-- Card: LocalAI Image -->
-      <a class="work-card reveal" href="./localai-image/" data-category="ai-guide" data-card-id="localai-image">
+      <a class="work-card reveal" href="./localai-image/" data-category="ai-guide" data-card-id="localai-image" data-order="004">
         <div class="card-thumb">
           <img src="./localai-image/image/LocalAI_Image.png" alt="LocalAI Image 介面">
           <span class="card-tag">AI 指南</span>
@@ -856,7 +987,7 @@
       </a>
 
       <!-- Card: AI Guide -->
-      <a class="work-card reveal" href="./ai-guide/" data-category="ai-guide" data-card-id="ai-guide">
+      <a class="work-card reveal" href="./ai-guide/" data-category="ai-guide" data-card-id="ai-guide" data-order="005">
         <div class="card-thumb">
           <img src="./ai-guide/image/ai-guide.png" alt="AI 宇宙指南">
           <span class="card-tag">AI 指南</span>
@@ -875,7 +1006,7 @@
       </a>
 
       <!-- Card: AI Coding Guide -->
-      <a class="work-card reveal" href="./ai-coding-guide/" data-category="ai-guide" data-card-id="ai-coding-guide">
+      <a class="work-card reveal" href="./ai-coding-guide/" data-category="ai-guide" data-card-id="ai-coding-guide" data-order="006">
         <div class="card-thumb">
           <img src="./ai-coding-guide/image/cover.png" alt="AI 寫程式工具指南">
           <span class="card-tag">AI 指南</span>
@@ -894,7 +1025,7 @@
       </a>
 
       <!-- Card: Form Guide -->
-      <a class="work-card reveal" href="./form-guide/" data-category="ai-guide" data-card-id="form-guide">
+      <a class="work-card reveal" href="./form-guide/" data-category="ai-guide" data-card-id="form-guide" data-order="007">
         <div class="card-thumb">
           <img src="./form-guide/image/cover.png" alt="讓網頁會收資料">
           <span class="card-tag">AI 指南</span>
@@ -913,7 +1044,7 @@
       </a>
 
       <!-- Card: 3D Print Traps -->
-      <a class="work-card reveal" href="./3dprint-traps/" data-category="diy" data-card-id="3dprint-traps">
+      <a class="work-card reveal" href="./3dprint-traps/" data-category="diy" data-card-id="3dprint-traps" data-order="008">
         <div class="card-thumb">
           <img src="./3dprint-traps/image/cover.png" alt="FDM 入坑指南">
           <span class="card-tag">自造日誌</span>
@@ -932,7 +1063,7 @@
       </a>
 
       <!-- Card: HTML5 Story -->
-      <a class="work-card reveal" href="./html5-story/" data-category="story" data-card-id="html5-story">
+      <a class="work-card reveal" href="./html5-story/" data-category="story" data-card-id="html5-story" data-order="009">
         <div class="card-thumb">
           <img src="./html5-story/image/cover.png" alt="HTML5 的故事與創作可能性">
           <span class="card-tag">隨筆雜談</span>
@@ -1164,6 +1295,37 @@
   pwOverlay.addEventListener('click', e => {
     if (e.target === pwOverlay) pwOverlay.classList.remove('open');
   });
+
+  // ── LATEST CARD ──
+  (function() {
+    const cards = document.querySelectorAll('.work-card[data-order]');
+    let latest = null;
+    let latestOrder = -1;
+    cards.forEach(card => {
+      const order = parseInt(card.dataset.order, 10);
+      if (order > latestOrder) {
+        latestOrder = order;
+        latest = card;
+      }
+    });
+    if (!latest) return;
+    const latestCard = document.getElementById('latestCard');
+    const img = latest.querySelector('.card-thumb img');
+    const tag = latest.querySelector('.card-tag');
+    const title = latest.querySelector('.card-title');
+    const desc = latest.querySelector('.card-desc');
+    if (img) {
+      document.getElementById('latestImg').src = img.src;
+      document.getElementById('latestImg').alt = img.alt;
+    }
+    if (tag) document.getElementById('latestTag').textContent = tag.textContent;
+    if (title) document.getElementById('latestTitle').textContent = title.textContent;
+    if (desc) document.getElementById('latestDesc').textContent = desc.textContent;
+    latestCard.href = latest.getAttribute('href');
+    if (latest.dataset.password) {
+      latestCard.dataset.password = latest.dataset.password;
+    }
+  })();
 
   // ── SCROLL REVEAL ──
   const reveals = document.querySelectorAll('.reveal');
