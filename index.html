@@ -1296,6 +1296,18 @@
     if (e.target === pwOverlay) pwOverlay.classList.remove('open');
   });
 
+  // ── SORT GRID (新到舊) ──
+  (function() {
+    const grid = document.getElementById('workGrid');
+    const cards = Array.from(grid.children);
+    cards.sort((a, b) => {
+      const orderA = parseInt(a.dataset.order || '0', 10);
+      const orderB = parseInt(b.dataset.order || '0', 10);
+      return orderB - orderA;
+    });
+    cards.forEach(card => grid.appendChild(card));
+  })();
+
   // ── LATEST CARD ──
   (function() {
     const cards = document.querySelectorAll('.work-card[data-order]');
