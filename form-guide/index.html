@@ -551,6 +551,16 @@
     margin-bottom: 4px;
   }
   .bubble-label.right { text-align: right; }
+  .bubble-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+  .bubble-wrap.right {
+    align-items: flex-end;
+  }
+  .bubble-wrap.left {
+    align-items: flex-start;
+  }
 
   /* ── DANGER ZONE ── */
   .danger-steps {
@@ -1102,20 +1112,28 @@ Google Sheets ID 是：<span class="kw">[在這裡貼上你的 Sheets ID]</span>
 
     <div class="chat-demo">
       <div>
-        <div class="bubble-label right">你說</div>
-        <div class="bubble user">我照你的步驟做了，但是填表送出之後 Google Sheets 沒有出現任何資料，網頁顯示的是「送出失敗」。GAS 的部署我選的是「所有人可以存取」。</div>
+        <div class="bubble-wrap right">
+          <div class="bubble-label right">你說</div>
+          <div class="bubble user">我照你的步驟做了，但是填表送出之後 Google Sheets 沒有出現任何資料，網頁顯示的是「送出失敗」。GAS 的部署我選的是「所有人可以存取」。</div>
+        </div>
       </div>
       <div>
-        <div class="bubble-label">GPT 通常會回</div>
-        <div class="bubble ai">好的，我來幫你檢查幾個常見原因：<br><br>1. 請確認你的 Sheets ID 有沒有貼對……<br>2. 部署的時候有沒有點到「更新」而不是重新部署……<br>3. 可以打開瀏覽器的開發者工具，按 F12，點「Console」，告訴我紅色錯誤訊息寫什麼……</div>
+        <div class="bubble-wrap left">
+          <div class="bubble-label">GPT 通常會回</div>
+          <div class="bubble ai">好的，我來幫你檢查幾個常見原因：<br><br>1. 請確認你的 Sheets ID 有沒有貼對……<br>2. 部署的時候有沒有點到「更新」而不是重新部署……<br>3. 可以打開瀏覽器的開發者工具，按 F12，點「Console」，告訴我紅色錯誤訊息寫什麼……</div>
+        </div>
       </div>
       <div>
-        <div class="bubble-label right">你說</div>
-        <div class="bubble user">Console 有一行紅色的：CORS policy: No 'Access-Control-Allow-Origin'</div>
+        <div class="bubble-wrap right">
+          <div class="bubble-label right">你說</div>
+          <div class="bubble user">Console 有一行紅色的：CORS policy: No 'Access-Control-Allow-Origin'</div>
+        </div>
       </div>
       <div>
-        <div class="bubble-label">GPT 通常會回</div>
-        <div class="bubble ai">找到問題了！這是因為 GAS 需要加一個回應標頭，請把 doPost 函式裡的 return 改成這樣……（附上修正後的程式碼）</div>
+        <div class="bubble-wrap left">
+          <div class="bubble-label">GPT 通常會回</div>
+          <div class="bubble ai">找到問題了！這是因為 GAS 需要加一個回應標頭，請把 doPost 函式裡的 return 改成這樣……（附上修正後的程式碼）</div>
+        </div>
       </div>
     </div>
 
