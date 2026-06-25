@@ -149,47 +149,10 @@
     /* Hanzi Writer 容器 */
     .hw-wrap {
       width:100%; aspect-ratio:1;
-      background:#f8f8f8;
-      border:2px solid #e6e6e6;
-      border-radius:var(--radius-sm);
+      background:#f8f8f8; border-radius:var(--radius-sm);
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
-      position:relative;
     }
-
-    /* ===== AnimCJK SVG 筆順 / 描字 ===== */
-    .animcjk-board { position:relative; touch-action:none; }
-    .animcjk-board::before, .animcjk-board::after {
-      content:""; position:absolute; pointer-events:none; z-index:0;
-    }
-    .animcjk-board::before {
-      top:0; bottom:0; left:50%;
-      border-left:2px dashed #d8d8d8;
-      transform:translateX(-1px);
-    }
-    .animcjk-board::after {
-      left:0; right:0; top:50%;
-      border-top:2px dashed #d8d8d8;
-      transform:translateY(-1px);
-    }
-    .animcjk-target { width:88%; height:88%; position:relative; z-index:1; }
-    .animcjk-target svg { width:100%; height:100%; display:block; overflow:visible; }
-    .animcjk-outline { fill:#d8d0c8; opacity:.82; }
-    .animcjk-sweep {
-      fill:none; stroke:var(--primary); stroke-width:128; stroke-linecap:round; stroke-linejoin:round;
-      stroke-dasharray:3333; stroke-dashoffset:3333;
-    }
-    .practice-sweep { stroke:var(--secondary); opacity:.95; }
-    .practice-user-path { fill:none; stroke:var(--secondary); stroke-width:34; stroke-linecap:round; stroke-linejoin:round; opacity:.78; }
-    .practice-guide-path { fill:none; stroke:transparent; stroke-width:42; stroke-linecap:round; stroke-linejoin:round; opacity:0; pointer-events:none; }
-    .animcjk-progress { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; min-height:24px; }
-    .stroke-dot {
-      min-width:24px; height:24px; padding:0 7px; border-radius:999px; display:flex; align-items:center; justify-content:center;
-      font-size:.75rem; font-weight:900; border:2px solid #d0d4e8; color:#888; background:#fff;
-    }
-    .stroke-dot.done { background:var(--secondary); border-color:var(--secondary); color:#fff; }
-    .stroke-dot.active { background:var(--primary); border-color:var(--primary); color:#fff; }
-
 
     /* 靜態圖 */
     .static-wrap {
@@ -285,18 +248,24 @@
     <!-- 左：筆順示範 -->
     <div class="learn-card">
       <div class="card-title">✍️ 筆順示範</div>
-      <div class="hw-wrap animcjk-board" id="anim-wrap">
-        <div id="anim-target" class="animcjk-target"></div>
+      <div class="tab-row">
+        <button class="tab-btn active" id="tab-anim" onclick="switchTab('anim')">▶ 動畫</button>
+        <button class="tab-btn" id="tab-static" onclick="switchTab('static')">🖼 字形</button>
       </div>
-      <div class="animcjk-progress" id="anim-progress"></div>
+      <div class="hw-wrap" id="anim-wrap">
+        <div id="anim-target"></div>
+      </div>
+      <div class="static-wrap" id="static-wrap">
+        <img id="static-img" src="" alt="字形"/>
+      </div>
       <button class="reset-btn" id="replay-btn" onclick="replayAnim()">▶ 再播一次</button>
     </div>
 
     <!-- 右：描字練習 -->
     <div class="learn-card">
       <div class="card-title">🖌️ 描字練習</div>
-      <div class="hw-wrap animcjk-board" id="practice-board">
-        <div id="quiz-target" class="animcjk-target"></div>
+      <div class="hw-wrap">
+        <div id="quiz-target"></div>
       </div>
       <div class="quiz-result" id="quiz-result"></div>
       <button class="reset-btn" onclick="resetQuiz()">↺ 重新練習</button>
@@ -311,12 +280,17 @@
   </div>
 </main>
 
-<footer>© 2025 505kaichen-dev · 注音樂園 · 筆順資料：AnimCJK SVG</footer>
+<footer>© 2025 505kaichen-dev · 注音樂園 · 筆順資料：MadLadSquad/hanzi-writer-data-youyin（animCJK）</footer>
+
+<!-- Hanzi Writer -->
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 
 <script>
 // ===== 狀態變數 =====
 let currentIndex = 0;
 let currentTab = 'anim';
+let animWriter = null;
+let quizWriter = null;
 
 // ===== 符號資料 =====
 const ALL_SYMBOLS = [
@@ -361,303 +335,114 @@ const ALL_SYMBOLS = [
 
 const CONSONANTS = ALL_SYMBOLS.filter(s => s.type === '聲母');
 const VOWELS     = ALL_SYMBOLS.filter(s => s.type === '韻母');
-// ===== AnimCJK SVG 資料：從本地 SVG 載入 =====
-const ANIMCJK_BASE = 'scripts/animcjk';
-const SVG_NS = 'http://www.w3.org/2000/svg';
-const XLINK_NS = 'http://www.w3.org/1999/xlink';
-
-let currentSvgData = null;
-let demoStep = 0;
-let currentPractice = 0;
-let drawing = false;
-let drawPoints = [];
-let animEls = [];
-let practiceEls = null;
-
-function symbolToSvgFile(char) {
-  return `${char.codePointAt(0)}.svg`;
-}
-
-function fetchAnimCjkSvg(char) {
-  const file = symbolToSvgFile(char);
-  return fetch(`${ANIMCJK_BASE}/${file}`).then(r => {
-    if (!r.ok) throw new Error(`找不到 AnimCJK SVG：${ANIMCJK_BASE}/${file}`);
-    return r.text();
-  }).then(text => parseAnimCjkSvg(text));
-}
-
-function parseAnimCjkSvg(text) {
-  const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
-  const svg = doc.querySelector('svg');
-  if (!svg) throw new Error('SVG 格式錯誤');
-  const viewBox = svg.getAttribute('viewBox') || '0 0 1024 1024';
-  const outlines = Array.from(svg.querySelectorAll('path[id]'))
-    .filter(p => /d\d+$/.test(p.id))
-    .sort((a, b) => {
-      const na = parseInt(a.id.match(/d(\d+)$/)?.[1] || '0', 10);
-      const nb = parseInt(b.id.match(/d(\d+)$/)?.[1] || '0', 10);
-      return na - nb;
+// ===== Hanzi Writer 資料：從本地 JSON 載入（來自 youyin 完整資料庫）=====
+function charDataLoader(char, onLoad, onError) {
+  fetch(`scripts/data/${encodeURIComponent(char)}.json`)
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
     })
-    .map(p => p.getAttribute('d'));
-  const sweeps = Array.from(svg.querySelectorAll('path[clip-path]'))
-    .map(p => p.getAttribute('d'));
-  if (!outlines.length || !sweeps.length) throw new Error('SVG 缺少筆畫資料');
-  return { viewBox, outlines, sweeps };
+    .then(data => onLoad(data))
+    .catch(err => onError(err));
 }
 
-function makeSvgEl(tag, attrs = {}) {
-  const el = document.createElementNS(SVG_NS, tag);
-  Object.entries(attrs).forEach(([k, v]) => {
-    if (k === 'href') el.setAttributeNS(XLINK_NS, 'href', v);
-    else el.setAttribute(k, v);
-  });
-  return el;
-}
+const HW_COMMON = {
+  width: 280, height: 280,
+  padding: 8,
+  strokeWidth: 32,
+  showOutline: true,
+  outlineColor: '#d8d0c8',
+  charDataLoader,
+};
 
-function buildAnimCjkSvg(data, mode) {
-  const uid = `${mode}-${Date.now()}-${Math.floor(Math.random() * 99999)}`;
-  const svg = makeSvgEl('svg', { viewBox:data.viewBox, 'aria-label':'AnimCJK 注音筆畫' });
-  const defs = makeSvgEl('defs');
-  svg.appendChild(defs);
-
-  data.outlines.forEach((d, i) => {
-    const p = makeSvgEl('path', { id:`${uid}-d${i}`, d });
-    defs.appendChild(p);
-    const clip = makeSvgEl('clipPath', { id:`${uid}-c${i}` });
-    clip.appendChild(makeSvgEl('use', { href:`#${uid}-d${i}` }));
-    defs.appendChild(clip);
+function initHanziWriter(char) {
+  // 動畫 writer
+  document.getElementById('anim-target').innerHTML = '';
+  animWriter = HanziWriter.create('anim-target', char, {
+    ...HW_COMMON,
+    strokeColor: '#FF6B35',
+    strokeAnimationSpeed: 0.48,
+    delayBetweenStrokes: 800,
+    onLoadCharDataSuccess: () => {
+      if (currentTab === 'anim') animWriter.animateCharacter();
+    },
   });
 
-  data.outlines.forEach((_, i) => {
-    const u = makeSvgEl('use', { href:`#${uid}-d${i}`, class:'animcjk-outline' });
-    if (mode === 'practice') u.setAttribute('opacity', '.62');
-    svg.appendChild(u);
-  });
-
-  const sweeps = data.sweeps.map((d, i) => {
-    const p = makeSvgEl('path', {
-      d,
-      class: mode === 'practice' ? 'animcjk-sweep practice-sweep' : 'animcjk-sweep',
-      'clip-path':`url(#${uid}-c${i})`,
-      pathLength:'3333'
-    });
-    p.style.strokeDasharray = '3333';
-    p.style.strokeDashoffset = '3333';
-    svg.appendChild(p);
-    return p;
-  });
-
-  const guides = [];
-  if (mode === 'practice') {
-    data.sweeps.forEach((d, i) => {
-      const g = makeSvgEl('path', { d, class:'practice-guide-path' });
-      svg.appendChild(g);
-      guides.push(g);
-    });
-    const user = makeSvgEl('path', { class:'practice-user-path' });
-    svg.appendChild(user);
-    return { svg, sweeps, guides, user };
-  }
-  return { svg, sweeps };
-}
-
-function setDash(path, value) {
-  path.style.strokeDasharray = '3333';
-  path.style.strokeDashoffset = String(value);
-}
-
-function animatePath(path, duration = 850) {
-  path.getAnimations().forEach(a => a.cancel());
-  path.style.strokeDasharray = '3333';
-  path.style.strokeDashoffset = '3333';
-  return path.animate([
-    { strokeDashoffset: 3333 },
-    { strokeDashoffset: 0 }
-  ], { duration, easing:'linear', fill:'forwards' }).finished.then(() => {
-    path.style.strokeDashoffset = '0';
-  });
-}
-
-function buildDots(count) {
-  return Array.from({length:count}, (_,i)=>`<span class="stroke-dot" data-stroke-dot="${i}">${i+1}</span>`).join('');
-}
-
-function updateAnimProgress() {
-  const dots = document.querySelectorAll('#anim-progress .stroke-dot');
-  dots.forEach((d,i)=>{
-    d.classList.toggle('done', i < demoStep);
-    d.classList.toggle('active', i === demoStep && demoStep < dots.length);
-  });
-}
-
-async function playDemo() {
-  if (!animEls.length) return;
-  replayAnim(false);
-  for (let i = 0; i < animEls.length; i++) {
-    demoStep = i;
-    updateAnimProgress();
-    await animatePath(animEls[i], 850);
-    demoStep = i + 1;
-    updateAnimProgress();
-    await new Promise(r => setTimeout(r, 220));
-  }
-}
-
-function replayAnim(autoplay = true) {
-  demoStep = 0;
-  animEls.forEach(p => { p.getAnimations().forEach(a=>a.cancel()); setDash(p, 3333); });
-  updateAnimProgress();
-  if (autoplay) playDemo();
-}
-
-function svgPoint(evt) {
-  const svg = practiceEls.svg;
-  const pt = svg.createSVGPoint();
-  pt.x = evt.clientX;
-  pt.y = evt.clientY;
-  return pt.matrixTransform(svg.getScreenCTM().inverse());
-}
-function dist(a,b) { return Math.hypot(a.x-b.x, a.y-b.y); }
-function pathPoint(path, ratio) {
-  const len = path.getTotalLength();
-  const p = path.getPointAtLength(len * ratio);
-  return {x:p.x, y:p.y};
-}
-function closestDistanceToPath(pt, path, samples=90) {
-  let best = Infinity, bestRatio = 0;
-  const len = path.getTotalLength();
-  for (let i=0;i<=samples;i++) {
-    const ratio = i / samples;
-    const p = path.getPointAtLength(len * ratio);
-    const d = Math.hypot(pt.x - p.x, pt.y - p.y);
-    if (d < best) { best = d; bestRatio = ratio; }
-  }
-  return {distance:best, ratio:bestRatio};
-}
-function pointsToD(pts) {
-  if (!pts.length) return '';
-  return 'M ' + pts.map(p=>`${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ');
-}
-function validateStroke(pts, targetPath) {
-  if (pts.length < 8) return {ok:false, reason:'筆畫太短，請完整描完'};
-  const start = pathPoint(targetPath, 0);
-  const end = pathPoint(targetPath, 1);
-  const startOk = dist(pts[0], start) < 130;
-  const endOk = dist(pts[pts.length - 1], end) < 150;
-  if (!startOk) return {ok:false, reason:'起筆位置不對，請從正確位置開始'};
-  if (!endOk) return {ok:false, reason:'收筆位置不對，請依方向寫到底'};
-
-  const ratios = [];
-  let closeCount = 0;
-  for (const p of pts) {
-    const c = closestDistanceToPath(p, targetPath, 80);
-    ratios.push(c.ratio);
-    if (c.distance < 120) closeCount++;
-  }
-  const closeRate = closeCount / pts.length;
-  const coverage = Math.max(...ratios) - Math.min(...ratios);
-  let forward = 0;
-  for (let i=1;i<ratios.length;i++) if (ratios[i] >= ratios[i-1] - .08) forward++;
-  const forwardRate = forward / Math.max(1, ratios.length - 1);
-  if (closeRate < .66) return {ok:false, reason:'偏離字形太多，請沿著灰色筆畫寫'};
-  if (coverage < .58) return {ok:false, reason:'覆蓋範圍不夠，請把這一筆寫完整'};
-  if (forwardRate < .58) return {ok:false, reason:'方向可能反了，請照筆順方向書寫'};
-  return {ok:true};
-}
-
-function updatePracticeUI(kind='wait', text) {
-  const res = document.getElementById('quiz-result');
-  res.className = 'quiz-result' + (kind === 'ok' ? ' ok' : kind === 'no' ? ' no' : '');
-  if (text) res.textContent = text;
-  if (!practiceEls) return;
-  practiceEls.guides.forEach((g,i)=> g.style.display = i === currentPractice ? 'block' : 'none');
-}
-
-function completeCurrentStroke() {
-  setDash(practiceEls.sweeps[currentPractice], 0);
-  currentPractice++;
-  practiceEls.user.setAttribute('d','');
-  if (currentPractice >= practiceEls.sweeps.length) {
-    updatePracticeUI('ok', '✓ 太棒了！完成描字！🌟');
-    speakFeedback('太棒了！寫得非常好！');
-  } else {
-    updatePracticeUI('ok', `第 ${currentPractice} 筆完成！請繼續第 ${currentPractice + 1} 筆`);
-    speakFeedback('答對了！');
-  }
-}
-
-function bindPracticeEvents() {
-  const svg = practiceEls.svg;
-  svg.addEventListener('pointerdown', e => {
-    if (currentPractice >= practiceEls.sweeps.length) return;
-    svg.setPointerCapture(e.pointerId);
-    drawing = true;
-    drawPoints = [svgPoint(e)];
-    practiceEls.user.setAttribute('d', pointsToD(drawPoints));
-    updatePracticeUI('wait', `描寫第 ${currentPractice + 1} 筆`);
-  });
-  svg.addEventListener('pointermove', e => {
-    if (!drawing) return;
-    drawPoints.push(svgPoint(e));
-    practiceEls.user.setAttribute('d', pointsToD(drawPoints));
-  });
-  function finishPointer(e) {
-    if (!drawing) return;
-    drawing = false;
-    drawPoints.push(svgPoint(e));
-    practiceEls.user.setAttribute('d', pointsToD(drawPoints));
-    const result = validateStroke(drawPoints, practiceEls.guides[currentPractice]);
-    if (result.ok) completeCurrentStroke();
-    else {
-      updatePracticeUI('no', result.reason);
-      speakFeedback('再試試看！');
-      setTimeout(()=> practiceEls.user.setAttribute('d',''), 700);
-    }
-  }
-  svg.addEventListener('pointerup', finishPointer);
-  svg.addEventListener('pointercancel', () => { drawing = false; practiceEls.user.setAttribute('d',''); });
-}
-
-function resetQuiz() {
-  currentPractice = 0;
-  drawing = false;
-  drawPoints = [];
-  if (practiceEls) {
-    practiceEls.user.setAttribute('d','');
-    practiceEls.sweeps.forEach(p => setDash(p, 3333));
-  }
-  updatePracticeUI('wait', '請依照筆順描寫灰色字形');
-}
-
-async function initAnimCjk(char) {
-  const animTarget = document.getElementById('anim-target');
-  const quizTarget = document.getElementById('quiz-target');
-  const progress = document.getElementById('anim-progress');
-  animTarget.innerHTML = '<span style="color:#aaa;font-weight:700">載入中…</span>';
-  quizTarget.innerHTML = '<span style="color:#aaa;font-weight:700">載入中…</span>';
+  // 描字 writer
+  document.getElementById('quiz-target').innerHTML = '';
   document.getElementById('quiz-result').textContent = '';
   document.getElementById('quiz-result').className = 'quiz-result';
 
-  try {
-    currentSvgData = await fetchAnimCjkSvg(char);
-    const anim = buildAnimCjkSvg(currentSvgData, 'anim');
-    const practice = buildAnimCjkSvg(currentSvgData, 'practice');
-    animTarget.innerHTML = '';
-    quizTarget.innerHTML = '';
-    animTarget.appendChild(anim.svg);
-    quizTarget.appendChild(practice.svg);
-    animEls = anim.sweeps;
-    practiceEls = practice;
-    progress.innerHTML = buildDots(animEls.length);
-    demoStep = 0;
-    currentPractice = 0;
-    bindPracticeEvents();
-    resetQuiz();
-    replayAnim(true);
-  } catch (err) {
-    console.error(err);
-    animTarget.innerHTML = `<span style="color:#b45309;font-weight:700">SVG 載入失敗：${err.message}</span>`;
-    quizTarget.innerHTML = `<span style="color:#b45309;font-weight:700">請確認 ${ANIMCJK_BASE}/${symbolToSvgFile(char)} 是否存在</span>`;
+  quizWriter = HanziWriter.create('quiz-target', char, {
+    ...HW_COMMON,
+    showCharacter: false,
+    strokeColor: '#4ECDC4',
+    drawingColor: '#4ECDC4',
+    drawingWidth: 72,
+    onLoadCharDataSuccess: () => {
+      startQuiz();
+    },
+  });
+}
+
+function startQuiz() {
+  quizWriter.quiz({
+    onMistake: (data) => {
+      const res = document.getElementById('quiz-result');
+      res.className = 'quiz-result no';
+      res.textContent = `第 ${data.strokeNum + 1} 畫再試試看 ✏️`;
+      speakFeedback('再試試看！');
+    },
+    onCorrectStroke: (data) => {
+      const res = document.getElementById('quiz-result');
+      res.className = 'quiz-result ok';
+      res.textContent = `第 ${data.strokeNum + 1} 畫正確！繼續加油 🎉`;
+      speakFeedback('答對了！');
+    },
+    onComplete: (summary) => {
+      const res = document.getElementById('quiz-result');
+      res.className = 'quiz-result ok';
+      const mistakes = summary.totalMistakes || 0;
+      res.textContent = mistakes === 0
+        ? '✓ 太棒了！完美寫完！🌟'
+        : `✓ 完成！繼續練習會更好 😊`;
+      speakFeedback(mistakes === 0 ? '太棒了！寫得非常好！' : '寫完了！繼續加油！');
+    },
+  });
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-result').textContent = '';
+  document.getElementById('quiz-result').className = 'quiz-result';
+  try { quizWriter.cancelQuiz(); } catch(e) { /* quiz 尚未開始，忽略 */ }
+  startQuiz();
+}
+
+function replayAnim() {
+  if (animWriter) animWriter.animateCharacter();
+}
+
+// ===== Tab 切換 =====
+function switchTab(tab) {
+  currentTab = tab;
+  const animWrap   = document.getElementById('anim-wrap');
+  const staticWrap = document.getElementById('static-wrap');
+  const replayBtn  = document.getElementById('replay-btn');
+  const tabAnim    = document.getElementById('tab-anim');
+  const tabStatic  = document.getElementById('tab-static');
+
+  if (tab === 'anim') {
+    animWrap.style.display   = 'flex';
+    staticWrap.style.display = 'none';
+    replayBtn.style.display  = 'block';
+    tabAnim.classList.add('active');
+    tabStatic.classList.remove('active');
+  } else {
+    animWrap.style.display   = 'none';
+    staticWrap.style.display = 'flex';
+    replayBtn.style.display  = 'none';
+    tabStatic.classList.add('active');
+    tabAnim.classList.remove('active');
   }
 }
 
@@ -696,8 +481,11 @@ function render() {
   document.getElementById('sym-type').textContent   = sym.type;
   document.getElementById('sym-stroke').textContent = `${sym.strokes} 畫`;
 
-  // AnimCJK SVG 筆順與描字
-  initAnimCjk(sym.char);
+  // 靜態圖
+  document.getElementById('static-img').src = `images/${sym.img}`;
+
+  // Hanzi Writer
+  initHanziWriter(sym.char);
 
   // 例字
   document.getElementById('examples-title').textContent = `📖 ${sym.char} 的例字`;
@@ -799,7 +587,7 @@ updateBar();
 <!--
 === 產圖移交摘要 ===
 本頁（learn.html）無需額外產圖。
-筆順動畫與描字：AnimCJK SVG
+筆順動畫：Hanzi Writer + hanzi-writer-data-youyin（animCJK，CC BY-NC-ND）
 靜態底稿：教育部 EPUB 圖片（CC BY-NC-ND）
 ==================
 -->
