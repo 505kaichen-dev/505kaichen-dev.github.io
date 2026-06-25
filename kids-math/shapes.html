@@ -18,8 +18,8 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .page.active{display:flex;}
 
 /* 歡迎頁 */
-.welcome-cover{width:100%;border-radius:var(--card-radius);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#7C3AED,#A855F7);min-height:180px;display:flex;align-items:center;justify-content:center;}
-.welcome-cover img{width:100%;height:220px;object-fit:cover;display:block;}
+.welcome-cover{width:100%;border-radius:var(--card-radius);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#7C3AED,#A855F7);display:flex;align-items:center;justify-content:center;}
+.welcome-cover img{width:100%;height:auto;display:block;object-fit:contain;}
 .welcome-title{font-size:clamp(30px,7vw,50px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;}
 .welcome-desc{font-size:16px;color:#666;font-weight:700;text-align:center;line-height:1.6;}
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;}

@@ -23,8 +23,8 @@ header { position: relative; z-index: 10; padding: 20px 32px; display: flex; ali
 .page.active { display: flex; }
 
 /* 歡迎頁 */
-.welcome-cover img { width: 100%; height: 220px; object-fit: cover; display: block; }
-.welcome-cover { width: 100%; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); background: linear-gradient(135deg, #0F766E, #4ECDC4); min-height: 180px; display: flex; align-items: center; justify-content: center; }
+.welcome-cover img { width: 100%; height: auto; display: block; object-fit: contain; }
+.welcome-cover { width: 100%; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); background: linear-gradient(135deg, #0F766E, #4ECDC4);  display: flex; align-items: center; justify-content: center; }
 .welcome-cover .cover-placeholder { font-size: 80px; animation: float 3s ease-in-out infinite; }
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 .welcome-title { font-size: clamp(30px,7vw,50px); font-weight: 900; background: linear-gradient(135deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }

@@ -16,8 +16,8 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .back-link::before{content:'←';font-size:18px;}
 .page{display:none;position:relative;z-index:1;flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 24px 60px;flex-direction:column;align-items:center;gap:24px;}
 .page.active{display:flex;}
-.welcome-cover img{width:100%;height:220px;object-fit:cover;display:block;} .welcome-cover img{width:100%;height:220px;object-fit:cover;display:block;}
-.welcome-cover{width:100%;border-radius:var(--card-radius);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#7C3AED,#A855F7,#FF6B35);min-height:180px;display:flex;align-items:center;justify-content:center;gap:16px;}
+.welcome-cover img{width:100%;height:auto;display:block;object-fit:contain;} .welcome-cover img{width:100%;height:auto;display:block;object-fit:contain;}
+.welcome-cover{width:100%;border-radius:var(--card-radius);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#7C3AED,#A855F7,#FF6B35);display:flex;align-items:center;justify-content:center;gap:16px;}
 .welcome-cover .cover-placeholder{font-size:64px;animation:float 3s ease-in-out infinite;}
 .welcome-cover .cover-placeholder:nth-child(2){animation-delay:0.5s;}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
