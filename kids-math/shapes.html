@@ -395,6 +395,7 @@ function pNext(){
     if(PS.locked)return;
     document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.classList.remove('selected'));
     btn.classList.add('selected');PS.sel=val;PS.selBtn=btn;
+    speak(val, 'p-speak');
     document.getElementById('p-confirm').classList.add('ready');
   });
   if(PS.isAuto){const need=XP_NEEDED[PS.lv]??1;document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%';}
@@ -447,6 +448,7 @@ function cLoad(i){
   renderShapeOpts(q,'c-opts',(btn,val)=>{
     document.querySelectorAll('#c-opts .option-btn').forEach(b=>b.classList.remove('selected'));
     btn.classList.add('selected');CS.sel=val;CS.selBtn=btn;
+    speak(val, 'c-speak');
     document.getElementById('c-confirm').classList.add('ready');
   });
   if(q.userAns!==null&&!q.skipped){document.querySelectorAll('#c-opts .option-btn').forEach(b=>{if(b.dataset.val===q.userAns)b.classList.add('selected');});}
