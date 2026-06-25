@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ㄅㄆㄇ 注音學習小站</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #FFF9F0; --primary: #FF6B35; --secondary: #4ECDC4;
+      --accent: #FFE66D; --ink: #2C2C2C; --card: #FFFFFF; --soft: #F0F4FF;
+      --radius: 24px; --radius-sm: 14px;
+    }
+    body { font-family: 'Nunito','Noto Sans TC',sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 28px; background: var(--primary); color: #fff;
+      box-shadow: 0 4px 16px rgba(255,107,53,0.25);
+    }
+    .header-back { text-decoration:none; color:#fff; font-weight:700; font-size:1rem; opacity:0.9; }
+    .header-back:hover { opacity:1; }
+    .header-title { font-size:1.6rem; font-weight:900; letter-spacing:4px; }
+    .header-placeholder { width: 80px; }
+
+    .hero { text-align:center; padding:48px 24px 32px; }
+    .hero-emoji { font-size:4rem; display:block; margin-bottom:12px; animation:bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .hero-title { font-size:2.2rem; font-weight:900; margin-bottom:10px; }
+    .hero-sub { font-size:1rem; color:#888; }
+
+    .cards-wrap { max-width:860px; margin:0 auto; padding:0 20px 60px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+
+    .main-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: var(--ink);
+      transition: transform .2s, box-shadow .2s;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      border: 3px solid transparent;
+    }
+    .main-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,0.13); }
+    .main-card.chart:hover  { border-color: var(--secondary); }
+    .main-card.learn:hover  { border-color: var(--primary); }
+    .main-card.game:hover   { border-color: var(--accent); }
+
+    .card-icon { font-size: 3.5rem; }
+    .card-name { font-size: 1.3rem; font-weight: 900; }
+    .card-desc { font-size: 0.85rem; color: #888; line-height: 1.5; }
+    .card-badge {
+      padding: 6px 18px; border-radius: 50px;
+      font-size: 0.8rem; font-weight: 700;
+      display: inline-block;
+    }
+    .chart .card-badge  { background: #E8FAF9; color: #0f6e56; }
+    .learn .card-badge  { background: #FFF0EB; color: #c2410c; }
+    .game .card-badge   { background: #FFFBEB; color: #92400e; }
+
+    footer { text-align:center; padding:24px; color:#aaa; font-size:0.8rem; border-top:1px solid #e8e8e8; }
+
+    @media (max-width: 640px) {
+      .cards-wrap { grid-template-columns: 1fr; max-width:360px; }
+      .hero-title { font-size:1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../" class="header-back">← 回首頁</a>
+  <span class="header-title">ㄅ ㄆ ㄇ</span>
+  <div class="header-placeholder"></div>
+</header>
+
+<div class="hero">
+  <span class="hero-emoji">🐻</span>
+  <div class="hero-title">注音學習小站</div>
+  <div class="hero-sub">選一個你想做的事，開始學習！</div>
+</div>
+
+<div class="cards-wrap">
+
+  <a href="chart.html" class="main-card chart">
+    <div class="card-icon">📋</div>
+    <div class="card-name">注音總表</div>
+    <div class="card-desc">一次看完所有 37 個注音符號，點符號可以聽發音</div>
+    <span class="card-badge">認識符號</span>
+  </a>
+
+  <a href="learn.html" class="main-card learn">
+    <div class="card-icon">✍️</div>
+    <div class="card-name">符號教學</div>
+    <div class="card-desc">看筆順動畫、練習描字、聽例字發音，一個一個學</div>
+    <span class="card-badge">跟著寫</span>
+  </a>
+
+  <a href="game/index.html" class="main-card game">
+    <div class="card-icon">🎮</div>
+    <div class="card-name">遊戲關卡</div>
+    <div class="card-desc">用遊戲練習注音，看圖選字、聽音答題，邊玩邊學</div>
+    <span class="card-badge">即將開放</span>
+  </a>
+
+</div>
+
+<footer>© 2025 505kaichen-dev · 注音學習小站</footer>
+
+</body>
+</html>
