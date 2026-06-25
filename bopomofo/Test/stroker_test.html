@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>筆順引擎測試 v5</title>
+  <style>
+    body {
+      font-family: sans-serif; background: #FFF9F0;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 16px; gap: 24px;
+    }
+    h2 { font-size: 1.4rem; color: #2C2C2C; }
+
+    /* 外框 */
+    #app-wrap {
+      width: 280px; height: 280px;
+      border: 2px solid #ddd; border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 引擎容器：讓它填滿外框 */
+    #app {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* overlay 限制在容器內 */
+    #app .overlay {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 10;
+    }
+    #app .overlay__backdrop { position: absolute; inset: 0; }
+
+    /* modal 填滿，讓 SVG 自然縮放 */
+    #app .modal {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 讓引擎輸出的 SVG 填滿容器 */
+    #app svg {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 500px; }
+    button {
+      padding: 8px 16px; border-radius: 50px;
+      border: 2px solid #FF6B35;
+      background: #fff; color: #FF6B35;
+      font-size: 1.1rem; font-weight: 700; cursor: pointer;
+      transition: all .15s;
+    }
+    button:hover { background: #FF6B35; color: #fff; }
+    button.active { background: #FF6B35; color: #fff; }
+    .note { font-size: 0.85rem; color: #888; }
+  </style>
+</head>
+<body>
+  <h2>筆順引擎測試 v5</h2>
+  <div id="app-wrap">
+    <div id="app"></div>
+  </div>
+  <div class="btns" id="btn-row"></div>
+  <div class="note">點符號按鈕觀看筆順動畫</div>
+
+  <script src="react-zh-stroker.js"></script>
+  <script>
+    const SYMBOLS = ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ','ㄍ','ㄎ','ㄏ','ㄐ','ㄑ','ㄒ'];
+    const container = document.getElementById('app');
+    let currentBtn = null;
+
+    function switchSymbol(char, btn) {
+      if (window.ReactDOM && ReactDOM.unmountComponentAtNode) {
+        ReactDOM.unmountComponentAtNode(container);
+      } else {
+        container.innerHTML = '';
+      }
+      if (currentBtn) currentBtn.classList.remove('active');
+      currentBtn = btn;
+      btn.classList.add('active');
+      setTimeout(() => zhStroker('app', char), 50);
+    }
+
+    const row = document.getElementById('btn-row');
+    SYMBOLS.forEach(char => {
+      const btn = document.createElement('button');
+      btn.textContent = char;
+      btn.onclick = () => switchSymbol(char, btn);
+      row.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

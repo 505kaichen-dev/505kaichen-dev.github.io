@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ㄅㄆㄇ 注音總表</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FFF9F0;
+      --primary: #FF6B35;
+      --secondary: #4ECDC4;
+      --accent: #FFE66D;
+      --ink: #2C2C2C;
+      --card: #FFFFFF;
+      --soft: #F0F4FF;
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    body {
+      font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255,107,53,0.25);
+    }
+
+    .header-back {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.9;
+      transition: opacity .2s;
+    }
+    .header-back:hover { opacity: 1; }
+
+    .header-title { font-size: 1.6rem; font-weight: 900; letter-spacing: 4px; }
+
+    .header-teacher {
+      text-decoration: none;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      opacity: 0.7;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 40px 24px 28px;
+    }
+
+    .hero-emoji {
+      font-size: 3.5rem;
+      display: block;
+      margin-bottom: 12px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .hero-title { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
+    .hero-sub   { font-size: 1rem; color: #888; }
+
+    .chart-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    .group-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 32px 0 14px;
+    }
+
+    .group-label-text { font-size: 1.1rem; font-weight: 900; }
+
+    .group-label-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 50px;
+      padding: 2px 10px;
+    }
+    .group-label-badge.vowel { background: var(--secondary); }
+
+    .group-divider {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(to right, #e0e0e0, transparent);
+      border-radius: 2px;
+    }
+
+    .symbol-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .symbol-cell {
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      padding: 14px 8px 10px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+      border: 3px solid transparent;
+      transition: all .18s ease;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .symbol-cell:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px) scale(1.06);
+      box-shadow: 0 8px 24px rgba(255,107,53,0.2);
+    }
+
+    .symbol-cell.vowel:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 8px 24px rgba(78,205,196,0.2);
+    }
+
+    .cell-char    { font-size: 2rem; font-weight: 900; color: var(--ink); line-height: 1; }
+    .cell-emoji   { font-size: 1.1rem; line-height: 1; }
+    .cell-example { font-size: 0.65rem; color: #aaa; font-weight: 700; }
+
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 24px;
+      background: var(--soft);
+      border-radius: var(--radius);
+      margin: 32px 0 0;
+      text-align: center;
+    }
+
+    .stat-num   { font-size: 2rem; font-weight: 900; color: var(--primary); display: block; }
+    .stat-label { font-size: 0.8rem; color: #888; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #aaa;
+      font-size: 0.85rem;
+      border-top: 1px solid #e8e8e8;
+    }
+
+    @media (max-width: 700px) {
+      .symbol-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      .cell-char { font-size: 1.6rem; }
+      .hero-title { font-size: 1.5rem; }
+      .stats-bar { gap: 20px; }
+    }
+    @media (max-width: 420px) {
+      .symbol-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="header-back">← 回首頁</a>
+  <span class="header-title">ㄅ ㄆ ㄇ</span>
+  <a href="teacher.html" class="header-teacher">老師設定</a>
+</header>
+
+<div class="hero">
+  <span class="hero-emoji">🐻</span>
+  <div class="hero-title">注音符號大全表</div>
+  <div class="hero-sub">點一個符號，開始學習！</div>
+</div>
+
+<div class="chart-wrap">
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-num">37</span>
+      <span class="stat-label">個注音符號</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">21</span>
+      <span class="stat-label">個聲母</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">16</span>
+      <span class="stat-label">個韻母</span>
+    </div>
+  </div>
+
+  <div class="group-label">
+    <span class="group-label-text">聲母</span>
+    <span class="group-label-badge">21 個</span>
+    <div class="group-divider"></div>
+  </div>
+  <div class="symbol-grid" id="consonant-grid"></div>
+
+  <div class="group-label">
+    <span class="group-label-text">韻母</span>
+    <span class="group-label-badge vowel">16 個</span>
+    <div class="group-divider"></div>
+  </div>
+  <div class="symbol-grid" id="vowel-grid"></div>
+
+</div>
+
+<footer>© 2025 505kaichen-dev · 注音學習小站</footer>
+
+<script>
+  const CONSONANTS = [
+    { char:'ㄅ', emoji:'🍼', example:'爸' },
+    { char:'ㄆ', emoji:'🫧', example:'婆' },
+    { char:'ㄇ', emoji:'🐴', example:'馬' },
+    { char:'ㄈ', emoji:'🏠', example:'房' },
+    { char:'ㄉ', emoji:'🥚', example:'蛋' },
+    { char:'ㄊ', emoji:'🐰', example:'兔' },
+    { char:'ㄋ', emoji:'🐟', example:'魚' },
+    { char:'ㄌ', emoji:'🦁', example:'虎' },
+    { char:'ㄍ', emoji:'🐢', example:'龜' },
+    { char:'ㄎ', emoji:'👄', example:'口' },
+    { char:'ㄏ', emoji:'🦊', example:'狐' },
+    { char:'ㄐ', emoji:'🐔', example:'雞' },
+    { char:'ㄑ', emoji:'🎸', example:'琴' },
+    { char:'ㄒ', emoji:'🌟', example:'星' },
+    { char:'ㄓ', emoji:'🕷️', example:'蜘' },
+    { char:'ㄔ', emoji:'🚂', example:'車' },
+    { char:'ㄕ', emoji:'🐍', example:'蛇' },
+    { char:'ㄖ', emoji:'☀️', example:'日' },
+    { char:'ㄗ', emoji:'✏️', example:'字' },
+    { char:'ㄘ', emoji:'🌿', example:'草' },
+    { char:'ㄙ', emoji:'🧹', example:'掃' },
+  ];
+
+  const VOWELS = [
+    { char:'ㄚ', emoji:'🦷', example:'啊' },
+    { char:'ㄛ', emoji:'🪺', example:'哦' },
+    { char:'ㄜ', emoji:'🐊', example:'鱷' },
+    { char:'ㄝ', emoji:'🧚', example:'耶' },
+    { char:'ㄞ', emoji:'❤️', example:'愛' },
+    { char:'ㄟ', emoji:'👋', example:'欸' },
+    { char:'ㄠ', emoji:'🐱', example:'貓' },
+    { char:'ㄡ', emoji:'👶', example:'幼' },
+    { char:'ㄢ', emoji:'🌅', example:'晚' },
+    { char:'ㄣ', emoji:'☁️', example:'恩' },
+    { char:'ㄤ', emoji:'🦅', example:'昂' },
+    { char:'ㄥ', emoji:'🐝', example:'嗡' },
+    { char:'ㄦ', emoji:'👂', example:'耳' },
+    { char:'ㄧ', emoji:'1️⃣', example:'一' },
+    { char:'ㄨ', emoji:'🐸', example:'蛙' },
+    { char:'ㄩ', emoji:'🐠', example:'魚' },
+  ];
+
+  function renderGrid(data, containerId, type) {
+    const grid = document.getElementById(containerId);
+    data.forEach(item => {
+      const a = document.createElement('a');
+      a.href = `learn.html?s=${encodeURIComponent(item.char)}`;
+      a.className = `symbol-cell${type === 'vowel' ? ' vowel' : ''}`;
+      a.innerHTML = `
+        <span class="cell-char">${item.char}</span>
+        <span class="cell-emoji">${item.emoji}</span>
+        <span class="cell-example">${item.example}</span>
+      `;
+      grid.appendChild(a);
+    });
+  }
+
+  renderGrid(CONSONANTS, 'consonant-grid', 'consonant');
+  renderGrid(VOWELS,     'vowel-grid',     'vowel');
+</script>
+
+<!--
+=== 產圖移交摘要 ===
+本次為總表首頁（index.html），符號格以 Emoji 呈現，暫無圖片需求。
+v0.2 確認視覺方向後補充 COVER 標記。
+==================
+-->
+
+</body>
+</html>
