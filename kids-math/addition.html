@@ -6,349 +6,373 @@
 <title>加法 ➕ 數學樂園</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F0FFFE;
-    --primary: #4ECDC4;
-    --primary-dark: #0F766E;
-    --ink: #1A1A2E;
-    --card-radius: 24px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.10);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-  }
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: radial-gradient(circle at 10% 20%, #4ECDC433 0%, transparent 45%),
-                radial-gradient(circle at 90% 80%, #FFE66D33 0%, transparent 45%);
-    pointer-events: none; z-index: 0;
-  }
+:root {
+  --bg: #F0FFFE; --primary: #4ECDC4; --primary-dark: #0F766E;
+  --accent: #FFE66D; --orange: #FF6B35; --ink: #1A1A2E;
+  --card-radius: 24px; --shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 10% 20%, #4ECDC433 0%, transparent 45%), radial-gradient(circle at 90% 80%, #FFE66D33 0%, transparent 45%); pointer-events: none; z-index: 0; }
+header { position: relative; z-index: 10; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; }
+.back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px; padding: 8px 16px; background: white; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s; }
+.back-link:hover { transform: translateY(-2px); }
+.back-link::before { content: '←'; font-size: 18px; }
 
-  header {
-    position: relative; z-index: 10;
-    padding: 20px 32px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .back-link {
-    display: inline-flex; align-items: center; gap: 8px;
-    color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px;
-    padding: 8px 16px; background: white; border-radius: 50px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s;
-  }
-  .back-link:hover { transform: translateY(-2px); }
-  .back-link::before { content: '←'; font-size: 18px; }
+.page { display: none; position: relative; z-index: 1; flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 0 24px 60px; flex-direction: column; align-items: center; gap: 24px; }
+.page.active { display: flex; }
 
-  main {
-    position: relative; z-index: 1;
-    flex: 1; max-width: 720px; width: 100%;
-    margin: 0 auto; padding: 0 24px 60px;
-    display: flex; flex-direction: column; align-items: center; gap: 24px;
-  }
+/* 歡迎頁 */
+.welcome-cover img { width: 100%; height: 220px; object-fit: cover; display: block; }
+.welcome-cover { width: 100%; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); background: linear-gradient(135deg, #0F766E, #4ECDC4); min-height: 180px; display: flex; align-items: center; justify-content: center; }
+.welcome-cover .cover-placeholder { font-size: 80px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.welcome-title { font-size: clamp(30px,7vw,50px); font-weight: 900; background: linear-gradient(135deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
+.welcome-desc { font-size: 16px; color: #666; font-weight: 700; text-align: center; line-height: 1.6; }
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+.mode-card { background: white; border-radius: 20px; padding: 28px 20px; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s; }
+.mode-card:hover { transform: translateY(-4px); }
+.mode-card.practice { border-color: var(--primary); }
+.mode-card.challenge { border-color: var(--orange); }
+.mode-icon { font-size: 40px; margin-bottom: 10px; }
+.mode-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+.mode-desc { font-size: 13px; color: #888; font-weight: 700; line-height: 1.5; }
 
-  .info-bar {
-    width: 100%;
-    display: flex; align-items: center; justify-content: space-between;
-    background: white; border-radius: 16px;
-    padding: 14px 24px; box-shadow: var(--shadow);
-  }
-  .level-badge {
-    font-weight: 900; font-size: 15px;
-    padding: 4px 14px; border-radius: 50px;
-    background: var(--primary); color: white;
-  }
-  .streak-display { font-weight: 800; font-size: 15px; color: #888; }
-  .streak-display span { color: #FF6B35; font-size: 18px; }
+/* 設定頁 */
+.setup-card { background: white; border-radius: var(--card-radius); box-shadow: var(--shadow); padding: 36px 28px; width: 100%; }
+.setup-title { font-size: 22px; font-weight: 900; margin-bottom: 24px; text-align: center; }
+.setup-section { margin-bottom: 24px; }
+.setup-label { font-size: 13px; font-weight: 800; letter-spacing: 2px; color: #aaa; text-transform: uppercase; margin-bottom: 12px; }
+.option-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.opt-btn { font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; padding: 10px 20px; border-radius: 50px; border: 2.5px solid #e5e5e5; background: white; color: var(--ink); cursor: pointer; transition: all 0.15s; }
+.opt-btn:hover { border-color: var(--primary); background: #E0FAF8; }
+.opt-btn.selected { background: var(--primary); border-color: var(--primary); color: white; }
+.start-btn { font-family: 'Nunito', sans-serif; width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 20px; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 16px rgba(78,205,196,0.4); transition: transform 0.15s; }
+.start-btn:hover { transform: translateY(-2px); }
+.start-btn.orange { background: linear-gradient(135deg, var(--orange), #C2410C); box-shadow: 0 4px 16px rgba(255,107,53,0.4); }
 
-  .question-card {
-    width: 100%; background: white;
-    border-radius: var(--card-radius); box-shadow: var(--shadow);
-    padding: 40px 32px; text-align: center;
-  }
-  .question-label {
-    font-size: 14px; font-weight: 800; letter-spacing: 2px;
-    color: #bbb; text-transform: uppercase; margin-bottom: 24px;
-  }
+/* 遊戲頁 */
+.game-topbar { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.level-badge { font-weight: 900; font-size: 14px; padding: 5px 14px; border-radius: 50px; background: var(--primary); color: white; white-space: nowrap; }
+.level-badge.orange { background: var(--orange); }
+.streak-display { font-weight: 800; font-size: 14px; color: #888; white-space: nowrap; }
+.streak-display span { color: var(--orange); }
+.skip-btn { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: 50px; border: 2px solid #ddd; background: white; color: #aaa; cursor: pointer; transition: all 0.15s; }
+.skip-btn:hover { border-color: #EF4444; color: #EF4444; }
+.xp-bar-wrap { width: 100%; background: #e5e5e5; border-radius: 50px; height: 12px; overflow: hidden; }
+.xp-bar { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+.nav-strip { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+.nav-dot { width: 32px; height: 32px; border-radius: 8px; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; background: #e5e5e5; color: #aaa; cursor: pointer; transition: all 0.15s; border: 2px solid transparent; }
+.nav-dot.current { border-color: var(--primary-dark); background: white; color: var(--primary-dark); }
+.nav-dot.answered { background: #22C55E; color: white; }
+.nav-dot.skipped { background: #EF4444; color: white; }
+.question-card { width: 100%; background: white; border-radius: var(--card-radius); box-shadow: var(--shadow); padding: 36px 28px; text-align: center; }
+.question-label { font-size: 13px; font-weight: 800; letter-spacing: 2px; color: #bbb; text-transform: uppercase; margin-bottom: 20px; }
+.visual-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; min-height: 60px; }
+.visual-group { display: flex; flex-wrap: wrap; gap: 4px; max-width: 180px; justify-content: center; background: #F0FFFE; border-radius: 12px; padding: 8px; }
+.visual-emoji { font-size: 22px; line-height: 1; }
+.op-sym { font-size: 36px; font-weight: 900; color: var(--primary); }
+.equation { font-size: clamp(30px,7vw,50px); font-weight: 900; letter-spacing: 3px; }
+.equation .num { color: var(--primary-dark); }
+.equation .op { color: var(--primary); margin: 0 6px; }
+.equation .blank { display: inline-block; min-width: 56px; border-bottom: 4px solid var(--ink); color: transparent; }
+.options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
+.option-btn { font-family: 'Nunito', sans-serif; font-size: 26px; font-weight: 900; padding: 18px 8px; border: 3px solid #e0f7f5; border-radius: 18px; background: white; color: var(--ink); cursor: pointer; transition: transform 0.15s, background 0.15s, border-color 0.15s; box-shadow: 0 4px 0 #b2ede9; }
+.option-btn:hover:not(:disabled) { transform: translateY(-3px); background: #E0FAF8; border-color: var(--primary); }
+.option-btn.selected { background: #E0FAF8; border-color: var(--primary-dark); box-shadow: 0 4px 0 var(--primary); }
+.option-btn.correct { background: #22C55E; color: white; border-color: #16A34A; box-shadow: 0 4px 0 #15803D; animation: bounce 0.4s; }
+.option-btn.wrong-sel { background: #EF4444; color: white; border-color: #DC2626; box-shadow: 0 4px 0 #B91C1C; animation: shake 0.4s; }
+.option-btn:disabled { cursor: default; }
+.confirm-btn { font-family: 'Nunito', sans-serif; width: 100%; padding: 16px; border-radius: 16px; border: none; font-size: 18px; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; opacity: 0.35; pointer-events: none; transition: opacity 0.2s, transform 0.15s; }
+.confirm-btn.ready { opacity: 1; pointer-events: auto; }
+.confirm-btn.ready:hover { transform: translateY(-2px); }
+.prev-btn { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; padding: 8px 18px; border-radius: 50px; border: 2px solid #ddd; background: white; color: #888; cursor: pointer; transition: all 0.15s; align-self: flex-start; }
+.prev-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary-dark); }
+.prev-btn:disabled { opacity: 0.3; cursor: default; }
+.feedback { font-size: 20px; font-weight: 900; height: 32px; text-align: center; }
+.feedback.correct-msg { color: #22C55E; }
+.feedback.wrong-msg { color: #EF4444; }
 
-  /* 視覺化加法展示 */
-  .visual-row {
-    display: flex; align-items: center; justify-content: center;
-    gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
-  }
-  .visual-group {
-    display: flex; flex-wrap: wrap; gap: 4px;
-    max-width: 200px; justify-content: center;
-    background: #F0FFFE; border-radius: 12px; padding: 10px;
-  }
-  .visual-emoji { font-size: 24px; line-height: 1; }
-  .op-symbol {
-    font-size: 40px; font-weight: 900;
-    color: var(--primary);
-  }
+/* EXP + 粒子 + Toast */
+.exp-pop { position: fixed; pointer-events: none; z-index: 999; font-size: 22px; font-weight: 900; color: var(--primary-dark); animation: exp-fly 1s ease-out forwards; }
+@keyframes exp-fly { 0%{transform:translateY(0) scale(1);opacity:1} 100%{transform:translateY(-80px) scale(1.3);opacity:0} }
+.particle { position: fixed; pointer-events: none; font-size: 26px; z-index: 999; animation: particle-fly 1s ease-out forwards; }
+@keyframes particle-fly { 0%{transform:translate(0,0) scale(1);opacity:1} 100%{transform:translate(var(--dx),var(--dy)) scale(0.3);opacity:0} }
+.level-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--accent); padding: 12px 28px; border-radius: 50px; font-weight: 900; font-size: 16px; z-index: 100; animation: toast-in 0.3s ease, toast-out 0.3s ease 1.7s forwards; pointer-events: none; }
+@keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toast-out{to{opacity:0;transform:translateX(-50%) translateY(-10px)}}
 
-  /* 算式 */
-  .equation {
-    font-size: clamp(36px, 8vw, 56px);
-    font-weight: 900; letter-spacing: 4px;
-    color: var(--ink);
-  }
-  .equation .num { color: var(--primary-dark); }
-  .equation .op { color: var(--primary); margin: 0 8px; }
-  .equation .blank {
-    display: inline-block; min-width: 60px;
-    border-bottom: 4px solid var(--ink);
-    color: transparent; vertical-align: baseline;
-  }
+/* 結算頁 */
+.result-card { width: 100%; background: white; border-radius: var(--card-radius); box-shadow: var(--shadow); padding: 40px 28px; text-align: center; }
+.result-emoji { font-size: 72px; margin-bottom: 12px; animation: bounce 0.6s; }
+.result-score { font-size: clamp(48px,10vw,80px); font-weight: 900; color: var(--primary-dark); }
+.result-label { font-size: 16px; color: #aaa; font-weight: 700; margin-bottom: 8px; }
+.result-msg { font-size: 20px; font-weight: 900; color: var(--ink); margin: 12px 0 28px; }
+.wrong-list { width: 100%; text-align: left; }
+.wrong-list-title { font-size: 13px; font-weight: 800; letter-spacing: 2px; color: #aaa; text-transform: uppercase; margin-bottom: 12px; }
+.wrong-item { background: #FFF5F5; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.wi-eq { color: var(--ink); }
+.wi-your { color: #EF4444; }
+.wi-skip { color: #aaa; font-style: italic; }
+.result-actions { display: flex; gap: 12px; width: 100%; }
+.result-btn { font-family: 'Nunito', sans-serif; flex: 1; padding: 16px; border-radius: 16px; border: none; font-size: 17px; font-weight: 900; cursor: pointer; transition: transform 0.15s; }
+.result-btn:hover { transform: translateY(-2px); }
+.result-btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+.result-btn.secondary { background: white; border: 2.5px solid #ddd; color: var(--ink); }
 
-  .feedback {
-    font-size: 22px; font-weight: 900;
-    height: 36px; text-align: center; transition: opacity 0.3s;
-  }
-  .feedback.correct-msg { color: #22C55E; }
-  .feedback.wrong-msg { color: #EF4444; }
-
-  /* 選項按鈕 */
-  .options-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 14px; width: 100%;
-  }
-  .option-btn {
-    font-family: 'Nunito', sans-serif;
-    font-size: 28px; font-weight: 900;
-    padding: 20px 8px;
-    border: 3px solid #e0f7f5;
-    border-radius: 20px;
-    background: white; color: var(--ink);
-    cursor: pointer;
-    transition: transform 0.15s, background 0.15s, border-color 0.15s;
-    box-shadow: 0 4px 0 #b2ede9;
-  }
-  .option-btn:hover {
-    transform: translateY(-4px);
-    background: #E0FAF8; border-color: var(--primary);
-    box-shadow: 0 8px 0 #b2ede9;
-  }
-  .option-btn.correct {
-    background: #22C55E; color: white; border-color: #16A34A;
-    box-shadow: 0 4px 0 #15803D; animation: bounce 0.4s;
-  }
-  .option-btn.wrong {
-    background: #EF4444; color: white; border-color: #DC2626;
-    box-shadow: 0 4px 0 #B91C1C; animation: shake 0.4s;
-  }
-  @keyframes bounce { 0%,100%{transform:scale(1)}50%{transform:scale(1.12)} }
-  @keyframes shake { 0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)} }
-
-  .particle {
-    position: fixed; pointer-events: none;
-    font-size: 28px; z-index: 999;
-    animation: particle-fly 1s ease-out forwards;
-  }
-  @keyframes particle-fly {
-    0%{transform:translate(0,0) scale(1);opacity:1}
-    100%{transform:translate(var(--dx),var(--dy)) scale(0.3);opacity:0}
-  }
-  .level-toast {
-    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: var(--primary);
-    padding: 12px 28px; border-radius: 50px;
-    font-weight: 900; font-size: 16px; z-index: 100;
-    animation: toast-in 0.3s ease, toast-out 0.3s ease 1.7s forwards;
-    pointer-events: none;
-  }
-  @keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-  @keyframes toast-out{to{opacity:0;transform:translateX(-50%) translateY(-10px)}}
-
-  footer { position: relative; z-index: 1; text-align: center; padding: 20px; font-size: 13px; color: #bbb; font-weight: 700; }
-
-  @media(max-width:480px){
-    .options-grid{grid-template-columns:repeat(3,1fr);gap:10px}
-    .option-btn{font-size:22px;padding:16px 4px}
-    .equation{font-size:32px}
-  }
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+footer { position: relative; z-index: 1; text-align: center; padding: 20px; font-size: 13px; color: #bbb; font-weight: 700; }
+@media(max-width:480px){ .mode-grid{grid-template-columns:1fr} .options-grid{gap:8px} .option-btn{font-size:20px;padding:14px 4px} .equation{font-size:26px} .nav-dot{width:26px;height:26px;font-size:11px} }
 </style>
 </head>
 <body>
+<header><a href="index.html" class="back-link">數學樂園</a></header>
 
-<header>
-  <a href="index.html" class="back-link">數學樂園</a>
-</header>
-
-<main>
-  <div class="info-bar">
-    <div class="level-badge" id="levelBadge">Lv 1</div>
-    <div class="streak-display">連答 <span id="streakCount">0</span> 題 🔥</div>
+<!-- 歡迎頁 -->
+<div class="page active" id="page-welcome">
+  <div class="welcome-cover"><img src="./addition.png" alt="加法練習"></div>
+  <div class="welcome-title">加法練習</div>
+  <div class="welcome-desc">從小數字到大數字，越算越厲害！<br>選擇你的練習模式吧 🎯</div>
+  <div class="mode-grid">
+    <div class="mode-card practice" onclick="showPage('page-practice-setup')">
+      <div class="mode-icon">📖</div><div class="mode-title">練習模式</div>
+      <div class="mode-desc">無限題庫<br>累積 EXP 經驗值<br>隨時切換難度</div>
+    </div>
+    <div class="mode-card challenge" onclick="showPage('page-challenge-setup')">
+      <div class="mode-icon">🏆</div><div class="mode-title">挑戰模式</div>
+      <div class="mode-desc">固定題數作答<br>最後統一結算<br>挑戰滿分 100 分</div>
+    </div>
   </div>
+</div>
 
+<!-- 練習設定頁 -->
+<div class="page" id="page-practice-setup">
+  <div class="setup-card">
+    <div class="setup-title">📖 練習模式設定</div>
+    <div class="setup-section">
+      <div class="setup-label">難度模式</div>
+      <div class="option-row" id="p-diff-mode">
+        <button class="opt-btn selected" data-val="auto" onclick="selectOpt(this,'p-diff-mode')">🚀 自動升級</button>
+        <button class="opt-btn" data-val="fixed" onclick="selectOpt(this,'p-diff-mode')">📌 固定難度</button>
+      </div>
+    </div>
+    <div class="setup-section" id="p-fixed-lv-wrap" style="display:none">
+      <div class="setup-label">選擇難度</div>
+      <div class="option-row" id="p-fixed-lv">
+        <button class="opt-btn selected" data-val="0" onclick="selectOpt(this,'p-fixed-lv')">Lv 1</button>
+        <button class="opt-btn" data-val="1" onclick="selectOpt(this,'p-fixed-lv')">Lv 2</button>
+        <button class="opt-btn" data-val="2" onclick="selectOpt(this,'p-fixed-lv')">Lv 3</button>
+        <button class="opt-btn" data-val="3" onclick="selectOpt(this,'p-fixed-lv')">Lv 4</button>
+        <button class="opt-btn" data-val="4" onclick="selectOpt(this,'p-fixed-lv')">Lv 5</button>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startPractice()">開始練習 🚀</button>
+  </div>
+  <button class="prev-btn" onclick="showPage('page-welcome')">← 返回</button>
+</div>
+
+<!-- 挑戰設定頁 -->
+<div class="page" id="page-challenge-setup">
+  <div class="setup-card">
+    <div class="setup-title">🏆 挑戰模式設定</div>
+    <div class="setup-section">
+      <div class="setup-label">難度</div>
+      <div class="option-row" id="c-diff">
+        <button class="opt-btn selected" data-val="0" onclick="selectOpt(this,'c-diff')">Lv 1</button>
+        <button class="opt-btn" data-val="1" onclick="selectOpt(this,'c-diff')">Lv 2</button>
+        <button class="opt-btn" data-val="2" onclick="selectOpt(this,'c-diff')">Lv 3</button>
+        <button class="opt-btn" data-val="3" onclick="selectOpt(this,'c-diff')">Lv 4</button>
+        <button class="opt-btn" data-val="4" onclick="selectOpt(this,'c-diff')">Lv 5</button>
+        <button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 自動</button>
+      </div>
+    </div>
+    <div class="setup-section">
+      <div class="setup-label">題目數</div>
+      <div class="option-row" id="c-count">
+        <button class="opt-btn selected" data-val="10" onclick="selectOpt(this,'c-count')">10 題</button>
+        <button class="opt-btn" data-val="25" onclick="selectOpt(this,'c-count')">25 題</button>
+      </div>
+    </div>
+    <button class="start-btn orange" onclick="startChallenge()">開始挑戰 🏆</button>
+  </div>
+  <button class="prev-btn" onclick="showPage('page-welcome')">← 返回</button>
+</div>
+
+<!-- 練習遊戲頁 -->
+<div class="page" id="page-practice">
+  <div class="game-topbar">
+    <div class="level-badge" id="p-lv-badge">Lv 1</div>
+    <div class="streak-display">連答 <span id="p-streak">0</span> 題 🔥</div>
+    <button class="skip-btn" onclick="practiceSkip()">跳過</button>
+  </div>
+  <div class="xp-bar-wrap" id="p-xp-wrap"><div class="xp-bar" id="p-xp-bar" style="width:0%"></div></div>
   <div class="question-card">
     <div class="question-label">加在一起是幾個？</div>
-    <div class="visual-row" id="visualRow"></div>
-    <div class="equation" id="equation"></div>
+    <div class="visual-row" id="p-visual"></div>
+    <div class="equation" id="p-eq"></div>
   </div>
+  <div class="feedback" id="p-fb"></div>
+  <div class="options-grid" id="p-opts"></div>
+  <button class="confirm-btn" id="p-confirm" onclick="practiceConfirm()">確認作答</button>
+</div>
 
-  <div class="feedback" id="feedback"></div>
-  <div class="options-grid" id="optionsGrid"></div>
-</main>
+<!-- 挑戰遊戲頁 -->
+<div class="page" id="page-challenge">
+  <div class="game-topbar">
+    <div class="level-badge orange" id="c-lv-badge">Lv 1</div>
+    <div class="streak-display" id="c-progress">第 1 / 10 題</div>
+    <button class="skip-btn" onclick="challengeSkip()">跳過</button>
+  </div>
+  <div class="nav-strip" id="c-nav"></div>
+  <div class="question-card">
+    <div class="question-label">加在一起是幾個？</div>
+    <div class="visual-row" id="c-visual"></div>
+    <div class="equation" id="c-eq"></div>
+  </div>
+  <button class="prev-btn" id="c-prev" onclick="challengePrev()">← 上一題</button>
+  <div class="options-grid" id="c-opts"></div>
+  <button class="confirm-btn" id="c-confirm" onclick="challengeConfirm()">確認作答</button>
+</div>
+
+<!-- 結算頁 -->
+<div class="page" id="page-result">
+  <div class="result-card">
+    <div class="result-emoji" id="r-emoji">🏆</div>
+    <div class="result-label">最終得分</div>
+    <div class="result-score" id="r-score">100</div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="wrong-list" id="r-wrong"></div>
+  </div>
+  <div class="result-actions">
+    <button class="result-btn secondary" onclick="showPage('page-welcome')">回主頁</button>
+    <button class="result-btn primary" onclick="showPage('page-challenge-setup')">再挑戰一次</button>
+  </div>
+</div>
 
 <footer>➕ 加法關卡</footer>
 
 <script>
-// Lv設定：[加數最大值, 結果最大值]
-const LEVELS = [
-  { aMax:4, sumMax:5  },
-  { aMax:9, sumMax:10 },
-  { aMax:10,sumMax:20 },
-  { aMax:25,sumMax:50 },
-  { aMax:50,sumMax:100},
-];
-const EMOJIS = ['🍎','🍊','🍋','🐶','⭐','🌸','🎈','🦋','🍓','🐸'];
+const LEVELS=[{aMax:4,sumMax:5},{aMax:9,sumMax:10},{aMax:10,sumMax:20},{aMax:25,sumMax:50},{aMax:50,sumMax:100}];
+const XP_NEEDED=[5,10,20,30];
+const EMOJIS=['🍎','🍊','🍋','🐶','⭐','🌸','🎈','🦋','🍓','🐸'];
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+let PS={},CS={};
 
-let level=0, streak=0, correctStreak=0, wrongStreak=0, locked=false;
-let lastQ='';
-const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-function playTone(f,d,t='sine',g=0.3){
-  const o=audioCtx.createOscillator(),gn=audioCtx.createGain();
-  o.connect(gn);gn.connect(audioCtx.destination);
-  o.type=t;o.frequency.value=f;
-  gn.gain.setValueAtTime(g,audioCtx.currentTime);
-  gn.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);
-  o.start();o.stop(audioCtx.currentTime+d);
+function selectOpt(btn,gid){
+  document.querySelectorAll('#'+gid+' .opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  if(gid==='p-diff-mode') document.getElementById('p-fixed-lv-wrap').style.display=btn.dataset.val==='fixed'?'':'none';
 }
-function playCorrect(){playTone(523,0.15);setTimeout(()=>playTone(659,0.15),120);setTimeout(()=>playTone(784,0.25),240);}
-function playWrong(){playTone(250,0.4,'sawtooth',0.2);}
+function getSelected(gid){ const b=document.querySelector('#'+gid+' .opt-btn.selected'); return b?b.dataset.val:null; }
 
-function spawnParticles(){
-  ['⭐','🎉','✨','🌟','🎊'].forEach((_,i)=>{
-    const el=document.createElement('div');
-    el.className='particle';
-    el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)];
-    el.style.left=(20+Math.random()*60)+'vw';
-    el.style.top=(30+Math.random()*40)+'vh';
-    el.style.setProperty('--dx',(Math.random()*200-100)+'px');
-    el.style.setProperty('--dy',(-80-Math.random()*120)+'px');
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(),1000);
-  });
+function playTone(f,d,t='sine',g=0.28){ const o=audioCtx.createOscillator(),gn=audioCtx.createGain(); o.connect(gn);gn.connect(audioCtx.destination); o.type=t;o.frequency.value=f; gn.gain.setValueAtTime(g,audioCtx.currentTime); gn.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d); o.start();o.stop(audioCtx.currentTime+d); }
+function playOK(){ playTone(523,0.12);setTimeout(()=>playTone(659,0.12),100);setTimeout(()=>playTone(784,0.2),200); }
+function playNG(){ playTone(250,0.35,'sawtooth',0.18); }
+
+function spawnParticles(){ for(let i=0;i<7;i++){ const el=document.createElement('div');el.className='particle'; el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)]; el.style.left=(20+Math.random()*60)+'vw';el.style.top=(30+Math.random()*40)+'vh'; el.style.setProperty('--dx',(Math.random()*180-90)+'px');el.style.setProperty('--dy',(-70-Math.random()*100)+'px'); document.body.appendChild(el);setTimeout(()=>el.remove(),1000); } }
+function spawnExp(){ const el=document.createElement('div');el.className='exp-pop';el.textContent='+EXP'; el.style.cssText='left:50%;top:50%;transform:translateX(-50%)'; document.body.appendChild(el);setTimeout(()=>el.remove(),1000); }
+function showToast(msg){ const t=document.createElement('div');t.className='level-toast';t.textContent=msg; document.body.appendChild(t);setTimeout(()=>t.remove(),2000); }
+
+function genQ(lv){ const cfg=LEVELS[lv]; let a,b,tries=0; do{ a=Math.floor(Math.random()*cfg.aMax)+1; const bMax=Math.min(cfg.aMax,cfg.sumMax-a); if(bMax<1){tries++;continue;} b=Math.floor(Math.random()*bMax)+1; tries++; }while(tries<60); return {a,b,answer:a+b,lv}; }
+
+function genOpts(correct,lv){ const max=LEVELS[lv].sumMax; const s=new Set([correct]); let att=0; while(s.size<3&&att<100){ const d=Math.floor(Math.random()*5)+1,sg=Math.random()<0.5?1:-1,c=correct+sg*d; if(c>=1&&c<=max+5&&c!==correct)s.add(c); att++; } let f=1;while(s.size<3){if(!s.has(f))s.add(f);f++;} return [...s].sort(()=>Math.random()-0.5); }
+
+function renderVisual(a,b,vid){ const el=document.getElementById(vid); el.innerHTML=''; if(a>12||b>12){el.style.display='none';return;} el.style.display='flex'; const e1=EMOJIS[Math.floor(Math.random()*EMOJIS.length)]; let e2;do{e2=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];}while(e2===e1); const g1=document.createElement('div');g1.className='visual-group'; for(let i=0;i<a;i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=e1;g1.appendChild(s);} const op=document.createElement('div');op.className='op-sym';op.textContent='+'; const g2=document.createElement('div');g2.className='visual-group'; for(let i=0;i<b;i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=e2;g2.appendChild(s);} el.append(g1,op,g2); }
+
+function renderEq(a,b,eid){ document.getElementById(eid).innerHTML=`<span class="num">${a}</span><span class="op">+</span><span class="num">${b}</span><span class="op">=</span><span class="blank">?</span>`; }
+
+function renderOpts(opts,correct,gid,onSel){ const g=document.getElementById(gid);g.innerHTML=''; opts.forEach(v=>{ const btn=document.createElement('button');btn.className='option-btn';btn.textContent=v;btn.dataset.val=v; btn.onclick=()=>onSel(btn,v); g.appendChild(btn); }); }
+
+/* ── 練習模式 ── */
+function startPractice(){
+  const isAuto=getSelected('p-diff-mode')==='auto';
+  const lv=isAuto?0:parseInt(getSelected('p-fixed-lv')||'0');
+  PS={isAuto,lv,streak:0,xp:0,sel:null,selBtn:null,locked:false};
+  document.getElementById('p-xp-wrap').style.display=isAuto?'':'none';
+  pNext(); showPage('page-practice');
 }
-
-function showLevelToast(msg){
-  const t=document.createElement('div');t.className='level-toast';t.textContent=msg;
-  document.body.appendChild(t);setTimeout(()=>t.remove(),2000);
+function pNext(){
+  PS.sel=null;PS.selBtn=null;PS.locked=false;
+  document.getElementById('p-confirm').classList.remove('ready');
+  document.getElementById('p-fb').textContent='';document.getElementById('p-fb').className='feedback';
+  const q=genQ(PS.lv); PS.q=q;
+  document.getElementById('p-lv-badge').textContent='Lv '+(PS.lv+1);
+  renderVisual(q.a,q.b,'p-visual'); renderEq(q.a,q.b,'p-eq');
+  renderOpts(genOpts(q.answer,PS.lv),q.answer,'p-opts',(btn,val)=>{ if(PS.locked)return; document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');PS.sel=val;PS.selBtn=btn; document.getElementById('p-confirm').classList.add('ready'); });
+  if(PS.isAuto){ const need=XP_NEEDED[PS.lv]??1; document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%'; }
 }
+function practiceConfirm(){
+  if(!PS.sel||PS.locked)return; PS.locked=true;
+  const ok=parseInt(PS.sel)===PS.q.answer; const fb=document.getElementById('p-fb');
+  document.querySelectorAll('#p-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===PS.q.answer)b.classList.add('correct'); else if(b===PS.selBtn&&!ok)b.classList.add('wrong-sel'); b.disabled=true; });
+  if(ok){ fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)]; fb.className='feedback correct-msg'; playOK();spawnParticles();spawnExp(); PS.streak++;document.getElementById('p-streak').textContent=PS.streak; if(PS.isAuto){PS.xp++;const need=XP_NEEDED[PS.lv];if(need&&PS.xp>=need&&PS.lv<4){PS.lv++;PS.xp=0;showToast('🎯 升級！Lv '+(PS.lv+1));}} }
+  else{ fb.textContent=['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)]; fb.className='feedback wrong-msg'; playNG();PS.streak=0;document.getElementById('p-streak').textContent=0; }
+  setTimeout(pNext,1300);
+}
+function practiceSkip(){ if(PS.locked)return;PS.streak=0;document.getElementById('p-streak').textContent=0; const fb=document.getElementById('p-fb');fb.textContent='跳過囉～下一題！';fb.className='feedback wrong-msg'; PS.locked=true;setTimeout(pNext,800); }
 
-function updateLevel(d){
-  const prev=level;
-  level=Math.max(0,Math.min(LEVELS.length-1,level+d));
-  if(level!==prev){
-    showLevelToast(level>prev?`🎯 升級！Lv ${level+1}`:`⬇️ 降回 Lv ${level+1}`);
-    document.getElementById('levelBadge').textContent=`Lv ${level+1}`;
+/* ── 挑戰模式 ── */
+function startChallenge(){
+  const diffVal=getSelected('c-diff'); const count=parseInt(getSelected('c-count')||'10');
+  const isAuto=diffVal==='auto'; let lv=isAuto?0:parseInt(diffVal);
+  const qs=[];
+  for(let i=0;i<count;i++){ qs.push({...genQ(lv),userAns:null,skipped:false}); if(isAuto&&(i+1)%5===0&&lv<4)lv++; }
+  CS={qs,count,cur:0,sel:null,selBtn:null};
+  renderNav();cLoad(0);showPage('page-challenge');
+}
+function renderNav(){ const nav=document.getElementById('c-nav');nav.innerHTML=''; CS.qs.forEach((q,i)=>{ const d=document.createElement('div');d.className='nav-dot'+(i===CS.cur?' current':''); d.textContent=i+1; if(q.skipped)d.classList.add('skipped'); else if(q.userAns!==null)d.classList.add('answered'); d.onclick=()=>cGo(i);nav.appendChild(d); }); }
+function cGo(i){CS.cur=i;cLoad(i);renderNav();}
+function cLoad(i){
+  const q=CS.qs[i]; CS.sel=null;CS.selBtn=null;
+  document.getElementById('c-confirm').classList.remove('ready');
+  document.getElementById('c-lv-badge').textContent='Lv '+(q.lv+1);
+  document.getElementById('c-progress').textContent='第 '+(i+1)+' / '+CS.count+' 題';
+  document.getElementById('c-prev').disabled=i===0;
+  renderVisual(q.a,q.b,'c-visual');renderEq(q.a,q.b,'c-eq');
+  renderOpts(genOpts(q.answer,q.lv),q.answer,'c-opts',(btn,val)=>{ document.querySelectorAll('#c-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');CS.sel=val;CS.selBtn=btn; document.getElementById('c-confirm').classList.add('ready'); });
+  if(q.userAns!==null&&!q.skipped){ document.querySelectorAll('#c-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===q.userAns)b.classList.add('selected'); }); }
+}
+function challengeConfirm(){ if(!CS.sel)return; CS.qs[CS.cur].userAns=parseInt(CS.sel);CS.qs[CS.cur].skipped=false; renderNav();cAdvance(); }
+function challengeSkip(){ CS.qs[CS.cur].userAns=null;CS.qs[CS.cur].skipped=true; renderNav();cAdvance(); }
+function challengePrev(){ if(CS.cur>0)cGo(CS.cur-1); }
+function cAdvance(){
+  let next=-1;
+  for(let i=CS.cur+1;i<CS.count;i++){if(CS.qs[i].userAns===null&&!CS.qs[i].skipped){next=i;break;}}
+  if(next===-1){
+    const allDone=CS.qs.every(q=>q.userAns!==null||q.skipped);
+    if(allDone){setTimeout(showResult,300);return;}
+    for(let i=0;i<CS.count;i++){if(CS.qs[i].userAns===null&&!CS.qs[i].skipped){next=i;break;}}
   }
+  if(next!==-1)cGo(next);
 }
-
-function generateQuestion(){
-  locked=false;
-  const cfg=LEVELS[level];
-  let a,b,key;
-  let tries=0;
-  do {
-    a=Math.floor(Math.random()*cfg.aMax)+1;
-    const bMax=Math.min(cfg.aMax, cfg.sumMax-a);
-    if(bMax<1){tries++;continue;}
-    b=Math.floor(Math.random()*bMax)+1;
-    key=`${a}+${b}`;
-    tries++;
-  } while(key===lastQ && tries<50);
-  lastQ=key;
-  const answer=a+b;
-
-  // 視覺化
-  const emoji1=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-  let emoji2;
-  do{emoji2=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];}while(emoji2===emoji1);
-
-  const vr=document.getElementById('visualRow');
-  vr.innerHTML='';
-  const g1=document.createElement('div');g1.className='visual-group';
-  for(let i=0;i<Math.min(a,10);i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=emoji1;g1.appendChild(s);}
-  const op=document.createElement('div');op.className='op-symbol';op.textContent='+';
-  const g2=document.createElement('div');g2.className='visual-group';
-  for(let i=0;i<Math.min(b,10);i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=emoji2;g2.appendChild(s);}
-  vr.append(g1,op,g2);
-
-  // 算式（高 Lv 縮小視覺圖）
-  if(a>10||b>10) vr.style.display='none'; else vr.style.display='flex';
-  document.getElementById('equation').innerHTML=
-    `<span class="num">${a}</span><span class="op">+</span><span class="num">${b}</span><span class="op">=</span><span class="blank">?</span>`;
-
-  document.getElementById('feedback').textContent='';
-  document.getElementById('feedback').className='feedback';
-
-  generateOptions(answer, cfg.sumMax);
-}
-
-function generateOptions(correct, maxVal){
-  const opts=new Set([correct]);
-  let att=0;
-  while(opts.size<3&&att<100){
-    const d=Math.floor(Math.random()*5)+1;
-    const s=Math.random()<0.5?1:-1;
-    const c=correct+s*d;
-    if(c>=1&&c<=maxVal+5&&c!==correct)opts.add(c);
-    att++;
+function showResult(){
+  const perQ=CS.count===10?10:4; let correct=0; const wrong=[];
+  CS.qs.forEach((q,i)=>{ if(!q.skipped&&q.userAns===q.answer)correct++; else wrong.push({i,q}); });
+  const score=correct*perQ;
+  document.getElementById('r-score').textContent=score;
+  let emoji,msg;
+  if(score===100){emoji='🏆';msg='太完美了！你是數學天才！';}
+  else if(score>=80){emoji='⭐';msg='好厲害！再加把勁就滿分了！';}
+  else if(score>=60){emoji='💪';msg='做得好！繼續練習會更棒！';}
+  else{emoji='😊';msg='沒關係，多練習就會進步！';}
+  document.getElementById('r-emoji').textContent=emoji;
+  document.getElementById('r-msg').textContent=msg;
+  if(score===100)spawnParticles(); playOK();
+  const wl=document.getElementById('r-wrong');wl.innerHTML='';
+  if(wrong.length>0){
+    const t=document.createElement('div');t.className='wrong-list-title';t.textContent='需要加強的題目';wl.appendChild(t);
+    wrong.forEach(({i,q})=>{ const d=document.createElement('div');d.className='wrong-item'; const eq=`第${i+1}題：${q.a} + ${q.b} = ${q.answer}`; d.innerHTML=q.skipped?`<span class="wi-eq">${eq}</span><span class="wi-skip">（跳過）</span>`:`<span class="wi-eq">${eq}</span><span class="wi-your">你答：${q.userAns}</span>`; wl.appendChild(d); });
   }
-  let f=1;while(opts.size<3){if(!opts.has(f)&&f>=1)opts.add(f);f++;}
-  const arr=[...opts].sort(()=>Math.random()-0.5);
-  const grid=document.getElementById('optionsGrid');
-  grid.innerHTML='';
-  arr.forEach(v=>{
-    const btn=document.createElement('button');
-    btn.className='option-btn';btn.textContent=v;
-    btn.onclick=()=>handleAnswer(btn,v,correct);
-    grid.appendChild(btn);
-  });
+  showPage('page-result');
 }
-
-function handleAnswer(btn,val,correct){
-  if(locked)return;locked=true;
-  const fb=document.getElementById('feedback');
-  if(val===correct){
-    btn.classList.add('correct');
-    fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];
-    fb.className='feedback correct-msg';
-    playCorrect();spawnParticles();
-    streak++;correctStreak++;wrongStreak=0;
-    document.getElementById('streakCount').textContent=streak;
-    if(correctStreak>=3){correctStreak=0;updateLevel(1);}
-    setTimeout(generateQuestion,1200);
-  } else {
-    btn.classList.add('wrong');
-    fb.textContent=['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)];
-    fb.className='feedback wrong-msg';
-    playWrong();
-    streak=0;correctStreak=0;wrongStreak++;
-    document.getElementById('streakCount').textContent=streak;
-    if(wrongStreak>=2){wrongStreak=0;updateLevel(-1);}
-    setTimeout(()=>{btn.classList.remove('wrong');locked=false;},800);
-  }
-}
-
-generateQuestion();
 </script>
-
 <!--
 === 產圖移交摘要 ===
-本次頁面圖片需求如下，供 ChatGPT 掃描使用：
-
-[COVER] 1200x630 加法遊戲封面，可愛卡通風格，兩堆水果圖示中間有大大的加號，星星吉祥物開心舉手，背景淺青綠（#F0FFFE），主色青綠（#4ECDC4）、深青（#0F766E），活潑童趣風格
-
+[COVER] 1200x630 加法遊戲封面，兩堆水果圖示中間有大大的加號，星星吉祥物開心舉手，背景淺青綠（#F0FFFE），主色青綠（#4ECDC4）、深青（#0F766E），活潑童趣風格
 ==================
 -->
-
 </body>
 </html>
