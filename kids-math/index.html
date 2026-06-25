@@ -28,10 +28,10 @@
   .back-link::before { content: '←'; font-size: 18px; }
 
   /* Hero */
-  .hero { position: relative; z-index: 1; text-align: center; padding: 40px 24px 24px; }
-  .mascot-wrap { display: inline-block; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-  .mascot svg { width: 120px; height: 120px; }
+  .hero { position: relative; z-index: 1; text-align: center; padding: 24px 24px 24px; }
+  .hero-cover { width: 100%; max-width: 760px; margin: 0 auto 28px; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); height: 280px; }
+  .hero-cover img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  .mascot-wrap { display: none; }
   .hero h1 { font-size: clamp(36px,8vw,64px); font-weight: 900; line-height: 1.1; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
   .hero p { font-size: clamp(16px,3vw,20px); color: #555; font-weight: 700; }
 
@@ -107,8 +107,8 @@
 
   footer { position: relative; z-index: 1; text-align: center; padding: 24px; font-size: 13px; color: #bbb; font-weight: 700; }
 
-  @media (max-width: 760px) { .games-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
-  @media (max-width: 420px) { .games-grid { grid-template-columns: 1fr; } .card-body { padding: 14px 16px 16px; } }
+  @media (max-width: 760px) { .games-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } .hero-cover { height: 200px; } }
+  @media (max-width: 420px) { .games-grid { grid-template-columns: 1fr; } .card-body { padding: 14px 16px 16px; } .hero-cover { height: 160px; } }
 </style>
 </head>
 <body>
@@ -118,18 +118,8 @@
 </header>
 
 <section class="hero">
-  <div class="mascot-wrap">
-    <div class="mascot">
-      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
-        <circle cx="48" cy="50" r="7" fill="white"/><circle cx="72" cy="50" r="7" fill="white"/>
-        <circle cx="50" cy="51" r="4" fill="#1A1A2E"/><circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
-        <circle cx="52" cy="49" r="1.5" fill="white"/><circle cx="76" cy="49" r="1.5" fill="white"/>
-        <path d="M 48 63 Q 60 74 72 63" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="42" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
-        <ellipse cx="78" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
-      </svg>
-    </div>
+  <div class="hero-cover">
+    <img src="./image/cover.png" alt="數學樂園">
   </div>
   <h1>數學樂園 🎮</h1>
   <p>選一個主題，開始挑戰吧！</p>
