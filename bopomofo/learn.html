@@ -606,13 +606,31 @@ function renderLearn() {
 }
 
 // ===== Web Speech API =====
+let voices = [];
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+}
+
+if (window.speechSynthesis) {
+  loadVoices();
+  speechSynthesis.addEventListener('voiceschanged', loadVoices);
+}
+
 function speak(text) {
   if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-TW';
   u.rate = 0.75;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
+
+  const preferred = voices.find(v => v.lang === 'zh-TW')
+    || voices.find(v => v.lang.startsWith('zh'))
+    || null;
+  if (preferred) u.voice = preferred;
+
+  setTimeout(() => speechSynthesis.speak(u), 50);
 }
 
 // ===== 模式切換 =====
