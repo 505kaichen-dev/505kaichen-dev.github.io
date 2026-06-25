@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hanzi Writer 注音測試</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: #FFF9F0;
+      display: flex; flex-direction: column;
+      align-items: center; padding: 32px 16px; gap: 24px;
+    }
+    h2 { font-size: 1.4rem; color: #2C2C2C; }
+
+    .panels { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+
+    .panel {
+      background: #fff; border-radius: 16px;
+      padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      min-width: 260px;
+    }
+    .panel-label { font-size: 0.85rem; font-weight: 700; color: #888; }
+
+    .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 500px; }
+    button {
+      padding: 8px 16px; border-radius: 50px;
+      border: 2px solid #FF6B35;
+      background: #fff; color: #FF6B35;
+      font-size: 1.1rem; font-weight: 700; cursor: pointer;
+      transition: all .15s;
+    }
+    button:hover { background: #FF6B35; color: #fff; }
+    button.active { background: #FF6B35; color: #fff; }
+
+    .result {
+      font-size: 0.9rem; font-weight: 700;
+      padding: 6px 16px; border-radius: 50px;
+      min-height: 32px; text-align: center;
+    }
+    .result.ok { background: #E8FAF9; color: #0f6e56; }
+    .result.no { background: #FFF5E0; color: #b45309; }
+
+    .controls { display: flex; gap: 8px; }
+    .ctrl-btn {
+      padding: 7px 18px; border-radius: 50px;
+      border: 2px solid #d0d4e8;
+      background: #fff; color: #2C2C2C;
+      font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    }
+    .ctrl-btn.primary { background: #4ECDC4; color: #fff; border-color: #4ECDC4; }
+  </style>
+</head>
+<body>
+  <h2>Hanzi Writer 注音測試</h2>
+
+  <div class="panels">
+    <!-- 動畫示範 -->
+    <div class="panel">
+      <div class="panel-label">✍️ 筆順動畫</div>
+      <div id="anim-target"></div>
+      <div class="controls">
+        <button class="ctrl-btn primary" onclick="animWriter.animateCharacter()">▶ 播放</button>
+        <button class="ctrl-btn" onclick="animWriter.cancelAnimation()">■ 停止</button>
+      </div>
+    </div>
+
+    <!-- 描字練習 -->
+    <div class="panel">
+      <div class="panel-label">🖌️ 描字練習</div>
+      <div id="quiz-target"></div>
+      <div class="result" id="quiz-result"></div>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="resetQuiz()">↺ 重試</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 符號切換 -->
+  <div class="btns" id="btn-row"></div>
+  <div style="font-size:0.8rem;color:#aaa;">點符號切換，左邊看動畫，右邊練習描字</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+  <script>
+    const SYMBOLS = ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ','ㄍ','ㄎ','ㄏ','ㄐ','ㄑ','ㄒ'];
+    const DATA_BASE = 'https://raw.githubusercontent.com/MadLadSquad/hanzi-writer-data-youyin/master/data/';
+
+    // 自訂 data loader
+    function charDataLoader(char, onLoad, onError) {
+      const url = DATA_BASE + encodeURIComponent(char) + '.json';
+      fetch(url)
+        .then(r => r.json())
+        .then(data => onLoad(data))
+        .catch(err => onError(err));
+    }
+
+    let animWriter = null;
+    let quizWriter = null;
+    let currentChar = 'ㄅ';
+    let currentBtn = null;
+
+    const COMMON_OPTIONS = {
+      width: 300, height: 300,
+      padding: 8,
+      showOutline: true,
+      strokeColor: '#FF6B35',
+      outlineColor: '#d0cbc4',
+      strokeWidth: 32,        // 動畫筆畫粗細
+      charDataLoader,
+    };
+
+    function initWriters(char) {
+      currentChar = char;
+
+      // 動畫 writer
+      document.getElementById('anim-target').innerHTML = '';
+      animWriter = HanziWriter.create('anim-target', char, {
+        ...COMMON_OPTIONS,
+        strokeAnimationSpeed: 0.48,
+        delayBetweenStrokes: 800,
+      });
+
+      // 描字 writer
+      document.getElementById('quiz-target').innerHTML = '';
+      document.getElementById('quiz-result').textContent = '';
+      document.getElementById('quiz-result').className = 'result';
+
+      quizWriter = HanziWriter.create('quiz-target', char, {
+        ...COMMON_OPTIONS,
+        showCharacter: false,
+        showOutline: true,
+        strokeColor: '#4ECDC4',
+        drawingColor: '#4ECDC4',
+        drawingWidth: 72,       // 使用者筆觸粗細（彩色筆感）
+        strokeWidth: 32,
+      });
+
+      startQuiz();
+
+      // 自動播放動畫
+      setTimeout(() => animWriter.animateCharacter(), 300);
+    }
+
+    function startQuiz() {
+      quizWriter.quiz({
+        onMistake: (strokeData) => {
+          const res = document.getElementById('quiz-result');
+          res.className = 'result no';
+          res.textContent = `第 ${strokeData.strokeNum + 1} 畫再試試 ✏️`;
+        },
+        onCorrectStroke: (strokeData) => {
+          const res = document.getElementById('quiz-result');
+          res.className = 'result ok';
+          res.textContent = `第 ${strokeData.strokeNum + 1} 畫正確！`;
+        },
+        onComplete: (summary) => {
+          const res = document.getElementById('quiz-result');
+          res.className = 'result ok';
+          res.textContent = `✓ 完成！共 ${summary.strokeCount} 畫，錯誤 ${summary.mistakesOnStroke?.reduce((a,b)=>a+b,0) ?? 0} 次`;
+        },
+      });
+    }
+
+    function resetQuiz() {
+      document.getElementById('quiz-result').textContent = '';
+      document.getElementById('quiz-result').className = 'result';
+      quizWriter.cancelQuiz();
+      startQuiz();
+
+      // 自動播放動畫
+      setTimeout(() => animWriter.animateCharacter(), 300);
+    }
+
+    // 建立按鈕
+    const row = document.getElementById('btn-row');
+    SYMBOLS.forEach(char => {
+      const btn = document.createElement('button');
+      btn.textContent = char;
+      btn.onclick = () => {
+        if (currentBtn) currentBtn.classList.remove('active');
+        currentBtn = btn;
+        btn.classList.add('active');
+        initWriters(char);
+      };
+      row.appendChild(btn);
+    });
+
+    // 預設載入 ㄅ
+    const firstBtn = row.querySelector('button');
+    firstBtn.classList.add('active');
+    currentBtn = firstBtn;
+    initWriters('ㄅ');
+  </script>
+</body>
+</html>

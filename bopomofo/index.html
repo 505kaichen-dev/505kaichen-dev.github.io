@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ㄅㄆㄇ 注音學習小站</title>
+  <title>注音樂園</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,6 +13,32 @@
       --radius: 24px; --radius-sm: 14px;
     }
     body { font-family: 'Nunito','Noto Sans TC',sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+    .hero-cover {
+      position: relative;
+      width: 100%;
+      max-height: 360px;
+      overflow: hidden;
+    }
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 16px 24px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.35));
+      text-align: center;
+    }
+    .hero-tagline {
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
 
     header {
       display: flex; align-items: center; justify-content: space-between;
@@ -30,7 +56,7 @@
     .hero-title { font-size:2.2rem; font-weight:900; margin-bottom:10px; }
     .hero-sub { font-size:1rem; color:#888; }
 
-    .cards-wrap { max-width:860px; margin:0 auto; padding:0 20px 60px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .cards-wrap { max-width:860px; margin:0 auto; padding:24px 20px 60px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
 
     .main-card {
       background: var(--card);
@@ -73,14 +99,16 @@
 
 <header>
   <a href="../" class="header-back">← 回首頁</a>
-  <span class="header-title">ㄅ ㄆ ㄇ</span>
+  <span class="header-title">注音樂園 🎠</span>
   <div class="header-placeholder"></div>
 </header>
 
-<div class="hero">
-  <span class="hero-emoji">🐻</span>
-  <div class="hero-title">注音學習小站</div>
-  <div class="hero-sub">選一個你想做的事，開始學習！</div>
+<!-- Hero 封面圖 -->
+<div class="hero-cover">
+  <img src="image/cover.png" alt="注音樂園" class="hero-img"/>
+  <div class="hero-overlay">
+    <div class="hero-tagline">選一個你想做的事，開始學習！</div>
+  </div>
 </div>
 
 <div class="cards-wrap">
@@ -108,7 +136,7 @@
 
 </div>
 
-<footer>© 2025 505kaichen-dev · 注音學習小站</footer>
+<footer>© 2025 505kaichen-dev · 注音樂園</footer>
 
 </body>
 </html>

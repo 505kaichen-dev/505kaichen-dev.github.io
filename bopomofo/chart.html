@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ㄅㄆㄇ 注音總表</title>
+  <title>注音符號大全表</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
@@ -138,10 +138,24 @@
       gap: 4px;
     }
 
+    .symbol-cell {
+      cursor: pointer;
+    }
     .symbol-cell:hover {
       border-color: var(--primary);
       transform: translateY(-4px) scale(1.06);
       box-shadow: 0 8px 24px rgba(255,107,53,0.2);
+    }
+    .symbol-cell.active {
+      border-color: var(--primary);
+      background: #FFF0EB;
+      transform: translateY(-4px) scale(1.06);
+      box-shadow: 0 8px 24px rgba(255,107,53,0.3);
+    }
+    .symbol-cell.vowel.active {
+      border-color: var(--secondary);
+      background: #E8FAF9;
+      box-shadow: 0 8px 24px rgba(78,205,196,0.3);
     }
 
     .symbol-cell.vowel:hover {
@@ -190,7 +204,7 @@
 
 <header>
   <a href="index.html" class="header-back">← 回首頁</a>
-  <span class="header-title">ㄅ ㄆ ㄇ</span>
+  <span class="header-title">注音符號大全表</span>
   <a href="teacher.html" class="header-teacher">老師設定</a>
 </header>
 
@@ -233,6 +247,13 @@
 
 </div>
 
+<div id="action-bar" style="
+      display:none; position:fixed; bottom:0; left:0; right:0;
+      background:#fff; padding:14px 24px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      z-index:200; align-items:center; justify-content:center; gap:16px;
+      border-top: 2px solid #f0f0f0;
+    "></div>
 <footer>© 2025 505kaichen-dev · 注音學習小站</footer>
 
 <script>
@@ -279,19 +300,64 @@
     { char:'ㄩ', emoji:'🐠', example:'魚' },
   ];
 
+  // 音效
+  const audioCache = {};
+  let voices = [];
+  function loadVoices(){ voices = speechSynthesis.getVoices(); }
+  if(window.speechSynthesis){ loadVoices(); speechSynthesis.addEventListener('voiceschanged', loadVoices); }
+
+  function playSymbol(char) {
+    const path = `audio/${char}.mp3`;
+    if (!audioCache[char]) audioCache[char] = new Audio(path);
+    const a = audioCache[char];
+    a.currentTime = 0;
+    a.play().catch(() => {
+      if(!window.speechSynthesis) return;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(char);
+      u.lang='zh-TW'; u.rate=0.75;
+      const v = voices.find(v=>v.lang==='zh-TW')||voices.find(v=>v.lang.startsWith('zh'));
+      if(v) u.voice=v;
+      setTimeout(()=>speechSynthesis.speak(u),50);
+    });
+  }
+
+  let activeCell = null;
+
   function renderGrid(data, containerId, type) {
     const grid = document.getElementById(containerId);
     data.forEach(item => {
-      const a = document.createElement('a');
-      a.href = `learn.html?s=${encodeURIComponent(item.char)}`;
-      a.className = `symbol-cell${type === 'vowel' ? ' vowel' : ''}`;
-      a.innerHTML = `
+      const cell = document.createElement('div');
+      cell.className = `symbol-cell${type === 'vowel' ? ' vowel' : ''}`;
+      cell.dataset.char = item.char;
+      cell.innerHTML = `
         <span class="cell-char">${item.char}</span>
         <span class="cell-emoji">${item.emoji}</span>
         <span class="cell-example">${item.example}</span>
       `;
-      grid.appendChild(a);
+      cell.addEventListener('click', () => {
+        // 取消上一個高亮
+        if (activeCell) activeCell.classList.remove('active');
+        activeCell = cell;
+        cell.classList.add('active');
+        // 播音
+        playSymbol(item.char);
+        // 顯示底部動作列
+        showAction(item.char);
+      });
+      grid.appendChild(cell);
     });
+  }
+
+  // 底部動作列
+  function showAction(char) {
+    let bar = document.getElementById('action-bar');
+    bar.innerHTML = `
+      <span style="font-size:1.6rem;font-weight:900;">${char}</span>
+      <button onclick="playSymbol('${char}')" style="padding:8px 18px;border-radius:50px;border:none;background:#4ECDC4;color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;">🔊 再聽一次</button>
+      <a href="learn.html?s=${encodeURIComponent(char)}" style="padding:8px 18px;border-radius:50px;border:none;background:#FF6B35;color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;text-decoration:none;">✍️ 進入教學</a>
+    `;
+    bar.style.display = 'flex';
   }
 
   renderGrid(CONSONANTS, 'consonant-grid', 'consonant');
