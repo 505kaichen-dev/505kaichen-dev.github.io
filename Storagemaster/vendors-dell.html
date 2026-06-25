@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dell Storage 產品線全覽 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-new td { background: rgba(63,185,80,.06); }
+    .highlight-amber td { background: rgba(210,153,34,.06); }
+    .highlight-red td { background: rgba(248,81,73,.06); }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link active" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link nav-sub" href="#powerstore">PowerStore</a>
+      <a class="nav-link nav-sub" href="#powermax">PowerMax</a>
+      <a class="nav-link nav-sub" href="#powerscale">PowerScale</a>
+      <a class="nav-link nav-sub" href="#vplex">VPLEX</a>
+      <a class="nav-link nav-sub" href="#ppdd">PowerProtect DD</a>
+      <a class="nav-link nav-sub" href="#powerflex">PowerFlex</a>
+      <a class="nav-link nav-sub" href="#legacy">退場產品</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">VENDOR REFERENCE / DELL</div>
+      <h1>Dell Storage 產品線全覽</h1>
+      <p class="page-desc">Dell Technologies 完整儲存產品線快速參考。涵蓋 PowerStore（含 2026 新品 Elite）、PowerMax、PowerScale、VPLEX、PowerProtect DD，以及 PowerFlex 軟體定義儲存。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-red">Dell</span>
+        <span class="badge badge-blue">2026 更新</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#powerstore">PowerStore（含 2026 Elite 新品）</a></li>
+        <li><a href="#powermax">PowerMax — 高端使命關鍵</a></li>
+        <li><a href="#powerscale">PowerScale（前 Isilon）— 橫向擴展 NAS</a></li>
+        <li><a href="#vplex">VPLEX — 儲存虛擬化與雙活</a></li>
+        <li><a href="#ppdd">PowerProtect DD（前 Data Domain）</a></li>
+        <li><a href="#powerflex">PowerFlex — 軟體定義 Block 儲存</a></li>
+        <li><a href="#legacy">退場產品（Unity XT）</a></li>
+      </ol>
+    </div>
+
+    <!-- 產品線定位圖 -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 660 190" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+        <text x="330" y="18" text-anchor="middle" fill="#8B949E" font-size="11" font-family="JetBrains Mono,monospace" font-weight="600">DELL STORAGE 產品線定位圖</text>
+
+        <!-- Block 中階 -->
+        <rect x="20" y="28" width="200" height="60" rx="6" fill="#0D1117" stroke="#993C1D" stroke-width="1.5"/>
+        <text x="30" y="46" fill="#993C1D" font-size="9" font-family="JetBrains Mono,monospace">BLOCK + FILE（中階）</text>
+        <text x="30" y="62" fill="#E6EDF3" font-size="11" font-weight="500">PowerStore</text>
+        <text x="30" y="76" fill="#8B949E" font-size="10">500T ～ Elite 9500 · 2026 最新</text>
+
+        <!-- Block 高端 -->
+        <rect x="230" y="28" width="200" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+        <text x="240" y="46" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">BLOCK（高端使命關鍵）</text>
+        <text x="240" y="62" fill="#E6EDF3" font-size="11" font-weight="500">PowerMax 2500 / 8500</text>
+        <text x="240" y="76" fill="#8B949E" font-size="10">前 VMAX · SRDF · 99.9999%</text>
+
+        <!-- NAS -->
+        <rect x="440" y="28" width="210" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+        <text x="450" y="46" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">SCALE-OUT NAS</text>
+        <text x="450" y="62" fill="#E6EDF3" font-size="11" font-weight="500">PowerScale（前 Isilon）</text>
+        <text x="450" y="76" fill="#8B949E" font-size="10">F / H / A 系列 · OneFS</text>
+
+        <!-- 虛擬化 -->
+        <rect x="20" y="100" width="190" height="52" rx="6" fill="#1C2128" stroke="#30363D"/>
+        <text x="30" y="118" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">VIRTUALIZATION</text>
+        <text x="30" y="134" fill="#E6EDF3" font-size="11" font-weight="500">VPLEX Metro / Geo</text>
+        <text x="30" y="146" fill="#8B949E" font-size="10">In-band 雙活</text>
+
+        <!-- 備份 -->
+        <rect x="220" y="100" width="210" height="52" rx="6" fill="#1C2128" stroke="#30363D"/>
+        <text x="230" y="118" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">BACKUP TARGET</text>
+        <text x="230" y="134" fill="#E6EDF3" font-size="11" font-weight="500">PowerProtect DD</text>
+        <text x="230" y="146" fill="#8B949E" font-size="10">前 Data Domain · 重刪</text>
+
+        <!-- SDS -->
+        <rect x="440" y="100" width="210" height="52" rx="6" fill="#1C2128" stroke="#30363D"/>
+        <text x="450" y="118" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">SDS</text>
+        <text x="450" y="134" fill="#E6EDF3" font-size="11" font-weight="500">PowerFlex</text>
+        <text x="450" y="146" fill="#8B949E" font-size="10">前 ScaleIO · 軟體定義 Block</text>
+
+        <text x="330" y="178" text-anchor="middle" fill="#484F58" font-size="10">PowerStore 為 Dell 中階主力，取代 Unity XT 與舊 VNX 產品線</text>
+      </svg>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PowerStore -->
+    <!-- ============================================================ -->
+    <section id="powerstore">
+      <div class="anchor-wrap">
+        <h2>PowerStore（Gen 2 現役 + Gen 3 Elite）<a class="anchor-link" href="#powerstore">#</a></h2>
+      </div>
+      <p>PowerStore 是 Dell 中階 All-Flash 儲存主力，同時支援 Block 和 File（NFS / SMB）存取，取代舊有 Unity XT 和 VNX 產品線。目前台灣市場銷售 Gen 2（500T～9200T），Gen 3 PowerStore Elite（1500/5500/9500）預計 2026/07 上市。</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">規格來源說明</div>
+        Gen 2 規格來自 Dell 官方 PowerStore Gen 2 Spec Sheet（dell.com/zh-tw 台灣版）。PowerStore Elite 規格來自 Dell 官方部落格（dell.com/zh-tw，2026/06/09）及台灣版 PowerStore 商品頁。
+      </div>
+
+      <h3>Gen 2 現役機型規格（目前台灣在售）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>機型</th><th>CPU</th><th>記憶體</th><th>最大有效容量（單台）</th><th>磁碟機上限</th><th>Volume 支援</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>PowerStore 500T</strong></td>
+              <td>2 × Intel Xeon，24 核心，2.2 GHz</td>
+              <td>192 GB</td>
+              <td>6.16 PBe（5:1 DRR）</td>
+              <td>97</td>
+              <td>1,500</td>
+            </tr>
+            <tr>
+              <td><strong>PowerStore 1200T</strong></td>
+              <td>4 × Intel Xeon，40 核心，2.4 GHz</td>
+              <td>384 GB</td>
+              <td>5.9 PBe</td>
+              <td>93</td>
+              <td>6,000</td>
+            </tr>
+            <tr>
+              <td><strong>PowerStore 3200T/Q</strong></td>
+              <td>4 × Intel CPU，64 核心，2.1 GHz</td>
+              <td>768 GB</td>
+              <td>5.9 PBe</td>
+              <td>93</td>
+              <td>4,000（T）/ 4,000（Q）</td>
+            </tr>
+            <tr>
+              <td><strong>PowerStore 5200T/Q</strong></td>
+              <td>4 × Intel CPU，96 核心，2.2 GHz</td>
+              <td>1,152 GB</td>
+              <td>5.9 PBe</td>
+              <td>93</td>
+              <td>6,000（T）/ 16,000（Q）</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>PowerStore 9200T</strong></td>
+              <td>4 × Intel CPU，112 核心，2.2 GHz</td>
+              <td>2,560 GB</td>
+              <td>5.9 PBe</td>
+              <td>93</td>
+              <td>16,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.8125rem; color:var(--text-muted);">T 型號採用 TLC NVMe；Q 型號採用 QLC NVMe。單台最大容量均假設 5:1 資料縮減。4 台叢集最大 23.6 PBe（500T 除外為 24.64 PBe）。可用性：99.9999%。</p>
+
+      <h3>Gen 3 PowerStore Elite（台灣預計 2026/07 上市）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>機型</th><th>機箱</th><th>磁碟機上限</th><th>最大有效容量（單台）</th><th>資料縮減保證</th><th>前端介面</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>PowerStore 1500</strong></td>
+              <td rowspan="3">3U</td>
+              <td rowspan="3">最多 40 顆 E3 NVMe</td>
+              <td>—</td>
+              <td rowspan="3">6:1（Gen 3 專屬）</td>
+              <td rowspan="3">64 Gb FC / 100 GbE<br>NVMe/FC / NVMe/TCP<br>（未來支援 128 Gb FC / 200/400 GbE）</td>
+            </tr>
+            <tr>
+              <td><strong>PowerStore 5500</strong></td>
+              <td>—</td>
+            </tr>
+            <tr class="highlight-new">
+              <td><strong>PowerStore 9500</strong></td>
+              <td><strong>5.8 PBe</strong>（6:1 DRR）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Gen 3 主要升級</h3>
+      <ul>
+        <li><strong>效能：</strong>IOPS / 輸送量均較 Gen 2 提升 3 倍（以 1500 vs 1200T 比較）</li>
+        <li><strong>密度：</strong>9500 vs 9200T 密度提升 3 倍（6:1 vs 5:1 DRR 計算）</li>
+        <li><strong>硬體：</strong>新一代 Intel CPU（核心數最多增加 50%）、DDR5、PCIe Gen 5、節點互連速度加快 20 倍</li>
+        <li><strong>媒體：</strong>業界標準 E3 NVMe（非專屬模組），每型號均支援 TLC 或 QLC</li>
+        <li><strong>資料縮減保證：</strong>從 5:1（Gen 2）提升至 6:1（Gen 3 專屬）</li>
+        <li><strong>Dell Cyber Detect：</strong>AI 驅動勒索軟體偵測，需另行購買授權</li>
+      </ul>
+
+      <h3>對標 IBM FlashSystem 7600</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>Dell PowerStore Elite（Gen 3）</th><th>IBM FlashSystem 7600</th></tr></thead>
+          <tbody>
+            <tr><td>定位</td><td>中階主力</td><td>中階主力</td></tr>
+            <tr><td>機箱</td><td>3U</td><td>2U</td></tr>
+            <tr><td>最大有效容量（單台）</td><td>5.8 PBe（9500）</td><td>7.2 PBe</td></tr>
+            <tr><td>資料縮減保證</td><td>6:1（Gen 3）</td><td>無保證（FCM5 硬體加速）</td></tr>
+            <tr><td>媒體</td><td>業界標準 E3 NVMe（TLC / QLC）</td><td>IBM 自研 FCM5（QLC）</td></tr>
+            <tr><td>File 支援</td><td>原生 NFS / SMB</td><td>FlashSystem File（另外啟用）</td></tr>
+            <tr><td>勒索偵測</td><td>Cyber Detect（另購）</td><td>FCM5 硬體層內建，&lt; 1 分鐘</td></tr>
+            <tr><td>虛擬化管理</td><td>無（需搭配 VPLEX）</td><td>Storage Virtualize 內建</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PowerMax -->
+    <!-- ============================================================ -->
+    <section id="powermax">
+      <div class="anchor-wrap">
+        <h2>PowerMax — 高端使命關鍵<a class="anchor-link" href="#powermax">#</a></h2>
+      </div>
+      <p>PowerMax 是 Dell 高端儲存旗艦，前身為 VMAX / VMAX All Flash，針對金融、電信等需要極高可用性的使命關鍵應用設計。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>機型</th><th>規模定位</th><th>節點數</th><th>可用性</th><th>主要強項</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>PowerMax 2500</strong></td>
+              <td>中大型企業</td>
+              <td>2 節點</td>
+              <td>99.9999%（6個9）</td>
+              <td>入門高端，All-NVMe，SRDF 複製</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>PowerMax 8500</strong></td>
+              <td>超大型企業 / 金融電信</td>
+              <td>最多 16 節點</td>
+              <td>99.9999%（6個9）</td>
+              <td>最大規模，Cyber Recovery Service，AI 自動管理</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>PowerMax 核心技術</h3>
+      <ul>
+        <li><strong>SRDF（Symmetrix Remote Data Facility）：</strong>Dell 旗艦複製技術，SRDF/S（同步）和 SRDF/A（非同步），是業界最成熟的企業複製方案之一</li>
+        <li><strong>Cyber Recovery Service：</strong>隔離的 Vault 環境 + 不可變快照，針對勒索軟體設計</li>
+        <li><strong>ML 自動管理：</strong>內建機器學習，自動調配效能資源</li>
+        <li><strong>NVMe-oF 端對端：</strong>前端到後端全 NVMe，延遲極低</li>
+      </ul>
+
+      <h3>對標 IBM DS8000 / FlashSystem 9600</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>Dell PowerMax 8500</th><th>IBM FlashSystem 9600</th><th>IBM DS8000</th></tr></thead>
+          <tbody>
+            <tr><td>定位</td><td>高端 x86 / 開放系統</td><td>高端 x86 / 開放系統</td><td>IBM Z / IBM i 專屬</td></tr>
+            <tr><td>可用性</td><td>99.9999%</td><td>99.9999%</td><td>99.999999%（8個9）</td></tr>
+            <tr><td>複製技術</td><td>SRDF/S + SRDF/A</td><td>Metro Mirror + Global Mirror</td><td>GDPS + Metro Mirror</td></tr>
+            <tr><td>勒索防護</td><td>Cyber Recovery Service</td><td>Safeguarded Copy</td><td>Safeguarded Copy</td></tr>
+            <tr><td>最大節點數</td><td>16</td><td>32（Grid）</td><td>依型號</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PowerScale -->
+    <!-- ============================================================ -->
+    <section id="powerscale">
+      <div class="anchor-wrap">
+        <h2>PowerScale（前 Isilon）— 橫向擴展 NAS<a class="anchor-link" href="#powerscale">#</a></h2>
+      </div>
+      <p>PowerScale 是 Dell 的橫向擴展 NAS 平台，前身為 EMC Isilon，擅長處理大量非結構化資料，是媒體、基因體學、EDA（電子設計自動化）和 AI 訓練資料的主流選擇。</p>
+
+      <h3>PowerScale 節點系列</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>系列</th><th>定位</th><th>媒介類型</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>F 系列</strong></td>
+              <td>高效能 / 低延遲</td>
+              <td>All-Flash NVMe</td>
+              <td>EDA、AI 訓練推理、高頻率隨機存取</td>
+            </tr>
+            <tr>
+              <td><strong>H 系列</strong></td>
+              <td>均衡效能</td>
+              <td>Flash + HDD 混合</td>
+              <td>媒體製作、基因體學、一般 NAS 工作負載</td>
+            </tr>
+            <tr>
+              <td><strong>A 系列</strong></td>
+              <td>高容量歸檔</td>
+              <td>高密度 HDD</td>
+              <td>長期歸檔、冷資料保存、成本敏感場景</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>OneFS 作業系統</h3>
+      <p>所有 PowerScale 節點統一跑 OneFS 作業系統，提供：</p>
+      <ul>
+        <li>單一命名空間橫向擴展，從數 TB 到 EB 級不需要重新架構</li>
+        <li>同時支援 NFS / SMB / S3 / HDFS 多協定</li>
+        <li>內建 SmartPools（自動分層）、SmartQuotas（配額管理）</li>
+        <li>SyncIQ（非同步複製）用於 DR 和備份</li>
+      </ul>
+
+      <h3>對標 IBM Storage Scale</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>Dell PowerScale</th><th>IBM Storage Scale</th></tr></thead>
+          <tbody>
+            <tr><td>架構</td><td>橫向擴展 NAS（Scale-out NAS）</td><td>平行分散式檔案系統（GPFS）</td></tr>
+            <tr><td>市占</td><td>Scale-out NAS 市場領導者</td><td>HPC / 科學計算市場強勢</td></tr>
+            <tr><td>協定</td><td>NFS / SMB / S3 / HDFS</td><td>NFS / SMB / S3 / POSIX</td></tr>
+            <tr><td>強項</td><td>管理簡單、多協定、媒體業廣泛採用</td><td>極高吞吐量、HPC 工作負載、與 IBM FlashSystem 搭配</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VPLEX -->
+    <!-- ============================================================ -->
+    <section id="vplex">
+      <div class="anchor-wrap">
+        <h2>VPLEX — 儲存虛擬化與雙活<a class="anchor-link" href="#vplex">#</a></h2>
+      </div>
+      <p>Dell VPLEX 是 In-band 儲存虛擬化平台，與 IBM SVC 定位相近但設計哲學不同，最大強項是跨站雙活（Metro / Geo）。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>模式</th><th>距離</th><th>RPO</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>VPLEX Metro</strong></td>
+              <td>同城（&lt; 100 km）</td>
+              <td>零</td>
+              <td>同步雙活，兩個站點同時服務 I/O，任一站點故障主機無感知</td>
+            </tr>
+            <tr>
+              <td><strong>VPLEX Geo</strong></td>
+              <td>跨城市 / 跨國</td>
+              <td>秒級</td>
+              <td>非同步延伸，資料在遠端站點有副本，用於跨地區 DR</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>VPLEX vs IBM SVC 的核心差異</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>Dell VPLEX</th><th>IBM SVC</th></tr></thead>
+          <tbody>
+            <tr><td>設計核心強項</td><td>跨站雙活（Metro / Geo）</td><td>異構設備統一管理 + 豐富資料服務</td></tr>
+            <tr><td>異構設備管理</td><td>支援，但不是主要強項</td><td>核心強項</td></tr>
+            <tr><td>雙活機制</td><td>VPLEX Metro（原生設計）</td><td>HyperSwap（需 Quorum）</td></tr>
+            <tr><td>Cache 設計</td><td>分散式 Cache（跨節點同步）</td><td>每個 I/O Group 獨立 Cache</td></tr>
+            <tr><td>適用環境</td><td>Dell 設備為主的環境</td><td>IBM 設備或異構混合環境</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">VPLEX 在企業環境的常見部署方式</div>
+        VPLEX 通常部署在兩個站點之間，下接 PowerMax 或 PowerStore，對主機提供統一的雙活 Volume。部分大型企業環境有 VPLEX 與其他品牌儲存設備（如 IBM FlashSystem）混接的案例，但這屬於進階特殊架構。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PowerProtect DD -->
+    <!-- ============================================================ -->
+    <section id="ppdd">
+      <div class="anchor-wrap">
+        <h2>PowerProtect DD（前 Data Domain）<a class="anchor-link" href="#ppdd">#</a></h2>
+      </div>
+      <p>PowerProtect DD（前身 EMC Data Domain）是業界最廣泛部署的備份目標儲存設備，以極高的重複資料刪除率著稱。幾乎所有主流備份軟體都有 DD Boost 整合。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>特性</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>重刪率</td><td>最高 65:1（依資料類型，備份資料效果最佳）</td></tr>
+            <tr><td>DD Boost 協定</td><td>與 Veeam、Veritas NetBackup、Commvault、IBM Spectrum Protect 等主流備份軟體深度整合，備份速度比傳統方式快 2～10 倍</td></tr>
+            <tr class="highlight-row"><td>備份軟體整合</td><td>幾乎支援所有主流備份軟體，是台灣企業備份目標設備的最常見選擇之一</td></tr>
+            <tr><td>雲端延伸</td><td>可將備份資料分層至 AWS S3 / Azure / Google Cloud</td></tr>
+            <tr><td>DD3410（2026 Q1 新品）</td><td>最新入門機型，針對中小型環境</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">PowerProtect DD 與 IBM 的關係</div>
+        IBM 在備份目標設備市場相對弱勢，台灣很多客戶的備份目標是 PowerProtect DD，搭配 IBM FlashSystem 做主儲存的組合相當常見。了解 DD Boost 的運作原理，有助於在 IBM 主儲存提案時說明備份整合方案。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PowerFlex -->
+    <!-- ============================================================ -->
+    <section id="powerflex">
+      <div class="anchor-wrap">
+        <h2>PowerFlex — 軟體定義 Block 儲存<a class="anchor-link" href="#powerflex">#</a></h2>
+      </div>
+      <p>PowerFlex（前身 ScaleIO）是 Dell 的軟體定義 Block 儲存，可跑在通用 x86 伺服器上，也有 Appliance 硬體版本。2025 年推出的 PowerFlex Ultra 版本進一步提升效率。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>特性</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>架構</td><td>純軟體定義，可部署在通用 x86 伺服器或 Dell Appliance</td></tr>
+            <tr><td>可用性</td><td>PowerFlex Ultra：10個9（99.9999999%）資料可用性</td></tr>
+            <tr><td>儲存效率</td><td>PowerFlex Ultra：最高 80% 儲存效率</td></tr>
+            <tr><td>適用場景</td><td>OpenStack 私有雲、Kubernetes、大規模虛擬化環境</td></tr>
+            <tr class="highlight-row"><td>Dell Private Cloud 整合</td><td>Dell Automation Platform 原生支援，與 PowerStore / PowerMax 並列為 Dell Private Cloud 三大儲存選項</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>PowerFlex 詳細架構說明見 <a href="sds.html">SDS 全景頁</a>。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 退場產品 -->
+    <!-- ============================================================ -->
+    <section id="legacy">
+      <div class="anchor-wrap">
+        <h2>退場產品（Unity XT）<a class="anchor-link" href="#legacy">#</a></h2>
+      </div>
+      <p>了解退場產品有助於識別客戶現有環境中的汰換商機。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>產品</th><th>狀態</th><th>接班產品</th><th>注意事項</th></tr></thead>
+          <tbody>
+            <tr class="highlight-red">
+              <td><strong>Unity XT（All-Flash 機型）</strong></td>
+              <td>已停止銷售（2025）</td>
+              <td>PowerStore</td>
+              <td>現有大量客戶仍在使用，是 PowerStore 的主要汰換商機來源</td>
+            </tr>
+            <tr class="highlight-amber">
+              <td><strong>Unity XT（Hybrid 機型）</strong></td>
+              <td>部分仍可訂購，逐步退場中</td>
+              <td>PowerStore</td>
+              <td>各地區停售時程不同，建議確認當地狀況</td>
+            </tr>
+            <tr>
+              <td><strong>VNX / VNXe</strong></td>
+              <td>已完全退場</td>
+              <td>Unity XT → PowerStore</td>
+              <td>市場上仍有大量老舊 VNX 環境，是汰換機會</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">官方查詢資源</div>
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:.875rem;">
+          <div>🔍 <strong>dell.com/support</strong> — EOS / EOL 日期查詢（Service Tag 或型號）</div>
+          <div>📋 <strong>Dell Technologies World 2026</strong> — PowerStore Elite 發表（2026/05）</div>
+          <div>📊 <strong>Dell Compatibility Matrix</strong> — 主機 / 儲存相容性查詢</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Dell Storage 產品線全覽', keywords: 'Dell PowerStore PowerMax PowerScale Isilon VPLEX PowerProtect Data Domain PowerFlex ScaleIO Unity', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: 'Dell PowerStore Elite', keywords: 'PowerStore Elite 1500 5500 9500 All-Flash Block File NVMe 2026', url: 'vendors-dell.html#powerstore', path: 'vendors-dell.html' },
+  { title: 'Dell PowerMax 2500 8500', keywords: 'PowerMax 2500 8500 VMAX SRDF 高端 使命關鍵 Cyber Recovery 6個9', url: 'vendors-dell.html#powermax', path: 'vendors-dell.html' },
+  { title: 'Dell PowerScale Isilon', keywords: 'PowerScale Isilon OneFS NAS F系列 H系列 A系列 非結構化 AI HPC', url: 'vendors-dell.html#powerscale', path: 'vendors-dell.html' },
+  { title: 'Dell VPLEX Metro Geo', keywords: 'VPLEX Metro Geo 雙活 In-band 虛擬化 同步 非同步', url: 'vendors-dell.html#vplex', path: 'vendors-dell.html' },
+  { title: 'Dell PowerProtect DD Data Domain', keywords: 'PowerProtect Data Domain DD Boost 重刪 備份目標 Veeam Veritas Commvault', url: 'vendors-dell.html#ppdd', path: 'vendors-dell.html' },
+  { title: 'Dell PowerFlex ScaleIO SDS', keywords: 'PowerFlex ScaleIO 軟體定義 Block SDS x86 OpenStack Kubernetes', url: 'vendors-dell.html#powerflex', path: 'vendors-dell.html' },
+  { title: 'Dell Unity XT 退場', keywords: 'Unity XT 退場 停售 汰換 VNX PowerStore', url: 'vendors-dell.html#legacy', path: 'vendors-dell.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

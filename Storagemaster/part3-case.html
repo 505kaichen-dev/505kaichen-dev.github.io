@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 3 情境案例 — 虛擬化儲存層 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .formula {
+      font-family: var(--mono);
+      font-size: .875rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 20px;
+      margin: 16px 0;
+      color: var(--primary-hi);
+      line-height: 1.9;
+    }
+    .scenario-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .scenario-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 10px;
+    }
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .spec-card {
+      background: var(--surface2);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .spec-card-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .spec-card-value {
+      font-size: .875rem;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .spec-card-sub {
+      font-size: .8125rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link active" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link nav-sub" href="#scenario">情境假設</a>
+      <a class="nav-link nav-sub" href="#pool-current">SVC Pool 現況分析</a>
+      <a class="nav-link nav-sub" href="#thin">Thin Provisioning 推導</a>
+      <a class="nav-link nav-sub" href="#drp">Compression / Dedup 層次</a>
+      <a class="nav-link nav-sub" href="#replace">汰換後容量變化</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 03 / 情境案例</div>
+      <h1>情境案例：異構環境建置與容量推導</h1>
+      <p class="page-desc">以一個完整假設的企業主中心 SVC 環境為例，從硬體 BOM 出發，逐步推導 Pool 容量、Thin Provisioning 設定，到汰換後的容量變化。建議先閱讀<a href="part3-svc.html">原理頁</a>再來這裡。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-amber">情境案例</span>
+        <span class="badge badge-green">IBM FlashSystem</span>
+        <span class="badge badge-blue">Storage Modeller</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#scenario">情境假設：環境定義</a></li>
+        <li><a href="#pool-current">SVC Pool 現況分析</a></li>
+        <li><a href="#thin">Thin Provisioning 三層數字推導</a></li>
+        <li><a href="#drp">Compression / Dedup 的作用層次</a></li>
+        <li><a href="#replace">汰換舊設備後的容量變化</a></li>
+      </ol>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1. 情境假設 -->
+    <!-- ============================================================ -->
+    <section id="scenario">
+      <div class="anchor-wrap">
+        <h2>情境假設：環境定義<a class="anchor-link" href="#scenario">#</a></h2>
+      </div>
+      <p>以下是本案例使用的假設環境。所有型號為真實 IBM 產品，組合方式與數值為教學用途假設，不代表任何實際客戶環境。</p>
+
+      <div class="scenario-header">
+        <div class="scenario-title">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          假設環境：某企業主中心（DC1）
+        </div>
+        <p style="font-size:.875rem; color:var(--text-muted); margin-bottom:16px;">SVC 管理三台異構儲存設備，環境已運行數年，正在規劃汰換舊世代設備。</p>
+
+        <div class="spec-grid">
+          <div class="spec-card">
+            <div class="spec-card-label">SVC 型號</div>
+            <div class="spec-card-value">IBM SAN Volume Controller<br>2145-SV1（雙節點 HA）</div>
+            <div class="spec-card-sub">In-band 虛擬化，統一管理以下三台設備</div>
+          </div>
+          <div class="spec-card" style="border-color: var(--red); border-left: 3px solid var(--red);">
+            <div class="spec-card-label">設備 A — 汰換目標</div>
+            <div class="spec-card-value">IBM DS8884（2831-84E）<br>高階磁碟陣列</div>
+            <div class="spec-card-sub">已超過原廠支援期限 · 年維護費用偏高 · 排程汰換</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-card-label">設備 B — 現役 Flash</div>
+            <div class="spec-card-value">IBM FlashSystem 7200（4656-4N4）<br>24 顆 3.84 TB NVMe FCM4</div>
+            <div class="spec-card-sub">DRAID-6（10+P+Q）· 線上運作中 · 未開 Thin Provisioning</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-card-label">設備 C — 現役 Flash（已開 Thin）</div>
+            <div class="spec-card-value">IBM FlashSystem 7300（4657-924）<br>18 顆 9.6 TB NVMe FCM4</div>
+            <div class="spec-card-sub">DRAID-6（10+P+Q）· 線上運作中 · 已開 Thin Provisioning</div>
+          </div>
+          <div class="spec-card" style="border-color: var(--primary); border-left: 3px solid var(--primary);">
+            <div class="spec-card-label">設備 D — 新採購（汰換 A）</div>
+            <div class="spec-card-value">IBM FlashSystem 7600（5075-A30）<br>25 顆 6.4 TB NVMe FCM5</div>
+            <div class="spec-card-sub">DRAID-6（10+P+Q）· 取代設備 A · 導入規劃中</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">為什麼選這個情境？</div>
+        這個情境刻意包含三種常見狀況：①有已過支援期限的舊設備需要汰換、②現役設備中有的開了 Thin Provisioning 有的沒有、③新採購設備即將加入。這是企業環境中最典型的「歷史包袱 + 現役混用 + 新舊交接」場景。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2. SVC Pool 現況分析 -->
+    <!-- ============================================================ -->
+    <section id="pool-current">
+      <div class="anchor-wrap">
+        <h2>SVC Pool 現況分析<a class="anchor-link" href="#pool-current">#</a></h2>
+      </div>
+      <p>SVC 管理介面的「儲存層」（Pool）畫面，是日常監控的主要依據。但這裡的數字有一個重要前提：<strong>開了 Thin Provisioning 的 Pool，顯示的容量是虛擬容量，不是物理容量。</strong></p>
+
+      <h3>假設 SVC 介面顯示如下</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pool 名稱</th>
+              <th>對應設備</th>
+              <th>SVC 顯示總容量</th>
+              <th>SVC 顯示已使用</th>
+              <th>使用率</th>
+              <th>Thin Provisioning</th>
+              <th>資料縮減</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Pool-DS8884-15K</code></td>
+              <td>設備 A（DS8884）</td>
+              <td>86 TiB</td>
+              <td>71 TiB</td>
+              <td>83%</td>
+              <td>否</td>
+              <td>否</td>
+            </tr>
+            <tr>
+              <td><code>Pool-DS8884-10K</code></td>
+              <td>設備 A（DS8884）</td>
+              <td>54 TiB</td>
+              <td>38 TiB</td>
+              <td>70%</td>
+              <td>否</td>
+              <td>否</td>
+            </tr>
+            <tr>
+              <td><code>Pool-FS7200</code></td>
+              <td>設備 B（FS7200）</td>
+              <td>112 TiB</td>
+              <td>98 TiB</td>
+              <td>88%</td>
+              <td>否</td>
+              <td>否</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><code>Pool-FS7300</code></td>
+              <td>設備 C（FS7300）</td>
+              <td><strong>345 TiB</strong></td>
+              <td>175 TiB</td>
+              <td>51%</td>
+              <td><strong>是（65%）</strong></td>
+              <td>否</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 注意：Pool-FS7300 的 345 TiB 不是物理容量</div>
+        FS7300 硬體只有 18 顆磁碟，物理 Usable 約 120 TiB。SVC 顯示的 345 TiB 是開啟 Thin Provisioning 後的虛擬承諾空間。下一節將完整推導這個數字的來源。
+      </div>
+
+      <h3>整體 SVC Pool 加總</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>計算項目</th><th>數字</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>SVC 介面顯示總容量加總</td><td>86 + 54 + 112 + 345 = <strong>597 TiB</strong></td><td>含 Thin Provisioning 虛擬空間</td></tr>
+            <tr><td>SVC 介面顯示已使用加總</td><td>71 + 38 + 98 + 175 = <strong>382 TiB</strong></td><td>整體使用率約 64%</td></tr>
+            <tr class="highlight-row"><td>實際物理 Usable 加總（推估）</td><td>86 + 54 + 112 + 120 = <strong>372 TiB</strong></td><td>Pool-FS7300 換回物理值；這才是真正的硬體容量上限</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>這個差異說明了一件事：如果只看 SVC 介面的 597 TiB，會高估整體可用容量 225 TiB（約 38%）。這正是 Thin Provisioning 最容易造成誤判的地方。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 3. Thin Provisioning 推導 -->
+    <!-- ============================================================ -->
+    <section id="thin">
+      <div class="anchor-wrap">
+        <h2>Thin Provisioning 三層數字推導<a class="anchor-link" href="#thin">#</a></h2>
+      </div>
+      <p>以設備 C（FlashSystem 7300，4657-924）為例，從硬體 BOM 出發，一步一步還原 SVC 介面顯示 345 TiB 的來源。</p>
+
+      <h3>第一層：硬體 BOM → Storage Modeller Usable</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>BOM 規格</th><th>數值</th></tr></thead>
+          <tbody>
+            <tr><td>磁碟型號</td><td>9.6 TB NVMe FCM4（2.5"）</td></tr>
+            <tr><td>磁碟數量</td><td>18 顆</td></tr>
+            <tr><td>RAID 類型</td><td>DRAID-6（10+P+Q）</td></tr>
+            <tr><td>Raw 容量</td><td>18 × 9.6 TB ≈ 157 TiB（Binary 換算）</td></tr>
+            <tr class="highlight-row"><td>Storage Modeller Usable（無 Thin）</td><td><strong>約 120 TiB</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Storage Modeller 的 Usable 數字是物理磁碟在 DRAID-6 保護下實際可用的空間，這是物理上限，無法突破。</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">驗證方式</div>
+        在 IBM Storage Modeller 建立 FlashSystem 7300（4657-924）專案，Capacity 頁面設定 Pool Type 為 Regular Pool、Thin Provisioning = 0，Usable 應顯示約 120 TiB。這個數字可以自行驗證。
+      </div>
+
+      <h3>第二層：物理 Usable → SVC Pool 顯示容量</h3>
+      <p>開啟 Thin Provisioning 後，SVC Pool 對外「承諾」的空間超過物理 Usable，差值就是 Thin Provisioning 的放大倍率：</p>
+
+      <div class="formula">
+        SVC Pool 顯示總容量 = 物理 Usable × 放大倍率<br>
+        345 TiB ≈ 120 TiB × 2.875<br><br>
+        放大倍率 → Thin Provisioning 設定值（%）：<br>
+        設定值 = ( 1 − 1/倍率 ) × 100<br>
+        = ( 1 − 1/2.875 ) × 100 ≈ <strong>65%</strong>
+      </div>
+
+      <h3>Storage Modeller 驗證</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Storage Modeller 設定</th><th>Effective Capacity</th><th>與 SVC 差異</th></tr></thead>
+          <tbody>
+            <tr><td>Thin Provisioning = 0%（關閉）</td><td>120 TiB</td><td>—</td></tr>
+            <tr><td>Thin Provisioning = 50%（2× 倍率）</td><td>240 TiB</td><td>—</td></tr>
+            <tr class="highlight-row"><td>Thin Provisioning = <strong>65%</strong>（約 2.87× 倍率）</td><td><strong>約 343 TiB</strong></td><td>與 SVC 顯示 345 TiB 誤差 &lt; 1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>誤差小於 1% 代表反推結果可信，這台 FS7300 當初建置時 Thin Provisioning 設定值約為 65%。</p>
+
+      <h3>第三層：SVC Pool 顯示容量 vs 實際物理寫入</h3>
+      <p>SVC 顯示「已使用 175 TiB」，而物理 Usable 只有 120 TiB——為什麼不會爆？</p>
+      <p>這和 VM 精簡 vDisk 的道理完全相同：主機宣告的 VDisk 空間不等於已寫入的資料量。175 TiB 是「主機已配置的虛擬空間」，真正寫入磁碟的資料量（物理佔用）要小得多：</p>
+
+      <div class="formula">
+        物理寫入推估 = 物理 Usable × SVC 使用率<br>
+        ≈ 120 TiB × 51% ≈ <strong>61 TiB</strong><br><br>
+        （前提：假設各 VDisk 的寫入資料在虛擬空間中均勻分佈）
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">更精確的物理寫入量</div>
+        均勻分佈只是估算前提。要取得精確的物理寫入量，需從 SVC CLI 執行 <code>lsvdisk</code> 查看每個 VDisk 的 <code>used_capacity</code>，或直接在 FS7300 的本機管理介面查看 Pool 的實際物理使用量。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4. Compression / Dedup 層次 -->
+    <!-- ============================================================ -->
+    <section id="drp">
+      <div class="anchor-wrap">
+        <h2>Compression / Dedup 的作用層次<a class="anchor-link" href="#drp">#</a></h2>
+      </div>
+      <p>延續本案例，說明在 SVC 管理 External Storage（Mdisk 模式）的情況下，Compression 和 Deduplication 在哪一層設定才有效。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 620 260" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- SVC 層 -->
+          <rect x="20" y="20" width="580" height="50" rx="6" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="310" y="40" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">SVC VIRTUALIZATION LAYER</text>
+          <text x="310" y="58" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">SVC Volume 層 Compression / DRP（Data Reduction Pool）</text>
+
+          <!-- 說明：SVC層有效 -->
+          <rect x="20" y="82" width="280" height="50" rx="6" fill="#1C2128" stroke="#3FB950"/>
+          <text x="160" y="102" text-anchor="middle" fill="#3FB950" font-size="11" font-weight="500">✓ 這裡設定有效</text>
+          <text x="160" y="118" text-anchor="middle" fill="#8B949E" font-size="10">影響 SVC Pool 顯示的 Effective 容量</text>
+
+          <!-- 說明：SVC層查看 -->
+          <rect x="320" y="82" width="280" height="50" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="460" y="102" text-anchor="middle" fill="#8B949E" font-size="11">SVC 介面「資料縮減」欄位</text>
+          <text x="460" y="118" text-anchor="middle" fill="#8B949E" font-size="10">顯示「否」→ SVC 層未啟用縮減</text>
+
+          <!-- 箭頭 -->
+          <line x1="160" y1="132" x2="160" y2="155" stroke="#30363D" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="460" y1="132" x2="460" y2="155" stroke="#30363D" stroke-width="1" stroke-dasharray="3,3"/>
+
+          <!-- 底層設備 -->
+          <rect x="20" y="156" width="280" height="84" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="160" y="178" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace">底層設備（FS7300）本機 Pool</text>
+          <text x="160" y="196" text-anchor="middle" fill="#484F58" font-size="11">底層設備本機的 Compression 設定</text>
+          <text x="160" y="212" text-anchor="middle" fill="#F85149" font-size="10">✗ 對 SVC 看到的容量無直接影響</text>
+          <text x="160" y="230" text-anchor="middle" fill="#484F58" font-size="10">（SVC 透過 FC 看到固定大小的 LUN）</text>
+
+          <rect x="320" y="156" width="280" height="84" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="460" y="178" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace">本案例 FS7300 Pool 設定</text>
+          <text x="460" y="196" text-anchor="middle" fill="#E6EDF3" font-size="11">Compression = 0</text>
+          <text x="460" y="212" text-anchor="middle" fill="#E6EDF3" font-size="11">Deduplication = 0</text>
+          <text x="460" y="230" text-anchor="middle" fill="#3FB950" font-size="10">→ 345 TiB 純來自 Thin Provisioning</text>
+        </svg>
+      </div>
+
+      <h3>本案例的結論</h3>
+      <p>由於本案例 FS7300 的 SVC Pool「資料縮減」欄位顯示「否」，代表：</p>
+      <ul>
+        <li>SVC Volume 層未啟用 Compression / Deduplication</li>
+        <li>FS7300 底層 Pool 本身也未開啟（對 SVC 無影響）</li>
+        <li>345 TiB 的虛擬容量，<strong>100% 來自 Thin Provisioning 65%</strong>，沒有任何其他因素介入</li>
+      </ul>
+      <p>這也是為什麼反推公式可以得到小於 1% 誤差的結果——如果還有壓縮或重刪介入，反推就需要更複雜的多因素計算。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5. 汰換後容量變化 -->
+    <!-- ============================================================ -->
+    <section id="replace">
+      <div class="anchor-wrap">
+        <h2>汰換舊設備後的容量變化<a class="anchor-link" href="#replace">#</a></h2>
+      </div>
+      <p>設備 A（DS8884）預計汰換，由新採購的設備 D（FlashSystem 7600，5075-A30）取代。以下計算汰換前後的容量對比。</p>
+
+      <h3>設備 D 的物理 Usable（Storage Modeller）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>BOM 規格</th><th>數值</th></tr></thead>
+          <tbody>
+            <tr><td>磁碟型號</td><td>6.4 TB NVMe FCM5（2.5"）</td></tr>
+            <tr><td>磁碟數量</td><td>25 顆</td></tr>
+            <tr><td>RAID 類型</td><td>DRAID-6（10+P+Q）</td></tr>
+            <tr class="highlight-row"><td>Storage Modeller Usable</td><td><strong>約 100 TiB</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>汰換前後 Pool 容量對比</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pool</th>
+              <th>汰換前（物理 Usable）</th>
+              <th>汰換後（物理 Usable）</th>
+              <th>變化</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>設備 A 相關 Pool<br><small>Pool-DS8884-15K + 10K</small></td>
+              <td>86 + 54 = 140 TiB</td>
+              <td>— （退出）</td>
+              <td><span style="color:var(--red);">− 140 TiB</span></td>
+            </tr>
+            <tr>
+              <td>設備 B（FS7200）</td>
+              <td>112 TiB</td>
+              <td>112 TiB</td>
+              <td>不變</td>
+            </tr>
+            <tr>
+              <td>設備 C（FS7300）</td>
+              <td>120 TiB（物理）</td>
+              <td>120 TiB（物理）</td>
+              <td>不變</td>
+            </tr>
+            <tr>
+              <td>設備 D（FS7600）</td>
+              <td>— （未導入）</td>
+              <td>100 TiB</td>
+              <td><span style="color:var(--green);">+ 100 TiB</span></td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>物理 Usable 合計</strong></td>
+              <td><strong>372 TiB</strong></td>
+              <td><strong>332 TiB</strong></td>
+              <td><span style="color:var(--red);">− 40 TiB</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">物理容量減少，但這是預期內的</div>
+        汰換後物理 Usable 減少 40 TiB，原因是設備 D（FS7600）的 Usable（100 TiB）小於設備 A 退出的容量（140 TiB）。這不代表空間不夠——關鍵是目前設備 A 上的實際已使用資料量（71 + 38 = 109 TiB）必須能被其他 Pool 容納。
+      </div>
+
+      <h3>已使用資料的遷移可行性驗證</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>驗證項目</th><th>數值</th></tr></thead>
+          <tbody>
+            <tr><td>設備 A 需遷出的資料量</td><td>71 + 38 = <strong>109 TiB</strong></td></tr>
+            <tr><td>汰換後剩餘 Pool 可用空間（物理）</td><td>FS7200 可用 14 TiB + FS7300 物理可用約 59 TiB + FS7600 新增 100 TiB = <strong>約 173 TiB</strong></td></tr>
+            <tr class="highlight-row"><td>結論</td><td>173 TiB &gt; 109 TiB，遷移空間充足，汰換可行</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">實際規劃時的注意事項</div>
+        上面的計算是靜態快照。實際規劃時還需考慮：① 遷移期間資料持續成長的緩衝空間、② SVC Volume Migration 的效能影響（建議在離峰時段執行）、③ 汰換後整體使用率是否合理（建議不超過 70% 作為安全緩衝）。詳細的容量規劃方法論見 <a href="part6-capacity.html">Part 6</a>。
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">延伸閱讀</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part6-capacity.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Part 6 — 效能規劃與容量管理（Storage Modeller 操作詳解）
+          </a>
+          <a href="part5-ha.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Part 5 — 高可用與災難復原（遷移期間的 HA 設計）
+          </a>
+          <a href="part7-finance.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Part 7 — 企業實戰場景（汰換專案全流程）
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 In-band Mdisk Pool VDisk', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: 'Part 3 — 情境案例', keywords: 'FlashSystem 7300 7200 7600 DS8884 Thin Provisioning 容量推導 Storage Modeller 汰換', url: 'part3-case.html', path: 'part3-case.html' },
+  { title: '情境假設環境定義', keywords: 'DS8884 2831-84E FS7200 4656-4N4 FS7300 4657-924 FS7600 5075-A30 FCM4 FCM5', url: 'part3-case.html#scenario', path: 'part3-case.html' },
+  { title: 'SVC Pool 現況分析', keywords: 'Pool 顯示容量 已使用 使用率 Thin Provisioning 虛擬容量', url: 'part3-case.html#pool-current', path: 'part3-case.html' },
+  { title: 'Thin Provisioning 三層數字推導', keywords: 'Thin Provisioning 物理 Usable 虛擬容量 倍率 反推 Storage Modeller', url: 'part3-case.html#thin', path: 'part3-case.html' },
+  { title: 'Compression Dedup 作用層次', keywords: 'Compression Deduplication DRP Data Reduction Pool SVC Volume 層次', url: 'part3-case.html#drp', path: 'part3-case.html' },
+  { title: '汰換後容量變化', keywords: '汰換 容量變化 遷移 Volume Migration FS7600 DS8884 可行性', url: 'part3-case.html#replace', path: 'part3-case.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe RAID DRAID', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'FC iSCSI Zoning MPIO', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: 'Part 5 — 高可用與災難復原', keywords: 'HA DR RTO RPO HyperSwap FlashCopy', url: 'part5-ha.html', path: 'part5-ha.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS Storage Modeller TiB TB 容量規劃', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

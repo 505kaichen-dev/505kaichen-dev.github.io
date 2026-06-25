@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 2 — SAN 網路層 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-green td { background: rgba(63,185,80,.06); }
+    .highlight-amber td { background: rgba(210,153,34,.06); }
+    .formula {
+      font-family: var(--mono);
+      font-size: .875rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 20px;
+      margin: 16px 0;
+      color: var(--primary-hi);
+      line-height: 1.9;
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link active" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link nav-sub" href="#concept">2.1 SAN 基本概念</a>
+      <a class="nav-link nav-sub" href="#fc">2.2 Fibre Channel 架構</a>
+      <a class="nav-link nav-sub" href="#iscsi">2.3 iSCSI 與 FCoE</a>
+      <a class="nav-link nav-sub" href="#nvmeof">2.4 NVMe-oF</a>
+      <a class="nav-link nav-sub" href="#zoning">2.5 Zoning 與 LUN Masking</a>
+      <a class="nav-link nav-sub" href="#mpio">2.6 多路徑（MPIO）</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 02 / CORE CURRICULUM</div>
+      <h1>SAN 網路層</h1>
+      <p class="page-desc">從 Block / File / Object 的根本差異出發，深入 Fibre Channel 協定、iSCSI、NVMe-oF 的原理與選型邏輯，掌握 Zoning 隔離設計與多路徑備援。本章為純通用概念，適用所有品牌儲存環境。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-green">通用概念</span>
+        <span class="badge badge-blue">基礎必讀</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#concept">2.1 SAN 基本概念</a></li>
+        <li><a href="#fc">2.2 Fibre Channel 架構</a></li>
+        <li><a href="#iscsi">2.3 iSCSI 與 FCoE</a></li>
+        <li><a href="#nvmeof">2.4 NVMe-oF（NVMe over Fabrics）</a></li>
+        <li><a href="#zoning">2.5 Zoning 與 LUN Masking</a></li>
+        <li><a href="#mpio">2.6 多路徑（Multipath / MPIO）</a></li>
+      </ol>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 2.1 SAN 基本概念 -->
+    <!-- ============================================================ -->
+    <section id="concept">
+      <div class="anchor-wrap">
+        <h2>2.1 SAN 基本概念<a class="anchor-link" href="#concept">#</a></h2>
+      </div>
+      <p>要理解 SAN，需要先從儲存資料的三種根本方式談起，因為 SAN 只是其中一種，選錯了架構會造成很多不必要的複雜度。</p>
+
+      <h3>Block / File / Object：三種儲存類型</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>類型</th><th>存取方式</th><th>主機看到的</th><th>典型協定</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>Block</strong></td>
+              <td>以固定大小的 Block 為單位讀寫，主機自行管理檔案系統</td>
+              <td>裸磁碟（LUN），自行格式化</td>
+              <td>FC、iSCSI、NVMe-oF</td>
+              <td>資料庫、VM Datastore、核心應用</td>
+            </tr>
+            <tr>
+              <td><strong>File（NAS）</strong></td>
+              <td>以檔案和目錄為單位，由儲存設備管理檔案系統</td>
+              <td>網路磁碟機 / 掛載點</td>
+              <td>NFS（Linux）、SMB/CIFS（Windows）</td>
+              <td>檔案共享、Home Directory、備份</td>
+            </tr>
+            <tr>
+              <td><strong>Object</strong></td>
+              <td>以物件（Object）為單位，透過 API 存取，無目錄結構</td>
+              <td>S3 API 端點</td>
+              <td>S3、Swift</td>
+              <td>大規模非結構化資料、備份目標、AI 資料湖</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>DAS / NAS / SAN 的差異</h3>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 640 200" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- DAS -->
+          <text x="106" y="18" text-anchor="middle" fill="#8B949E" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">DAS</text>
+          <rect x="30" y="28" width="152" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="106" y="52" text-anchor="middle" fill="#E6EDF3" font-size="12">主機</text>
+          <line x1="106" y1="64" x2="106" y2="90" stroke="#30363D" stroke-width="2"/>
+          <rect x="56" y="90" width="100" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="106" y="114" text-anchor="middle" fill="#E6EDF3" font-size="12">儲存設備</text>
+          <text x="106" y="145" text-anchor="middle" fill="#8B949E" font-size="10">直接連接</text>
+          <text x="106" y="160" text-anchor="middle" fill="#8B949E" font-size="10">單一主機獨占</text>
+          <text x="106" y="175" text-anchor="middle" fill="#F85149" font-size="10">✗ 無法共享</text>
+
+          <!-- NAS -->
+          <text x="320" y="18" text-anchor="middle" fill="#8B949E" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">NAS</text>
+          <rect x="224" y="28" width="80" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="264" y="52" text-anchor="middle" fill="#E6EDF3" font-size="12">主機 A</text>
+          <rect x="316" y="28" width="80" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="356" y="52" text-anchor="middle" fill="#E6EDF3" font-size="12">主機 B</text>
+          <line x1="264" y1="64" x2="320" y2="90" stroke="#30363D" stroke-width="1.5"/>
+          <line x1="356" y1="64" x2="320" y2="90" stroke="#30363D" stroke-width="1.5"/>
+          <rect x="270" y="90" width="100" height="36" rx="4" fill="#1C2128" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="320" y="114" text-anchor="middle" fill="#3FB950" font-size="12">NAS 設備</text>
+          <text x="320" y="145" text-anchor="middle" fill="#8B949E" font-size="10">IP 網路（NFS / SMB）</text>
+          <text x="320" y="160" text-anchor="middle" fill="#8B949E" font-size="10">File 層共享</text>
+          <text x="320" y="175" text-anchor="middle" fill="#3FB950" font-size="10">✓ 多主機共享檔案</text>
+
+          <!-- SAN -->
+          <text x="554" y="18" text-anchor="middle" fill="#2F81F7" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">SAN</text>
+          <rect x="458" y="28" width="80" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="498" y="52" text-anchor="middle" fill="#E6EDF3" font-size="12">主機 A</text>
+          <rect x="550" y="28" width="80" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="590" y="52" text-anchor="middle" fill="#E6EDF3" font-size="12">主機 B</text>
+          <line x1="498" y1="64" x2="554" y2="90" stroke="#2F81F7" stroke-width="1.5"/>
+          <line x1="590" y1="64" x2="554" y2="90" stroke="#2F81F7" stroke-width="1.5"/>
+          <rect x="504" y="90" width="100" height="36" rx="4" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="554" y="114" text-anchor="middle" fill="#2F81F7" font-size="12">SAN Switch</text>
+          <line x1="554" y1="126" x2="554" y2="145" stroke="#2F81F7" stroke-width="1.5"/>
+          <rect x="504" y="145" width="100" height="30" rx="4" fill="#1C2128" stroke="#2F81F7"/>
+          <text x="554" y="166" text-anchor="middle" fill="#E6EDF3" font-size="11">儲存陣列</text>
+          <text x="554" y="192" text-anchor="middle" fill="#2F81F7" font-size="10">✓ Block 層共享</text>
+        </svg>
+      </div>
+
+      <h3>為什麼企業核心應用偏好 Block SAN</h3>
+      <p>資料庫（Oracle、DB2、SQL Server）和虛擬化平台（VMware ESXi）幾乎都偏好 Block SAN，原因有三：</p>
+      <ul>
+        <li><strong>效能最優：</strong>主機直接管理 Block I/O，沒有 NAS 的 File 協定開銷，延遲最低</li>
+        <li><strong>一致性保證：</strong>Block 層的原子寫入（Atomic Write）比 File 層更容易保證資料一致性</li>
+        <li><strong>隔離性：</strong>每台主機的 LUN 相互獨立，不會因為其他主機的 I/O 行為互相干擾</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2.2 Fibre Channel -->
+    <!-- ============================================================ -->
+    <section id="fc">
+      <div class="anchor-wrap">
+        <h2>2.2 Fibre Channel 架構<a class="anchor-link" href="#fc">#</a></h2>
+      </div>
+      <p>Fibre Channel（FC）是專為儲存 I/O 設計的網路協定，從底層就針對低延遲、高可靠性做最佳化。與一般的 Ethernet 網路不同，FC 是一個 Lossless（無封包遺失）的傳輸協定，沒有 TCP/IP 的重傳機制，因此延遲更穩定。</p>
+
+      <h3>FC 的基本組成</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>元件</th><th>說明</th><th>類比</th></tr></thead>
+          <tbody>
+            <tr><td><strong>HBA（Host Bus Adapter）</strong></td><td>主機端的 FC 介面卡，相當於網路卡</td><td>Ethernet NIC</td></tr>
+            <tr><td><strong>FC Switch</strong></td><td>連接主機和儲存設備的交換機，構成 Fabric</td><td>Ethernet Switch</td></tr>
+            <tr><td><strong>FC Director</strong></td><td>企業級大型 FC Switch，支援更多 Port、更高可用性</td><td>Core Switch</td></tr>
+            <tr><td><strong>光纖纜線</strong></td><td>FC 主要用光纖傳輸（也有短距離銅線版本）</td><td>光纖 Ethernet</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>WWN 命名體系</h3>
+      <p>FC 網路不用 IP 位址，而是用 WWN（World Wide Name）識別每個端點，格式類似 MAC Address：</p>
+      <div class="formula">
+        WWNN（World Wide Node Name）：識別一台設備（HBA 卡）<br>
+        WWPN（World Wide Port Name）：識別一個 Port（一張 HBA 通常有 2～4 個 Port）<br><br>
+        格式範例：20:00:00:25:B5:AA:BB:CC（8 個 Byte，16 進位）<br>
+        Zoning 設定通常以 WWPN 為單位（見 2.5 節）
+      </div>
+
+      <h3>FC Fabric 拓樸</h3>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 220" width="540" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 主機群 -->
+          <rect x="20" y="20" width="90" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="65" y="44" text-anchor="middle" fill="#E6EDF3" font-size="11">主機 A</text>
+          <rect x="20" y="70" width="90" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="65" y="94" text-anchor="middle" fill="#E6EDF3" font-size="11">主機 B</text>
+          <rect x="20" y="120" width="90" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="65" y="144" text-anchor="middle" fill="#E6EDF3" font-size="11">主機 C</text>
+
+          <!-- HBA Ports -->
+          <text x="65" y="178" text-anchor="middle" fill="#484F58" font-size="9" font-family="JetBrains Mono,monospace">HBA Port（WWPN）</text>
+
+          <!-- FC Switch A -->
+          <line x1="110" y1="38" x2="200" y2="80" stroke="#2F81F7" stroke-width="1.5"/>
+          <line x1="110" y1="88" x2="200" y2="90" stroke="#2F81F7" stroke-width="1.5"/>
+          <line x1="110" y1="138" x2="200" y2="100" stroke="#2F81F7" stroke-width="1.5"/>
+
+          <rect x="200" y="60" width="100" height="60" rx="6" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="250" y="85" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">FC SWITCH A</text>
+          <text x="250" y="100" text-anchor="middle" fill="#8B949E" font-size="10">Fabric A</text>
+          <text x="250" y="113" text-anchor="middle" fill="#8B949E" font-size="9">ISL</text>
+
+          <!-- ISL 連線 -->
+          <line x1="300" y1="90" x2="380" y2="90" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+          <!-- FC Switch B -->
+          <rect x="380" y="60" width="100" height="60" rx="6" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="430" y="85" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">FC SWITCH B</text>
+          <text x="430" y="100" text-anchor="middle" fill="#8B949E" font-size="10">Fabric B</text>
+
+          <!-- 儲存設備 -->
+          <line x1="480" y1="80" x2="540" y2="50" stroke="#2F81F7" stroke-width="1.5"/>
+          <line x1="480" y1="100" x2="540" y2="100" stroke="#2F81F7" stroke-width="1.5"/>
+          <line x1="480" y1="110" x2="540" y2="150" stroke="#2F81F7" stroke-width="1.5"/>
+
+          <rect x="540" y="30" width="30" height="36" rx="4" fill="#1C2128" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="555" y="44" text-anchor="middle" fill="#3FB950" font-size="9">Ctrl</text>
+          <text x="555" y="56" text-anchor="middle" fill="#3FB950" font-size="9">A</text>
+          <rect x="540" y="80" width="30" height="36" rx="4" fill="#1C2128" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="555" y="94" text-anchor="middle" fill="#3FB950" font-size="9">Ctrl</text>
+          <text x="555" y="106" text-anchor="middle" fill="#3FB950" font-size="9">B</text>
+          <rect x="540" y="130" width="30" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="555" y="148" text-anchor="middle" fill="#8B949E" font-size="9">儲存</text>
+          <text x="555" y="160" text-anchor="middle" fill="#8B949E" font-size="9">陣列</text>
+
+          <!-- 說明 -->
+          <text x="250" y="155" text-anchor="middle" fill="#484F58" font-size="10">雙 Fabric 設計：每台主機各有一條路徑到 Fabric A 和 Fabric B</text>
+          <text x="250" y="170" text-anchor="middle" fill="#484F58" font-size="10">任一 Switch 故障，另一條路徑繼續服務（搭配 MPIO）</text>
+          <text x="430" y="155" text-anchor="middle" fill="#58A6FF" font-size="9">ISL = Inter-Switch Link</text>
+        </svg>
+      </div>
+
+      <h3>FC 速度演進</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>世代</th><th>速度</th><th>實際吞吐量</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>8GFC</td><td>8 Gbps</td><td>~800 MB/s</td><td>仍有大量存量設備</td></tr>
+            <tr><td>16GFC</td><td>16 Gbps</td><td>~1.6 GB/s</td><td>目前常見</td></tr>
+            <tr class="highlight-row"><td>32GFC</td><td>32 Gbps</td><td>~3.2 GB/s</td><td>目前主流新建</td></tr>
+            <tr><td>64GFC</td><td>64 Gbps</td><td>~6.4 GB/s</td><td>高端新設備導入中</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>為什麼大型企業偏好 FC</h3>
+      <ul>
+        <li><strong>Lossless 傳輸：</strong>FC 協定設計上不允許封包遺失（透過 Credit-based Flow Control），不像 TCP/IP 需要重傳，延遲更穩定</li>
+        <li><strong>專用網路：</strong>SAN 網路和 LAN 完全分離，儲存 I/O 不受一般網路流量影響</li>
+        <li><strong>成熟可靠：</strong>FC 發展超過 30 年，在大型企業和金融業有極高的信任度與實績</li>
+        <li><strong>硬體加速：</strong>FC HBA 在硬體層處理協定，不佔用主機 CPU 資源</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2.3 iSCSI 與 FCoE -->
+    <!-- ============================================================ -->
+    <section id="iscsi">
+      <div class="anchor-wrap">
+        <h2>2.3 iSCSI 與 FCoE<a class="anchor-link" href="#iscsi">#</a></h2>
+      </div>
+
+      <h3>iSCSI：把 SCSI 指令跑在 IP 網路上</h3>
+      <p>iSCSI（Internet Small Computer Systems Interface）將 SCSI 儲存指令封裝在 TCP/IP 封包中傳輸，讓標準 Ethernet 網路可以承載儲存 I/O，不需要額外的 FC 基礎設施。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>Fibre Channel</th><th>iSCSI</th></tr></thead>
+          <tbody>
+            <tr><td>傳輸介質</td><td>FC 光纖 / 銅線（專用）</td><td>標準 Ethernet（共用）</td></tr>
+            <tr><td>基礎設施</td><td>需要 FC Switch、FC HBA</td><td>標準 Ethernet Switch、NIC 即可</td></tr>
+            <tr><td>延遲</td><td>低且穩定（Lossless）</td><td>較高，受網路狀況影響</td></tr>
+            <tr><td>成本</td><td>較高（FC 設備貴）</td><td>較低（利用現有 LAN 設備）</td></tr>
+            <tr><td>管理複雜度</td><td>需要懂 FC Zoning</td><td>熟悉 IP 網路即可入門</td></tr>
+            <tr class="highlight-row"><td>適用場景</td><td>大型企業、金融、電信、核心應用</td><td>中小企業、非關鍵應用、成本敏感環境</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">iSCSI 效能優化</div>
+        iSCSI 跑在 TCP/IP 上，封包處理會消耗主機 CPU。高效能環境建議使用支援 TOE（TCP Offload Engine）的網路卡，或直接使用 iSCSI HBA（硬體加速），避免 CPU 成為瓶頸。此外，iSCSI 建議走獨立的 VLAN 或專用 Switch，避免與一般資料流量競爭頻寬。
+      </div>
+
+      <h3>FCoE：在 Ethernet 上跑 FC（已逐漸式微）</h3>
+      <p>FCoE（Fibre Channel over Ethernet）試圖將 FC 的 Lossless 特性和 Ethernet 的普及性結合，在 10GbE 以上的 Ethernet 上傳輸 FC 訊框。需要支援 DCB（Data Center Bridging）的 Switch 才能保證 Lossless。</p>
+      <p>由於 FCoE 需要特殊的 Switch 和 CNA（Converged Network Adapter），複雜度高、成本並未顯著低於 FC，加上 NVMe-oF 的出現提供了更好的選項，FCoE 目前已逐漸式微，不建議新建環境採用。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2.4 NVMe-oF -->
+    <!-- ============================================================ -->
+    <section id="nvmeof">
+      <div class="anchor-wrap">
+        <h2>2.4 NVMe-oF（NVMe over Fabrics）<a class="anchor-link" href="#nvmeof">#</a></h2>
+      </div>
+      <p>NVMe 本來只能本機連接（PCIe 插槽），NVMe-oF 讓 NVMe 的低延遲特性可以透過網路傳遞到遠端儲存設備，是目前企業儲存網路的最新演進方向。</p>
+
+      <h3>為什麼需要 NVMe-oF</h3>
+      <p>傳統 SAN 協定（FC-SCSI、iSCSI）在設計時針對 HDD 的延遲特性，指令佇列深度有限（SCSI 最多 256 個）。NVMe SSD 的延遲已低至 50 µs，但如果還要走傳統 SCSI 協定，協定本身的開銷反而成為新的瓶頸。NVMe-oF 讓網路傳輸也能使用 NVMe 的指令集，真正發揮 NVMe SSD 的效能潛力。</p>
+
+      <h3>三種 NVMe-oF 傳輸協定</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>協定</th><th>傳輸介質</th><th>延遲</th><th>適用場景</th><th>普及程度</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>FC-NVMe</strong></td>
+              <td>現有 FC 基礎設施</td>
+              <td>極低</td>
+              <td>已有 FC 環境的升級路徑，不需要新建網路</td>
+              <td>企業最快落地</td>
+            </tr>
+            <tr>
+              <td><strong>NVMe/RoCE</strong></td>
+              <td>高速 Ethernet（25G / 100G）+ RDMA</td>
+              <td>極低（接近本地）</td>
+              <td>新建高效能環境、AI / HPC</td>
+              <td>成長最快</td>
+            </tr>
+            <tr>
+              <td><strong>NVMe/TCP</strong></td>
+              <td>標準 Ethernet（無需 RDMA）</td>
+              <td>低（高於 RoCE）</td>
+              <td>不需要 RDMA 硬體，部署最簡單</td>
+              <td>中小企業友善</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>NVMe-oF vs 傳統 SCSI 協定的根本差異</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>傳統 SCSI（FC / iSCSI）</th><th>NVMe-oF</th></tr></thead>
+          <tbody>
+            <tr><td>指令集</td><td>SCSI 指令集（為 HDD 設計）</td><td>NVMe 指令集（為 Flash 設計）</td></tr>
+            <tr><td>佇列深度</td><td>最多 256 個指令</td><td>最多 65,535 個佇列 × 65,536 深度</td></tr>
+            <tr><td>CPU 開銷</td><td>SCSI 翻譯層有額外開銷</td><td>原生 NVMe 無翻譯層</td></tr>
+            <tr class="highlight-row"><td>延遲</td><td>受 SCSI 協定開銷影響</td><td>接近本地 NVMe 延遲</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">目前普及狀況</div>
+        FC-NVMe 在已有 FC 基礎設施的大型企業中推進最快，因為不需要新建網路。NVMe/TCP 因為不需要特殊硬體，在中小企業新建環境中受到關注。整體而言，NVMe-oF 仍在快速普及階段，目前大多數企業環境仍以傳統 FC-SCSI 為主。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2.5 Zoning 與 LUN Masking -->
+    <!-- ============================================================ -->
+    <section id="zoning">
+      <div class="anchor-wrap">
+        <h2>2.5 Zoning 與 LUN Masking<a class="anchor-link" href="#zoning">#</a></h2>
+      </div>
+      <p>在 SAN 環境中，同一個 Fabric 上可能有數十甚至數百台主機和儲存設備。如果沒有隔離機制，任何一台主機都能看到所有儲存設備的所有 LUN，這在安全性和效能上都是災難。Zoning 和 LUN Masking 是 SAN 隔離的兩個層次。</p>
+
+      <h3>Zoning：在 Switch 層隔離</h3>
+      <p>Zoning 在 FC Switch 上設定，控制哪些 Port 或 WWN 可以互相「看見」並建立連線。同一個 Zone 內的成員可以溝通，不同 Zone 的成員完全隔離。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Zoning 類型</th><th>設定方式</th><th>優點</th><th>缺點</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>Hard Zoning（Port Zoning）</strong></td>
+              <td>依 Switch 的實體 Port 編號設定</td>
+              <td>最安全，Switch 硬體強制隔離，無法繞過</td>
+              <td>設備搬到不同 Port 就要重新設定 Zone</td>
+            </tr>
+            <tr>
+              <td><strong>Soft Zoning（WWN Zoning）</strong></td>
+              <td>依 WWPN 設定，與實體 Port 無關</td>
+              <td>設備換 Port 不需要改 Zone，管理彈性高</td>
+              <td>理論上可被 WWN 偽冒繞過（實務上罕見）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>企業實務上多採用 <strong>WWN Zoning（依 WWPN）</strong>，兼顧安全性和管理彈性。最佳實踐是一個 Zone 只包含「一台主機的 WWPN」加上「它需要存取的儲存設備 Port」，最小化存取範圍。</p>
+
+      <h3>LUN Masking：在儲存設備層隔離</h3>
+      <p>Zoning 控制「誰能連到誰」，LUN Masking 控制「連上去之後能看到哪些 LUN」。即使兩台主機在同一個 Zone，LUN Masking 還是可以讓它們各自只看到自己的 LUN。</p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">雙層防護最佳實踐</div>
+        Zoning（Switch 層）+ LUN Masking（儲存設備層）雙層設定，即使其中一層設定有誤，另一層還能提供保護。這是企業 SAN 環境的標準做法。
+      </div>
+
+      <h3>設定錯誤的常見後果</h3>
+      <ul>
+        <li><strong>Zone 設定錯誤：</strong>主機看不到 LUN，應用無法啟動（最常見的 SAN 建置問題）</li>
+        <li><strong>LUN Masking 遺漏：</strong>主機意外看到不屬於它的 LUN，若主機格式化該 LUN 會造成資料遺失</li>
+        <li><strong>Zoning 過於寬鬆：</strong>不必要的連線路徑增加管理複雜度，也增加安全風險</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2.6 多路徑 MPIO -->
+    <!-- ============================================================ -->
+    <section id="mpio">
+      <div class="anchor-wrap">
+        <h2>2.6 多路徑（Multipath / MPIO）<a class="anchor-link" href="#mpio">#</a></h2>
+      </div>
+      <p>如果主機到儲存設備只有一條路徑，這條路徑上的任何一個元件故障（HBA Port、光纖纜線、FC Switch、儲存控制器 Port）都會導致儲存服務中斷。多路徑（Multipath / MPIO）透過同時建立多條獨立路徑，提供備援和效能提升。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 520 160" width="480" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 主機 -->
+          <rect x="20" y="50" width="100" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="70" y="74" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">主機</text>
+          <text x="70" y="90" text-anchor="middle" fill="#8B949E" font-size="10">HBA Port 0</text>
+          <text x="70" y="102" text-anchor="middle" fill="#8B949E" font-size="10">HBA Port 1</text>
+
+          <!-- 路徑 A（上） -->
+          <line x1="120" y1="68" x2="200" y2="50" stroke="#2F81F7" stroke-width="1.5"/>
+          <rect x="200" y="30" width="80" height="36" rx="4" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="240" y="48" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">Fabric A</text>
+          <text x="240" y="60" text-anchor="middle" fill="#8B949E" font-size="9">FC Switch</text>
+          <line x1="280" y1="48" x2="360" y2="68" stroke="#2F81F7" stroke-width="1.5"/>
+
+          <!-- 路徑 B（下） -->
+          <line x1="120" y1="92" x2="200" y2="110" stroke="#3FB950" stroke-width="1.5"/>
+          <rect x="200" y="94" width="80" height="36" rx="4" fill="#1C2128" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="240" y="112" text-anchor="middle" fill="#3FB950" font-size="10" font-family="JetBrains Mono,monospace">Fabric B</text>
+          <text x="240" y="124" text-anchor="middle" fill="#8B949E" font-size="9">FC Switch</text>
+          <line x1="280" y1="112" x2="360" y2="92" stroke="#3FB950" stroke-width="1.5"/>
+
+          <!-- 儲存設備 -->
+          <rect x="360" y="50" width="120" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="420" y="74" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">儲存陣列</text>
+          <text x="420" y="90" text-anchor="middle" fill="#8B949E" font-size="10">Ctrl A Port</text>
+          <text x="420" y="102" text-anchor="middle" fill="#8B949E" font-size="10">Ctrl B Port</text>
+
+          <!-- 標籤 -->
+          <text x="240" y="152" text-anchor="middle" fill="#484F58" font-size="10">兩條獨立路徑，任一路徑故障，另一條自動接手</text>
+        </svg>
+      </div>
+
+      <h3>路徑選擇策略</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>策略</th><th>說明</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Failover Only</strong></td>
+              <td>一條主要路徑，另一條待命。主要路徑故障才切換</td>
+              <td>簡單備援，不需要負載均衡</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>Round-robin</strong></td>
+              <td>I/O 依序輪流分配到各條路徑</td>
+              <td>效能最佳化，充分利用所有路徑頻寬</td>
+            </tr>
+            <tr>
+              <td><strong>ALUA（Asymmetric Logical Unit Access）</strong></td>
+              <td>儲存設備告知主機哪條路徑是最優路徑（Optimized），主機優先使用</td>
+              <td>雙控制器儲存設備的標準模式，避免 Cross-controller I/O 開銷</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>各作業系統的 MPIO 實作</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>作業系統</th><th>MPIO 元件</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td><strong>IBM AIX</strong></td><td>AIX MPIO（內建）</td><td>AIX 原生多路徑，支援 ALUA，IBM 儲存設備整合最佳</td></tr>
+            <tr><td><strong>IBM i</strong></td><td>內建多路徑</td><td>IBM i 作業系統原生支援，透過 VIOS 或直接 FC 連接</td></tr>
+            <tr><td><strong>Linux</strong></td><td>DM-Multipath（device-mapper-multipath）</td><td>開源，支援各廠商儲存設備，需設定 multipath.conf</td></tr>
+            <tr><td><strong>Windows</strong></td><td>MPIO（Microsoft 內建）</td><td>Windows Server 內建，需安裝各廠商的 DSM（Device Specific Module）</td></tr>
+            <tr><td><strong>VMware ESXi</strong></td><td>Native Multipathing Plugin（NMP）</td><td>ESXi 內建，支援 PSP（Path Selection Policy）設定</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 常見 MPIO 設定問題</div>
+        <ul style="margin-bottom:0;">
+          <li>路徑數量不對稱（一台主機有 4 條路徑，另一台只有 2 條），效能和備援能力不一致</li>
+          <li>路徑策略設定錯誤（應用 ALUA 的儲存設備卻設成 Round-robin），導致跨控制器 I/O 增加延遲</li>
+          <li>Fabric A 和 Fabric B 的路徑全部接到同一台 FC Switch，失去雙 Fabric 的備援意義</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">下一步</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part3-svc.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            Part 3 — 虛擬化儲存層原理（SAN 建好後，如何在上面建虛擬化層）
+          </a>
+          <a href="part5-ha.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Part 5 — 高可用與災難復原（多路徑 + HA 的完整設計）
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe RAID DRAID 控制器', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'SAN FC Fibre Channel iSCSI NVMe-oF Zoning LUN Masking MPIO Multipath WWN WWPN Block File Object DAS NAS', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: '2.1 SAN 基本概念', keywords: 'Block File Object DAS NAS SAN 差異 適用場景 資料庫', url: 'part2-san.html#concept', path: 'part2-san.html' },
+  { title: '2.2 Fibre Channel 架構', keywords: 'FC Fibre Channel HBA WWN WWPN WWNN Fabric Switch Director 8G 16G 32G 64G Lossless', url: 'part2-san.html#fc', path: 'part2-san.html' },
+  { title: '2.3 iSCSI 與 FCoE', keywords: 'iSCSI FCoE TCP IP Ethernet TOE CNA Converged 比較', url: 'part2-san.html#iscsi', path: 'part2-san.html' },
+  { title: '2.4 NVMe-oF', keywords: 'NVMe-oF FC-NVMe RoCE iWARP TCP RDMA 延遲 佇列深度', url: 'part2-san.html#nvmeof', path: 'part2-san.html' },
+  { title: '2.5 Zoning 與 LUN Masking', keywords: 'Zoning Hard Soft WWN Port LUN Masking 隔離 安全', url: 'part2-san.html#zoning', path: 'part2-san.html' },
+  { title: '2.6 多路徑 MPIO', keywords: 'MPIO Multipath Failover Round-robin ALUA AIX Linux DM-Multipath Windows VMware ESXi 備援', url: 'part2-san.html#mpio', path: 'part2-san.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 Mdisk Pool VDisk', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: 'Part 3 — 情境案例', keywords: 'FlashSystem Thin Provisioning 容量推導', url: 'part3-case.html', path: 'part3-case.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS Storage Modeller TiB TB 容量規劃', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

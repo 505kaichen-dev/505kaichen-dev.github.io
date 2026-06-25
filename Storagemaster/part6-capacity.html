@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 6 — 效能規劃與容量管理 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .formula {
+      font-family: var(--mono);
+      font-size: .875rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 20px;
+      margin: 16px 0;
+      color: var(--primary-hi);
+      line-height: 1.9;
+    }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-green td { background: rgba(63,185,80,.06); }
+    .highlight-red td { background: rgba(248,81,73,.06); }
+    .triangle-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .triangle-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      text-align: center;
+    }
+    .triangle-item-icon { font-size: 24px; margin-bottom: 8px; }
+    .triangle-item-title { font-size: .875rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .triangle-item-desc { font-size: .8125rem; color: var(--text-muted); line-height: 1.55; }
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .step-card {
+      background: var(--surface2);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .step-card-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .step-card-title { font-size: .875rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .step-card-desc { font-size: .8125rem; color: var(--text-muted); line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link active" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link nav-sub" href="#perf-basics">6.1 效能指標基礎</a>
+      <a class="nav-link nav-sub" href="#capacity-layers">6.2 容量三層換算</a>
+      <a class="nav-link nav-sub" href="#modeller">6.3 Storage Modeller 實戰</a>
+      <a class="nav-link nav-sub" href="#planning">6.4 容量規劃方法論</a>
+      <a class="nav-link nav-sub" href="#bottleneck">6.5 效能瓶頸診斷</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 06 / CORE CURRICULUM</div>
+      <h1>效能規劃與容量管理</h1>
+      <p class="page-desc">從 HDD 與 All-Flash 的規劃思維差異出發，掌握 Raw → Usable → Effective 三層換算邏輯，搭配 IBM Storage Modeller 操作實戰，建立完整的容量規劃與效能診斷能力。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-blue">容量規劃</span>
+        <span class="badge badge-green">IBM Storage Modeller</span>
+        <span class="badge badge-amber">通用概念</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#perf-basics">6.1 效能指標基礎</a></li>
+        <li><a href="#capacity-layers">6.2 容量三層換算</a></li>
+        <li><a href="#modeller">6.3 IBM Storage Modeller 操作實戰</a></li>
+        <li><a href="#planning">6.4 容量規劃方法論</a></li>
+        <li><a href="#bottleneck">6.5 效能瓶頸診斷</a></li>
+      </ol>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 6.1 效能指標基礎 -->
+    <!-- ============================================================ -->
+    <section id="perf-basics">
+      <div class="anchor-wrap">
+        <h2>6.1 效能指標基礎<a class="anchor-link" href="#perf-basics">#</a></h2>
+      </div>
+      <p>儲存效能由三個核心指標描述，三者之間有密切的相互影響關係，不能單獨看待。</p>
+
+      <div class="triangle-box">
+        <div class="triangle-item">
+          <div class="triangle-item-icon">⚡</div>
+          <div class="triangle-item-title">IOPS</div>
+          <div class="triangle-item-desc">每秒 I/O 操作次數。資料庫、交易系統等隨機讀寫密集的工作負載最關注此指標。</div>
+        </div>
+        <div class="triangle-item">
+          <div class="triangle-item-icon">🚀</div>
+          <div class="triangle-item-title">吞吐量（Throughput）</div>
+          <div class="triangle-item-desc">每秒傳輸的資料量（MB/s 或 GB/s）。大型循序讀寫（備份、影像串流）最關注此指標。</div>
+        </div>
+        <div class="triangle-item">
+          <div class="triangle-item-icon">⏱️</div>
+          <div class="triangle-item-title">延遲（Latency）</div>
+          <div class="triangle-item-desc">單次 I/O 的回應時間（ms 或 µs）。即時交易、核心應用對延遲最敏感。</div>
+        </div>
+      </div>
+
+      <h3>三者的相互關係</h3>
+      <p>IOPS 和吞吐量不能同時最大化：小 I/O（4K、8K）有利於高 IOPS；大 I/O（64K、128K 以上）有利於高吞吐量，但同時 IOPS 數字會下降。延遲則受到 Queue Depth（佇列深度）影響——Queue Depth 越高，儲存系統越忙，單次 I/O 的等待時間越長。</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Queue Depth 的直覺理解</div>
+        把儲存系統想像成一個服務窗口，Queue Depth 就是排隊人數。窗口忙碌（高負載）時，即使窗口本身的服務速度夠快，每個人等待的時間（延遲）還是會增加。所以高 IOPS 不代表低延遲，這兩個目標在高負載下會互相拉扯。
+      </div>
+
+      <h3>HDD 時代：用顆數換 IOPS</h3>
+      <p>傳統 HDD 的 IOPS 受限於機械動作：磁頭尋道（Seek Time）和碟片旋轉等待（Rotational Latency）。這兩個都是物理限制，無法靠軟體突破。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>HDD 類型</th><th>轉速</th><th>典型 IOPS（4K 隨機）</th><th>典型延遲</th></tr></thead>
+          <tbody>
+            <tr><td>SATA HDD</td><td>7,200 RPM</td><td>75 ~ 100 IOPS</td><td>8 ~ 12 ms</td></tr>
+            <tr><td>SAS HDD</td><td>10,000 RPM</td><td>130 ~ 150 IOPS</td><td>5 ~ 8 ms</td></tr>
+            <tr><td>SAS HDD（高速）</td><td>15,000 RPM</td><td>175 ~ 210 IOPS</td><td>3 ~ 5 ms</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>假設應用需要 10,000 IOPS，使用 15K SAS HDD（約 180 IOPS / 顆）：</p>
+      <div class="formula">
+        所需磁碟數 = 目標 IOPS ÷ 單顆 IOPS<br>
+        = 10,000 ÷ 180 ≈ <strong>56 顆</strong>
+      </div>
+
+      <p>56 顆 4 TB HDD 的總容量是 224 TB，但應用實際可能只需要 20 TB 的資料量。其餘 204 TB 完全是為了湊 IOPS 而買的「無效容量」。這是 HDD 時代容量規劃最大的浪費來源。</p>
+
+      <h3>All-Flash 時代：規劃思維的根本轉變</h3>
+      <p>NVMe SSD 沒有機械動作，IOPS 由電子訊號速度決定，一顆現代 NVMe SSD 可提供數十萬甚至百萬 IOPS。這讓「用顆數換 IOPS」的邏輯完全瓦解。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>媒介類型</th><th>典型 IOPS（4K 隨機）</th><th>典型延遲</th><th>規劃主軸</th></tr></thead>
+          <tbody>
+            <tr><td>15K SAS HDD</td><td>~200 IOPS / 顆</td><td>3 ~ 5 ms</td><td>用顆數換 IOPS</td></tr>
+            <tr><td>SATA SSD</td><td>~80,000 IOPS / 顆</td><td>0.1 ~ 0.5 ms</td><td>IOPS 不再是瓶頸</td></tr>
+            <tr class="highlight-row"><td>NVMe SSD（企業級）</td><td>500,000 ~ 1,500,000 IOPS / 顆</td><td>50 ~ 200 µs</td><td><strong>容量與成本為主軸</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>All-Flash 的顆數取捨三角</h3>
+      <p>當 IOPS 不再是瓶頸，All-Flash 的容量規劃轉變為以下三角取捨：</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 560 220" width="520" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 三角形 -->
+          <polygon points="280,30 80,190 480,190" fill="none" stroke="#30363D" stroke-width="1.5"/>
+
+          <!-- 頂點：容量需求 -->
+          <circle cx="280" cy="30" r="28" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="280" y="26" text-anchor="middle" fill="#2F81F7" font-size="10" font-weight="600">容量</text>
+          <text x="280" y="38" text-anchor="middle" fill="#2F81F7" font-size="10" font-weight="600">需求</text>
+
+          <!-- 左下：顆數 -->
+          <circle cx="80" cy="190" r="28" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="80" y="186" text-anchor="middle" fill="#3FB950" font-size="10" font-weight="600">磁碟</text>
+          <text x="80" y="198" text-anchor="middle" fill="#3FB950" font-size="10" font-weight="600">顆數</text>
+
+          <!-- 右下：成本 -->
+          <circle cx="480" cy="190" r="28" fill="#0D1117" stroke="#D29922" stroke-width="1.5"/>
+          <text x="480" y="186" text-anchor="middle" fill="#D29922" font-size="10" font-weight="600">採購</text>
+          <text x="480" y="198" text-anchor="middle" fill="#D29922" font-size="10" font-weight="600">成本</text>
+
+          <!-- 邊的說明 -->
+          <!-- 左邊：顆數影響 Usable -->
+          <text x="155" y="108" text-anchor="middle" fill="#8B949E" font-size="11" transform="rotate(-52, 155, 108)">顆數多 → Usable 比例高</text>
+          <!-- 右邊：顆數影響成本 -->
+          <text x="400" y="108" text-anchor="middle" fill="#8B949E" font-size="11" transform="rotate(52, 400, 108)">顆數少 → 控制器成本低</text>
+          <!-- 底邊：成本 vs 容量 -->
+          <text x="280" y="207" text-anchor="middle" fill="#8B949E" font-size="11">大容量單顆 → 更低單位成本</text>
+
+          <!-- 中間說明 -->
+          <text x="280" y="128" text-anchor="middle" fill="#484F58" font-size="11">顆數↑ → 重建速度↑</text>
+          <text x="280" y="144" text-anchor="middle" fill="#484F58" font-size="11">顆數↓ → 控制器負擔↓</text>
+        </svg>
+      </div>
+
+      <p>實際規劃時，採購方通常會在「給定容量需求」的前提下，尋找顆數與單顆容量的最佳組合，讓總成本最低、同時 Usable 比例和重建速度都在可接受範圍內。IBM Storage Modeller 是驗證這個取捨的標準工具。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6.2 容量三層換算 -->
+    <!-- ============================================================ -->
+    <section id="capacity-layers">
+      <div class="anchor-wrap">
+        <h2>6.2 容量三層換算<a class="anchor-link" href="#capacity-layers">#</a></h2>
+      </div>
+      <p>從磁碟的標示容量到主機實際可用的空間，中間經過三層轉換，每一層都有損耗或放大。搞清楚這三層，是容量規劃最基礎的功夫。</p>
+
+      <h3>Raw → Usable → Effective</h3>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 130" width="540" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- Raw -->
+          <rect x="20" y="30" width="155" height="70" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="97" y="55" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace">RAW</text>
+          <text x="97" y="74" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">磁碟標示容量</text>
+          <text x="97" y="90" text-anchor="middle" fill="#8B949E" font-size="11">廠商標示 TB</text>
+
+          <!-- Arrow 1 -->
+          <line x1="175" y1="65" x2="205" y2="65" stroke="#30363D" stroke-width="1.5"/>
+          <polygon points="202,59 212,65 202,71" fill="#30363D"/>
+          <text x="193" y="56" text-anchor="middle" fill="#F85149" font-size="10">RAID / DRAID</text>
+          <text x="193" y="78" text-anchor="middle" fill="#F85149" font-size="10">保護開銷</text>
+
+          <!-- Usable -->
+          <rect x="213" y="30" width="155" height="70" rx="6" fill="#1C2128" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="290" y="55" text-anchor="middle" fill="#3FB950" font-size="10" font-family="JetBrains Mono,monospace">USABLE</text>
+          <text x="290" y="74" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">物理可用容量</text>
+          <text x="290" y="90" text-anchor="middle" fill="#8B949E" font-size="11">Storage Modeller 基準</text>
+
+          <!-- Arrow 2 -->
+          <line x1="368" y1="65" x2="398" y2="65" stroke="#30363D" stroke-width="1.5"/>
+          <polygon points="395,59 405,65 395,71" fill="#30363D"/>
+          <text x="386" y="52" text-anchor="middle" fill="#2F81F7" font-size="10">Thin / Comp</text>
+          <text x="386" y="64" text-anchor="middle" fill="#2F81F7" font-size="10">/ Dedup</text>
+          <text x="386" y="78" text-anchor="middle" fill="#2F81F7" font-size="10">放大或縮減</text>
+
+          <!-- Effective -->
+          <rect x="406" y="30" width="155" height="70" rx="6" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="483" y="55" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">EFFECTIVE</text>
+          <text x="483" y="74" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">有效容量</text>
+          <text x="483" y="90" text-anchor="middle" fill="#8B949E" font-size="11">主機可配置上限</text>
+        </svg>
+      </div>
+
+      <h3>TiB vs TB：最常見的混淆來源</h3>
+      <p>磁碟廠商用十進位（1 TB = 1,000,000,000,000 Bytes），作業系統和 SVC 介面用二進位（1 TiB = 1,099,511,627,776 Bytes）。兩者差距約 9.1%，在大容量環境下數字落差很明顯。</p>
+
+      <div class="formula">
+        TB → TiB 換算：TiB = TB × (1000⁴ ÷ 1024⁴) ≈ TB × 0.9095<br>
+        TiB → TB 換算：TB = TiB × (1024⁴ ÷ 1000⁴) ≈ TiB × 1.0995<br><br>
+        例：廠商標示 9.6 TB NVMe<br>
+        → 實際 = 9.6 × 0.9095 ≈ <strong>8.73 TiB</strong>（作業系統 / SVC 顯示值）
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 規劃文件的單位一致性</div>
+        同一份文件中混用 TB 和 TiB 是最常見的錯誤來源。建議原則：SVC 介面顯示什麼單位，文件就用什麼單位。IBM SVC 和 FlashSystem 介面一律顯示 TiB，所以規劃文件統一用 TiB，需要對外說明時再換算成整數 TB 概估值。
+      </div>
+
+      <h3>DRAID vs 傳統 RAID 的 Usable 差異</h3>
+      <p>同樣 18 顆磁碟，DRAID-6 和傳統 RAID-6 的 Usable 有顯著差異：</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RAID 類型</th><th>18 顆磁碟</th><th>保護方式</th><th>Usable 比例</th><th>優勢</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>傳統 RAID-6</td>
+              <td>18 顆（固定群組）</td>
+              <td>每群組固定 2 顆 Parity</td>
+              <td>~88.9%（16/18）</td>
+              <td>簡單直觀</td>
+            </tr>
+            <tr class="highlight-row">
+              <td>DRAID-6（10+P+Q）</td>
+              <td>18 顆（分散 Stripe）</td>
+              <td>Parity 分散於所有磁碟</td>
+              <td>~83.3%（10/12 per stripe）</td>
+              <td>重建速度快、所有磁碟都參與重建</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>DRAID 的 Usable 比例略低於傳統 RAID-6，但重建時間大幅縮短（因為所有磁碟都參與重建，不只是固定幾顆）。在 All-Flash 環境中，重建速度的優先級高於 Usable 比例，因此 IBM FlashSystem 全系列預設使用 DRAID。</p>
+
+      <h3>顆數對 Usable 比例的影響</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>磁碟顆數</th><th>DRAID-6 配置</th><th>Data Drives</th><th>Usable 比例</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr><td>12 顆</td><td>10+P+Q</td><td>10</td><td>83.3%</td><td>最小可用配置</td></tr>
+            <tr><td>18 顆</td><td>10+P+Q × 1.5 組</td><td>~15</td><td>~83.3%</td><td>FS7300 典型配置</td></tr>
+            <tr><td>24 顆</td><td>10+P+Q × 2 組</td><td>~20</td><td>~83.3%</td><td>FS7200 典型配置</td></tr>
+            <tr class="highlight-row"><td>顆數越多</td><td>—</td><td>—</td><td>比例趨於穩定</td><td>重建速度↑、單顆故障影響↓</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">實務建議</div>
+        不要手算 DRAID Usable，直接用 IBM Storage Modeller 輸入 BOM 規格，系統會自動計算出精確的 Raw / Usable / Effective 數字，這才是提案和驗收的官方依據。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6.3 Storage Modeller 操作實戰 -->
+    <!-- ============================================================ -->
+    <section id="modeller">
+      <div class="anchor-wrap">
+        <h2>6.3 IBM Storage Modeller 操作實戰<a class="anchor-link" href="#modeller">#</a></h2>
+      </div>
+      <p>IBM Storage Modeller 是 IBM 官方的容量規劃工具，輸入 BOM 規格後自動計算 Raw / Usable / Effective 容量。是提案、驗收、容量規劃的標準依據，不能用手算取代。</p>
+
+      <h3>介面四個頁籤</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>頁籤</th><th>功能</th><th>常用時機</th></tr></thead>
+          <tbody>
+            <tr><td><strong>System</strong></td><td>設定機型、軟體版本、Standard / Custom 配置</td><td>建立新專案第一步</td></tr>
+            <tr><td><strong>Adapters</strong></td><td>設定前端 FC / iSCSI 介面卡數量</td><td>需要確認 FC Port 數量時</td></tr>
+            <tr><td><strong>Capacity</strong></td><td>設定磁碟顆數、DRAID 類型、Pool 參數（Thin / Compression / Dedup）</td><td>容量規劃核心頁面</td></tr>
+            <tr><td><strong>Report</strong></td><td>輸出完整規格報表，含 Raw / Usable / Effective</td><td>提案文件截圖依據</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>建立 FlashSystem 專案步驟</h3>
+      <div class="step-grid">
+        <div class="step-card">
+          <div class="step-card-num">STEP 01</div>
+          <div class="step-card-title">選擇機型</div>
+          <div class="step-card-desc">System 頁籤，從下拉選單選擇正確的 FlashSystem 型號（如 FlashSystem 7300 / 4657-924）</div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-num">STEP 02</div>
+          <div class="step-card-title">選擇軟體版本</div>
+          <div class="step-card-desc">選擇對應的 Software Version，影響功能可用性（如 DRP 需要特定版本以上）</div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-num">STEP 03</div>
+          <div class="step-card-title">切換 Capacity 頁籤</div>
+          <div class="step-card-desc">Add Pool 建立儲存池，選擇 Regular Pool 或 Data Reduction Pool</div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-num">STEP 04</div>
+          <div class="step-card-title">設定磁碟</div>
+          <div class="step-card-desc">Add Array，選擇磁碟型號（需與 BOM 一致）、顆數、DRAID 類型（如 DRAID-6 10+P+Q）</div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-num">STEP 05</div>
+          <div class="step-card-title">設定 Pool 參數</div>
+          <div class="step-card-desc">Thin Provisioning（%）、Compression（%）、Deduplication（%），不開就填 0</div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-num">STEP 06</div>
+          <div class="step-card-title">確認右上角數字</div>
+          <div class="step-card-desc">Raw / Usable / Effective 三個數字即時更新，這是提案文件的官方依據</div>
+        </div>
+      </div>
+
+      <h3>Pool 參數的意義</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>參數</th><th>填 0 的意思</th><th>填非 0 的效果</th><th>建議</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Thin Provisioning (%)</strong></td>
+              <td>不開，Effective = Usable</td>
+              <td>Effective 大於 Usable（虛擬放大）</td>
+              <td>反推現況時使用；新建提案填 0，用物理 Usable 說明</td>
+            </tr>
+            <tr>
+              <td><strong>Compression (%)</strong></td>
+              <td>不開壓縮</td>
+              <td>Effective 進一步放大（依資料壓縮率）</td>
+              <td>資料庫環境壓縮率有限，建議保守估計</td>
+            </tr>
+            <tr>
+              <td><strong>Deduplication (%)</strong></td>
+              <td>不開重刪</td>
+              <td>Effective 進一步放大（依資料重複率）</td>
+              <td>需使用 Data Reduction Pool 才能開啟</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>用 Storage Modeller 驗證顆數取捨</h3>
+      <p>以 FlashSystem 7600（5075-A30）為例，比較不同顆數配置的 Usable 差異：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>磁碟顆數</th><th>單顆容量</th><th>Raw</th><th>Usable（DRAID-6）</th><th>單位成本比較</th></tr></thead>
+          <tbody>
+            <tr><td>12 顆</td><td>6.4 TB NVMe FCM5</td><td>~65 TiB</td><td>~54 TiB</td><td>基準</td></tr>
+            <tr class="highlight-row"><td>25 顆</td><td>6.4 TB NVMe FCM5</td><td>~136 TiB</td><td>~113 TiB</td><td>控制器成本分攤較低</td></tr>
+            <tr><td>12 顆</td><td>12.8 TB NVMe FCM5</td><td>~131 TiB</td><td>~109 TiB</td><td>顆數少、大容量單顆，控制器負擔低</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>相近的 Usable 容量，可以用「少顆大容量」或「多顆小容量」達成。前者控制器負擔低、成本可能較低；後者重建速度較快、Usable 比例略高。Storage Modeller 是驗證這個取捨的最快工具。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6.4 容量規劃方法論 -->
+    <!-- ============================================================ -->
+    <section id="planning">
+      <div class="anchor-wrap">
+        <h2>6.4 容量規劃方法論<a class="anchor-link" href="#planning">#</a></h2>
+      </div>
+      <p>容量規劃不是算一次就結束，而是一個「現況 → 預測 → 設計緩衝 → 定期複查」的循環。以下是標準流程。</p>
+
+      <h3>Step 1：現況盤點</h3>
+      <p>從 SVC 管理介面或 CLI 取得每個 Pool 的現況數字：</p>
+      <div class="formula">
+        SVC CLI：lsmdiskgrp -delimited :<br>
+        關鍵欄位：capacity（總容量）、used_capacity（已使用）、<br>
+        free_capacity（可用）、overallocation_max（Thin 上限）
+      </div>
+      <p>注意：如果 Pool 有開 Thin Provisioning，<code>capacity</code> 是虛擬容量，需回到 Storage Modeller 確認物理 Usable。</p>
+
+      <h3>Step 2：成長率預測</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>預測方法</th><th>說明</th><th>適用情境</th></tr></thead>
+          <tbody>
+            <tr><td>歷史趨勢法</td><td>取過去 12～24 個月的容量成長紀錄，計算月均成長率</td><td>業務穩定、無重大變化</td></tr>
+            <tr><td>業務預估法</td><td>依業務單位提供的未來業務量預估，換算儲存需求</td><td>業務有明確擴張計畫</td></tr>
+            <tr><td>保守估計法</td><td>取歷史趨勢的 1.5～2 倍作為規劃基礎</td><td>不確定性高、寧可保守</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Step 3：安全緩衝設計</h3>
+      <p>不能讓 Pool 使用率達到 100% 才開始行動，因為：</p>
+      <ul>
+        <li>採購到交貨有 Lead Time（IBM FlashSystem 一般 4～12 週）</li>
+        <li>Thin Provisioning 環境下，Pool 爆滿會導致 VDisk 直接離線，影響比想像中大</li>
+        <li>需要保留空間給 FlashCopy / Snapshot 的暫存使用</li>
+      </ul>
+
+      <div class="formula">
+        建議警戒線（物理 Usable）：<strong>70%</strong><br>
+        建議採購啟動點：使用率達 70%，立即啟動採購流程<br>
+        建議緊急上限：80%（超過此點應立即減少非必要資料）<br><br>
+        剩餘可用年限估算：<br>
+        剩餘容量 = 物理 Usable × (1 - 目前使用率)<br>
+        可用年限 = 剩餘容量 ÷ (年均成長量)
+      </div>
+
+      <h3>Step 4：汰換時機判斷</h3>
+      <p>容量不足不是汰換的唯一理由，以下四個條件任一成立，就應該啟動汰換評估：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>條件</th><th>說明</th><th>緊急程度</th></tr></thead>
+          <tbody>
+            <tr class="highlight-red"><td>已超過原廠支援期限（EOS）</td><td>無法取得原廠支援、安全更新，構成合規風險</td><td>高</td></tr>
+            <tr class="highlight-red"><td>容量使用率超過 80%</td><td>距離爆滿緩衝不足，且採購 Lead Time 可能來不及</td><td>高</td></tr>
+            <tr><td>年維護費用接近或超過新設備折舊</td><td>繼續維護的 TCO 不划算</td><td>中</td></tr>
+            <tr><td>效能已無法滿足應用需求</td><td>延遲過高、IOPS 不足，影響應用 SLA</td><td>視情況</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6.5 效能瓶頸診斷 -->
+    <!-- ============================================================ -->
+    <section id="bottleneck">
+      <div class="anchor-wrap">
+        <h2>6.5 效能瓶頸診斷<a class="anchor-link" href="#bottleneck">#</a></h2>
+      </div>
+      <p>效能問題的根源不外乎四類，這個分類框架是通用的，不管用哪個品牌的儲存設備都適用。確定根源類型後，再用各廠商對應的工具深入診斷。</p>
+
+      <h3>四類效能瓶頸（通用框架）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>類型</th><th>症狀</th><th>常見原因</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>① 前端路徑瓶頸</strong><br><small>主機 → 儲存的連線</small></td>
+              <td>主機 I/O 等待時間長，但儲存設備本身負載不高</td>
+              <td>FC HBA 頻寬不足、FC Switch 擁塞、Zoning 設定錯誤、MPIO 路徑不均衡</td>
+            </tr>
+            <tr>
+              <td><strong>② Cache 效率低</strong><br><small>虛擬化層 / 控制器</small></td>
+              <td>Cache hit rate 低，大量 I/O 穿透到磁碟層</td>
+              <td>Cache 容量不足、工作負載隨機性太高（難以預測預取）、Cache 被少數大 I/O 佔滿</td>
+            </tr>
+            <tr>
+              <td><strong>③ 後端磁碟瓶頸</strong><br><small>實體磁碟層</small></td>
+              <td>磁碟 IOPS / 吞吐量達到上限，延遲升高</td>
+              <td>磁碟數量不足（HDD 時代常見）、DRAID 重建中（臨時效能下降）、熱點 Volume 集中在同一 Array</td>
+            </tr>
+            <tr>
+              <td><strong>④ 熱點問題</strong><br><small>資料分佈不均</small></td>
+              <td>特定 Volume 延遲高，其他 Volume 正常</td>
+              <td>少數 LUN 承擔大量 I/O、Easy Tier 尚未完成熱資料遷移、應用層 SQL 查詢效率問題（需從應用層排查）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>各品牌對應診斷工具</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>診斷項目</th>
+              <th>IBM SVC / FlashSystem</th>
+              <th>NetApp ONTAP</th>
+              <th>Everpure Pure1</th>
+              <th>Dell PowerStore</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>整體 I/O 統計</td>
+              <td><code>lsiogrp</code><br><code>lsnodestats</code></td>
+              <td><code>statistics show</code></td>
+              <td>Pure1 Dashboard → Arrays</td>
+              <td>PowerStore Manager → Performance</td>
+            </tr>
+            <tr>
+              <td>Cache hit rate</td>
+              <td><code>lsnodestats</code><br>（cache_read_hits 欄位）</td>
+              <td><code>statistics show -object cache</code></td>
+              <td>內建顯示（Always-On）</td>
+              <td>Performance → Cache</td>
+            </tr>
+            <tr>
+              <td>熱點 Volume</td>
+              <td><code>lsvdiskcopy</code><br><code>lsiogrp -delimited</code></td>
+              <td><code>qos statistics volume show</code></td>
+              <td>Array Analytics → Volumes</td>
+              <td>Performance → Volume</td>
+            </tr>
+            <tr>
+              <td>前端 FC 路徑</td>
+              <td><code>lsportfc</code><br><code>lsportstats</code></td>
+              <td><code>network interface show</code></td>
+              <td>Pure1 → Connections</td>
+              <td>Hardware → FC Ports</td>
+            </tr>
+            <tr>
+              <td>磁碟層狀態</td>
+              <td><code>lsdrive</code><br><code>lsarray</code></td>
+              <td><code>storage disk show</code></td>
+              <td>Pure1 → Hardware</td>
+              <td>Hardware → Drives</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">診斷建議順序</div>
+        效能問題發生時，建議依照「前端路徑 → Cache → 後端磁碟 → 熱點」的順序排查，不要一開始就假設是磁碟不夠用。前端路徑問題（FC 設定錯誤、MPIO 不均衡）是最常被忽略但修復成本最低的問題類型。
+      </div>
+
+      <h3>IBM SVC 常用診斷指令速查</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>指令</th><th>用途</th><th>關鍵欄位</th></tr></thead>
+          <tbody>
+            <tr><td><code>lsmdiskgrp</code></td><td>Pool 容量與使用率</td><td>capacity、used_capacity、free_capacity</td></tr>
+            <tr><td><code>lsvdisk</code></td><td>VDisk 清單與使用量</td><td>capacity、used_capacity、mdisk_grp_name</td></tr>
+            <tr><td><code>lsmdisk</code></td><td>Mdisk（底層設備）狀態</td><td>status、capacity、mdisk_grp_name</td></tr>
+            <tr><td><code>lsiogrp</code></td><td>I/O Group 統計</td><td>node_count、cache_size</td></tr>
+            <tr><td><code>lsnodestats</code></td><td>節點即時效能統計</td><td>stat_name=cache_read_hits / total_cache_delay_ms</td></tr>
+            <tr><td><code>lsportfc</code></td><td>FC Port 狀態</td><td>status、WWPN、speed、attachment</td></tr>
+            <tr><td><code>lsdrive</code></td><td>磁碟狀態</td><td>status、tech_type、capacity</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">延伸閱讀</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part3-case.html#thin" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Part 3 情境案例 — Thin Provisioning 容量推導實例
+          </a>
+          <a href="part5-ha.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Part 5 — 高可用與災難復原（FlashCopy 對容量的影響）
+          </a>
+          <a href="part7-finance.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Part 7 — 企業實戰場景（汰換專案容量規劃全流程）
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 In-band Mdisk Pool VDisk', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: 'Part 3 — 情境案例', keywords: 'FlashSystem 7300 7200 Thin Provisioning 容量推導', url: 'part3-case.html', path: 'part3-case.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS 吞吐量 延遲 Queue Depth HDD All-Flash Storage Modeller TiB TB DRAID 容量規劃 效能瓶頸', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: '6.1 效能指標基礎', keywords: 'IOPS 吞吐量 延遲 Queue Depth HDD NVMe All-Flash 顆數 換算', url: 'part6-capacity.html#perf-basics', path: 'part6-capacity.html' },
+  { title: '6.2 容量三層換算', keywords: 'Raw Usable Effective TiB TB 換算 DRAID RAID Thin Provisioning', url: 'part6-capacity.html#capacity-layers', path: 'part6-capacity.html' },
+  { title: '6.3 Storage Modeller 操作實戰', keywords: 'Storage Modeller BOM Pool Regular DRP Thin Compression Dedup Report', url: 'part6-capacity.html#modeller', path: 'part6-capacity.html' },
+  { title: '6.4 容量規劃方法論', keywords: '容量規劃 成長率 安全緩衝 警戒線 汰換 Lead Time lsmdiskgrp', url: 'part6-capacity.html#planning', path: 'part6-capacity.html' },
+  { title: '6.5 效能瓶頸診斷', keywords: '效能瓶頸 Cache hit rate 熱點 前端路徑 FC lsiogrp lsnodestats lsportfc NetApp ONTAP Everpure Pure1 Dell PowerStore', url: 'part6-capacity.html#bottleneck', path: 'part6-capacity.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe RAID DRAID', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'FC iSCSI Zoning MPIO', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: 'Part 4 — 前端平台與整合', keywords: '三層式 HCI VMware IBM Power AIX', url: 'part4-platform.html', path: 'part4-platform.html' },
+  { title: 'Part 5 — 高可用與災難復原', keywords: 'HA DR RTO RPO HyperSwap FlashCopy Safeguarded Copy', url: 'part5-ha.html', path: 'part5-ha.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

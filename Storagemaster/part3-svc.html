@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 3 — 虛擬化儲存層 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .problem-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .problem-box-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 24px 0;
+    }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .step-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .step-dot.active {
+      background: rgba(47,129,247,.15);
+      border-color: var(--primary);
+      color: var(--primary-hi);
+    }
+    .step-connector {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      margin: 2px 0;
+    }
+    .step-content {
+      padding: 4px 0 20px;
+    }
+    .step-content h4 {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .step-content p {
+      font-size: .875rem;
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link active" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link nav-sub" href="#why-virt">為什麼需要儲存虛擬化</a>
+      <a class="nav-link nav-sub" href="#inband">In-band vs Out-of-band</a>
+      <a class="nav-link nav-sub" href="#svc-arch">SVC 三層架構</a>
+      <a class="nav-link nav-sub" href="#svc-features">SVC 核心功能概覽</a>
+      <a class="nav-link nav-sub" href="#market">市場主流方案對照</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 03 / CORE CURRICULUM</div>
+      <h1>虛擬化儲存層原理</h1>
+      <p class="page-desc">從「為什麼需要儲存虛擬化」出發，逐層理解 IBM SVC 的設計邏輯與三層架構，並對照市場主流方案的不同路線。實際數字推導請見<a href="part3-case.html">情境案例頁</a>。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-green">IBM SVC</span>
+        <span class="badge badge-blue">原理</span>
+        <span class="badge badge-purple">競品對照</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#why-virt">為什麼需要儲存虛擬化？</a></li>
+        <li><a href="#inband">In-band vs Out-of-band 虛擬化</a></li>
+        <li><a href="#svc-arch">SVC 三層架構：Mdisk / Pool / VDisk</a></li>
+        <li><a href="#svc-features">SVC 核心功能概覽</a></li>
+        <li><a href="#market">市場主流方案對照</a></li>
+      </ol>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1. 為什麼需要儲存虛擬化 -->
+    <!-- ============================================================ -->
+    <section id="why-virt">
+      <div class="anchor-wrap">
+        <h2>為什麼需要儲存虛擬化？<a class="anchor-link" href="#why-virt">#</a></h2>
+      </div>
+      <p>要理解 SVC 存在的意義，必須先從主機的儲存需求談起，逐步推導出每個架構演進的動機。</p>
+
+      <!-- Step flow -->
+      <div class="step-flow">
+
+        <div class="step-item">
+          <div class="step-line">
+            <div class="step-dot">1</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <h4>最簡單的起點：主機直接接儲存（DAS）</h4>
+            <p>Direct Attached Storage，磁碟直接連到主機。簡單、低延遲，但容量被一台主機獨占，其他主機無法共用，擴充也受限於主機本身的插槽數量。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-line">
+            <div class="step-dot">2</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <h4>解決共享問題：SAN 出現</h4>
+            <p>Storage Area Network 透過 Fibre Channel 或 iSCSI 網路，讓多台主機共享同一台儲存設備的容量。容量可以統一管理，主機之間不再各自為政。但 SAN 本身只解決了「連接」的問題，沒有解決「管理」的問題。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-line">
+            <div class="step-dot">3</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <h4>新問題出現：異構多設備的管理困境</h4>
+            <p>企業的儲存設備不可能只有一台，也不可能永遠是同一個廠牌。幾年下來，環境裡可能同時有 A 廠的高階陣列、B 廠的中階陣列、上一代的舊設備還沒汰換完。每台設備有自己的管理介面、自己的容量池，容量無法跨設備共用，資料搬移需要停機，擴充一台設備不等於整體容量就能用到。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-line">
+            <div class="step-dot active">4</div>
+          </div>
+          <div class="step-content">
+            <h4>儲存虛擬化的出現：SVC 解決的核心問題</h4>
+            <p>在主機和實體儲存設備之間，插入一個虛擬化層。主機只和這個虛擬化層溝通，不需要知道底下有幾台設備、是哪個廠牌。虛擬化層負責把所有設備的容量統一管理，並對主機提供一致的邏輯卷介面。IBM SVC 就是這個虛擬化層的角色。</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 核心價值清單 -->
+      <div class="problem-box">
+        <div class="problem-box-title" style="color:var(--green);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          SVC 虛擬化層解決的四個核心問題
+        </div>
+        <div class="table-wrap" style="margin:0;">
+          <table>
+            <thead><tr><th>問題</th><th>SVC 如何解決</th></tr></thead>
+            <tbody>
+              <tr><td>異構設備各自為政，管理介面不統一</td><td>所有設備統一以 Mdisk 呈現，透過 SVC 單一介面管理</td></tr>
+              <tr><td>容量無法跨設備池化，利用率低</td><td>多台設備的 Mdisk 組成統一 Pool，主機從 Pool 取用容量</td></tr>
+              <tr><td>資料搬移到新設備需要停機</td><td>SVC 在背景搬移資料，主機端的 VDisk 持續可用</td></tr>
+              <tr><td>底層設備功能不一致（有些不支援快照、壓縮）</td><td>功能統一由 SVC 虛擬化層提供，不依賴底層設備支援</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2. In-band vs Out-of-band -->
+    <!-- ============================================================ -->
+    <section id="inband">
+      <div class="anchor-wrap">
+        <h2>In-band vs Out-of-band 虛擬化<a class="anchor-link" href="#inband">#</a></h2>
+      </div>
+      <p>儲存虛擬化依據「虛擬化層是否在 I/O 資料路徑上」分為兩種架構，這個選擇決定了虛擬化設備能做什麼、以及它的風險在哪裡。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 660 280" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- In-band 左側 -->
+          <text x="160" y="24" text-anchor="middle" fill="#2F81F7" font-size="12" font-weight="600" font-family="JetBrains Mono,monospace">IN-BAND</text>
+
+          <rect x="60" y="36" width="200" height="40" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="160" y="62" text-anchor="middle" fill="#E6EDF3" font-size="13">主機</text>
+
+          <line x1="160" y1="76" x2="160" y2="100" stroke="#2F81F7" stroke-width="1.5"/>
+          <polygon points="154,97 160,107 166,97" fill="#2F81F7"/>
+          <text x="176" y="92" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">I/O 流量</text>
+
+          <rect x="60" y="108" width="200" height="40" rx="6" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="160" y="130" text-anchor="middle" fill="#2F81F7" font-size="11" font-family="JetBrains Mono,monospace">虛擬化層</text>
+          <text x="160" y="144" text-anchor="middle" fill="#8B949E" font-size="10">IBM SVC / Dell VPLEX</text>
+
+          <line x1="160" y1="148" x2="160" y2="172" stroke="#2F81F7" stroke-width="1.5"/>
+          <polygon points="154,169 160,179 166,169" fill="#2F81F7"/>
+          <text x="176" y="164" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">I/O 流量</text>
+
+          <rect x="60" y="180" width="200" height="40" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="160" y="206" text-anchor="middle" fill="#E6EDF3" font-size="13">實體儲存設備</text>
+
+          <text x="160" y="240" text-anchor="middle" fill="#3FB950" font-size="11">✓ 可做 Cache 加速</text>
+          <text x="160" y="256" text-anchor="middle" fill="#3FB950" font-size="11">✓ 可攔截並轉換 I/O</text>
+          <text x="160" y="272" text-anchor="middle" fill="#F85149" font-size="11">✗ 本身需 HA 設計</text>
+
+          <!-- 分隔線 -->
+          <line x1="330" y1="30" x2="330" y2="280" stroke="#30363D" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Out-of-band 右側 -->
+          <text x="500" y="24" text-anchor="middle" fill="#8B949E" font-size="12" font-weight="600" font-family="JetBrains Mono,monospace">OUT-OF-BAND</text>
+
+          <rect x="400" y="36" width="200" height="40" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="500" y="62" text-anchor="middle" fill="#E6EDF3" font-size="13">主機</text>
+
+          <line x1="500" y1="76" x2="500" y2="180" stroke="#8B949E" stroke-width="1.5"/>
+          <polygon points="494,177 500,187 506,177" fill="#8B949E"/>
+
+          <rect x="400" y="188" width="200" height="40" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="500" y="210" text-anchor="middle" fill="#E6EDF3" font-size="13">實體儲存設備</text>
+
+          <!-- 管理平面 -->
+          <rect x="400" y="108" width="200" height="40" rx="6" fill="#1C2128" stroke="#484F58" stroke-dasharray="4,3"/>
+          <text x="500" y="130" text-anchor="middle" fill="#484F58" font-size="11" font-family="JetBrains Mono,monospace">虛擬化層</text>
+          <text x="500" y="144" text-anchor="middle" fill="#484F58" font-size="10">僅管理平面，資料不流經</text>
+          <line x1="500" y1="148" x2="500" y2="188" stroke="#484F58" stroke-width="1" stroke-dasharray="3,3"/>
+
+          <text x="500" y="240" text-anchor="middle" fill="#3FB950" font-size="11">✓ 不影響 I/O 路徑</text>
+          <text x="500" y="256" text-anchor="middle" fill="#F85149" font-size="11">✗ 無法做 Cache 加速</text>
+          <text x="500" y="272" text-anchor="middle" fill="#F85149" font-size="11">✗ 無法即時轉換 I/O</text>
+        </svg>
+      </div>
+
+      <p>IBM SVC 採用 <strong>In-band</strong> 架構。所有主機的 I/O 都流經 SVC，這讓 SVC 能夠：</p>
+      <ul>
+        <li>提供 Cache 層加速讀寫（對底層老舊設備效果顯著）</li>
+        <li>在 I/O 路徑上即時執行 Thin Provisioning、Compression 等功能</li>
+        <li>攔截並重新導向 I/O，實現不停機的資料搬移</li>
+      </ul>
+      <p>代價是 SVC 本身成為 I/O 路徑上的關鍵節點，因此必須以雙節點 HA 方式部署，避免單點故障。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 3. SVC 三層架構 -->
+    <!-- ============================================================ -->
+    <section id="svc-arch">
+      <div class="anchor-wrap">
+        <h2>SVC 三層架構：Mdisk / Pool / VDisk<a class="anchor-link" href="#svc-arch">#</a></h2>
+      </div>
+      <p>SVC 用三個邏輯層次，把實體儲存設備和主機之間的複雜關係整理清楚。每一層解決一個特定的問題。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 660 380" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- 主機 -->
+          <rect x="30" y="16" width="600" height="50" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="330" y="37" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace" letter-spacing="1">HOST LAYER</text>
+          <text x="330" y="55" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">主機（IBM i / AIX / Linux / Windows / VMware ESXi）</text>
+
+          <!-- 箭頭 主機→VDisk -->
+          <line x1="330" y1="66" x2="330" y2="88" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="324,85 330,95 336,85" fill="#58A6FF"/>
+          <text x="346" y="81" fill="#58A6FF" font-size="10" font-family="JetBrains Mono,monospace">FC / iSCSI</text>
+
+          <!-- VDisk 層 -->
+          <rect x="30" y="96" width="600" height="56" rx="6" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="330" y="117" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace" letter-spacing="1">LAYER 3 — VDISK（VOLUME）</text>
+          <text x="330" y="136" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">主機看到的邏輯卷（LUN）</text>
+          <text x="330" y="150" text-anchor="middle" fill="#8B949E" font-size="11">從 Pool 配置空間・可設定 Thin / Mirror / 壓縮・CLI: lsvdisk</text>
+
+          <!-- 箭頭 VDisk→Pool -->
+          <line x1="330" y1="152" x2="330" y2="174" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="324,171 330,181 336,171" fill="#58A6FF"/>
+
+          <!-- Pool 層 -->
+          <rect x="30" y="182" width="600" height="56" rx="6" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="330" y="203" text-anchor="middle" fill="#3FB950" font-size="10" font-family="JetBrains Mono,monospace" letter-spacing="1">LAYER 2 — POOL（MDISK GROUP）</text>
+          <text x="330" y="222" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">容量池：一或多個 Mdisk 組成</text>
+          <text x="330" y="236" text-anchor="middle" fill="#8B949E" font-size="11">Thin Provisioning / Compression / Easy Tier 的作用單位・CLI: lsmdiskgrp</text>
+
+          <!-- 箭頭 Pool→Mdisk -->
+          <line x1="180" y1="238" x2="180" y2="260" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="174,257 180,267 186,257" fill="#58A6FF"/>
+          <line x1="330" y1="238" x2="330" y2="260" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="324,257 330,267 336,257" fill="#58A6FF"/>
+          <line x1="480" y1="238" x2="480" y2="260" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="474,257 480,267 486,257" fill="#58A6FF"/>
+
+          <!-- Mdisk 層（三個設備） -->
+          <text x="330" y="256" text-anchor="middle" fill="#58A6FF" font-size="10" font-family="JetBrains Mono,monospace">LAYER 1 — MDISK（MANAGED DISK）</text>
+
+          <rect x="30" y="268" width="180" height="88" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="120" y="290" text-anchor="middle" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">設備 A（舊世代陣列）</text>
+          <text x="120" y="308" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">高階磁碟陣列</text>
+          <text x="120" y="324" text-anchor="middle" fill="#F85149" font-size="10">已過原廠支援期限</text>
+          <text x="120" y="340" text-anchor="middle" fill="#8B949E" font-size="10">排程汰換中</text>
+          <text x="120" y="350" text-anchor="middle" fill="#484F58" font-size="9" font-family="JetBrains Mono,monospace">CLI: lsmdisk</text>
+
+          <rect x="240" y="268" width="180" height="88" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="330" y="290" text-anchor="middle" fill="#8B949E" font-size="9" font-family="JetBrains Mono,monospace">設備 B（現役 Flash）</text>
+          <text x="330" y="308" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">All-Flash 陣列</text>
+          <text x="330" y="324" text-anchor="middle" fill="#3FB950" font-size="10">線上運作中</text>
+          <text x="330" y="340" text-anchor="middle" fill="#8B949E" font-size="10">主力儲存設備</text>
+          <text x="330" y="350" text-anchor="middle" fill="#484F58" font-size="9" font-family="JetBrains Mono,monospace">CLI: lsmdisk</text>
+
+          <rect x="450" y="268" width="180" height="88" rx="6" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="540" y="290" text-anchor="middle" fill="#2F81F7" font-size="9" font-family="JetBrains Mono,monospace">設備 C（新採購）</text>
+          <text x="540" y="308" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">新世代 All-Flash 陣列</text>
+          <text x="540" y="324" text-anchor="middle" fill="#2F81F7" font-size="10">導入中</text>
+          <text x="540" y="340" text-anchor="middle" fill="#8B949E" font-size="10">取代設備 A</text>
+          <text x="540" y="350" text-anchor="middle" fill="#484F58" font-size="9" font-family="JetBrains Mono,monospace">CLI: lsmdisk</text>
+
+        </svg>
+      </div>
+
+      <h3>各層次的角色與職責</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>層次</th><th>名稱</th><th>解決的問題</th><th>主機視角</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">Layer 1</span></td>
+              <td><strong>Mdisk</strong><br><small>Managed Disk</small></td>
+              <td>把不同廠牌、不同世代的實體設備，統一抽象成 SVC 可以管理的磁碟單元</td>
+              <td>主機看不到這一層</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">Layer 2</span></td>
+              <td><strong>Pool</strong><br><small>MDisk Group</small></td>
+              <td>把多個 Mdisk 的容量合併成一個池，讓容量可以跨設備共用，並統一套用 Thin Provisioning、壓縮等功能</td>
+              <td>主機看不到這一層</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span class="badge badge-amber">Layer 3</span></td>
+              <td><strong>VDisk</strong><br><small>Virtual Disk / Volume</small></td>
+              <td>從 Pool 配置邏輯容量，對主機呈現為標準 LUN，主機直接對 VDisk 進行讀寫</td>
+              <td>主機唯一看到的層次</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>I/O Group 與 Cache</h3>
+      <p>SVC 節點兩兩一組構成 I/O Group，每個 I/O Group 擁有獨立的 Cache 記憶體。主機的讀寫 I/O 先進入 Cache，由 Cache 決定是否需要對底層 Mdisk 進行實際讀寫。這個設計讓 SVC 即使管理老舊的 HDD 陣列，也能透過 Cache 提供相對穩定的 I/O 回應時間。</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">關鍵概念：主機只和 VDisk 溝通</div>
+        無論底層有幾台設備、是什麼廠牌、容量怎麼分配，主機看到的永遠只是 VDisk。這意味著：汰換底層設備、搬移資料、更換廠牌，對主機來說完全透明，不需要停機或重新設定。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4. SVC 核心功能概覽 -->
+    <!-- ============================================================ -->
+    <section id="svc-features">
+      <div class="anchor-wrap">
+        <h2>SVC 核心功能概覽<a class="anchor-link" href="#svc-features">#</a></h2>
+      </div>
+      <p>SVC 在虛擬化層上提供一系列資料服務功能，這些功能不依賴底層儲存設備的支援，由 SVC 統一提供。以下是各功能解決的問題與對應章節。</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">📦</div>
+          <div class="card-title">Thin Provisioning</div>
+          <div class="card-desc">對主機承諾較大的邏輯容量，但只有實際寫入資料時才佔用物理空間。提升容量利用率，但需監控實際使用量避免爆滿。</div>
+          <div style="margin-top:10px;"><a href="part3-case.html#thin" style="font-size:.8125rem;">→ 情境案例頁有完整推導</a></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗜️</div>
+          <div class="card-title">Compression / Dedup</div>
+          <div class="card-desc">資料縮減技術，可在 Pool 層（Data Reduction Pool）或 Volume 層套用。需注意作用層次，避免對容量數字產生誤判。</div>
+          <div style="margin-top:10px;"><a href="part3-case.html#drp" style="font-size:.8125rem;">→ 情境案例頁有層次說明</a></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔥</div>
+          <div class="card-title">Easy Tier</div>
+          <div class="card-desc">依據 I/O 熱度自動將資料在 Flash / HDD 層之間搬移。混合設備環境下效果顯著；All-Flash 環境中可評估關閉。</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📸</div>
+          <div class="card-title">FlashCopy（快照）</div>
+          <div class="card-desc">瞬間建立 VDisk 的可讀寫副本，不影響來源 VDisk 的 I/O。常用於備份前建立一致性快照點。詳見 Part 5。</div>
+          <div style="margin-top:10px;"><a href="part5-ha.html#part5-flashcopy" style="font-size:.8125rem;">→ Part 5 高可用章節</a></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔄</div>
+          <div class="card-title">Metro Mirror / Global Mirror</div>
+          <div class="card-desc">跨站點同步或非同步複製，用於災難復原。Metro Mirror 為同步（零 RPO），Global Mirror 為非同步（低 RPO）。詳見 Part 5。</div>
+          <div style="margin-top:10px;"><a href="part5-ha.html#part5-replication" style="font-size:.8125rem;">→ Part 5 高可用章節</a></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">HyperSwap</div>
+          <div class="card-desc">基於 Metro Mirror 的雙活架構，主站發生故障時自動切換到備站，主機完全無感知，RPO = 0。詳見 Part 5。</div>
+          <div style="margin-top:10px;"><a href="part5-ha.html#part5-hyperswap" style="font-size:.8125rem;">→ Part 5 高可用章節</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5. 市場主流方案對照 -->
+    <!-- ============================================================ -->
+    <section id="market">
+      <div class="anchor-wrap">
+        <h2>市場主流方案對照<a class="anchor-link" href="#market">#</a></h2>
+      </div>
+      <p>市場上解決儲存虛擬化與多設備管理問題的方案，大致可分為兩條路線，設計哲學有根本性的差異。</p>
+
+      <h3>兩條路線</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>路線</th><th>做法</th><th>代表產品</th><th>核心取捨</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>獨立虛擬化層</strong></td>
+              <td>在主機與儲存設備之間部署獨立的虛擬化設備，I/O 流經此層</td>
+              <td>IBM SVC<br>Dell VPLEX</td>
+              <td>功能最強（Cache、異構管理、豐富資料服務），但虛擬化設備本身需要 HA 設計，多一個維運對象</td>
+            </tr>
+            <tr>
+              <td><strong>陣列內建</strong></td>
+              <td>資料服務由儲存陣列作業系統直接提供，不需要外部虛擬化層</td>
+              <td>NetApp ONTAP（AFF）<br>Everpure Purity OS<br>HPE Alletra</td>
+              <td>架構簡潔，管理介面統一，但只能管理自家設備，異構統一管理能力有限</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>各產品定位對照</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>產品</th><th>路線</th><th>主要強項</th><th>相對弱項</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>IBM SVC</strong><br><small>2145-SV1 / 未來 SV3</small></td>
+              <td>獨立虛擬化層（In-band）</td>
+              <td>異構設備統一管理、豐富資料服務（FlashCopy / HyperSwap / Metro Mirror）、老設備 Cache 加速</td>
+              <td>需額外部署虛擬化設備、架構相對複雜</td>
+            </tr>
+            <tr>
+              <td><strong>Dell VPLEX</strong></td>
+              <td>獨立虛擬化層（In-band）</td>
+              <td>跨站雙活（Metro / Geo）、跨廠牌 Volume 延伸，雙活設計是核心</td>
+              <td>資料服務廣度不如 SVC，更聚焦雙活場景</td>
+            </tr>
+            <tr>
+              <td><strong>NetApp ONTAP（AFF）</strong></td>
+              <td>陣列內建</td>
+              <td>Block + NAS + S3 三合一、SnapMirror 複製生態成熟、雲端延伸（Cloud Volumes ONTAP）</td>
+              <td>無法管理非 NetApp 設備</td>
+            </tr>
+            <tr>
+              <td><strong>Everpure（前 Pure Storage）FlashArray</strong></td>
+              <td>陣列內建</td>
+              <td>Always-On 資料縮減、極簡管理介面（Pure1）、Evergreen 原地升級商業模式</td>
+              <td>無法管理非 Everpure 設備、NAS 功能相對有限</td>
+            </tr>
+            <tr>
+              <td><strong>HPE Alletra MP</strong></td>
+              <td>陣列內建（解耦架構）</td>
+              <td>控制平面與資料平面解耦、GreenLake 按用量付費、InfoSight AI 預測維運</td>
+              <td>市場成熟度相對較新，生態廣度仍在建立</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>選型判斷原則</h3>
+      <ul>
+        <li><strong>環境有異構設備、需要統一管理</strong>：獨立虛擬化層（SVC / VPLEX）是唯一真正能解決問題的路線</li>
+        <li><strong>全新建置、設備單一廠牌</strong>：陣列內建路線架構更簡潔，管理成本較低</li>
+        <li><strong>需要跨站雙活（RPO = 0）</strong>：IBM SVC HyperSwap 或 Dell VPLEX Metro，兩者定位相近但生態不同</li>
+        <li><strong>需要 Block + NAS 統一</strong>：NetApp ONTAP 生態最成熟；Everpure 在 Block 端極強但 NAS 相對有限</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">台灣企業市場現況</div>
+        台灣大型企業環境中，多數都有多年累積的異構設備，完全單一廠牌的情況反而少見。這也是為什麼 IBM SVC 在台灣企業市場（尤其大型組織）有相當高的部署率——不是因為功能最炫，而是它解決了「歷史包袱」的實際問題。
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">下一步</div>
+        <p style="margin-bottom:12px; font-size:.9375rem;">理解了原理之後，建議接著閱讀情境案例頁，透過一個完整假設的環境，把三層架構、Thin Provisioning 推導、容量計算都走一遍。</p>
+        <a href="part3-case.html" style="display:inline-flex; align-items:center; gap:8px; font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          前往 Part 3 情境案例頁 →
+        </a>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 In-band Mdisk Pool VDisk Cache I/O Group', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: '為什麼需要儲存虛擬化', keywords: 'DAS SAN 異構 多設備 管理困境 虛擬化 動機', url: 'part3-svc.html#why-virt', path: 'part3-svc.html' },
+  { title: 'In-band vs Out-of-band', keywords: 'In-band Out-of-band 虛擬化 架構 差異', url: 'part3-svc.html#inband', path: 'part3-svc.html' },
+  { title: 'SVC 三層架構 Mdisk Pool VDisk', keywords: 'Mdisk Pool VDisk MDisk Group lsmdisk lsvdisk lsmdiskgrp 三層', url: 'part3-svc.html#svc-arch', path: 'part3-svc.html' },
+  { title: 'SVC 核心功能概覽', keywords: 'Thin Provisioning Compression Easy Tier FlashCopy Metro Mirror HyperSwap', url: 'part3-svc.html#svc-features', path: 'part3-svc.html' },
+  { title: '市場主流方案對照', keywords: 'SVC VPLEX NetApp ONTAP Everpure Pure HPE Alletra 選型 對標', url: 'part3-svc.html#market', path: 'part3-svc.html' },
+  { title: 'Part 3 — 情境案例', keywords: 'FlashSystem 7300 7200 Thin Provisioning 容量推導 Storage Modeller', url: 'part3-case.html', path: 'part3-case.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe RAID DRAID', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'FC iSCSI NVMe-oF Zoning MPIO', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: 'Part 4 — 前端平台與整合', keywords: '三層式 HCI VMware IBM Power AIX', url: 'part4-platform.html', path: 'part4-platform.html' },
+  { title: 'Part 5 — 高可用與災難復原', keywords: 'HA DR RTO RPO HyperSwap FlashCopy Safeguarded Copy', url: 'part5-ha.html', path: 'part5-ha.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS 吞吐量 延遲 Storage Modeller TiB TB', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>
