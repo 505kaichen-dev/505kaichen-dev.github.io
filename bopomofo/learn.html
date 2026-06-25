@@ -286,6 +286,12 @@
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 
 <script>
+// ===== 狀態變數 =====
+let currentIndex = 0;
+let currentTab = 'anim';
+let animWriter = null;
+let quizWriter = null;
+
 // ===== 符號資料 =====
 const ALL_SYMBOLS = [
   { char:'ㄅ', type:'聲母', strokes:1, img:'01.png', examples:[{e:'🍼',w:'爸爸',n:'ㄅㄚˋ'},{e:'🎒',w:'背包',n:'ㄅㄟ ㄅㄠ'},{e:'🥛',w:'杯子',n:'ㄅㄟ ㄗ'}] },
@@ -357,6 +363,9 @@ function initHanziWriter(char) {
     strokeColor: '#FF6B35',
     strokeAnimationSpeed: 0.48,
     delayBetweenStrokes: 800,
+    onLoadCharDataSuccess: () => {
+      if (currentTab === 'anim') animWriter.animateCharacter();
+    },
   });
 
   // 描字 writer
@@ -370,13 +379,10 @@ function initHanziWriter(char) {
     strokeColor: '#4ECDC4',
     drawingColor: '#4ECDC4',
     drawingWidth: 72,
+    onLoadCharDataSuccess: () => {
+      startQuiz();
+    },
   });
-
-  // 自動播放
-  setTimeout(() => {
-    if (currentTab === 'anim') animWriter.animateCharacter();
-    startQuiz();
-  }, 300);
 }
 
 function startQuiz() {
@@ -408,7 +414,7 @@ function startQuiz() {
 function resetQuiz() {
   document.getElementById('quiz-result').textContent = '';
   document.getElementById('quiz-result').className = 'quiz-result';
-  quizWriter.cancelQuiz();
+  try { quizWriter.cancelQuiz(); } catch(e) { /* quiz 尚未開始，忽略 */ }
   startQuiz();
 }
 
@@ -483,13 +489,19 @@ function render() {
 
   // 例字
   document.getElementById('examples-title').textContent = `📖 ${sym.char} 的例字`;
-  document.getElementById('examples-grid').innerHTML = sym.examples.map(ex => `
-    <div class="example-item" onclick="speak('${ex.w}')">
+  const grid = document.getElementById('examples-grid');
+  grid.innerHTML = '';
+  sym.examples.forEach(ex => {
+    const div = document.createElement('div');
+    div.className = 'example-item';
+    div.innerHTML = `
       <span class="ex-emoji">${ex.e}</span>
       <span class="ex-word">${ex.w}</span>
       <span class="ex-note">${ex.n}</span>
-    </div>
-  `).join('');
+    `;
+    div.addEventListener('click', () => speak(ex.w));
+    grid.appendChild(div);
+  });
 }
 
 function goTo(idx) {
