@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>形狀 🔷 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F0FF;
+    --primary: #A855F7;
+    --primary-dark: #7C3AED;
+    --ink: #1A1A2E;
+    --card-radius: 24px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh; display: flex; flex-direction: column;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(circle at 10% 20%, #A855F722 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, #FFE66D33 0%, transparent 45%);
+    pointer-events: none; z-index: 0;
+  }
+
+  header { position: relative; z-index: 10; padding: 20px 32px; display: flex; align-items: center; }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px;
+    padding: 8px 16px; background: white; border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s;
+  }
+  .back-link:hover { transform: translateY(-2px); }
+  .back-link::before { content: '←'; font-size: 18px; }
+
+  main {
+    position: relative; z-index: 1; flex: 1;
+    max-width: 720px; width: 100%; margin: 0 auto;
+    padding: 0 24px 60px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+
+  .info-bar {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    background: white; border-radius: 16px; padding: 14px 24px; box-shadow: var(--shadow);
+  }
+  .level-badge { font-weight: 900; font-size: 15px; padding: 4px 14px; border-radius: 50px; background: var(--primary); color: white; }
+  .streak-display { font-weight: 800; font-size: 15px; color: #888; }
+  .streak-display span { color: #FF6B35; font-size: 18px; }
+
+  .question-card {
+    width: 100%; background: white; border-radius: var(--card-radius);
+    box-shadow: var(--shadow); padding: 40px 32px; text-align: center;
+  }
+  .question-label { font-size: 14px; font-weight: 800; letter-spacing: 2px; color: #bbb; text-transform: uppercase; margin-bottom: 24px; }
+
+  /* 形狀展示 */
+  .shape-display {
+    display: flex; align-items: center; justify-content: center;
+    height: 200px; margin-bottom: 12px;
+  }
+  .shape-display svg {
+    transition: transform 0.3s;
+    filter: drop-shadow(0 8px 24px rgba(168,85,247,0.25));
+  }
+  .shape-display svg.dance {
+    animation: shape-dance 0.6s ease;
+  }
+  @keyframes shape-dance {
+    0%,100%{transform:rotate(0) scale(1)}
+    25%{transform:rotate(-12deg) scale(1.1)}
+    75%{transform:rotate(12deg) scale(1.1)}
+  }
+
+  /* Lv4+ 顏色辨識提示 */
+  .color-hint {
+    font-size: 14px; font-weight: 800; color: #aaa;
+    margin-bottom: 16px; min-height: 20px;
+  }
+
+  .feedback { font-size: 22px; font-weight: 900; height: 36px; text-align: center; transition: opacity 0.3s; }
+  .feedback.correct-msg { color: #22C55E; }
+  .feedback.wrong-msg { color: #EF4444; }
+
+  .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; }
+  .option-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px; font-weight: 900; padding: 20px 8px;
+    border: 3px solid #EDE9FF; border-radius: 20px;
+    background: white; color: var(--ink); cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+    box-shadow: 0 4px 0 #c4b5fd;
+  }
+  .option-btn:hover { transform: translateY(-4px); background: #F3E8FF; border-color: var(--primary); box-shadow: 0 8px 0 #c4b5fd; }
+  .option-btn.correct { background: #22C55E; color: white; border-color: #16A34A; box-shadow: 0 4px 0 #15803D; animation: bounce 0.4s; }
+  .option-btn.wrong { background: #EF4444; color: white; border-color: #DC2626; box-shadow: 0 4px 0 #B91C1C; animation: shake 0.4s; }
+  @keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+  .particle { position: fixed; pointer-events: none; font-size: 28px; z-index: 999; animation: particle-fly 1s ease-out forwards; }
+  @keyframes particle-fly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0.3);opacity:0}}
+
+  .level-toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--primary);
+    padding: 12px 28px; border-radius: 50px;
+    font-weight: 900; font-size: 16px; z-index: 100;
+    animation: toast-in 0.3s ease, toast-out 0.3s ease 1.7s forwards; pointer-events: none;
+  }
+  @keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  @keyframes toast-out{to{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+
+  footer { position: relative; z-index: 1; text-align: center; padding: 20px; font-size: 13px; color: #bbb; font-weight: 700; }
+
+  @media(max-width:480px){
+    .option-btn{font-size:17px;padding:16px 4px}
+    .shape-display{height:160px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-link">數學樂園</a>
+</header>
+
+<main>
+  <div class="info-bar">
+    <div class="level-badge" id="levelBadge">Lv 1</div>
+    <div class="streak-display">連答 <span id="streakCount">0</span> 題 🔥</div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label" id="questionLabel">這是什麼形狀？</div>
+    <div class="shape-display" id="shapeDisplay"></div>
+    <div class="color-hint" id="colorHint"></div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <div class="options-grid" id="optionsGrid"></div>
+</main>
+
+<footer>🔷 形狀關卡</footer>
+
+<script>
+// 形狀定義
+const SHAPES = [
+  {
+    id: 'circle', name: '圓形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="${c}" stroke="${darken(c)}" stroke-width="4"/></svg>`,
+    lvMin: 1
+  },
+  {
+    id: 'square', name: '正方形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><rect x="12" y="12" width="136" height="136" rx="8" fill="${c}" stroke="${darken(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 1
+  },
+  {
+    id: 'triangle', name: '三角形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,10 152,148 8,148" fill="${c}" stroke="${darken(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 1
+  },
+  {
+    id: 'star', name: '星形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 95,55 145,55 105,84 120,130 80,102 40,130 55,84 15,55 65,55" fill="${c}" stroke="${darken(c)}" stroke-width="3" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 2
+  },
+  {
+    id: 'diamond', name: '菱形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 150,80 80,152 10,80" fill="${c}" stroke="${darken(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 2
+  },
+  {
+    id: 'rectangle', name: '長方形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><rect x="8" y="36" width="144" height="88" rx="8" fill="${c}" stroke="${darken(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 3
+  },
+  {
+    id: 'pentagon', name: '五邊形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 148,58 122,138 38,138 12,58" fill="${c}" stroke="${darken(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 4
+  },
+  {
+    id: 'hexagon', name: '六邊形',
+    svg: (c,r) => `<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 146,44 146,116 80,152 14,116 14,44" fill="${c}" stroke="${darken(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`,
+    lvMin: 4
+  },
+];
+
+// 顏色池
+const COLORS = [
+  {hex:'#FF6B35',name:'橘色'},{hex:'#4ECDC4',name:'青綠色'},{hex:'#FFE66D',name:'黃色'},
+  {hex:'#A855F7',name:'紫色'},{hex:'#22C55E',name:'綠色'},{hex:'#3B82F6',name:'藍色'},
+  {hex:'#F43F5E',name:'紅色'},{hex:'#F97316',name:'橙色'},
+];
+
+// 旋轉角度池（Lv4+ 啟用）
+const ROTATIONS = [0, 30, 45, 60, 90, 120, 135, 180];
+
+function darken(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.max(0,r-40)},${Math.max(0,g-40)},${Math.max(0,b-40)})`;
+}
+
+// Lv 設定：解鎖形狀、顏色辨識、旋轉
+const LEVEL_CFG = [
+  { shapeLv:1, colorQuiz:false, rotation:false },
+  { shapeLv:2, colorQuiz:false, rotation:false },
+  { shapeLv:3, colorQuiz:false, rotation:false },
+  { shapeLv:4, colorQuiz:true,  rotation:true  },
+  { shapeLv:5, colorQuiz:true,  rotation:true  },
+];
+
+let level=0, streak=0, correctStreak=0, wrongStreak=0, locked=false;
+let lastShapeId='';
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+
+function playTone(f,d,t='sine',g=0.3){
+  const o=audioCtx.createOscillator(),gn=audioCtx.createGain();
+  o.connect(gn);gn.connect(audioCtx.destination);
+  o.type=t;o.frequency.value=f;
+  gn.gain.setValueAtTime(g,audioCtx.currentTime);
+  gn.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);
+  o.start();o.stop(audioCtx.currentTime+d);
+}
+function playCorrect(){playTone(523,0.15);setTimeout(()=>playTone(659,0.15),120);setTimeout(()=>playTone(784,0.25),240);}
+function playWrong(){playTone(250,0.4,'sawtooth',0.2);}
+
+function spawnParticles(){
+  for(let i=0;i<8;i++){
+    const el=document.createElement('div');el.className='particle';
+    el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)];
+    el.style.left=(20+Math.random()*60)+'vw';
+    el.style.top=(30+Math.random()*40)+'vh';
+    el.style.setProperty('--dx',(Math.random()*200-100)+'px');
+    el.style.setProperty('--dy',(-80-Math.random()*120)+'px');
+    document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+  }
+}
+
+function showLevelToast(msg){
+  const t=document.createElement('div');t.className='level-toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2000);
+}
+function updateLevel(d){
+  const prev=level;
+  level=Math.max(0,Math.min(LEVEL_CFG.length-1,level+d));
+  if(level!==prev){
+    showLevelToast(level>prev?`🎯 升級！Lv ${level+1}`:`⬇️ 降回 Lv ${level+1}`);
+    document.getElementById('levelBadge').textContent=`Lv ${level+1}`;
+  }
+}
+
+let currentCorrect='';
+let currentColorMode=false;
+let currentColor=null;
+
+function generateQuestion(){
+  locked=false;
+  const cfg=LEVEL_CFG[level];
+  const available=SHAPES.filter(s=>s.lvMin<=cfg.shapeLv);
+
+  let shape;
+  do { shape=available[Math.floor(Math.random()*available.length)]; }
+  while(shape.id===lastShapeId && available.length>1);
+  lastShapeId=shape.id;
+
+  const color=COLORS[Math.floor(Math.random()*COLORS.length)];
+  currentColor=color;
+  const rotation=cfg.rotation ? ROTATIONS[Math.floor(Math.random()*ROTATIONS.length)] : 0;
+
+  // 決定題目模式
+  currentColorMode = cfg.colorQuiz && Math.random()<0.35; // 35% 機率出顏色題
+
+  const display=document.getElementById('shapeDisplay');
+  display.innerHTML=shape.svg(color.hex, rotation);
+
+  if(currentColorMode){
+    // 顏色辨識
+    currentCorrect=color.name;
+    document.getElementById('questionLabel').textContent='這個形狀是什麼顏色？';
+    document.getElementById('colorHint').textContent='';
+    generateColorOptions(color.name);
+  } else {
+    // 形狀辨識
+    currentCorrect=shape.name;
+    document.getElementById('questionLabel').textContent='這是什麼形狀？';
+    document.getElementById('colorHint').textContent= cfg.rotation && rotation!==0 ? `（旋轉了 ${rotation}°）` : '';
+    generateShapeOptions(shape.name, available);
+  }
+
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback';
+}
+
+function generateShapeOptions(correct, available){
+  const pool=available.map(s=>s.name);
+  const opts=new Set([correct]);
+  const others=pool.filter(n=>n!==correct).sort(()=>Math.random()-0.5);
+  others.slice(0,2).forEach(n=>opts.add(n));
+  // 若不夠，從全部 SHAPES 補
+  if(opts.size<3){
+    SHAPES.map(s=>s.name).filter(n=>!opts.has(n)).sort(()=>Math.random()-0.5)
+      .slice(0,3-opts.size).forEach(n=>opts.add(n));
+  }
+  renderOptions([...opts].sort(()=>Math.random()-0.5));
+}
+
+function generateColorOptions(correct){
+  const opts=new Set([correct]);
+  COLORS.map(c=>c.name).filter(n=>n!==correct).sort(()=>Math.random()-0.5).slice(0,2).forEach(n=>opts.add(n));
+  renderOptions([...opts].sort(()=>Math.random()-0.5));
+}
+
+function renderOptions(arr){
+  const grid=document.getElementById('optionsGrid');
+  grid.innerHTML='';
+  arr.forEach(v=>{
+    const btn=document.createElement('button');btn.className='option-btn';btn.textContent=v;
+    btn.onclick=()=>handleAnswer(btn,v);grid.appendChild(btn);
+  });
+}
+
+function handleAnswer(btn,val){
+  if(locked)return;locked=true;
+  const fb=document.getElementById('feedback');
+  if(val===currentCorrect){
+    btn.classList.add('correct');
+    // 形狀跳舞
+    const svg=document.querySelector('#shapeDisplay svg');
+    if(svg){svg.classList.add('dance');setTimeout(()=>svg.classList.remove('dance'),700);}
+    fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];
+    fb.className='feedback correct-msg';
+    playCorrect();spawnParticles();
+    streak++;correctStreak++;wrongStreak=0;
+    document.getElementById('streakCount').textContent=streak;
+    if(correctStreak>=3){correctStreak=0;updateLevel(1);}
+    setTimeout(generateQuestion,1400);
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent=['再試一次！💪','沒關係，加油！😊','仔細看看！👀'][Math.floor(Math.random()*3)];
+    fb.className='feedback wrong-msg';
+    playWrong();
+    streak=0;correctStreak=0;wrongStreak++;
+    document.getElementById('streakCount').textContent=streak;
+    if(wrongStreak>=2){wrongStreak=0;updateLevel(-1);}
+    setTimeout(()=>{btn.classList.remove('wrong');locked=false;},800);
+  }
+}
+
+generateQuestion();
+</script>
+
+<!--
+=== 產圖移交摘要 ===
+本次頁面圖片需求如下，供 ChatGPT 掃描使用：
+
+[COVER] 1200x630 形狀辨識遊戲封面，可愛卡通風格，圓形、三角形、星形、菱形等幾何圖案漂浮在畫面中並帶有表情，星星吉祥物站在中間指著形狀，背景淡紫（#F8F0FF），主色紫色（#A855F7）、深紫（#7C3AED），活潑童趣風格
+
+==================
+-->
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>數數字 🔢 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF9F0;
+    --primary: #FFE66D;
+    --primary-dark: #F59E0B;
+    --ink: #1A1A2E;
+    --card-radius: 24px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 15% 25%, #FFE66D33 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, #FF6B3522 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative; z-index: 10;
+    padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px;
+    padding: 8px 16px; background: white; border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s;
+  }
+  .back-link:hover { transform: translateY(-2px); }
+  .back-link::before { content: '←'; font-size: 18px; }
+
+  /* ── 主遊戲區 ── */
+  main {
+    position: relative; z-index: 1;
+    flex: 1;
+    max-width: 720px; width: 100%;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+
+  /* 頂部資訊列 */
+  .info-bar {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    background: white; border-radius: 16px;
+    padding: 14px 24px;
+    box-shadow: var(--shadow);
+  }
+  .level-badge {
+    font-weight: 900; font-size: 15px;
+    padding: 4px 14px; border-radius: 50px;
+    background: var(--primary); color: var(--ink);
+  }
+  .streak-display { font-weight: 800; font-size: 15px; color: #888; }
+  .streak-display span { color: #FF6B35; font-size: 18px; }
+
+  /* 題目卡片 */
+  .question-card {
+    width: 100%; background: white;
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow);
+    padding: 36px 24px;
+    text-align: center;
+  }
+  .question-label {
+    font-size: 14px; font-weight: 800; letter-spacing: 2px;
+    color: #bbb; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .emoji-display {
+    font-size: clamp(28px, 6vw, 40px);
+    line-height: 1.6;
+    min-height: 120px;
+    display: flex; flex-wrap: wrap;
+    align-items: center; justify-content: center; gap: 6px;
+    padding: 12px;
+    background: #FFFBEA;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+  .question-text {
+    font-size: 22px; font-weight: 900;
+    color: var(--ink);
+  }
+
+  /* 答案按鈕區 */
+  .answer-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+  .answer-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px; font-weight: 900;
+    padding: 16px 8px;
+    border: 3px solid #eee;
+    border-radius: 16px;
+    background: white;
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+    box-shadow: 0 3px 0 #ddd;
+  }
+  .answer-btn:hover {
+    transform: translateY(-3px);
+    background: #FFFBEA;
+    border-color: var(--primary);
+  }
+  .answer-btn.correct {
+    background: #22C55E; color: white;
+    border-color: #16A34A;
+    box-shadow: 0 3px 0 #15803D;
+    animation: bounce 0.4s;
+  }
+  .answer-btn.wrong {
+    background: #EF4444; color: white;
+    border-color: #DC2626;
+    box-shadow: 0 3px 0 #B91C1C;
+    animation: shake 0.4s;
+  }
+
+  @keyframes bounce {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+
+  /* 回饋訊息 */
+  .feedback {
+    font-size: 22px; font-weight: 900;
+    height: 36px; text-align: center;
+    transition: opacity 0.3s;
+  }
+  .feedback.correct-msg { color: #22C55E; }
+  .feedback.wrong-msg { color: #EF4444; }
+
+  /* 慶祝粒子 */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 28px;
+    z-index: 999;
+    animation: particle-fly 1s ease-out forwards;
+  }
+  @keyframes particle-fly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+  }
+
+  /* 等級升降提示 */
+  .level-toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--primary);
+    padding: 12px 28px; border-radius: 50px;
+    font-weight: 900; font-size: 16px;
+    z-index: 100;
+    animation: toast-in 0.3s ease, toast-out 0.3s ease 1.7s forwards;
+    pointer-events: none;
+  }
+  @keyframes toast-in { from { opacity:0; transform: translateX(-50%) translateY(-10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+  @keyframes toast-out { to { opacity:0; transform: translateX(-50%) translateY(-10px); } }
+
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 20px;
+    font-size: 13px; color: #bbb; font-weight: 700;
+  }
+
+  @media (max-width: 480px) {
+    .answer-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .answer-btn { font-size: 18px; padding: 12px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-link">數學樂園</a>
+</header>
+
+<main>
+  <div class="info-bar">
+    <div class="level-badge" id="levelBadge">Lv 1</div>
+    <div class="streak-display">連答 <span id="streakCount">0</span> 題 🔥</div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">數一數，總共幾個？</div>
+    <div class="emoji-display" id="emojiDisplay"></div>
+    <div class="question-text" id="questionText">選出正確的數字</div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="answer-grid" id="answerGrid"></div>
+</main>
+
+<footer>🔢 數數字關卡</footer>
+
+<script>
+// ── 設定 ──
+const EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🐶','🐱','🐸','🦊','🐼','⭐','🌸','🎈','🦋','🚀'];
+const LEVELS = [
+  { max: 5,   cols: 5  },
+  { max: 10,  cols: 5  },
+  { max: 20,  cols: 10 },
+  { max: 50,  cols: 10 },
+  { max: 100, cols: 10 },
+];
+
+let level = 0;         // 0-indexed
+let streak = 0;
+let correctStreak = 0;
+let wrongStreak = 0;
+let currentAnswer = 0;
+let locked = false;
+let lastAnswer = -1;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// ── 音效 ──
+function playTone(freq, duration, type='sine', gain=0.3) {
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.connect(g); g.connect(audioCtx.destination);
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(gain, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  o.start(); o.stop(audioCtx.currentTime + duration);
+}
+function playCorrect() {
+  playTone(523, 0.15); setTimeout(()=>playTone(659, 0.15), 120); setTimeout(()=>playTone(784, 0.25), 240);
+}
+function playWrong() {
+  playTone(300, 0.4, 'sawtooth', 0.2);
+}
+
+// ── 粒子 ──
+function spawnParticles() {
+  const items = ['⭐','🎉','✨','🌟','🎊'];
+  for(let i=0; i<8; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.textContent = items[Math.floor(Math.random()*items.length)];
+    el.style.left = (20 + Math.random()*60) + 'vw';
+    el.style.top = (30 + Math.random()*40) + 'vh';
+    el.style.setProperty('--dx', (Math.random()*200-100)+'px');
+    el.style.setProperty('--dy', (-80 - Math.random()*120)+'px');
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1000);
+  }
+}
+
+// ── 等級提示 ──
+function showLevelToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'level-toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2000);
+}
+
+// ── 更新等級 ──
+function updateLevel(delta) {
+  const prev = level;
+  level = Math.max(0, Math.min(LEVELS.length-1, level+delta));
+  if(level !== prev) {
+    showLevelToast(level > prev ? `🎯 升級！Lv ${level+1}` : `⬇️ 降回 Lv ${level+1}`);
+    document.getElementById('levelBadge').textContent = `Lv ${level+1}`;
+  }
+}
+
+// ── 出題 ──
+function generateQuestion() {
+  locked = false;
+  const cfg = LEVELS[level];
+  let count;
+  do { count = Math.floor(Math.random() * cfg.max) + 1; } while(count === lastAnswer);
+  lastAnswer = count;
+  currentAnswer = count;
+
+  // 隨機選 emoji
+  const emoji = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+  const display = document.getElementById('emojiDisplay');
+  display.textContent = '';
+  for(let i=0; i<count; i++) {
+    const span = document.createElement('span');
+    span.textContent = emoji;
+    display.appendChild(span);
+  }
+
+  document.getElementById('questionText').textContent = '總共有幾個？';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+
+  // 產生選項
+  generateOptions(count, cfg.max);
+}
+
+function generateOptions(correct, maxVal) {
+  const options = new Set([correct]);
+  let attempts = 0;
+  while(options.size < 5 && attempts < 100) {
+    const delta = Math.floor(Math.random()*5)+1;
+    const sign = Math.random()<0.5 ? 1 : -1;
+    const candidate = correct + sign * delta;
+    if(candidate >= 1 && candidate <= maxVal && candidate !== correct) options.add(candidate);
+    attempts++;
+  }
+  // 萬一還不夠，補湊
+  let fill = 1;
+  while(options.size < 5) { if(!options.has(fill) && fill !== correct) options.add(fill); fill++; }
+
+  const arr = [...options].sort(()=>Math.random()-0.5);
+  const grid = document.getElementById('answerGrid');
+  grid.innerHTML = '';
+  arr.forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.textContent = val;
+    btn.onclick = () => handleAnswer(btn, val);
+    grid.appendChild(btn);
+  });
+}
+
+// ── 處理作答 ──
+function handleAnswer(btn, val) {
+  if(locked) return;
+  locked = true;
+  const fb = document.getElementById('feedback');
+
+  if(val === currentAnswer) {
+    btn.classList.add('correct');
+    fb.textContent = ['太棒了！🎉','答對了！⭐','好厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];
+    fb.className = 'feedback correct-msg';
+    playCorrect();
+    spawnParticles();
+    streak++; correctStreak++; wrongStreak=0;
+    document.getElementById('streakCount').textContent = streak;
+    if(correctStreak >= 3) { correctStreak=0; updateLevel(1); }
+    setTimeout(generateQuestion, 1200);
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = ['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)];
+    fb.className = 'feedback wrong-msg';
+    playWrong();
+    streak=0; correctStreak=0; wrongStreak++;
+    document.getElementById('streakCount').textContent = streak;
+    if(wrongStreak >= 2) { wrongStreak=0; updateLevel(-1); }
+    setTimeout(()=>{
+      btn.classList.remove('wrong');
+      locked=false;
+    }, 800);
+  }
+}
+
+// ── 啟動 ──
+generateQuestion();
+</script>
+
+<!--
+=== 產圖移交摘要 ===
+本次頁面圖片需求如下，供 ChatGPT 掃描使用：
+
+[COVER] 1200x630 數數字遊戲封面，可愛卡通風格，大顆數字 1 到 10 漂浮在畫面中，星星吉祥物手指著數字，背景溫暖米白（#FFF9F0），主色鵝黃（#FFE66D）、琥珀（#F59E0B），充滿童趣活潑氛圍
+
+==================
+-->
+
+</body>
+</html>

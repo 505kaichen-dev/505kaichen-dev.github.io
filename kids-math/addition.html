@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加法 ➕ 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F0FFFE;
+    --primary: #4ECDC4;
+    --primary-dark: #0F766E;
+    --ink: #1A1A2E;
+    --card-radius: 24px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(circle at 10% 20%, #4ECDC433 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, #FFE66D33 0%, transparent 45%);
+    pointer-events: none; z-index: 0;
+  }
+
+  header {
+    position: relative; z-index: 10;
+    padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px;
+    padding: 8px 16px; background: white; border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s;
+  }
+  .back-link:hover { transform: translateY(-2px); }
+  .back-link::before { content: '←'; font-size: 18px; }
+
+  main {
+    position: relative; z-index: 1;
+    flex: 1; max-width: 720px; width: 100%;
+    margin: 0 auto; padding: 0 24px 60px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+
+  .info-bar {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    background: white; border-radius: 16px;
+    padding: 14px 24px; box-shadow: var(--shadow);
+  }
+  .level-badge {
+    font-weight: 900; font-size: 15px;
+    padding: 4px 14px; border-radius: 50px;
+    background: var(--primary); color: white;
+  }
+  .streak-display { font-weight: 800; font-size: 15px; color: #888; }
+  .streak-display span { color: #FF6B35; font-size: 18px; }
+
+  .question-card {
+    width: 100%; background: white;
+    border-radius: var(--card-radius); box-shadow: var(--shadow);
+    padding: 40px 32px; text-align: center;
+  }
+  .question-label {
+    font-size: 14px; font-weight: 800; letter-spacing: 2px;
+    color: #bbb; text-transform: uppercase; margin-bottom: 24px;
+  }
+
+  /* 視覺化加法展示 */
+  .visual-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
+  }
+  .visual-group {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    max-width: 200px; justify-content: center;
+    background: #F0FFFE; border-radius: 12px; padding: 10px;
+  }
+  .visual-emoji { font-size: 24px; line-height: 1; }
+  .op-symbol {
+    font-size: 40px; font-weight: 900;
+    color: var(--primary);
+  }
+
+  /* 算式 */
+  .equation {
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 900; letter-spacing: 4px;
+    color: var(--ink);
+  }
+  .equation .num { color: var(--primary-dark); }
+  .equation .op { color: var(--primary); margin: 0 8px; }
+  .equation .blank {
+    display: inline-block; min-width: 60px;
+    border-bottom: 4px solid var(--ink);
+    color: transparent; vertical-align: baseline;
+  }
+
+  .feedback {
+    font-size: 22px; font-weight: 900;
+    height: 36px; text-align: center; transition: opacity 0.3s;
+  }
+  .feedback.correct-msg { color: #22C55E; }
+  .feedback.wrong-msg { color: #EF4444; }
+
+  /* 選項按鈕 */
+  .options-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px; width: 100%;
+  }
+  .option-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px; font-weight: 900;
+    padding: 20px 8px;
+    border: 3px solid #e0f7f5;
+    border-radius: 20px;
+    background: white; color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+    box-shadow: 0 4px 0 #b2ede9;
+  }
+  .option-btn:hover {
+    transform: translateY(-4px);
+    background: #E0FAF8; border-color: var(--primary);
+    box-shadow: 0 8px 0 #b2ede9;
+  }
+  .option-btn.correct {
+    background: #22C55E; color: white; border-color: #16A34A;
+    box-shadow: 0 4px 0 #15803D; animation: bounce 0.4s;
+  }
+  .option-btn.wrong {
+    background: #EF4444; color: white; border-color: #DC2626;
+    box-shadow: 0 4px 0 #B91C1C; animation: shake 0.4s;
+  }
+  @keyframes bounce { 0%,100%{transform:scale(1)}50%{transform:scale(1.12)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)} }
+
+  .particle {
+    position: fixed; pointer-events: none;
+    font-size: 28px; z-index: 999;
+    animation: particle-fly 1s ease-out forwards;
+  }
+  @keyframes particle-fly {
+    0%{transform:translate(0,0) scale(1);opacity:1}
+    100%{transform:translate(var(--dx),var(--dy)) scale(0.3);opacity:0}
+  }
+  .level-toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--primary);
+    padding: 12px 28px; border-radius: 50px;
+    font-weight: 900; font-size: 16px; z-index: 100;
+    animation: toast-in 0.3s ease, toast-out 0.3s ease 1.7s forwards;
+    pointer-events: none;
+  }
+  @keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  @keyframes toast-out{to{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+
+  footer { position: relative; z-index: 1; text-align: center; padding: 20px; font-size: 13px; color: #bbb; font-weight: 700; }
+
+  @media(max-width:480px){
+    .options-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+    .option-btn{font-size:22px;padding:16px 4px}
+    .equation{font-size:32px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-link">數學樂園</a>
+</header>
+
+<main>
+  <div class="info-bar">
+    <div class="level-badge" id="levelBadge">Lv 1</div>
+    <div class="streak-display">連答 <span id="streakCount">0</span> 題 🔥</div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">加在一起是幾個？</div>
+    <div class="visual-row" id="visualRow"></div>
+    <div class="equation" id="equation"></div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <div class="options-grid" id="optionsGrid"></div>
+</main>
+
+<footer>➕ 加法關卡</footer>
+
+<script>
+// Lv設定：[加數最大值, 結果最大值]
+const LEVELS = [
+  { aMax:4, sumMax:5  },
+  { aMax:9, sumMax:10 },
+  { aMax:10,sumMax:20 },
+  { aMax:25,sumMax:50 },
+  { aMax:50,sumMax:100},
+];
+const EMOJIS = ['🍎','🍊','🍋','🐶','⭐','🌸','🎈','🦋','🍓','🐸'];
+
+let level=0, streak=0, correctStreak=0, wrongStreak=0, locked=false;
+let lastQ='';
+const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+
+function playTone(f,d,t='sine',g=0.3){
+  const o=audioCtx.createOscillator(),gn=audioCtx.createGain();
+  o.connect(gn);gn.connect(audioCtx.destination);
+  o.type=t;o.frequency.value=f;
+  gn.gain.setValueAtTime(g,audioCtx.currentTime);
+  gn.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);
+  o.start();o.stop(audioCtx.currentTime+d);
+}
+function playCorrect(){playTone(523,0.15);setTimeout(()=>playTone(659,0.15),120);setTimeout(()=>playTone(784,0.25),240);}
+function playWrong(){playTone(250,0.4,'sawtooth',0.2);}
+
+function spawnParticles(){
+  ['⭐','🎉','✨','🌟','🎊'].forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='particle';
+    el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)];
+    el.style.left=(20+Math.random()*60)+'vw';
+    el.style.top=(30+Math.random()*40)+'vh';
+    el.style.setProperty('--dx',(Math.random()*200-100)+'px');
+    el.style.setProperty('--dy',(-80-Math.random()*120)+'px');
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1000);
+  });
+}
+
+function showLevelToast(msg){
+  const t=document.createElement('div');t.className='level-toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2000);
+}
+
+function updateLevel(d){
+  const prev=level;
+  level=Math.max(0,Math.min(LEVELS.length-1,level+d));
+  if(level!==prev){
+    showLevelToast(level>prev?`🎯 升級！Lv ${level+1}`:`⬇️ 降回 Lv ${level+1}`);
+    document.getElementById('levelBadge').textContent=`Lv ${level+1}`;
+  }
+}
+
+function generateQuestion(){
+  locked=false;
+  const cfg=LEVELS[level];
+  let a,b,key;
+  let tries=0;
+  do {
+    a=Math.floor(Math.random()*cfg.aMax)+1;
+    const bMax=Math.min(cfg.aMax, cfg.sumMax-a);
+    if(bMax<1){tries++;continue;}
+    b=Math.floor(Math.random()*bMax)+1;
+    key=`${a}+${b}`;
+    tries++;
+  } while(key===lastQ && tries<50);
+  lastQ=key;
+  const answer=a+b;
+
+  // 視覺化
+  const emoji1=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+  let emoji2;
+  do{emoji2=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];}while(emoji2===emoji1);
+
+  const vr=document.getElementById('visualRow');
+  vr.innerHTML='';
+  const g1=document.createElement('div');g1.className='visual-group';
+  for(let i=0;i<Math.min(a,10);i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=emoji1;g1.appendChild(s);}
+  const op=document.createElement('div');op.className='op-symbol';op.textContent='+';
+  const g2=document.createElement('div');g2.className='visual-group';
+  for(let i=0;i<Math.min(b,10);i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=emoji2;g2.appendChild(s);}
+  vr.append(g1,op,g2);
+
+  // 算式（高 Lv 縮小視覺圖）
+  if(a>10||b>10) vr.style.display='none'; else vr.style.display='flex';
+  document.getElementById('equation').innerHTML=
+    `<span class="num">${a}</span><span class="op">+</span><span class="num">${b}</span><span class="op">=</span><span class="blank">?</span>`;
+
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback';
+
+  generateOptions(answer, cfg.sumMax);
+}
+
+function generateOptions(correct, maxVal){
+  const opts=new Set([correct]);
+  let att=0;
+  while(opts.size<3&&att<100){
+    const d=Math.floor(Math.random()*5)+1;
+    const s=Math.random()<0.5?1:-1;
+    const c=correct+s*d;
+    if(c>=1&&c<=maxVal+5&&c!==correct)opts.add(c);
+    att++;
+  }
+  let f=1;while(opts.size<3){if(!opts.has(f)&&f>=1)opts.add(f);f++;}
+  const arr=[...opts].sort(()=>Math.random()-0.5);
+  const grid=document.getElementById('optionsGrid');
+  grid.innerHTML='';
+  arr.forEach(v=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';btn.textContent=v;
+    btn.onclick=()=>handleAnswer(btn,v,correct);
+    grid.appendChild(btn);
+  });
+}
+
+function handleAnswer(btn,val,correct){
+  if(locked)return;locked=true;
+  const fb=document.getElementById('feedback');
+  if(val===correct){
+    btn.classList.add('correct');
+    fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];
+    fb.className='feedback correct-msg';
+    playCorrect();spawnParticles();
+    streak++;correctStreak++;wrongStreak=0;
+    document.getElementById('streakCount').textContent=streak;
+    if(correctStreak>=3){correctStreak=0;updateLevel(1);}
+    setTimeout(generateQuestion,1200);
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent=['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)];
+    fb.className='feedback wrong-msg';
+    playWrong();
+    streak=0;correctStreak=0;wrongStreak++;
+    document.getElementById('streakCount').textContent=streak;
+    if(wrongStreak>=2){wrongStreak=0;updateLevel(-1);}
+    setTimeout(()=>{btn.classList.remove('wrong');locked=false;},800);
+  }
+}
+
+generateQuestion();
+</script>
+
+<!--
+=== 產圖移交摘要 ===
+本次頁面圖片需求如下，供 ChatGPT 掃描使用：
+
+[COVER] 1200x630 加法遊戲封面，可愛卡通風格，兩堆水果圖示中間有大大的加號，星星吉祥物開心舉手，背景淺青綠（#F0FFFE），主色青綠（#4ECDC4）、深青（#0F766E），活潑童趣風格
+
+==================
+-->
+
+</body>
+</html>
