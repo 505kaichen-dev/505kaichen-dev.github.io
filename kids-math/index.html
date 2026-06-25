@@ -18,327 +18,200 @@
     --card-radius: 24px;
     --shadow: 0 8px 32px rgba(0,0,0,0.10);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 10% 20%, #FFE66D44 0%, transparent 40%), radial-gradient(circle at 90% 80%, #4ECDC444 0%, transparent 40%), radial-gradient(circle at 50% 50%, #FF6B3522 0%, transparent 60%); pointer-events: none; z-index: 0; }
 
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* 背景裝飾泡泡 */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(circle at 10% 20%, #FFE66D44 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, #4ECDC444 0%, transparent 40%),
-      radial-gradient(circle at 50% 50%, #FF6B3522 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── Header ── */
-  header {
-    position: relative;
-    z-index: 10;
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--ink);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 15px;
-    padding: 8px 16px;
-    background: white;
-    border-radius: 50px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
+  header { position: relative; z-index: 10; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px; padding: 8px 16px; background: white; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s, box-shadow 0.15s; }
   .back-link:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
   .back-link::before { content: '←'; font-size: 18px; }
 
-  /* ── Hero ── */
-  .hero {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 40px 24px 24px;
-  }
-
-  .mascot-wrap {
-    display: inline-block;
-    margin-bottom: 16px;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-
-  /* 吉祥物 inline SVG */
+  /* Hero */
+  .hero { position: relative; z-index: 1; text-align: center; padding: 40px 24px 24px; }
+  .mascot-wrap { display: inline-block; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
   .mascot svg { width: 120px; height: 120px; }
+  .hero h1 { font-size: clamp(36px,8vw,64px); font-weight: 900; line-height: 1.1; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+  .hero p { font-size: clamp(16px,3vw,20px); color: #555; font-weight: 700; }
 
-  .hero h1 {
-    font-size: clamp(36px, 8vw, 64px);
-    font-weight: 900;
-    line-height: 1.1;
-    background: linear-gradient(135deg, var(--primary), var(--purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 12px;
-  }
+  /* 關卡區 */
+  .games-section { position: relative; z-index: 1; max-width: 960px; margin: 40px auto; padding: 0 24px 60px; }
+  .section-label { text-align: center; font-size: 14px; font-weight: 800; letter-spacing: 3px; color: #aaa; text-transform: uppercase; margin-bottom: 32px; }
 
-  .hero p {
-    font-size: clamp(16px, 3vw, 20px);
-    color: #555;
-    font-weight: 700;
-  }
+  /* Grid：桌機 3 欄，平板 2 欄，手機 2 欄 */
+  .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 
-  /* ── 關卡卡片區 ── */
-  .games-section {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 0 24px 60px;
-  }
-
-  .section-label {
-    text-align: center;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    color: #aaa;
-    text-transform: uppercase;
-    margin-bottom: 32px;
-  }
-
-  .games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-  }
-
+  /* 卡片 */
   .game-card {
     background: white;
     border-radius: var(--card-radius);
-    padding: 32px 20px;
-    text-align: center;
     text-decoration: none;
     color: var(--ink);
     box-shadow: var(--shadow);
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
     border: 3px solid transparent;
-    display: block;
+    display: flex;
+    flex-direction: column;
+  }
+  .game-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.15); }
+
+  /* 封面圖區 */
+  .card-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: #f0f0f0;
+    flex-shrink: 0;
+  }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .game-card:hover .card-thumb img { transform: scale(1.04); }
+
+  /* 封面圖佔位（無圖時） */
+  .card-thumb-placeholder {
+    width: 100%; aspect-ratio: 16/9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px; flex-shrink: 0;
   }
 
-  .game-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.08;
-    transition: opacity 0.2s;
-  }
-
-  .game-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-  }
-
-  .game-card:hover::before { opacity: 0.14; }
+  /* 卡片內容 */
+  .card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .card-header { display: flex; align-items: center; gap: 10px; }
+  .card-emoji { font-size: 22px; }
+  .card-title { font-size: 18px; font-weight: 900; }
+  .card-desc { font-size: 13px; color: #888; font-weight: 700; line-height: 1.5; }
+  .card-badge { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 50px; font-size: 11px; font-weight: 800; background: #f0f0f0; color: #aaa; align-self: flex-start; }
 
   /* 各卡片顏色 */
-  .card-counting { border-color: #FFE66D; }
-  .card-counting::before { background: #FFE66D; }
-  .card-counting .card-icon { background: #FFF9D6; }
-
-  .card-addition { border-color: #4ECDC4; }
-  .card-addition::before { background: #4ECDC4; }
-  .card-addition .card-icon { background: #E0FAF8; }
-
+  .card-counting  { border-color: #FFE66D; }
+  .card-addition  { border-color: #4ECDC4; }
   .card-subtraction { border-color: #FF6B35; }
-  .card-subtraction::before { background: #FF6B35; }
-  .card-subtraction .card-icon { background: #FFE8DF; }
+  .card-shapes    { border-color: #A855F7; }
+  .card-mixed     { border-color: #A855F7; }
+  .card-coming    { border-color: #ddd; opacity: 0.5; pointer-events: none; }
 
-  .card-shapes { border-color: #A855F7; }
-  .card-shapes::before { background: #A855F7; }
-  .card-shapes .card-icon { background: #F3E8FF; }
+  .card-thumb-placeholder.counting    { background: #FFF9D6; }
+  .card-thumb-placeholder.addition    { background: #E0FAF8; }
+  .card-thumb-placeholder.subtraction { background: #FFE8DF; }
+  .card-thumb-placeholder.shapes      { background: #F3E8FF; }
+  .card-thumb-placeholder.mixed       { background: #F3E8FF; }
+  .card-thumb-placeholder.coming      { background: #f5f5f5; }
 
-  .card-coming { border-color: #ddd; opacity: 0.5; cursor: default; pointer-events: none; }
-  .card-coming::before { background: #ddd; }
-  .card-coming .card-icon { background: #f5f5f5; }
-
-  .card-icon {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-    font-size: 36px;
-  }
-
-  .card-title {
-    font-size: 20px;
-    font-weight: 900;
-    margin-bottom: 6px;
-  }
-
-  .card-desc {
-    font-size: 13px;
-    color: #888;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-
-  .card-badge {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 3px 10px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-weight: 800;
-    background: #f0f0f0;
-    color: #aaa;
-  }
-
-  .badge-counting { background: #FFF3B0; color: #B8860B; }
-  .badge-addition { background: #CCFAF7; color: #0F766E; }
+  .badge-counting    { background: #FFF3B0; color: #B8860B; }
+  .badge-addition    { background: #CCFAF7; color: #0F766E; }
   .badge-subtraction { background: #FFD8CC; color: #C2410C; }
-  .badge-shapes { background: #EDE9FF; color: #7C3AED; }
+  .badge-shapes      { background: #EDE9FF; color: #7C3AED; }
+  .badge-mixed       { background: #EDE9FF; color: #7C3AED; }
 
-  /* ── Footer ── */
-  footer {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 24px;
-    font-size: 13px;
-    color: #bbb;
-    font-weight: 700;
-  }
+  footer { position: relative; z-index: 1; text-align: center; padding: 24px; font-size: 13px; color: #bbb; font-weight: 700; }
 
-  /* ── RWD ── */
-  @media (max-width: 600px) {
-    header { padding: 16px 20px; }
-    .games-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
-    .game-card { padding: 24px 14px; }
-    .card-icon { width: 56px; height: 56px; font-size: 28px; }
-    .card-title { font-size: 17px; }
-  }
+  @media (max-width: 760px) { .games-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+  @media (max-width: 420px) { .games-grid { grid-template-columns: 1fr; } .card-body { padding: 14px 16px 16px; } }
 </style>
 </head>
 <body>
 
-<!-- ── Header ── -->
 <header>
   <a href="../" class="back-link">回首頁</a>
 </header>
 
-<!-- ── Hero ── -->
 <section class="hero">
   <div class="mascot-wrap">
-    <!-- 吉祥物佔位 SVG：圓臉大眼星星，之後可替換為 GPT 產圖 -->
-    <!-- [COVER] 1200x630 兒童數學學習樂園主封面，可愛卡通風格，圓滾滾星星吉祥物角色（大眼睛、笑臉）站在數字與幾何形狀之間，背景為溫暖米白色（#FFF9F0），主色橘紅（#FF6B35）、青綠（#4ECDC4）、鵝黃（#FFE66D）、紫色（#A855F7），字體圓潤、活潑、充滿童趣 -->
     <div class="mascot">
       <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <!-- 星星身體 -->
         <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
-        <!-- 眼睛 -->
-        <circle cx="48" cy="50" r="7" fill="white"/>
-        <circle cx="72" cy="50" r="7" fill="white"/>
-        <circle cx="50" cy="51" r="4" fill="#1A1A2E"/>
-        <circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
-        <!-- 眼睛亮點 -->
-        <circle cx="52" cy="49" r="1.5" fill="white"/>
-        <circle cx="76" cy="49" r="1.5" fill="white"/>
-        <!-- 笑臉 -->
+        <circle cx="48" cy="50" r="7" fill="white"/><circle cx="72" cy="50" r="7" fill="white"/>
+        <circle cx="50" cy="51" r="4" fill="#1A1A2E"/><circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
+        <circle cx="52" cy="49" r="1.5" fill="white"/><circle cx="76" cy="49" r="1.5" fill="white"/>
         <path d="M 48 63 Q 60 74 72 63" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <!-- 臉頰紅暈 -->
         <ellipse cx="42" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
         <ellipse cx="78" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
       </svg>
     </div>
   </div>
-
   <h1>數學樂園 🎮</h1>
   <p>選一個主題，開始挑戰吧！</p>
 </section>
 
-<!-- ── 關卡選單 ── -->
 <section class="games-section">
   <div class="section-label">選擇關卡</div>
   <div class="games-grid">
 
     <a href="counting.html" class="game-card card-counting">
-      <div class="card-icon">🔢</div>
-      <div class="card-title">數數字</div>
-      <div class="card-desc">從 1 數到 100<br>訓練數感基礎</div>
-      <span class="card-badge badge-counting">Lv 1 → 5</span>
+      <div class="card-thumb">
+        <img src="./counting.png" alt="數數字">
+      </div>
+      <div class="card-body">
+        <div class="card-header"><span class="card-emoji">🔢</span><span class="card-title">數數字</span></div>
+        <div class="card-desc">從 1 數到 100，訓練數感基礎</div>
+        <span class="card-badge badge-counting">Lv 1 → 5</span>
+      </div>
     </a>
 
     <a href="addition.html" class="game-card card-addition">
-      <div class="card-icon">➕</div>
-      <div class="card-title">加法</div>
-      <div class="card-desc">小數字到大數字<br>越來越難喔！</div>
-      <span class="card-badge badge-addition">Lv 1 → 5</span>
+      <div class="card-thumb">
+        <img src="./addition.png" alt="加法">
+      </div>
+      <div class="card-body">
+        <div class="card-header"><span class="card-emoji">➕</span><span class="card-title">加法</span></div>
+        <div class="card-desc">小數字到大數字，越來越難喔！</div>
+        <span class="card-badge badge-addition">Lv 1 → 5</span>
+      </div>
     </a>
 
     <a href="subtraction.html" class="game-card card-subtraction">
-      <div class="card-icon">➖</div>
-      <div class="card-title">減法</div>
-      <div class="card-desc">帶走多少？<br>剩下幾個？</div>
-      <span class="card-badge badge-subtraction">Lv 1 → 5</span>
+      <div class="card-thumb">
+        <img src="./subtraction.png" alt="減法">
+      </div>
+      <div class="card-body">
+        <div class="card-header"><span class="card-emoji">➖</span><span class="card-title">減法</span></div>
+        <div class="card-desc">帶走多少？剩下幾個？</div>
+        <span class="card-badge badge-subtraction">Lv 1 → 5</span>
+      </div>
     </a>
 
     <a href="shapes.html" class="game-card card-shapes">
-      <div class="card-icon">🔷</div>
-      <div class="card-title">形狀</div>
-      <div class="card-desc">圓形、三角形…<br>你認得出來嗎？</div>
-      <span class="card-badge badge-shapes">Lv 1 → 5</span>
+      <div class="card-thumb">
+        <img src="./shapes.png" alt="形狀">
+      </div>
+      <div class="card-body">
+        <div class="card-header"><span class="card-emoji">🔷</span><span class="card-title">形狀</span></div>
+        <div class="card-desc">圓形、三角形…你認得出來嗎？</div>
+        <span class="card-badge badge-shapes">Lv 1 → 5</span>
+      </div>
+    </a>
+
+    <a href="mixed.html" class="game-card card-mixed">
+      <div class="card-thumb">
+        <img src="./mixed.png" alt="加減綜合">
+      </div>
+      <div class="card-body">
+        <div class="card-header"><span class="card-emoji">🔀</span><span class="card-title">加減綜合</span></div>
+        <div class="card-desc">加法減法混在一起，準備好接受挑戰？</div>
+        <span class="card-badge badge-mixed">Lv 1 → 5</span>
+      </div>
     </a>
 
     <div class="game-card card-coming">
-      <div class="card-icon">🔒</div>
-      <div class="card-title">更多關卡</div>
-      <div class="card-desc">即將推出<br>敬請期待！</div>
-      <span class="card-badge">Coming Soon</span>
+      <div class="card-thumb-placeholder coming">🔒</div>
+      <div class="card-body">
+        <div class="card-header"><span class="card-emoji">🔒</span><span class="card-title">更多關卡</span></div>
+        <div class="card-desc">即將推出，敬請期待！</div>
+        <span class="card-badge">Coming Soon</span>
+      </div>
     </div>
 
   </div>
 </section>
 
-<!-- ── Footer ── -->
-<footer>
-  🌟 玩得開心，學得快樂！
-</footer>
+<footer>🌟 玩得開心，學得快樂！</footer>
 
 <!--
 === 產圖移交摘要 ===
-本次頁面圖片需求如下，供 ChatGPT 掃描使用：
-
 [COVER] 1200x630 兒童數學學習樂園主封面，可愛卡通風格，圓滾滾星星吉祥物角色（大眼睛、笑臉）站在數字與幾何形狀之間，背景為溫暖米白色（#FFF9F0），主色橘紅（#FF6B35）、青綠（#4ECDC4）、鵝黃（#FFE66D）、紫色（#A855F7），字體圓潤、活潑、充滿童趣
-
 ==================
 -->
-
 </body>
 </html>
