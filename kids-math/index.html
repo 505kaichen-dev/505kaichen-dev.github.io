@@ -109,6 +109,9 @@
 
   @media (max-width: 760px) { .games-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
   @media (max-width: 420px) { .games-grid { grid-template-columns: 1fr; } .card-body { padding: 14px 16px 16px; } }
+/* 兒童觸控防誤縮放：保留正常頁面捲動 */
+html{touch-action:pan-x pan-y;}
+button,a{touch-action:manipulation;}
 </style>
 </head>
 <body>

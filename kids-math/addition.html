@@ -126,10 +126,57 @@ header { position: relative; z-index: 10; padding: 20px 32px; display: flex; ali
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 footer { position: relative; z-index: 1; text-align: center; padding: 20px; font-size: 13px; color: #bbb; font-weight: 700; }
 @media(max-width:480px){ .mode-grid{grid-template-columns:1fr} .options-grid{gap:8px} .option-btn{font-size:20px;padding:14px 4px} .equation{font-size:26px} .nav-dot{width:26px;height:26px;font-size:11px} }
++/* ── 平板與手機遊玩最佳化 ── */
+html{touch-action:pan-x pan-y;}
+button,a{touch-action:manipulation;}
+.fullscreen-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:2px solid rgba(0,0,0,.08);border-radius:999px;background:#fff;color:var(--ink);font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.fullscreen-btn:hover{transform:translateY(-2px);}
+:fullscreen{overflow:hidden;}
+:fullscreen body{min-height:100dvh;}
+@media (orientation:landscape) and (min-width:900px){
+  body:has(#page-practice.active) footer,body:has(#page-challenge.active) footer{display:none;}
+  body:has(#page-practice.active) header,body:has(#page-challenge.active) header{padding-block:10px;}
+  #page-practice.active,#page-challenge.active{display:grid;width:min(1200px,100%);max-width:1200px;height:calc(100dvh - 64px);min-height:560px;padding:8px 24px 16px;gap:12px 24px;overflow:hidden;align-items:stretch;grid-template-columns:minmax(0,3fr) minmax(340px,2fr);grid-template-rows:auto auto minmax(0,1fr) auto auto;}
+  #page-practice.active{grid-template-areas:'top top' 'nav nav' 'question opts' 'question feedback' 'question confirm';}
+  #page-challenge.active{grid-template-areas:'top top' 'nav nav' 'question opts' 'question prev' 'question confirm';}
+  #page-practice>.game-topbar,#page-challenge>.game-topbar{grid-area:top;}
+  #page-practice>.xp-bar-wrap,#page-challenge>.nav-strip{grid-area:nav;margin:0;}
+  #page-practice>.question-card,#page-challenge>.question-card{grid-area:question;height:100%;min-height:0;display:flex;flex-direction:column;justify-content:center;margin:0;overflow:hidden;}
+  #page-practice>.feedback{grid-area:feedback;margin:0;align-self:end;}
+  #page-practice>.options-grid,#page-challenge>.options-grid{grid-area:opts;align-self:center;margin:0;}
+  #page-practice>.confirm-btn,#page-challenge>.confirm-btn{grid-area:confirm;align-self:end;margin:0;}
+  #page-challenge>.prev-btn{grid-area:prev;align-self:end;margin:0;}
+  .question-card{padding:20px 24px;}
+  .visual-row,.emoji-display,.shape-display{min-height:0;}
+}
+@media (orientation:portrait) and (max-width:900px){
+  header{padding:12px 16px;}
+  .page{max-width:760px;padding:0 16px 28px;gap:14px;}
+  #page-practice.active,#page-challenge.active{padding-bottom:24px;}
+  .question-card{padding:22px 18px;}
+  .question-label{margin-bottom:10px;}
+  .feedback{height:28px;font-size:18px;}
+  .confirm-btn{padding:15px;}
+}
+@media (max-height:700px) and (orientation:landscape){
+  #page-practice.active,#page-challenge.active{height:calc(100dvh - 54px);min-height:0;gap:8px 18px;padding-block:4px 10px;}
+  .game-topbar{min-height:36px;}
+  .question-card{padding:14px 18px;}
+  .question-label{margin-bottom:6px;}
+  .feedback{height:26px;font-size:17px;}
+  .option-btn{padding-block:12px;}
+  .confirm-btn{padding:13px;}
+}
+@media (max-width:600px){
+  .fullscreen-btn span{display:none;}
+  .fullscreen-btn{padding:8px 11px;}
+  .game-topbar{gap:8px;}
+  .question-card{padding:18px 14px;}
+}
 </style>
 </head>
 <body>
-<header><a href="index.html" class="back-link">數學樂園</a></header>
+<header><a href="index.html" class="back-link">數學樂園</a><button class="fullscreen-btn" type="button" onclick="toggleFullscreen()" aria-label="切換全螢幕">⛶ <span>全螢幕遊玩</span></button></header>
 
 <!-- 歡迎頁 -->
 <div class="page active" id="page-welcome">
@@ -370,6 +417,18 @@ function showResult(){
   }
   showPage('page-result');
 }
++function syncFullscreenButton(){
+  const label=document.fullscreenElement?'退出全螢幕':'全螢幕遊玩';
+  document.querySelectorAll('.fullscreen-btn span').forEach(el=>el.textContent=label);
+}
+async function toggleFullscreen(){
+  try{
+    if(document.fullscreenElement)await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  }catch(e){}
+  syncFullscreenButton();
+}
+document.addEventListener('fullscreenchange',syncFullscreenButton);
 </script>
 <!--
 === 產圖移交摘要 ===

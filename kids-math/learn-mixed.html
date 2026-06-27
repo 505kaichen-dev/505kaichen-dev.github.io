@@ -72,6 +72,9 @@ main{position:relative;z-index:1;flex:1;max-width:760px;width:100%;margin:0 auto
 .start-hint{font-size:13px;color:#bbb;font-weight:700;margin-top:12px;}
 footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
 @media(max-width:480px){.compare-grid{grid-template-columns:1fr 1fr}.start-btn{padding:16px 32px;font-size:18px;}}
+/* 兒童觸控防誤縮放：保留正常頁面捲動 */
+html{touch-action:pan-x pan-y;}
+button,a{touch-action:manipulation;}
 </style>
 </head>
 <body>
