@@ -404,3 +404,37 @@ mixed_judge_q1.mp3 ~ mixed_judge_q5.mp3
 - `shapes.html` 移除答對音結束後額外 300ms 的等待時間。
 - 短回饋音播放完畢後立即換題；題目出現時的朗讀、點選答案朗讀、答錯提示與跳過提示仍保留。
 - 五個頁面的 JavaScript 語法及短回饋函式檢查均通過。
+
+---
+
+## 十一、2026-06-27 原創遊戲回饋音效
+
+### 新增音檔
+
+```
+audio/sfx/correct_1.wav
+audio/sfx/correct_2.wav
+audio/sfx/correct_3.wav
+audio/sfx/wrong_1.wav
+audio/sfx/wrong_2.wav
+audio/sfx/wrong_3.wav
+audio/sfx/skip.wav
+```
+
+- 答對音效：三組清脆上行鐘琴／木琴音，長度約 0.52–0.55 秒。
+- 答錯音效：三組柔和下行音，不使用刺耳警報，長度約 0.46 秒。
+- 跳過音效：短促上滑音，長度約 0.34 秒。
+- 音檔為原創程式合成、44.1kHz、單聲道 PCM WAV；單檔約 29–48KB。
+
+### 程式調整
+
+- `counting.html`、`addition.html`、`subtraction.html`、`mixed.html`、`shapes.html` 的練習模式已改用 `audio/sfx/`。
+- 答對與答錯各隨機播放三種音效，降低長時間練習的重複感。
+- 跳過播放固定短音效。
+- 題目與選項仍使用語音朗讀；升級與結算等低頻事件仍保留原有語音／音效。
+
+### 驗證結果
+
+- 七個 WAV 檔案均通過 RIFF 檔頭與檔案存在檢查。
+- 五個遊戲頁均確認引用答對、答錯與跳過音效。
+- 五個遊戲頁的 JavaScript 語法檢查均通過。

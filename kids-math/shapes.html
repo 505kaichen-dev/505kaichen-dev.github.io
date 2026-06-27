@@ -336,15 +336,15 @@ function playOptionVO(name) {
 
 // 答對鼓勵（念完後執行 callback → 跳下一題）
 function playCorrectVO(onEnd) {
-  playAudio('common/correct_2.mp3', onEnd);
+  playAudio('sfx/correct_' + (Math.floor(Math.random()*3)+1) + '.wav', onEnd);
 }
 // 答錯回饋（念完後解鎖，不跳題）
 function playWrongVO(onEnd) {
-  playAudio('common/wrong_' + (Math.floor(Math.random()*3)+1) + '.mp3', onEnd);
+  playAudio('sfx/wrong_' + (Math.floor(Math.random()*3)+1) + '.wav', onEnd);
 }
 // 跳過（念完後跳下一題）
 function playSkipVO(onEnd) {
-  playAudio('common/skip.mp3', onEnd);
+  playAudio('sfx/skip.wav', onEnd);
 }
 // 升降級
 function playLevelUpVO()   { playAudio('common/levelup.mp3'); }

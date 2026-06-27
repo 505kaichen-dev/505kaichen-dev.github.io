@@ -302,9 +302,9 @@ const LEVELS=[{max:5,opts:5},{max:10,opts:10},{max:20,opts:10},{max:50,opts:10},
 let currentAudio=null;
 function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;let finished=false;const done=()=>{if(finished)return;finished=true;if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
 function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}
-function playCorrectVO(answer,onEnd){playAudio('common/correct_2.mp3',onEnd);}
-function playWrongVO(onEnd){playAudio(`common/wrong_${Math.floor(Math.random()*3)+1}.mp3`,onEnd);}
-function playSkipVO(onEnd){playAudio('common/skip.mp3',onEnd);}
+function playCorrectVO(answer,onEnd){playAudio(`sfx/correct_${Math.floor(Math.random()*3)+1}.wav`,onEnd);}
+function playWrongVO(onEnd){playAudio(`sfx/wrong_${Math.floor(Math.random()*3)+1}.wav`,onEnd);}
+function playSkipVO(onEnd){playAudio('sfx/skip.wav',onEnd);}
 function playLevelUpVO(){playAudio('common/levelup.mp3');}
 function playLevelDownVO(){playAudio('common/leveldown.mp3');}
 function playQuestionVO(){playAudio('counting/question.mp3');}
