@@ -251,11 +251,12 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 // Lv設定：[數量上限, 選項數量]
 const AUDIO_BASE='./audio/';
 const LEVELS=[{max:5,opts:5},{max:10,opts:10},{max:20,opts:10},{max:50,opts:10},{max:100,opts:10}];
-function playAudio(path,onEnd){const a=new Audio(AUDIO_BASE+path);a.onended=onEnd||null;a.onerror=onEnd||null;a.play().catch(()=>{if(onEnd)onEnd();});return a;}
+let currentAudio=null;
+function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;let finished=false;const done=()=>{if(finished)return;finished=true;if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
 function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}
-function playCorrectVO(answer){playSeq([`common/correct_${Math.floor(Math.random()*4)+1}.mp3`,`counting/correct_answer.mp3`,`numbers/${answer}.mp3`]);}
-function playWrongVO(){playAudio(`common/wrong_${Math.floor(Math.random()*3)+1}.mp3`);}
-function playSkipVO(){playAudio('common/skip.mp3');}
+function playCorrectVO(answer,onEnd){playSeq([`common/correct_${Math.floor(Math.random()*4)+1}.mp3`,`counting/correct_answer.mp3`,`numbers/${answer}.mp3`],onEnd);}
+function playWrongVO(onEnd){playAudio(`common/wrong_${Math.floor(Math.random()*3)+1}.mp3`,onEnd);}
+function playSkipVO(onEnd){playAudio('common/skip.mp3',onEnd);}
 function playLevelUpVO(){playAudio('common/levelup.mp3');}
 function playLevelDownVO(){playAudio('common/leveldown.mp3');}
 function playQuestionVO(){playAudio('counting/question.mp3');}
@@ -269,8 +270,8 @@ let PS={},CS={};
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function selectOpt(btn,gid){document.querySelectorAll('#'+gid+' .opt-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');if(gid==='p-diff-mode')document.getElementById('p-fixed-lv-wrap').style.display=btn.dataset.val==='fixed'?'':'none';}
 function getSelected(gid){const b=document.querySelector('#'+gid+' .opt-btn.selected');return b?b.dataset.val:null;}
-function playOK(){playCorrectVO(PS.q.answer);}
-function playNG(){playWrongVO();}
+function playOK(onEnd){playCorrectVO(PS.q.answer,onEnd);}
+function playNG(onEnd){playWrongVO(onEnd);}
 function spawnParticles(){for(let i=0;i<7;i++){const el=document.createElement('div');el.className='particle';el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)];el.style.left=(20+Math.random()*60)+'vw';el.style.top=(30+Math.random()*40)+'vh';el.style.setProperty('--dx',(Math.random()*180-90)+'px');el.style.setProperty('--dy',(-70-Math.random()*100)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),1000);}}
 function spawnExp(){const el=document.createElement('div');el.className='exp-pop';el.textContent='+EXP';el.style.cssText='left:50%;top:50%;transform:translateX(-50%)';document.body.appendChild(el);setTimeout(()=>el.remove(),1000);}
 function showToast(msg,isUp){const t=document.createElement('div');t.className='level-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2000);if(isUp)playLevelUpVO();else playLevelDownVO();}
@@ -335,7 +336,7 @@ function pNext(){
     document.getElementById('p-confirm').classList.add('ready');
   });
   if(PS.isAuto){const need=XP_NEEDED[PS.lv]??1;document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%';}
-  setTimeout(playQuestionVO, 300);
+  setTimeout(playQuestionVO,400);
 }
 function practiceConfirm(){
   if(!PS.sel||PS.locked)return;PS.locked=true;
@@ -343,16 +344,17 @@ function practiceConfirm(){
   document.querySelectorAll('#p-opts .option-btn').forEach(b=>{if(parseInt(b.dataset.val)===PS.q.answer)b.classList.add('correct');else if(b===PS.selBtn&&!ok)b.classList.add('wrong-sel');b.disabled=true;});
   if(ok){
     fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];fb.className='feedback correct-msg';
-    playOK();spawnParticles();spawnExp();
+    spawnParticles();spawnExp();
     PS.streak++;document.getElementById('p-streak').textContent=PS.streak;
     if(PS.isAuto){PS.xp++;const need=XP_NEEDED[PS.lv];if(need&&PS.xp>=need&&PS.lv<4){PS.lv++;PS.xp=0;showToast('🎯 升級！Lv '+(PS.lv+1),true);}}
+    playOK(pNext);
   }else{
     fb.textContent=['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)];fb.className='feedback wrong-msg';
-    playNG();PS.streak=0;document.getElementById('p-streak').textContent=0;
+    PS.streak=0;document.getElementById('p-streak').textContent=0;
+    playNG(()=>{PS.selBtn.classList.remove('wrong-sel');PS.sel=null;PS.selBtn=null;PS.locked=false;document.getElementById('p-confirm').classList.remove('ready');document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.disabled=false);});
   }
-  setTimeout(pNext,1300);
 }
-function practiceSkip(){if(PS.locked)return;PS.streak=0;document.getElementById('p-streak').textContent=0;const fb=document.getElementById('p-fb');fb.textContent='跳過囉～下一題！';fb.className='feedback wrong-msg';PS.locked=true;playSkipVO();setTimeout(pNext,800);}
+function practiceSkip(){if(PS.locked)return;PS.streak=0;document.getElementById('p-streak').textContent=0;const fb=document.getElementById('p-fb');fb.textContent='跳過囉～下一題！';fb.className='feedback wrong-msg';PS.locked=true;playSkipVO(pNext);}
 
 /* ── 挑戰模式 ── */
 function startChallenge(){
@@ -404,7 +406,7 @@ function showResult(){
   else if(score>=60){emoji='💪';msg='做得好！繼續練習會更棒！';}
   else{emoji='😊';msg='沒關係，多練習就會進步！';}
   document.getElementById('r-emoji').textContent=emoji;document.getElementById('r-msg').textContent=msg;
-  if(score===100)spawnParticles();playOK();
+  if(score===100)spawnParticles();playAudio(`common/correct_${Math.floor(Math.random()*4)+1}.mp3`);
   const wl=document.getElementById('r-wrong');wl.innerHTML='';
   if(wrong.length>0){
     const t=document.createElement('div');t.className='wrong-list-title';t.textContent='需要加強的題目';wl.appendChild(t);

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>減法教學 ➖ 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF5F0;--primary:#FF6B35;--primary-dark:#C2410C;--accent:#FFE66D;--ink:#1A1A2E;--card-radius:24px;--shadow:0 8px 32px rgba(0,0,0,0.10);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 10% 20%,#FF6B3522 0%,transparent 45%),radial-gradient(circle at 90% 80%,#FFE66D33 0%,transparent 45%);pointer-events:none;z-index:0;}
+header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:center;}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;padding:8px 16px;background:white;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.15s;}
+.back-link:hover{transform:translateY(-2px);}
+.back-link::before{content:'←';font-size:18px;}
+main{position:relative;z-index:1;flex:1;max-width:760px;width:100%;margin:0 auto;padding:0 24px 60px;display:flex;flex-direction:column;gap:28px;}
+.learn-hero{text-align:center;padding:20px 0 8px;}
+.learn-tag{display:inline-block;background:var(--primary);color:white;font-size:13px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:50px;margin-bottom:12px;}
+.learn-title{font-size:clamp(28px,6vw,44px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.learn-subtitle{font-size:16px;color:#888;font-weight:700;}
+.concept-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:32px 28px;border-left:6px solid var(--primary);}
+.concept-card-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:16px;}
+.concept-text{font-size:17px;font-weight:700;color:var(--ink);line-height:1.8;}
+.concept-text strong{color:var(--primary-dark);}
+.voice-guide{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px;padding:16px;background:#FFF7ED;border:2px solid #FED7AA;border-radius:18px;}
+.voice-btn{font:800 15px 'Nunito',sans-serif;color:#9A3412;background:white;border:2px solid #FDBA74;border-radius:999px;padding:9px 14px;cursor:pointer}.voice-btn:hover{transform:translateY(-2px)}
+.demo-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:28px;}
+.demo-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:20px;text-align:center;}
+.demo-visual{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;min-height:80px;}
+.demo-group{background:#FFE8DF;border-radius:16px;padding:14px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.demo-emoji{font-size:32px;line-height:1;transition:all 0.5s;}
+.demo-emoji.removed{opacity:0.15;filter:grayscale(1);transform:scale(0.8);}
+.demo-op{font-size:36px;font-weight:900;color:var(--primary);}
+.demo-result{font-size:52px;font-weight:900;color:white;background:var(--primary);border-radius:50%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 var(--primary-dark);}
+.demo-equation{text-align:center;font-size:clamp(28px,6vw,44px);font-weight:900;letter-spacing:4px;margin-bottom:20px;}
+.demo-equation .n{color:var(--primary-dark);}
+.demo-equation .o{color:var(--primary);margin:0 8px;}
+.demo-equation .r{color:#22C55E;}
+.speech-bubble{background:white;border:3px solid var(--primary);border-radius:20px;padding:14px 20px;text-align:center;font-size:17px;font-weight:800;color:var(--ink);box-shadow:var(--shadow);margin-bottom:8px;}
+.mascot-area{text-align:center;}
+.mascot-area svg{width:72px;height:72px;}
+.demo-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+.demo-btn{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;padding:10px 22px;border-radius:50px;border:none;cursor:pointer;transition:transform 0.15s;}
+.demo-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;}
+.demo-btn.secondary{background:white;border:2.5px solid #ddd;color:#888;}
+.demo-btn:hover{transform:translateY(-2px);}
+.demo-btn:disabled{opacity:0.4;cursor:default;transform:none;}
+.examples-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.example-item{background:white;border-radius:20px;box-shadow:var(--shadow);padding:20px 16px;text-align:center;border-top:4px solid var(--primary);}
+.example-icon{font-size:40px;margin-bottom:8px;}
+.example-text{font-size:14px;font-weight:800;color:var(--ink);line-height:1.5;}
+.example-sub{font-size:12px;color:#aaa;font-weight:700;margin-top:4px;}
+.parent-section{background:#F0F9FF;border-radius:var(--card-radius);padding:24px 28px;border-left:6px solid #3B82F6;}
+.parent-tag{display:inline-block;background:#3B82F6;color:white;font-size:12px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:50px;margin-bottom:14px;}
+.parent-title{font-size:18px;font-weight:900;color:#1E3A5F;margin-bottom:12px;}
+.parent-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.parent-list li{font-size:14px;font-weight:700;color:#334155;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.parent-list li::before{content:'✅';flex-shrink:0;}
+.start-section{text-align:center;padding:12px 0;}
+.start-btn{font-family:'Nunito',sans-serif;display:inline-block;padding:20px 48px;border-radius:20px;border:none;font-size:22px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 6px 0 var(--primary-dark),0 8px 24px rgba(255,107,53,0.35);transition:transform 0.15s;text-decoration:none;}
+.start-btn:hover{transform:translateY(-3px);}
+.start-hint{font-size:13px;color:#bbb;font-weight:700;margin-top:12px;}
+footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
+@media(max-width:480px){.examples-grid{grid-template-columns:1fr 1fr}.demo-emoji{font-size:24px}.start-btn{padding:16px 32px;font-size:18px;}}
+</style>
+</head>
+<body>
+<header><a href="subtraction.html" class="back-link">減法</a></header>
+<main>
+  <div class="voice-guide" aria-label="減法語音導覽">
+    <button class="voice-btn" onclick="playAudio('learn/subtraction_concept.mp3')">🔊 減法概念</button>
+    <button class="voice-btn" onclick="playAudio('learn/subtraction_step1.mp3')">🔊 步驟一</button>
+    <button class="voice-btn" onclick="playAudio('learn/subtraction_step2.mp3')">🔊 步驟二</button>
+    <button class="voice-btn" onclick="playAudio('learn/subtraction_step3.mp3')">🔊 步驟三</button>
+  </div>
+  <div class="learn-hero">
+    <div class="learn-tag">學習主題</div>
+    <div class="learn-title">減法 ➖</div>
+    <div class="learn-subtitle">拿走幾個之後，還剩下幾個？</div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card-title">什麼是減法？</div>
+    <div class="concept-text">
+      減法就是從一堆東西裡面<strong>拿走一些</strong>，看看還剩下幾個！<br><br>
+      例如：有 <strong>5 顆糖</strong>，吃掉了 <strong>2 顆</strong>，<br>
+      還剩下 <strong>3 顆糖</strong>！<br><br>
+      這就是 <strong>5 − 2 = 3</strong> 🎉
+    </div>
+  </div>
+
+  <div class="demo-card">
+    <div class="demo-title">🍓 一起來試試看！</div>
+    <div class="demo-visual" id="demoVisual"></div>
+    <div class="demo-equation" id="demoEquation">？ ➖ ？ = ？</div>
+    <div class="speech-bubble" id="speechBubble">按「開始示範」看看減法怎麼做！</div>
+    <div class="mascot-area">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
+        <circle cx="48" cy="50" r="7" fill="white"/><circle cx="72" cy="50" r="7" fill="white"/>
+        <circle cx="50" cy="51" r="4" fill="#1A1A2E"/><circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
+        <circle cx="52" cy="49" r="1.5" fill="white"/><circle cx="76" cy="49" r="1.5" fill="white"/>
+        <path d="M 48 63 Q 60 74 72 63" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="42" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+        <ellipse cx="78" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="demo-controls">
+      <button class="demo-btn secondary" onclick="prevDemo()" id="prevBtn" disabled>← 上一步</button>
+      <button class="demo-btn primary" onclick="nextDemo()" id="nextBtn">開始示範 →</button>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card-title">生活中的減法</div>
+    <div class="examples-grid">
+      <div class="example-item">
+        <div class="example-icon">🍪</div>
+        <div class="example-text">有 6 片餅乾，吃掉 2 片</div>
+        <div class="example-sub">6 − 2 = 4 片！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🎈</div>
+        <div class="example-text">有 8 顆氣球，飛走 3 顆</div>
+        <div class="example-sub">8 − 3 = 5 顆！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🐥</div>
+        <div class="example-text">有 7 隻小雞，走掉 4 隻</div>
+        <div class="example-sub">7 − 4 = 3 隻！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">⭐</div>
+        <div class="example-text">有 10 顆星星，消失 5 顆</div>
+        <div class="example-sub">10 − 5 = 5 顆！</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="parent-section">
+    <div class="parent-tag">📌 給爸爸媽媽</div>
+    <div class="parent-title">這個關卡在學什麼？</div>
+    <ul class="parent-list">
+      <li>理解「拿走」的概念，從一個數量中減去部分</li>
+      <li>結果永遠大於等於 1，不會出現負數或零</li>
+      <li>低難度有 emoji 消失動畫幫助理解帶走的概念</li>
+      <li>建議用實物（積木、糖果）讓孩子親手拿走感受</li>
+      <li>Lv1 從 5 以內開始，Lv5 可達 100 以內的減法</li>
+    </ul>
+  </div>
+
+  <div class="start-section">
+    <a href="subtraction.html" class="start-btn">我準備好了！開始玩 🚀</a>
+    <div class="start-hint">點擊後可選擇練習模式或挑戰模式</div>
+  </div>
+</main>
+<footer>➖ 減法教學</footer>
+
+<script>
+const AUDIO_BASE='./audio/';let currentAudio=null;
+function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;const done=()=>{if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
+function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}
+
+const DEMOS=[{a:5,b:2,emoji:'🍓'},{a:7,b:3,emoji:'⭐'},{a:6,b:4,emoji:'🍪'}];
+let demoIdx=0,demoStep=0;
+
+function getDemo(){return DEMOS[demoIdx];}
+
+function renderDemo(){
+  const d=getDemo();const a=d.a,b=d.b,r=a-b,e=d.emoji;
+  const v=document.getElementById('demoVisual');v.innerHTML='';
+  const g=document.createElement('div');g.className='demo-group';
+  for(let i=0;i<a;i++){
+    const sp=document.createElement('span');
+    sp.className='demo-emoji'+(demoStep>=2&&i>=r?' removed':'');
+    sp.textContent=e;g.appendChild(sp);
+  }
+  v.appendChild(g);
+  if(demoStep>=2){
+    const op=document.createElement('div');op.className='demo-op';op.textContent='=';v.appendChild(op);
+    const res=document.createElement('div');res.className='demo-result';res.textContent=r;v.appendChild(res);
+  }
+  const eqMap=['？ ➖ ？ = ？',`${a} ➖ ？ = ？`,`${a} ➖ ${b} = ？`,`${a} ➖ ${b} = ${r}`];
+  document.getElementById('demoEquation').innerHTML=(eqMap[demoStep]||eqMap[0]).replace(/(\d+)/g,(m,n)=>demoStep===3&&n==r?`<span class="r">${n}</span>`:`<span class="n">${n}</span>`).replace(/➖/g,'<span class="o">−</span>').replace(/？/g,'<span style="color:#ddd">?</span>');
+  const bubbles=['按「開始示範」看看減法怎麼做！',`這裡有 ${a} 個 ${e}`,`拿走 ${b} 個（變灰色的）`,`還剩下 ${r} 個 ${e}！${a} − ${b} = ${r}`];
+  document.getElementById('speechBubble').textContent=bubbles[demoStep];
+  document.getElementById('prevBtn').disabled=demoStep===0&&demoIdx===0;
+  const nb=document.getElementById('nextBtn');
+  if(demoStep===3&&demoIdx===DEMOS.length-1)nb.textContent='再看一次 🔄';
+  else if(demoStep===3)nb.textContent='下一個例子 →';
+  else nb.textContent=demoStep===0?'開始示範 →':'下一步 →';
+  if(demoStep===1)playSeq([`numbers/${a}.mp3`]);
+  else if(demoStep===2)playSeq(['operators/minus.mp3',`numbers/${b}.mp3`]);
+  else if(demoStep===3)playSeq([`numbers/${a}.mp3`,'operators/minus.mp3',`numbers/${b}.mp3`,'operators/equals.mp3',`numbers/${r}.mp3`]);
+}
+
+function nextDemo(){
+  if(demoStep===3){if(demoIdx===DEMOS.length-1){demoIdx=0;demoStep=0;}else{demoIdx++;demoStep=1;}}
+  else{demoStep++;}
+  renderDemo();
+}
+function prevDemo(){
+  if(demoStep>0){demoStep--;}else if(demoIdx>0){demoIdx--;demoStep=3;}
+  renderDemo();
+}
+renderDemo();
+</script>
+</body>
+</html>

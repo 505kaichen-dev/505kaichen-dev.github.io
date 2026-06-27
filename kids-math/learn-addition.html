@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加法教學 ➕ 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F0FFFE;--primary:#4ECDC4;--primary-dark:#0F766E;--accent:#FFE66D;--orange:#FF6B35;--ink:#1A1A2E;--card-radius:24px;--shadow:0 8px 32px rgba(0,0,0,0.10);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 10% 20%,#4ECDC433 0%,transparent 45%),radial-gradient(circle at 90% 80%,#FFE66D33 0%,transparent 45%);pointer-events:none;z-index:0;}
+header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:center;}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;padding:8px 16px;background:white;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.15s;}
+.back-link:hover{transform:translateY(-2px);}
+.back-link::before{content:'←';font-size:18px;}
+main{position:relative;z-index:1;flex:1;max-width:760px;width:100%;margin:0 auto;padding:0 24px 60px;display:flex;flex-direction:column;gap:28px;}
+.learn-hero{text-align:center;padding:20px 0 8px;}
+.learn-tag{display:inline-block;background:var(--primary);color:white;font-size:13px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:50px;margin-bottom:12px;}
+.learn-title{font-size:clamp(28px,6vw,44px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.learn-subtitle{font-size:16px;color:#888;font-weight:700;}
+.concept-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:32px 28px;border-left:6px solid var(--primary);}
+.concept-card-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:16px;}
+.concept-text{font-size:17px;font-weight:700;color:var(--ink);line-height:1.8;}
+.concept-text strong{color:var(--primary-dark);}
+.voice-guide{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px;padding:16px;background:#FFF7ED;border:2px solid #FED7AA;border-radius:18px;}
+.voice-btn{font:800 15px 'Nunito',sans-serif;color:#9A3412;background:white;border:2px solid #FDBA74;border-radius:999px;padding:9px 14px;cursor:pointer}.voice-btn:hover{transform:translateY(-2px)}
+
+/* 示範區 */
+.demo-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:28px;}
+.demo-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:20px;text-align:center;}
+.demo-visual{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+.demo-group{background:#E0FAF8;border-radius:16px;padding:14px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:80px;}
+.demo-group.group-b{background:#FFF3B0;}
+.demo-emoji{font-size:32px;line-height:1;transition:all 0.4s;}
+.demo-emoji.new{animation:pop 0.4s ease;}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+.demo-op{font-size:40px;font-weight:900;color:var(--primary);}
+.demo-eq{font-size:40px;font-weight:900;color:#aaa;}
+.demo-result{font-size:52px;font-weight:900;color:white;background:var(--primary);border-radius:50%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 var(--primary-dark);}
+.demo-equation{text-align:center;font-size:clamp(28px,6vw,44px);font-weight:900;letter-spacing:4px;margin-bottom:20px;}
+.demo-equation .n{color:var(--primary-dark);}
+.demo-equation .o{color:var(--primary);margin:0 8px;}
+.demo-equation .r{color:var(--orange);}
+.speech-bubble{background:white;border:3px solid var(--primary);border-radius:20px;padding:14px 20px;text-align:center;font-size:17px;font-weight:800;color:var(--ink);box-shadow:var(--shadow);margin-bottom:8px;}
+.mascot-area{text-align:center;}
+.mascot-area svg{width:72px;height:72px;}
+.demo-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+.demo-btn{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;padding:10px 22px;border-radius:50px;border:none;cursor:pointer;transition:transform 0.15s;}
+.demo-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;}
+.demo-btn.secondary{background:white;border:2.5px solid #ddd;color:#888;}
+.demo-btn:hover{transform:translateY(-2px);}
+.demo-btn:disabled{opacity:0.4;cursor:default;transform:none;}
+
+/* 生活例子 */
+.examples-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.example-item{background:white;border-radius:20px;box-shadow:var(--shadow);padding:20px 16px;text-align:center;border-top:4px solid var(--primary);}
+.example-icon{font-size:40px;margin-bottom:8px;}
+.example-text{font-size:14px;font-weight:800;color:var(--ink);line-height:1.5;}
+.example-sub{font-size:12px;color:#aaa;font-weight:700;margin-top:4px;}
+
+/* 給家長 */
+.parent-section{background:#F0F9FF;border-radius:var(--card-radius);padding:24px 28px;border-left:6px solid #3B82F6;}
+.parent-tag{display:inline-block;background:#3B82F6;color:white;font-size:12px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:50px;margin-bottom:14px;}
+.parent-title{font-size:18px;font-weight:900;color:#1E3A5F;margin-bottom:12px;}
+.parent-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.parent-list li{font-size:14px;font-weight:700;color:#334155;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.parent-list li::before{content:'✅';flex-shrink:0;}
+
+/* 開始按鈕 */
+.start-section{text-align:center;padding:12px 0;}
+.start-btn{font-family:'Nunito',sans-serif;display:inline-block;padding:20px 48px;border-radius:20px;border:none;font-size:22px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 6px 0 #0F766E,0 8px 24px rgba(78,205,196,0.35);transition:transform 0.15s,box-shadow 0.15s;text-decoration:none;}
+.start-btn:hover{transform:translateY(-3px);}
+.start-hint{font-size:13px;color:#bbb;font-weight:700;margin-top:12px;}
+footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
+@media(max-width:480px){.examples-grid{grid-template-columns:1fr 1fr}.demo-visual{gap:8px}.demo-emoji{font-size:24px}.start-btn{padding:16px 32px;font-size:18px;}}
+</style>
+</head>
+<body>
+<header><a href="addition.html" class="back-link">加法</a></header>
+<main>
+  <div class="voice-guide" aria-label="加法語音導覽">
+    <button class="voice-btn" onclick="playAudio('learn/addition_concept.mp3')">🔊 加法概念</button>
+    <button class="voice-btn" onclick="playAudio('learn/addition_step1.mp3')">🔊 步驟一</button>
+    <button class="voice-btn" onclick="playAudio('learn/addition_step2.mp3')">🔊 步驟二</button>
+    <button class="voice-btn" onclick="playAudio('learn/addition_step3.mp3')">🔊 步驟三</button>
+  </div>
+  <div class="learn-hero">
+    <div class="learn-tag">學習主題</div>
+    <div class="learn-title">加法 ➕</div>
+    <div class="learn-subtitle">把兩堆東西合在一起，總共有幾個？</div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card-title">什麼是加法？</div>
+    <div class="concept-text">
+      加法就是把<strong>兩堆東西合在一起</strong>數數看！<br><br>
+      例如：左手有 <strong>3 顆蘋果</strong>，右手有 <strong>2 顆蘋果</strong>，<br>
+      全部放在一起，就有 <strong>5 顆蘋果</strong>！<br><br>
+      這就是 <strong>3 + 2 = 5</strong> 🎉
+    </div>
+  </div>
+
+  <div class="demo-card">
+    <div class="demo-title">🍎 一起來試試看！</div>
+    <div class="demo-visual" id="demoVisual"></div>
+    <div class="demo-equation" id="demoEquation">？ ➕ ？ = ？</div>
+    <div class="speech-bubble" id="speechBubble">按「開始示範」看看加法怎麼做！</div>
+    <div class="mascot-area">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
+        <circle cx="48" cy="50" r="7" fill="white"/><circle cx="72" cy="50" r="7" fill="white"/>
+        <circle cx="50" cy="51" r="4" fill="#1A1A2E"/><circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
+        <circle cx="52" cy="49" r="1.5" fill="white"/><circle cx="76" cy="49" r="1.5" fill="white"/>
+        <path d="M 48 63 Q 60 74 72 63" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="42" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+        <ellipse cx="78" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="demo-controls">
+      <button class="demo-btn secondary" onclick="prevDemo()" id="prevBtn" disabled>← 上一步</button>
+      <button class="demo-btn primary" onclick="nextDemo()" id="nextBtn">開始示範 →</button>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card-title">生活中的加法</div>
+    <div class="examples-grid">
+      <div class="example-item">
+        <div class="example-icon">🍬</div>
+        <div class="example-text">媽媽給 2 顆糖，爸爸給 3 顆糖</div>
+        <div class="example-sub">2 + 3 = 5 顆糖！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🐟</div>
+        <div class="example-text">魚缸裡有 4 條魚，又買了 2 條</div>
+        <div class="example-sub">4 + 2 = 6 條魚！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🎈</div>
+        <div class="example-text">紅氣球 3 顆，藍氣球 3 顆</div>
+        <div class="example-sub">3 + 3 = 6 顆！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🌟</div>
+        <div class="example-text">今天得 5 顆星，明天得 4 顆星</div>
+        <div class="example-sub">5 + 4 = 9 顆星！</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="parent-section">
+    <div class="parent-tag">📌 給爸爸媽媽</div>
+    <div class="parent-title">這個關卡在學什麼？</div>
+    <ul class="parent-list">
+      <li>理解「合併」的概念，兩個數量加在一起</li>
+      <li>Lv1 從結果不超過 5 開始，Lv5 可到 100 以內的加法</li>
+      <li>低難度有 emoji 圖示輔助，高難度改為純算式</li>
+      <li>建議陪孩子用手指或實物示範，加深理解</li>
+      <li>答錯沒關係，系統會自動降回合適的難度</li>
+    </ul>
+  </div>
+
+  <div class="start-section">
+    <a href="addition.html" class="start-btn">我準備好了！開始玩 🚀</a>
+    <div class="start-hint">點擊後可選擇練習模式或挑戰模式</div>
+  </div>
+</main>
+<footer>➕ 加法教學</footer>
+
+<script>
+const AUDIO_BASE='./audio/';let currentAudio=null;
+function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;const done=()=>{if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
+function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}
+
+const DEMOS=[
+  {a:3,b:2,emoji:'🍎'},
+  {a:4,b:3,emoji:'🌸'},
+  {a:5,b:2,emoji:'⭐'},
+];
+let demoIdx=0, demoStep=0;
+
+const STEPS=[
+  {bubble:'按「開始示範」，看看加法怎麼做！', eq:'？ ➕ ？ = ？', showA:false, showB:false, showR:false},
+  {bubble:'這裡有 {a} 個 {e}！', eq:'{a} ➕ ？ = ？', showA:true, showB:false, showR:false, voice:['addition/question.mp3']},
+  {bubble:'這裡又有 {b} 個 {e}！', eq:'{a} ➕ {b} = ？', showA:true, showB:true, showR:false, voice:[]},
+  {bubble:'合在一起，總共有 {r} 個！', eq:'{a} ➕ {b} = {r}', showA:true, showB:true, showR:true, voice:[]},
+];
+
+function getDemo(){return DEMOS[demoIdx];}
+
+function renderDemo(){
+  const d=getDemo(); const s=STEPS[demoStep];
+  const a=d.a, b=d.b, r=a+b, e=d.emoji;
+  // 視覺
+  const v=document.getElementById('demoVisual'); v.innerHTML='';
+  if(s.showA){
+    const ga=document.createElement('div');ga.className='demo-group';
+    for(let i=0;i<a;i++){const sp=document.createElement('span');sp.className='demo-emoji';sp.textContent=e;ga.appendChild(sp);}
+    v.appendChild(ga);
+  }
+  if(s.showA&&s.showB){
+    const op=document.createElement('div');op.className='demo-op';op.textContent='+';v.appendChild(op);
+  }
+  if(s.showB){
+    const gb=document.createElement('div');gb.className='demo-group group-b';
+    for(let i=0;i<b;i++){const sp=document.createElement('span');sp.className='demo-emoji'+(demoStep===2?' new':'');sp.textContent=e;gb.appendChild(sp);}
+    v.appendChild(gb);
+  }
+  if(s.showR){
+    const eq=document.createElement('div');eq.className='demo-eq';eq.textContent='=';v.appendChild(eq);
+    const res=document.createElement('div');res.className='demo-result';res.textContent=r;v.appendChild(res);
+  }
+  // 算式
+  document.getElementById('demoEquation').innerHTML=s.eq.replace(/{a}/g,`<span class="n">${a}</span>`).replace(/{b}/g,`<span class="n">${b}</span>`).replace(/{r}/g,`<span class="r">${r}</span>`).replace(/➕/g,`<span class="o">+</span>`).replace(/？/g,'<span style="color:#ddd">?</span>');
+  // 泡泡
+  document.getElementById('speechBubble').textContent=s.bubble.replace(/{a}/g,a).replace(/{b}/g,b).replace(/{r}/g,r).replace(/{e}/g,e);
+  // 按鈕
+  document.getElementById('prevBtn').disabled=demoStep===0&&demoIdx===0;
+  const nb=document.getElementById('nextBtn');
+  if(demoStep===STEPS.length-1&&demoIdx===DEMOS.length-1) nb.textContent='再看一次 🔄';
+  else if(demoStep===STEPS.length-1) nb.textContent='下一個例子 →';
+  else nb.textContent=demoStep===0?'開始示範 →':'下一步 →';
+  // 語音
+  if(s.voice&&s.voice.length>0){
+    const vPaths=[...s.voice];
+    if(demoStep===1) vPaths.push(`numbers/${a}.mp3`);
+    if(demoStep===2) vPaths.push('operators/plus.mp3',`numbers/${b}.mp3`);
+    if(demoStep===3) vPaths.push('operators/equals.mp3',`numbers/${r}.mp3`);
+    playSeq(vPaths);
+  } else if(demoStep===2){
+    playSeq(['operators/plus.mp3',`numbers/${b}.mp3`]);
+  } else if(demoStep===3){
+    playSeq([`numbers/${a}.mp3`,'operators/plus.mp3',`numbers/${b}.mp3`,'operators/equals.mp3',`numbers/${r}.mp3`]);
+  }
+}
+
+function nextDemo(){
+  if(demoStep===STEPS.length-1){
+    if(demoIdx===DEMOS.length-1){demoIdx=0;demoStep=0;}
+    else{demoIdx++;demoStep=1;}
+  } else { demoStep++; }
+  renderDemo();
+}
+function prevDemo(){
+  if(demoStep>0){demoStep--;}
+  else if(demoIdx>0){demoIdx--;demoStep=STEPS.length-1;}
+  renderDemo();
+}
+renderDemo();
+</script>
+</body>
+</html>

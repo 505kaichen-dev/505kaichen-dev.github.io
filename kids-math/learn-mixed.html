@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加減綜合教學 🔀 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F0FF;--primary:#A855F7;--primary-dark:#7C3AED;--teal:#4ECDC4;--orange:#FF6B35;--accent:#FFE66D;--ink:#1A1A2E;--card-radius:24px;--shadow:0 8px 32px rgba(0,0,0,0.10);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 25%,#A855F722 0%,transparent 45%),radial-gradient(circle at 85% 75%,#FFE66D33 0%,transparent 45%);pointer-events:none;z-index:0;}
+header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:center;}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;padding:8px 16px;background:white;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.15s;}
+.back-link:hover{transform:translateY(-2px);}
+.back-link::before{content:'←';font-size:18px;}
+main{position:relative;z-index:1;flex:1;max-width:760px;width:100%;margin:0 auto;padding:0 24px 60px;display:flex;flex-direction:column;gap:28px;}
+.learn-hero{text-align:center;padding:20px 0 8px;}
+.learn-tag{display:inline-block;background:var(--primary);color:white;font-size:13px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:50px;margin-bottom:12px;}
+.learn-title{font-size:clamp(28px,6vw,44px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),var(--primary),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.learn-subtitle{font-size:16px;color:#888;font-weight:700;}
+.concept-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:32px 28px;border-left:6px solid var(--primary);}
+.concept-card-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:16px;}
+.concept-text{font-size:17px;font-weight:700;color:var(--ink);line-height:1.8;}
+.concept-text strong{color:var(--primary-dark);}
+.voice-guide{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px;padding:16px;background:#F5F0FF;border:2px solid #D8B4FE;border-radius:18px;}
+.voice-btn{font:800 15px 'Nunito',sans-serif;color:#6B21A8;background:white;border:2px solid #C084FC;border-radius:999px;padding:9px 14px;cursor:pointer}.voice-btn:hover{transform:translateY(-2px)}
+
+/* 加減對比 */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px;}
+.compare-card{border-radius:20px;padding:20px;text-align:center;}
+.compare-card.add{background:#E0FAF8;border:3px solid var(--teal);}
+.compare-card.sub{background:#FFE8DF;border:3px solid var(--orange);}
+.compare-op{font-size:40px;font-weight:900;margin-bottom:8px;}
+.compare-title{font-size:17px;font-weight:900;margin-bottom:6px;}
+.compare-title.add{color:#0F766E;}
+.compare-title.sub{color:#C2410C;}
+.compare-desc{font-size:13px;font-weight:700;color:#666;line-height:1.5;}
+.compare-example{font-size:20px;font-weight:900;margin-top:10px;padding:8px 12px;background:white;border-radius:12px;}
+
+/* 判斷題示範 */
+.judge-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:28px;}
+.judge-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:20px;text-align:center;}
+.judge-question{background:#F5F0FF;border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;}
+.judge-text{font-size:18px;font-weight:800;color:var(--ink);line-height:1.6;margin-bottom:12px;}
+.judge-btns{display:flex;gap:10px;justify-content:center;}
+.judge-btn{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;padding:12px 28px;border-radius:16px;border:3px solid transparent;cursor:pointer;transition:all 0.15s;}
+.judge-btn.add-btn{background:#E0FAF8;border-color:var(--teal);color:#0F766E;}
+.judge-btn.sub-btn{background:#FFE8DF;border-color:var(--orange);color:#C2410C;}
+.judge-btn:hover{transform:translateY(-2px);}
+.judge-btn.correct{animation:bounce 0.4s;}
+.judge-btn.wrong{animation:shake 0.4s;}
+.judge-feedback{text-align:center;font-size:18px;font-weight:900;min-height:28px;margin-top:8px;}
+.judge-feedback.ok{color:#22C55E;}
+.judge-feedback.ng{color:#EF4444;}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-8px)}50%{transform:translateX(8px)}}
+
+.speech-bubble{background:white;border:3px solid var(--primary);border-radius:20px;padding:14px 20px;text-align:center;font-size:16px;font-weight:800;color:var(--ink);box-shadow:var(--shadow);margin-bottom:8px;}
+.mascot-area{text-align:center;margin-bottom:12px;}
+.mascot-area svg{width:68px;height:68px;}
+
+.parent-section{background:#F0F9FF;border-radius:var(--card-radius);padding:24px 28px;border-left:6px solid #3B82F6;}
+.parent-tag{display:inline-block;background:#3B82F6;color:white;font-size:12px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:50px;margin-bottom:14px;}
+.parent-title{font-size:18px;font-weight:900;color:#1E3A5F;margin-bottom:12px;}
+.parent-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.parent-list li{font-size:14px;font-weight:700;color:#334155;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.parent-list li::before{content:'✅';flex-shrink:0;}
+.start-section{text-align:center;padding:12px 0;}
+.start-btn{font-family:'Nunito',sans-serif;display:inline-block;padding:20px 48px;border-radius:20px;border:none;font-size:22px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 6px 0 var(--primary-dark),0 8px 24px rgba(168,85,247,0.35);transition:transform 0.15s;text-decoration:none;}
+.start-btn:hover{transform:translateY(-3px);}
+.start-hint{font-size:13px;color:#bbb;font-weight:700;margin-top:12px;}
+footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
+@media(max-width:480px){.compare-grid{grid-template-columns:1fr 1fr}.start-btn{padding:16px 32px;font-size:18px;}}
+</style>
+</head>
+<body>
+<header><a href="mixed.html" class="back-link">加減綜合</a></header>
+<main>
+  <div class="voice-guide" aria-label="加減綜合語音導覽">
+    <button class="voice-btn" onclick="playAudio('learn/mixed_concept.mp3')">🔊 加減法概念</button>
+    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q1.mp3')">🔊 判斷題一</button>
+    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q2.mp3')">🔊 判斷題二</button>
+    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q3.mp3')">🔊 判斷題三</button>
+    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q4.mp3')">🔊 判斷題四</button>
+    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q5.mp3')">🔊 判斷題五</button>
+  </div>
+  <div class="learn-hero">
+    <div class="learn-tag">學習主題</div>
+    <div class="learn-title">加減綜合 🔀</div>
+    <div class="learn-subtitle">加法和減法混在一起，你能分清楚嗎？</div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card-title">加法和減法有什麼不同？</div>
+    <div class="compare-grid">
+      <div class="compare-card add">
+        <div class="compare-op">➕</div>
+        <div class="compare-title add">加法</div>
+        <div class="compare-desc">把兩堆<br>合在一起<br>變得更多！</div>
+        <div class="compare-example">3 + 2 = 5</div>
+      </div>
+      <div class="compare-card sub">
+        <div class="compare-op">➖</div>
+        <div class="compare-title sub">減法</div>
+        <div class="compare-desc">從一堆裡<br>拿走一些<br>變得更少！</div>
+        <div class="compare-example">5 − 2 = 3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="judge-card">
+    <div class="judge-title">🤔 練習判斷加法還是減法？</div>
+    <div class="mascot-area">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
+        <circle cx="48" cy="50" r="7" fill="white"/><circle cx="72" cy="50" r="7" fill="white"/>
+        <circle cx="50" cy="51" r="4" fill="#1A1A2E"/><circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
+        <circle cx="52" cy="49" r="1.5" fill="white"/><circle cx="76" cy="49" r="1.5" fill="white"/>
+        <path d="M 48 63 Q 60 74 72 63" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="42" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+        <ellipse cx="78" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="speech-bubble" id="judgeSpeech">這題應該用加法還是減法？</div>
+    <div class="judge-question" id="judgeQ">
+      <div class="judge-text" id="judgeText">載入中...</div>
+      <div class="judge-btns">
+        <button class="judge-btn add-btn" onclick="judgeAnswer('add')">➕ 加法</button>
+        <button class="judge-btn sub-btn" onclick="judgeAnswer('sub')">➖ 減法</button>
+      </div>
+    </div>
+    <div class="judge-feedback" id="judgeFb"></div>
+  </div>
+
+  <div class="parent-section">
+    <div class="parent-tag">📌 給爸爸媽媽</div>
+    <div class="parent-title">這個關卡在學什麼？</div>
+    <ul class="parent-list">
+      <li>綜合練習加法和減法，隨機混合出題</li>
+      <li>培養判斷「該用加還是減」的能力</li>
+      <li>題目頂部會顯示當前是加法還是減法題</li>
+      <li>建議先完成加法和減法關卡再挑戰這個</li>
+      <li>Lv1–5 難度與加減法單獨關卡相同</li>
+    </ul>
+  </div>
+
+  <div class="start-section">
+    <a href="mixed.html" class="start-btn">我準備好了！開始玩 🚀</a>
+    <div class="start-hint">點擊後可選擇練習模式或挑戰模式</div>
+  </div>
+</main>
+<footer>🔀 加減綜合教學</footer>
+
+<script>
+const AUDIO_BASE='./audio/';let currentAudio=null;
+function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;const done=()=>{if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
+function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}
+
+const JUDGE_QS=[
+  {text:'有 3 顆蘋果，媽媽又買了 2 顆，\n現在有幾顆？',ans:'add'},
+  {text:'有 7 顆糖，吃掉了 3 顆，\n還剩幾顆？',ans:'sub'},
+  {text:'小明有 4 張貼紙，小華給他 5 張，\n小明現在有幾張？',ans:'add'},
+  {text:'有 9 隻小鳥，飛走了 4 隻，\n還剩幾隻？',ans:'sub'},
+  {text:'左手有 2 顆球，右手有 3 顆球，\n總共幾顆？',ans:'add'},
+];
+let judgeIdx=0,judgeLocked=false;
+
+function loadJudge(){
+  judgeLocked=false;
+  const q=JUDGE_QS[judgeIdx];
+  document.getElementById('judgeText').textContent=q.text;
+  document.getElementById('judgeFb').textContent='';
+  document.getElementById('judgeFb').className='judge-feedback';
+  document.getElementById('judgeSpeech').textContent='這題應該用加法還是減法？';
+  document.querySelectorAll('.judge-btn').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+}
+
+function judgeAnswer(type){
+  if(judgeLocked)return;judgeLocked=true;
+  const q=JUDGE_QS[judgeIdx];
+  const isOk=type===q.ans;
+  const btn=document.querySelector(`.judge-btn.${type}-btn`);
+  const fb=document.getElementById('judgeFb');
+  btn.classList.add(isOk?'correct':'wrong');
+  document.querySelectorAll('.judge-btn').forEach(b=>b.disabled=true);
+  if(isOk){
+    fb.textContent='答對了！你好棒！🎉';fb.className='judge-feedback ok';
+    document.getElementById('judgeSpeech').textContent='對！這題要用'+(type==='add'?'加法➕':'減法➖')+'！';
+    playAudio('common/correct_1.mp3');
+  } else {
+    fb.textContent='再想想看！這題要用'+(q.ans==='add'?'加法➕':'減法➖');fb.className='judge-feedback ng';
+    document.getElementById('judgeSpeech').textContent='沒關係，再試一次！';
+    playAudio('common/wrong_1.mp3');
+  }
+  setTimeout(()=>{
+    judgeIdx=(judgeIdx+1)%JUDGE_QS.length;
+    loadJudge();
+  },2000);
+}
+
+loadJudge();
+</script>
+</body>
+</html>

@@ -16,12 +16,12 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .back-link::before{content:'←';font-size:18px;}
 .page{display:none;position:relative;z-index:1;flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 24px 60px;flex-direction:column;align-items:center;gap:24px;}
 .page.active{display:flex;}
-
-/* 歡迎頁 */
-.welcome-cover{width:100%;border-radius:var(--card-radius);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#7C3AED,#A855F7);display:flex;align-items:center;justify-content:center;}
+.welcome-cover{width:100%;border-radius:var(--card-radius);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#7C3AED,#A855F7);}
 .welcome-cover img{width:100%;height:auto;display:block;object-fit:contain;}
 .welcome-title{font-size:clamp(30px,7vw,50px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;}
 .welcome-desc{font-size:16px;color:#666;font-weight:700;text-align:center;line-height:1.6;}
+.learn-link{display:block;width:100%;padding:14px;border-radius:16px;border:2.5px dashed #A855F7;background:white;color:#7C3AED;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;text-align:center;text-decoration:none;transition:all 0.15s;}
+.learn-link:hover{background:#F3E8FF;border-style:solid;}
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;}
 .mode-card{background:white;border-radius:20px;padding:28px 20px;text-align:center;cursor:pointer;border:3px solid transparent;box-shadow:var(--shadow);transition:transform 0.2s;}
 .mode-card:hover{transform:translateY(-4px);}
@@ -30,8 +30,6 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .mode-icon{font-size:40px;margin-bottom:10px;}
 .mode-title{font-size:20px;font-weight:900;margin-bottom:6px;}
 .mode-desc{font-size:13px;color:#888;font-weight:700;line-height:1.5;}
-
-/* 設定頁 */
 .setup-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:36px 28px;width:100%;}
 .setup-title{font-size:22px;font-weight:900;margin-bottom:24px;text-align:center;}
 .setup-section{margin-bottom:24px;}
@@ -43,8 +41,6 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .start-btn{font-family:'Nunito',sans-serif;width:100%;padding:18px;border-radius:16px;border:none;font-size:20px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 4px 16px rgba(168,85,247,0.4);transition:transform 0.15s;}
 .start-btn:hover{transform:translateY(-2px);}
 .start-btn.orange{background:linear-gradient(135deg,var(--orange),#C2410C);box-shadow:0 4px 16px rgba(255,107,53,0.4);}
-
-/* 遊戲頁 */
 .game-topbar{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .level-badge{font-weight:900;font-size:14px;padding:5px 14px;border-radius:50px;background:var(--primary);color:white;white-space:nowrap;}
 .level-badge.orange{background:var(--orange);}
@@ -59,25 +55,16 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .nav-dot.current{border-color:var(--primary-dark);background:white;color:var(--primary-dark);}
 .nav-dot.answered{background:#22C55E;color:white;}
 .nav-dot.skipped{background:#EF4444;color:white;}
-
-/* 題目卡 */
 .question-card{width:100%;background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:32px 24px;text-align:center;}
 .question-label{font-size:13px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:12px;}
-
-/* 語音按鈕 */
 .speak-btn{font-family:'Nunito',sans-serif;display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;border:2px solid var(--primary);background:white;color:var(--primary-dark);font-weight:800;font-size:14px;cursor:pointer;transition:all 0.15s;margin-bottom:16px;}
 .speak-btn:hover{background:#F3E8FF;}
 .speak-btn.speaking{background:var(--primary);color:white;animation:pulse 0.8s ease-in-out infinite;}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-
-/* 形狀展示 */
 .shape-display{display:flex;align-items:center;justify-content:center;height:180px;margin-bottom:8px;}
-.shape-display svg{filter:drop-shadow(0 6px 20px rgba(168,85,247,0.25));transition:transform 0.3s;}
+.shape-display svg{filter:drop-shadow(0 6px 20px rgba(168,85,247,0.25));}
 .shape-display svg.dance{animation:shape-dance 0.6s ease;}
-@keyframes shape-dance{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-12deg) scale(1.1)}75%{transform:rotate(12deg) scale(1.1)}}
-.color-hint{font-size:13px;font-weight:800;color:#bbb;min-height:20px;margin-bottom:4px;}
-
-/* 選項：大字 + 注音小字 */
+@keyframes shape-dance{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 .options-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;}
 .option-btn{font-family:'Nunito',sans-serif;padding:16px 8px;border:3px solid #EDE9FF;border-radius:18px;background:white;color:var(--ink);cursor:pointer;transition:transform 0.15s,background 0.15s,border-color 0.15s;box-shadow:0 4px 0 #c4b5fd;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .option-btn:hover:not(:disabled){transform:translateY(-3px);background:#F3E8FF;border-color:var(--primary);}
@@ -88,8 +75,6 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .opt-main{font-size:20px;font-weight:900;line-height:1;}
 .opt-zhuyin{font-size:12px;font-weight:700;color:#aaa;line-height:1;}
 .option-btn.selected .opt-zhuyin,.option-btn.correct .opt-zhuyin,.option-btn.wrong-sel .opt-zhuyin{color:rgba(255,255,255,0.8);}
-
-/* 確認按鈕 */
 .confirm-btn{font-family:'Nunito',sans-serif;width:100%;padding:16px;border-radius:16px;border:none;font-size:18px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;opacity:0.35;pointer-events:none;transition:opacity 0.2s,transform 0.15s;}
 .confirm-btn.ready{opacity:1;pointer-events:auto;}
 .confirm-btn.ready:hover{transform:translateY(-2px);}
@@ -99,8 +84,6 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .feedback{font-size:20px;font-weight:900;height:32px;text-align:center;}
 .feedback.correct-msg{color:#22C55E;}
 .feedback.wrong-msg{color:#EF4444;}
-
-/* EXP、粒子、Toast */
 .exp-pop{position:fixed;pointer-events:none;z-index:999;font-size:22px;font-weight:900;color:var(--primary-dark);animation:exp-fly 1s ease-out forwards;}
 @keyframes exp-fly{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-80px) scale(1.3);opacity:0}}
 .particle{position:fixed;pointer-events:none;font-size:26px;z-index:999;animation:particle-fly 1s ease-out forwards;}
@@ -108,8 +91,6 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .level-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--accent);padding:12px 28px;border-radius:50px;font-weight:900;font-size:16px;z-index:100;animation:toast-in 0.3s ease,toast-out 0.3s ease 1.7s forwards;pointer-events:none;}
 @keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes toast-out{to{opacity:0;transform:translateX(-50%) translateY(-10px)}}
-
-/* 結算頁 */
 .result-card{width:100%;background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:40px 28px;text-align:center;}
 .result-emoji{font-size:72px;margin-bottom:12px;animation:bounce 0.6s;}
 .result-score{font-size:clamp(48px,10vw,80px);font-weight:900;color:var(--primary-dark);}
@@ -126,11 +107,11 @@ header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:c
 .result-btn:hover{transform:translateY(-2px);}
 .result-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;}
 .result-btn.secondary{background:white;border:2.5px solid #ddd;color:var(--ink);}
-
 @keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
-@media(max-width:480px){.mode-grid{grid-template-columns:1fr}.options-grid{gap:8px}.opt-main{font-size:17px}.nav-dot{width:26px;height:26px;font-size:11px}}
+@media(max-width:480px){.options-grid{gap:8px}.opt-main{font-size:17px}.nav-dot{width:26px;height:26px;font-size:11px}}
+@media(max-width:360px){.mode-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -141,6 +122,7 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
   <div class="welcome-cover"><img src="./shapes.png" alt="形狀辨識"></div>
   <div class="welcome-title">形狀辨識</div>
   <div class="welcome-desc">圓形、三角形…你都認得出來嗎？<br>選擇你的練習模式吧 🎯</div>
+  <a href="learn-shapes.html" class="learn-link">📖 先看教學，再來玩！</a>
   <div class="mode-grid">
     <div class="mode-card practice" onclick="showPage('page-practice-setup')">
       <div class="mode-icon">📖</div><div class="mode-title">練習模式</div>
@@ -216,9 +198,8 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
   <div class="xp-bar-wrap" id="p-xp-wrap"><div class="xp-bar" id="p-xp-bar" style="width:0%"></div></div>
   <div class="question-card">
     <div class="question-label" id="p-q-label">這是什麼形狀？</div>
-    <button class="speak-btn" id="p-speak" onclick="speakQuestion('p')">🔊 聽題目</button>
+    <button class="speak-btn" id="p-speak" onclick="playQuestionVO(currentQ,'p-speak')">🔊 聽題目</button>
     <div class="shape-display" id="p-shape"></div>
-    <div class="color-hint" id="p-hint"></div>
   </div>
   <div class="feedback" id="p-fb"></div>
   <div class="options-grid" id="p-opts"></div>
@@ -235,9 +216,8 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
   <div class="nav-strip" id="c-nav"></div>
   <div class="question-card">
     <div class="question-label" id="c-q-label">這是什麼形狀？</div>
-    <button class="speak-btn" id="c-speak" onclick="speakQuestion('c')">🔊 聽題目</button>
+    <button class="speak-btn" id="c-speak" onclick="playQuestionVO(currentQ,'c-speak')">🔊 聽題目</button>
     <div class="shape-display" id="c-shape"></div>
-    <div class="color-hint" id="c-hint"></div>
   </div>
   <button class="prev-btn" id="c-prev" onclick="challengePrev()">← 上一題</button>
   <div class="options-grid" id="c-opts"></div>
@@ -262,210 +242,399 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 <footer>🔷 形狀關卡</footer>
 
 <script>
-// ── 形狀資料 ──
-const SHAPES=[
-  {id:'circle',   name:'圓形',   zhuyin:'ㄩㄢˊ ㄒㄧㄥˊ', lvMin:1, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="${c}" stroke="${dk(c)}" stroke-width="4"/></svg>`},
-  {id:'square',   name:'正方形', zhuyin:'ㄓㄥˋ ㄈㄤ ㄒㄧㄥˊ', lvMin:1, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><rect x="12" y="12" width="136" height="136" rx="8" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'triangle', name:'三角形', zhuyin:'ㄙㄢ ㄐㄧㄠˇ ㄒㄧㄥˊ', lvMin:1, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,10 152,148 8,148" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'star',     name:'星形',   zhuyin:'ㄒㄧㄥ ㄒㄧㄥˊ', lvMin:2, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 95,55 145,55 105,84 120,130 80,102 40,130 55,84 15,55 65,55" fill="${c}" stroke="${dk(c)}" stroke-width="3" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'diamond',  name:'菱形',   zhuyin:'ㄌㄧㄥˊ ㄒㄧㄥˊ', lvMin:2, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 150,80 80,152 10,80" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'rectangle',name:'長方形', zhuyin:'ㄔㄤˊ ㄈㄤ ㄒㄧㄥˊ', lvMin:3, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><rect x="8" y="36" width="144" height="88" rx="8" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'pentagon', name:'五邊形', zhuyin:'ㄨˇ ㄅㄧㄢ ㄒㄧㄥˊ', lvMin:4, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 148,58 122,138 38,138 12,58" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'hexagon',  name:'六邊形', zhuyin:'ㄌㄧㄡˋ ㄅㄧㄢ ㄒㄧㄥˊ', lvMin:4, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 146,44 146,116 80,152 14,116 14,44" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
-  {id:'oval',     name:'橢圓形', zhuyin:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ', lvMin:5, svg:(c,r)=>`<svg width="160" height="160" viewBox="0 0 160 160"><ellipse cx="80" cy="80" rx="72" ry="48" fill="${c}" stroke="${dk(c)}" stroke-width="4" transform="rotate(${r},80,80)"/></svg>`},
+// ══════════════════════════════
+// 音檔系統（唯一、無重複）
+// ══════════════════════════════
+const AUDIO_BASE = './audio/';
+let currentAudio = null; // 追蹤當前播放，避免疊音
+
+function playAudio(path, onEnd) {
+  // 停止上一個音檔
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  const a = new Audio(AUDIO_BASE + path);
+  currentAudio = a;
+  a.onended = () => { currentAudio = null; if (onEnd) onEnd(); };
+  a.onerror = () => { currentAudio = null; if (onEnd) onEnd(); };
+  a.play().catch(() => { currentAudio = null; if (onEnd) onEnd(); });
+  return a;
+}
+
+// 題目朗讀：念題目句，播完後執行 callback
+function playQuestionVO(q, btnId, onEnd) {
+  if (!q) return;
+  const btn = btnId ? document.getElementById(btnId) : null;
+  if (btn) btn.classList.add('speaking');
+  const path = q.colorMode ? 'shapes/question_color.mp3' : 'shapes/question_shape.mp3';
+  playAudio(path, () => {
+    if (btn) btn.classList.remove('speaking');
+    if (onEnd) onEnd();
+  });
+}
+
+// 選項點選：念形狀或顏色名稱
+const AUDIO_ID_MAP = {
+  '圓形':'circle','正方形':'square','三角形':'triangle',
+  '星形':'star','菱形':'diamond','半圓形':'semicircle',
+  '心形':'heart','長方形':'rectangle','梯形':'trapezoid',
+  '平行四邊形':'parallelogram','五邊形':'pentagon',
+  '六邊形':'hexagon','橢圓形':'oval','箭頭形':'arrow',
+  '紅色':'red','橘色':'orange','黃色':'yellow',
+  '綠色':'green','藍色':'blue','紫色':'purple',
+  '黑色':'black','白色':'white'
+};
+function playOptionVO(name) {
+  const file = AUDIO_ID_MAP[name];
+  if (file) playAudio('shapes/' + file + '.mp3');
+}
+
+// 答對鼓勵（念完後執行 callback → 跳下一題）
+function playCorrectVO(onEnd) {
+  playAudio('common/correct_' + (Math.floor(Math.random()*4)+1) + '.mp3', onEnd);
+}
+// 答錯回饋（念完後解鎖，不跳題）
+function playWrongVO(onEnd) {
+  playAudio('common/wrong_' + (Math.floor(Math.random()*3)+1) + '.mp3', onEnd);
+}
+// 跳過（念完後跳下一題）
+function playSkipVO(onEnd) {
+  playAudio('common/skip.mp3', onEnd);
+}
+// 升降級
+function playLevelUpVO()   { playAudio('common/levelup.mp3'); }
+function playLevelDownVO() { playAudio('common/leveldown.mp3'); }
+// 結算鼓勵
+function playResultVO() {
+  playAudio('common/correct_1.mp3');
+}
+
+// ══════════════════════════════
+// 形狀資料（14種，無旋轉）
+// ══════════════════════════════
+function dk(hex) {
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.max(0,r-40)},${Math.max(0,g-40)},${Math.max(0,b-40)})`;
+}
+
+// svg 支援外部指定 stroke（白色形狀用）
+const SHAPES = [
+  {id:'circle',        name:'圓形',       zhuyin:'ㄩㄢˊ ㄒㄧㄥˊ',                     lvMin:1, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'square',        name:'正方形',     zhuyin:'ㄓㄥˋ ㄈㄤ ㄒㄧㄥˊ',               lvMin:1, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><rect x="12" y="12" width="136" height="136" rx="6" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'triangle',      name:'三角形',     zhuyin:'ㄙㄢ ㄐㄧㄠˇ ㄒㄧㄥˊ',             lvMin:1, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,10 152,148 8,148" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'star',          name:'星形',       zhuyin:'ㄒㄧㄥ ㄒㄧㄥˊ',                   lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 95,55 145,55 105,84 120,130 80,102 40,130 55,84 15,55 65,55" fill="${c}" stroke="${s||dk(c)}" stroke-width="3"/></svg>`},
+  {id:'diamond',       name:'菱形',       zhuyin:'ㄌㄧㄥˊ ㄒㄧㄥˊ',                 lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 150,80 80,152 10,80" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'semicircle',    name:'半圓形',     zhuyin:'ㄅㄢˋ ㄩㄢˊ ㄒㄧㄥˊ',             lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><path d="M12 90 A68 68 0 0 1 148 90 Z" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/><line x1="12" y1="90" x2="148" y2="90" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'heart',         name:'心形',       zhuyin:'ㄒㄧㄣ ㄒㄧㄥˊ',                   lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><path d="M80 130 C80 130 20 90 20 55 C20 35 35 20 55 20 C65 20 75 25 80 35 C85 25 95 20 105 20 C125 20 140 35 140 55 C140 90 80 130 80 130Z" fill="${c}" stroke="${s||dk(c)}" stroke-width="3"/></svg>`},
+  {id:'rectangle',     name:'長方形',     zhuyin:'ㄔㄤˊ ㄈㄤ ㄒㄧㄥˊ',               lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><rect x="8" y="36" width="144" height="88" rx="6" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'trapezoid',     name:'梯形',       zhuyin:'ㄊㄧˊ ㄒㄧㄥˊ',                   lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="40,30 120,30 148,130 12,130" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'parallelogram', name:'平行四邊形', zhuyin:'ㄆㄧㄥˊ ㄒㄧㄥˊ ㄙˋ ㄅㄧㄢ ㄒㄧㄥˊ', lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="40,30 148,30 120,130 12,130" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'pentagon',      name:'五邊形',     zhuyin:'ㄨˇ ㄅㄧㄢ ㄒㄧㄥˊ',               lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 148,58 122,138 38,138 12,58" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'hexagon',       name:'六邊形',     zhuyin:'ㄌㄧㄡˋ ㄅㄧㄢ ㄒㄧㄥˊ',           lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 146,44 146,116 80,152 14,116 14,44" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'oval',          name:'橢圓形',     zhuyin:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ',           lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><ellipse cx="80" cy="80" rx="72" ry="44" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'arrow',         name:'箭頭形',     zhuyin:'ㄐㄧㄢˋ ㄊㄡˊ ㄒㄧㄥˊ',           lvMin:5, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,10 148,80 110,80 110,148 50,148 50,80 12,80" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
 ];
 
-const COLORS=[
-  {hex:'#FF6B35',name:'橘色',zhuyin:'ㄩˋ ㄙㄜˋ'},{hex:'#4ECDC4',name:'青綠色',zhuyin:'ㄑㄧㄥ ㄌㄩˋ ㄙㄜˋ'},
-  {hex:'#FFE66D',name:'黃色',zhuyin:'ㄏㄨㄤˊ ㄙㄜˋ'},{hex:'#A855F7',name:'紫色',zhuyin:'ㄗˇ ㄙㄜˋ'},
-  {hex:'#22C55E',name:'綠色',zhuyin:'ㄌㄩˋ ㄙㄜˋ'},{hex:'#3B82F6',name:'藍色',zhuyin:'ㄌㄢˊ ㄙㄜˋ'},
-  {hex:'#F43F5E',name:'紅色',zhuyin:'ㄏㄨㄥˊ ㄙㄜˋ'},{hex:'#F97316',name:'橙色',zhuyin:'ㄔㄥˊ ㄙㄜˋ'},
+const COLORS = [
+  {id:'red',    name:'紅色', zhuyin:'ㄏㄨㄥˊ ㄙㄜˋ', hex:'#EF4444'},
+  {id:'orange', name:'橘色', zhuyin:'ㄩˋ ㄙㄜˋ',     hex:'#FF6B35'},
+  {id:'yellow', name:'黃色', zhuyin:'ㄏㄨㄤˊ ㄙㄜˋ', hex:'#FFE66D'},
+  {id:'green',  name:'綠色', zhuyin:'ㄌㄩˋ ㄙㄜˋ',   hex:'#22C55E'},
+  {id:'blue',   name:'藍色', zhuyin:'ㄌㄢˊ ㄙㄜˋ',   hex:'#3B82F6'},
+  {id:'purple', name:'紫色', zhuyin:'ㄗˇ ㄙㄜˋ',     hex:'#A855F7'},
+  {id:'black',  name:'黑色', zhuyin:'ㄏㄟ ㄙㄜˋ',    hex:'#1A1A2E'},
+  {id:'white',  name:'白色', zhuyin:'ㄅㄞˊ ㄙㄜˋ',   hex:'#F8F9FA'},
 ];
-
-const ROTATIONS=[0,30,45,60,90,120,135,180];
 
 // Lv設定
-const LEVEL_CFG=[
-  {lvMin:1,colorQuiz:false,rotation:false},
-  {lvMin:2,colorQuiz:false,rotation:false},
-  {lvMin:3,colorQuiz:false,rotation:false},
-  {lvMin:4,colorQuiz:true, rotation:true},
-  {lvMin:5,colorQuiz:true, rotation:true},
+const LEVEL_CFG = [
+  {lvMax:1, colorRate:0.20},
+  {lvMax:2, colorRate:0.30},
+  {lvMax:3, colorRate:0.35},
+  {lvMax:4, colorRate:0.40},
+  {lvMax:5, colorRate:0.40},
 ];
-const XP_NEEDED=[5,10,20,30];
+const XP_NEEDED = [5,10,20,30];
 
-function dk(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgb(${Math.max(0,r-40)},${Math.max(0,g-40)},${Math.max(0,b-40)})`;}
+// ══════════════════════════════
+// 共用工具
+// ══════════════════════════════
+let PS = {}, CS = {}, currentQ = null;
 
-const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-let PS={},CS={},currentSpeakText='';
-
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function selectOpt(btn,gid){document.querySelectorAll('#'+gid+' .opt-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');if(gid==='p-diff-mode')document.getElementById('p-fixed-lv-wrap').style.display=btn.dataset.val==='fixed'?'':'none';}
-function getSelected(gid){const b=document.querySelector('#'+gid+' .opt-btn.selected');return b?b.dataset.val:null;}
-function playTone(f,d,t='sine',g=0.28){const o=audioCtx.createOscillator(),gn=audioCtx.createGain();o.connect(gn);gn.connect(audioCtx.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,audioCtx.currentTime);gn.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);o.start();o.stop(audioCtx.currentTime+d);}
-function playOK(){playTone(523,0.12);setTimeout(()=>playTone(659,0.12),100);setTimeout(()=>playTone(784,0.2),200);}
-function playNG(){playTone(250,0.35,'sawtooth',0.18);}
-function spawnParticles(){for(let i=0;i<7;i++){const el=document.createElement('div');el.className='particle';el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)];el.style.left=(20+Math.random()*60)+'vw';el.style.top=(30+Math.random()*40)+'vh';el.style.setProperty('--dx',(Math.random()*180-90)+'px');el.style.setProperty('--dy',(-70-Math.random()*100)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),1000);}}
-function spawnExp(){const el=document.createElement('div');el.className='exp-pop';el.textContent='+EXP';el.style.cssText='left:50%;top:50%;transform:translateX(-50%)';document.body.appendChild(el);setTimeout(()=>el.remove(),1000);}
-function showToast(msg){const t=document.createElement('div');t.className='level-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2000);}
-
-// ── 語音朗讀 ──
-function speak(text,btnId){
-  if(!window.speechSynthesis)return;
-  window.speechSynthesis.cancel();
-  const btn=document.getElementById(btnId);
-  if(btn)btn.classList.add('speaking');
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-TW';u.rate=0.85;u.pitch=1.1;
-  u.onend=()=>{if(btn)btn.classList.remove('speaking');};
-  u.onerror=()=>{if(btn)btn.classList.remove('speaking');};
-  window.speechSynthesis.speak(u);
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
-function speakQuestion(prefix){
-  speak(currentSpeakText, prefix+'-speak');
+function selectOpt(btn, gid) {
+  document.querySelectorAll('#'+gid+' .opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  if (gid==='p-diff-mode')
+    document.getElementById('p-fixed-lv-wrap').style.display = btn.dataset.val==='fixed' ? '' : 'none';
 }
-
-// ── 產題 ──
-function genQ(lv){
-  const cfg=LEVEL_CFG[lv];
-  const available=SHAPES.filter(s=>s.lvMin<=cfg.lvMin);
-  const shape=available[Math.floor(Math.random()*available.length)];
-  const color=COLORS[Math.floor(Math.random()*COLORS.length)];
-  const rotation=cfg.rotation?ROTATIONS[Math.floor(Math.random()*ROTATIONS.length)]:0;
-  const colorMode=cfg.colorQuiz&&Math.random()<0.35;
-  return{shape,color,rotation,colorMode,lv,answer:colorMode?color.name:shape.name,answerZhuyin:colorMode?color.zhuyin:shape.zhuyin};
+function getSelected(gid) {
+  const b = document.querySelector('#'+gid+' .opt-btn.selected');
+  return b ? b.dataset.val : null;
 }
-
-function renderShape(q,containerId){
-  document.getElementById(containerId).innerHTML=q.shape.svg(q.color.hex,q.rotation);
-}
-
-function buildSpeakText(q){
-  return q.colorMode?`這個形狀是什麼顏色？`:`這是什麼形狀？`;
-}
-
-function renderShapeOpts(q,gid,onSel){
-  const g=document.getElementById(gid);g.innerHTML='';
-  const lv=q.lv;const cfg=LEVEL_CFG[lv];
-  let pool,correctName,correctZhuyin;
-  if(q.colorMode){
-    pool=COLORS.map(c=>({name:c.name,zhuyin:c.zhuyin}));
-    correctName=q.color.name;correctZhuyin=q.color.zhuyin;
-  } else {
-    const available=SHAPES.filter(s=>s.lvMin<=cfg.lvMin);
-    pool=available.map(s=>({name:s.name,zhuyin:s.zhuyin}));
-    correctName=q.shape.name;correctZhuyin=q.shape.zhuyin;
+function spawnParticles() {
+  for (let i=0;i<7;i++) {
+    const el=document.createElement('div'); el.className='particle';
+    el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)];
+    el.style.left=(20+Math.random()*60)+'vw'; el.style.top=(30+Math.random()*40)+'vh';
+    el.style.setProperty('--dx',(Math.random()*180-90)+'px');
+    el.style.setProperty('--dy',(-70-Math.random()*100)+'px');
+    document.body.appendChild(el); setTimeout(()=>el.remove(),1000);
   }
-  const opts=new Set([correctName]);
-  pool.filter(p=>p.name!==correctName).sort(()=>Math.random()-0.5).slice(0,2).forEach(p=>opts.add(p.name));
-  // 補到3個
-  if(opts.size<3) SHAPES.map(s=>s.name).filter(n=>!opts.has(n)).sort(()=>Math.random()-0.5).slice(0,3-opts.size).forEach(n=>opts.add(n));
-  const arr=[...opts].sort(()=>Math.random()-0.5);
-  arr.forEach(name=>{
-    const meta=q.colorMode?COLORS.find(c=>c.name===name):SHAPES.find(s=>s.name===name);
-    const zhuyin=meta?meta.zhuyin:'';
-    const btn=document.createElement('button');btn.className='option-btn';btn.dataset.val=name;
+}
+function spawnExp() {
+  const el=document.createElement('div'); el.className='exp-pop'; el.textContent='+EXP';
+  el.style.cssText='left:50%;top:50%;transform:translateX(-50%)';
+  document.body.appendChild(el); setTimeout(()=>el.remove(),1000);
+}
+function showToast(msg, isUp) {
+  if (isUp) playLevelUpVO(); else playLevelDownVO();
+  const t=document.createElement('div'); t.className='level-toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2000);
+}
+
+// ══════════════════════════════
+// 題目產生
+// ══════════════════════════════
+function genQ(lv) {
+  const cfg = LEVEL_CFG[lv];
+  const available = SHAPES.filter(s => s.lvMin <= cfg.lvMax);
+  const shape = available[Math.floor(Math.random()*available.length)];
+  const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+  const colorMode = Math.random() < cfg.colorRate;
+  return { shape, color, colorMode, lv, answer: colorMode ? color.name : shape.name };
+}
+
+function renderShape(q, containerId) {
+  const color = q.color.hex;
+  const stroke = q.color.id === 'white' ? '#888888' : null;
+  document.getElementById(containerId).innerHTML = q.shape.svg(color, stroke);
+}
+
+function renderOpts(q, gid, onSel) {
+  const g = document.getElementById(gid); g.innerHTML='';
+  const cfg = LEVEL_CFG[q.lv];
+  let pool = q.colorMode
+    ? COLORS.map(c=>({name:c.name,zhuyin:c.zhuyin}))
+    : SHAPES.filter(s=>s.lvMin<=cfg.lvMax).map(s=>({name:s.name,zhuyin:s.zhuyin}));
+
+  const opts = new Set([q.answer]);
+  pool.filter(p=>p.name!==q.answer).sort(()=>Math.random()-0.5).slice(0,2).forEach(p=>opts.add(p.name));
+  if (opts.size<3) {
+    SHAPES.map(s=>s.name).filter(n=>!opts.has(n)).sort(()=>Math.random()-0.5)
+      .slice(0,3-opts.size).forEach(n=>opts.add(n));
+  }
+  [...opts].sort(()=>Math.random()-0.5).forEach(name=>{
+    const meta = q.colorMode ? COLORS.find(c=>c.name===name) : SHAPES.find(s=>s.name===name);
+    const zhuyin = meta ? meta.zhuyin : '';
+    const btn = document.createElement('button'); btn.className='option-btn'; btn.dataset.val=name;
     btn.innerHTML=`<span class="opt-main">${name}</span><span class="opt-zhuyin">${zhuyin}</span>`;
-    btn.onclick=()=>onSel(btn,name);
+    btn.onclick = () => onSel(btn, name);
     g.appendChild(btn);
   });
 }
 
-// ── 練習模式 ──
-function startPractice(){
-  const isAuto=getSelected('p-diff-mode')==='auto';
-  const lv=isAuto?0:parseInt(getSelected('p-fixed-lv')||'0');
-  PS={isAuto,lv,streak:0,xp:0,sel:null,selBtn:null,locked:false};
-  document.getElementById('p-xp-wrap').style.display=isAuto?'':'none';
-  pNext();showPage('page-practice');
+// ══════════════════════════════
+// 練習模式
+// ══════════════════════════════
+function startPractice() {
+  const isAuto = getSelected('p-diff-mode')==='auto';
+  const lv = isAuto ? 0 : parseInt(getSelected('p-fixed-lv')||'0');
+  PS = {isAuto, lv, streak:0, xp:0, sel:null, selBtn:null, locked:false};
+  document.getElementById('p-xp-wrap').style.display = isAuto ? '' : 'none';
+  pNext();
+  showPage('page-practice');
 }
-function pNext(){
-  PS.sel=null;PS.selBtn=null;PS.locked=false;
+
+function pNext() {
+  PS.sel=null; PS.selBtn=null; PS.locked=false;
   document.getElementById('p-confirm').classList.remove('ready');
-  document.getElementById('p-fb').textContent='';document.getElementById('p-fb').className='feedback';
-  window.speechSynthesis&&window.speechSynthesis.cancel();
-  document.getElementById('p-speak').classList.remove('speaking');
-  const q=genQ(PS.lv);PS.q=q;
-  document.getElementById('p-lv-badge').textContent='Lv '+(PS.lv+1);
-  document.getElementById('p-q-label').textContent=q.colorMode?'這個形狀是什麼顏色？':'這是什麼形狀？';
-  document.getElementById('p-hint').textContent=LEVEL_CFG[PS.lv].rotation&&q.rotation!==0?`（旋轉了 ${q.rotation}°）`:'';
-  currentSpeakText=buildSpeakText(q);
+  document.getElementById('p-fb').textContent='';
+  document.getElementById('p-fb').className='feedback';
+
+  const q = genQ(PS.lv); PS.q=q; currentQ=q;
+  document.getElementById('p-lv-badge').textContent = 'Lv '+(PS.lv+1);
+  document.getElementById('p-q-label').textContent = q.colorMode ? '這個形狀是什麼顏色？' : '這是什麼形狀？';
   renderShape(q,'p-shape');
-  renderShapeOpts(q,'p-opts',(btn,val)=>{
-    if(PS.locked)return;
+
+  // 渲染選項，點選時念選項名稱
+  renderOpts(q,'p-opts',(btn,val)=>{
+    if (PS.locked) return;
     document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');PS.sel=val;PS.selBtn=btn;
-    speak(val, 'p-speak');
+    btn.classList.add('selected'); PS.sel=val; PS.selBtn=btn;
+    playOptionVO(val); // 念選項名稱
     document.getElementById('p-confirm').classList.add('ready');
   });
-  if(PS.isAuto){const need=XP_NEEDED[PS.lv]??1;document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%';}
-  // 自動朗讀題目
-  setTimeout(()=>speak(currentSpeakText,'p-speak'),400);
-}
-function practiceConfirm(){
-  if(!PS.sel||PS.locked)return;PS.locked=true;
-  const ok=PS.sel===PS.q.answer;const fb=document.getElementById('p-fb');
-  document.querySelectorAll('#p-opts .option-btn').forEach(b=>{if(b.dataset.val===PS.q.answer)b.classList.add('correct');else if(b===PS.selBtn&&!ok)b.classList.add('wrong-sel');b.disabled=true;});
-  if(ok){
-    // 形狀跳舞
-    const svg=document.querySelector('#p-shape svg');if(svg){svg.classList.add('dance');setTimeout(()=>svg.classList.remove('dance'),700);}
-    fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];fb.className='feedback correct-msg';
-    playOK();spawnParticles();spawnExp();
-    PS.streak++;document.getElementById('p-streak').textContent=PS.streak;
-    if(PS.isAuto){PS.xp++;const need=XP_NEEDED[PS.lv];if(need&&PS.xp>=need&&PS.lv<4){PS.lv++;PS.xp=0;showToast('🎯 升級！Lv '+(PS.lv+1));}}
-  }else{
-    fb.textContent=['再試一次！💪','沒關係，加油！😊','仔細看看！👀'][Math.floor(Math.random()*3)];fb.className='feedback wrong-msg';
-    playNG();PS.streak=0;document.getElementById('p-streak').textContent=0;
-  }
-  setTimeout(pNext,1400);
-}
-function practiceSkip(){if(PS.locked)return;PS.streak=0;document.getElementById('p-streak').textContent=0;const fb=document.getElementById('p-fb');fb.textContent='跳過囉～下一題！';fb.className='feedback wrong-msg';PS.locked=true;setTimeout(pNext,800);}
 
-// ── 挑戰模式 ──
-function startChallenge(){
-  const diffVal=getSelected('c-diff');const count=parseInt(getSelected('c-count')||'10');
-  const isAuto=diffVal==='auto';let lv=isAuto?0:parseInt(diffVal);
+  if (PS.isAuto) {
+    const need = XP_NEEDED[PS.lv]??1;
+    document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%';
+  }
+
+  // 題目出現後念題目句
+  setTimeout(() => playQuestionVO(q,'p-speak'), 400);
+}
+
+function practiceConfirm() {
+  if (!PS.sel || PS.locked) return;
+  PS.locked=true;
+  const ok = PS.sel===PS.q.answer;
+  const fb = document.getElementById('p-fb');
+
+  if (ok) {
+    // 答對：標示正確，念鼓勵句，鼓勵句念完再跳下一題
+    document.querySelectorAll('#p-opts .option-btn').forEach(b=>{
+      if (b.dataset.val===PS.q.answer) b.classList.add('correct');
+      b.disabled=true;
+    });
+    const svg=document.querySelector('#p-shape svg');
+    if (svg){svg.classList.add('dance');setTimeout(()=>svg.classList.remove('dance'),700);}
+    fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)];
+    fb.className='feedback correct-msg';
+    spawnParticles(); spawnExp();
+    PS.streak++; document.getElementById('p-streak').textContent=PS.streak;
+    if (PS.isAuto) {
+      PS.xp++;
+      const need=XP_NEEDED[PS.lv];
+      if (need&&PS.xp>=need&&PS.lv<4) {
+        PS.lv++; PS.xp=0;
+        showToast('🎯 升級！Lv '+(PS.lv+1),true);
+      }
+    }
+    // 念鼓勵句，念完後跳下一題
+    playCorrectVO(()=>setTimeout(pNext,300));
+
+  } else {
+    // 答錯：標示錯誤選項，念錯誤句，念完後解鎖讓重新選
+    PS.selBtn.classList.add('wrong-sel');
+    fb.textContent=['再試一次！💪','沒關係，加油！😊','仔細看看！👀'][Math.floor(Math.random()*3)];
+    fb.className='feedback wrong-msg';
+    PS.streak=0; document.getElementById('p-streak').textContent=0;
+    // 念錯誤句，念完後解鎖
+    playWrongVO(()=>{
+      PS.selBtn.classList.remove('wrong-sel');
+      PS.sel=null; PS.selBtn=null; PS.locked=false;
+      document.getElementById('p-confirm').classList.remove('ready');
+      // 重新啟用選項
+      document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.disabled=false);
+    });
+  }
+}
+
+function practiceSkip() {
+  if (PS.locked) return;
+  PS.locked=true;
+  PS.streak=0; document.getElementById('p-streak').textContent=0;
+  const fb=document.getElementById('p-fb');
+  fb.textContent='跳過囉～下一題！'; fb.className='feedback wrong-msg';
+  // 念跳過句，念完後跳下一題
+  playSkipVO(()=>setTimeout(pNext,300));
+}
+
+// ══════════════════════════════
+// 挑戰模式
+// ══════════════════════════════
+function startChallenge() {
+  const diffVal=getSelected('c-diff');
+  const count=parseInt(getSelected('c-count')||'10');
+  const isAuto=diffVal==='auto';
+  let lv=isAuto?0:parseInt(diffVal);
   const qs=[];
-  for(let i=0;i<count;i++){qs.push({...genQ(lv),userAns:null,skipped:false});if(isAuto&&(i+1)%5===0&&lv<4)lv++;}
+  for(let i=0;i<count;i++){
+    qs.push({...genQ(lv),userAns:null,skipped:false});
+    if(isAuto&&(i+1)%5===0&&lv<4) lv++;
+  }
   CS={qs,count,cur:0,sel:null,selBtn:null};
-  renderNav();cLoad(0);showPage('page-challenge');
+  renderNav(); cLoad(0); showPage('page-challenge');
 }
-function renderNav(){
-  const nav=document.getElementById('c-nav');nav.innerHTML='';
-  CS.qs.forEach((q,i)=>{const d=document.createElement('div');d.className='nav-dot'+(i===CS.cur?' current':'');d.textContent=i+1;if(q.skipped)d.classList.add('skipped');else if(q.userAns!==null)d.classList.add('answered');d.onclick=()=>cGo(i);nav.appendChild(d);});
+
+function renderNav() {
+  const nav=document.getElementById('c-nav'); nav.innerHTML='';
+  CS.qs.forEach((q,i)=>{
+    const d=document.createElement('div');
+    d.className='nav-dot'+(i===CS.cur?' current':'');
+    d.textContent=i+1;
+    if(q.skipped) d.classList.add('skipped');
+    else if(q.userAns!==null) d.classList.add('answered');
+    d.onclick=()=>cGo(i);
+    nav.appendChild(d);
+  });
 }
-function cGo(i){CS.cur=i;cLoad(i);renderNav();}
-function cLoad(i){
-  const q=CS.qs[i];CS.sel=null;CS.selBtn=null;
+
+function cGo(i) { CS.cur=i; cLoad(i); renderNav(); }
+
+function cLoad(i) {
+  const q=CS.qs[i]; CS.sel=null; CS.selBtn=null; currentQ=q;
   document.getElementById('c-confirm').classList.remove('ready');
   document.getElementById('c-lv-badge').textContent='Lv '+(q.lv+1);
   document.getElementById('c-progress').textContent='第 '+(i+1)+' / '+CS.count+' 題';
   document.getElementById('c-prev').disabled=i===0;
   document.getElementById('c-q-label').textContent=q.colorMode?'這個形狀是什麼顏色？':'這是什麼形狀？';
-  document.getElementById('c-hint').textContent=LEVEL_CFG[q.lv].rotation&&q.rotation!==0?`（旋轉了 ${q.rotation}°）`:'';
-  currentSpeakText=buildSpeakText(q);
   renderShape(q,'c-shape');
-  renderShapeOpts(q,'c-opts',(btn,val)=>{
+
+  // 渲染選項，點選時念選項名稱
+  renderOpts(q,'c-opts',(btn,val)=>{
     document.querySelectorAll('#c-opts .option-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');CS.sel=val;CS.selBtn=btn;
-    speak(val, 'c-speak');
+    btn.classList.add('selected'); CS.sel=val; CS.selBtn=btn;
+    playOptionVO(val); // 念選項名稱
     document.getElementById('c-confirm').classList.add('ready');
   });
-  if(q.userAns!==null&&!q.skipped){document.querySelectorAll('#c-opts .option-btn').forEach(b=>{if(b.dataset.val===q.userAns)b.classList.add('selected');});}
-  setTimeout(()=>speak(currentSpeakText,'c-speak'),400);
+
+  // 若已作答，還原選中視覺
+  if(q.userAns!==null&&!q.skipped){
+    document.querySelectorAll('#c-opts .option-btn').forEach(b=>{
+      if(b.dataset.val===q.userAns) b.classList.add('selected');
+    });
+  }
+
+  // 題目出現後念題目句
+  setTimeout(()=>playQuestionVO(q,'c-speak'),400);
 }
-function challengeConfirm(){if(!CS.sel)return;CS.qs[CS.cur].userAns=CS.sel;CS.qs[CS.cur].skipped=false;renderNav();cAdvance();}
-function challengeSkip(){CS.qs[CS.cur].userAns=null;CS.qs[CS.cur].skipped=true;renderNav();cAdvance();}
-function challengePrev(){if(CS.cur>0)cGo(CS.cur-1);}
-function cAdvance(){
+
+function challengeConfirm() {
+  if(!CS.sel) return;
+  // 記錄答案，不播語音，直接跳下一道未答題
+  CS.qs[CS.cur].userAns=CS.sel;
+  CS.qs[CS.cur].skipped=false;
+  renderNav(); cAdvance();
+}
+
+function challengeSkip() {
+  // 記錄跳過，不播語音，直接跳下一道未答題
+  CS.qs[CS.cur].userAns=null;
+  CS.qs[CS.cur].skipped=true;
+  renderNav(); cAdvance();
+}
+
+function challengePrev() {
+  if(CS.cur>0) cGo(CS.cur-1);
+  // cLoad 內會自動念題目句
+}
+
+function cAdvance() {
+  // 找下一道未答題（先往後找，再往前找）
   let next=-1;
-  for(let i=CS.cur+1;i<CS.count;i++){if(CS.qs[i].userAns===null&&!CS.qs[i].skipped){next=i;break;}}
-  if(next===-1){const allDone=CS.qs.every(q=>q.userAns!==null||q.skipped);if(allDone){setTimeout(showResult,300);return;}for(let i=0;i<CS.count;i++){if(CS.qs[i].userAns===null&&!CS.qs[i].skipped){next=i;break;}}}
-  if(next!==-1)cGo(next);
+  for(let i=CS.cur+1;i<CS.count;i++){
+    if(CS.qs[i].userAns===null&&!CS.qs[i].skipped){next=i;break;}
+  }
+  if(next===-1){
+    const allDone=CS.qs.every(q=>q.userAns!==null||q.skipped);
+    if(allDone){setTimeout(showResult,300);return;}
+    for(let i=0;i<CS.count;i++){
+      if(CS.qs[i].userAns===null&&!CS.qs[i].skipped){next=i;break;}
+    }
+  }
+  if(next!==-1) cGo(next);
 }
-function showResult(){
-  const perQ=CS.count===10?10:4;let correct=0;const wrong=[];
-  CS.qs.forEach((q,i)=>{if(!q.skipped&&q.userAns===q.answer)correct++;else wrong.push({i,q});});
+
+function showResult() {
+  const perQ=CS.count===10?10:4;
+  let correct=0; const wrong=[];
+  CS.qs.forEach((q,i)=>{
+    if(!q.skipped&&q.userAns===q.answer) correct++;
+    else wrong.push({i,q});
+  });
   const score=correct*perQ;
   document.getElementById('r-score').textContent=score;
   let emoji,msg;
@@ -473,15 +642,19 @@ function showResult(){
   else if(score>=80){emoji='⭐';msg='好厲害！再加把勁就滿分了！';}
   else if(score>=60){emoji='💪';msg='做得好！繼續練習會更棒！';}
   else{emoji='😊';msg='沒關係，多練習就會進步！';}
-  document.getElementById('r-emoji').textContent=emoji;document.getElementById('r-msg').textContent=msg;
-  if(score===100)spawnParticles();playOK();
-  const wl=document.getElementById('r-wrong');wl.innerHTML='';
+  document.getElementById('r-emoji').textContent=emoji;
+  document.getElementById('r-msg').textContent=msg;
+  if(score===100) spawnParticles();
+  playResultVO(); // 結算統一播一次鼓勵音
+  const wl=document.getElementById('r-wrong'); wl.innerHTML='';
   if(wrong.length>0){
     const t=document.createElement('div');t.className='wrong-list-title';t.textContent='需要加強的題目';wl.appendChild(t);
     wrong.forEach(({i,q})=>{
       const d=document.createElement('div');d.className='wrong-item';
       const eq=`第${i+1}題：正確答案「${q.answer}」`;
-      d.innerHTML=q.skipped?`<span class="wi-eq">${eq}</span><span class="wi-skip">（跳過）</span>`:`<span class="wi-eq">${eq}</span><span class="wi-your">你答：${q.userAns}</span>`;
+      d.innerHTML=q.skipped
+        ?`<span class="wi-eq">${eq}</span><span class="wi-skip">（跳過）</span>`
+        :`<span class="wi-eq">${eq}</span><span class="wi-your">你答：${q.userAns}</span>`;
       wl.appendChild(d);
     });
   }

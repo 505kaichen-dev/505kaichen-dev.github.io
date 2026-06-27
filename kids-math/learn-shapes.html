@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>形狀教學 🔷 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F8F0FF;--primary:#A855F7;--primary-dark:#7C3AED;--accent:#FFE66D;--ink:#1A1A2E;--card-radius:24px;--shadow:0 8px 32px rgba(0,0,0,0.10);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 10% 20%,#A855F722 0%,transparent 45%),radial-gradient(circle at 90% 80%,#FFE66D33 0%,transparent 45%);pointer-events:none;z-index:0;}
+header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:center;}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;padding:8px 16px;background:white;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.15s;}
+.back-link:hover{transform:translateY(-2px);}
+.back-link::before{content:'←';font-size:18px;}
+main{position:relative;z-index:1;flex:1;max-width:760px;width:100%;margin:0 auto;padding:0 24px 60px;display:flex;flex-direction:column;gap:28px;}
+.learn-hero{text-align:center;padding:20px 0 8px;}
+.learn-tag{display:inline-block;background:var(--primary);color:white;font-size:13px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:50px;margin-bottom:12px;}
+.learn-title{font-size:clamp(28px,6vw,44px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.learn-subtitle{font-size:16px;color:#888;font-weight:700;}
+.concept-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:32px 28px;border-left:6px solid var(--primary);}
+.concept-card-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:16px;}
+
+/* 形狀展示格 */
+.shapes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.shape-item{background:white;border-radius:20px;box-shadow:var(--shadow);padding:20px 12px;text-align:center;cursor:pointer;border:3px solid transparent;transition:all 0.2s;}
+.shape-item:hover{transform:translateY(-3px);border-color:var(--primary);}
+.shape-item.playing{border-color:var(--primary);background:#F3E8FF;}
+.shape-item svg{width:64px;height:64px;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(168,85,247,0.2));}
+.shape-name{font-size:15px;font-weight:900;color:var(--ink);}
+.shape-zhuyin{font-size:11px;color:#aaa;font-weight:700;margin-top:2px;}
+.shape-life{font-size:12px;color:#888;font-weight:700;margin-top:4px;}
+.click-hint{font-size:13px;color:#aaa;font-weight:700;text-align:center;margin-top:12px;}
+
+/* 給家長 */
+.parent-section{background:#F0F9FF;border-radius:var(--card-radius);padding:24px 28px;border-left:6px solid #3B82F6;}
+.parent-tag{display:inline-block;background:#3B82F6;color:white;font-size:12px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:50px;margin-bottom:14px;}
+.parent-title{font-size:18px;font-weight:900;color:#1E3A5F;margin-bottom:12px;}
+.parent-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.parent-list li{font-size:14px;font-weight:700;color:#334155;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.parent-list li::before{content:'✅';flex-shrink:0;}
+.start-section{text-align:center;padding:12px 0;}
+.start-btn{font-family:'Nunito',sans-serif;display:inline-block;padding:20px 48px;border-radius:20px;border:none;font-size:22px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 6px 0 var(--primary-dark),0 8px 24px rgba(168,85,247,0.35);transition:transform 0.15s;text-decoration:none;}
+.start-btn:hover{transform:translateY(-3px);}
+.start-hint{font-size:13px;color:#bbb;font-weight:700;margin-top:12px;}
+footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
+@media(max-width:480px){.shapes-grid{grid-template-columns:repeat(3,1fr)}.start-btn{padding:16px 32px;font-size:18px;}}
+</style>
+</head>
+<body>
+<header><a href="shapes.html" class="back-link">形狀</a></header>
+<main>
+  <div class="learn-hero">
+    <div class="learn-tag">學習主題</div>
+    <div class="learn-title">形狀辨識 🔷</div>
+    <div class="learn-subtitle">圓形、三角形…這些形狀你都認識嗎？</div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card-title">來認識這些形狀吧！</div>
+    <div class="shapes-grid" id="shapesGrid"></div>
+    <div class="click-hint">👆 點形狀可以聽聽看怎麼念！</div>
+  </div>
+
+  <div class="parent-section">
+    <div class="parent-tag">📌 給爸爸媽媽</div>
+    <div class="parent-title">這個關卡在學什麼？</div>
+    <ul class="parent-list">
+      <li>認識基本幾何形狀，從圓形、正方形、三角形開始</li>
+      <li>Lv1–3 辨識形狀名稱，Lv4–5 加入顏色辨識與旋轉形狀</li>
+      <li>所有選項都有注音輔助，題目會自動語音朗讀</li>
+      <li>建議在生活中找相同形狀，例如時鐘是圓形、書本是長方形</li>
+      <li>進階孩子可以挑戰旋轉後的形狀辨識</li>
+    </ul>
+  </div>
+
+  <div class="start-section">
+    <a href="shapes.html" class="start-btn">我準備好了！開始玩 🚀</a>
+    <div class="start-hint">點擊後可選擇練習模式或挑戰模式</div>
+  </div>
+</main>
+<footer>🔷 形狀教學</footer>
+
+<script>
+const AUDIO_BASE='./audio/';
+function playAudio(path,onEnd){const a=new Audio(AUDIO_BASE+path);a.onended=onEnd||null;a.onerror=onEnd||null;a.play().catch(()=>{if(onEnd)onEnd();});return a;}
+
+const SHAPES=[
+  {id:'circle',name:'圓形',zhuyin:'ㄩㄢˊ ㄒㄧㄥˊ',life:'時鐘、輪子',color:'#4ECDC4',svg:`<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#4ECDC4" stroke="#0F766E" stroke-width="3"/></svg>`},
+  {id:'square',name:'正方形',zhuyin:'ㄓㄥˋ ㄈㄤ ㄒㄧㄥˊ',life:'骰子、積木',color:'#FF6B35',svg:`<svg viewBox="0 0 80 80"><rect x="8" y="8" width="64" height="64" rx="4" fill="#FF6B35" stroke="#C2410C" stroke-width="3"/></svg>`},
+  {id:'triangle',name:'三角形',zhuyin:'ㄙㄢ ㄐㄧㄠˇ ㄒㄧㄥˊ',life:'山、三明治',color:'#A855F7',svg:`<svg viewBox="0 0 80 80"><polygon points="40,6 74,72 6,72" fill="#A855F7" stroke="#7C3AED" stroke-width="3"/></svg>`},
+  {id:'star',name:'星形',zhuyin:'ㄒㄧㄥ ㄒㄧㄥˊ',life:'夜空的星星',color:'#FFE66D',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 48,28 74,28 53,43 61,67 40,52 19,67 27,43 6,28 32,28" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/></svg>`},
+  {id:'diamond',name:'菱形',zhuyin:'ㄌㄧㄥˊ ㄒㄧㄥˊ',life:'撲克牌圖案',color:'#F43F5E',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 74,40 40,76 6,40" fill="#F43F5E" stroke="#BE123C" stroke-width="3"/></svg>`},
+  {id:'rectangle',name:'長方形',zhuyin:'ㄔㄤˊ ㄈㄤ ㄒㄧㄥˊ',life:'書本、門',color:'#22C55E',svg:`<svg viewBox="0 0 80 80"><rect x="4" y="20" width="72" height="40" rx="4" fill="#22C55E" stroke="#15803D" stroke-width="3"/></svg>`},
+  {id:'pentagon',name:'五邊形',zhuyin:'ㄨˇ ㄅㄧㄢ ㄒㄧㄥˊ',life:'足球的黑色格',color:'#3B82F6',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 74,30 61,70 19,70 6,30" fill="#3B82F6" stroke="#1D4ED8" stroke-width="3"/></svg>`},
+  {id:'hexagon',name:'六邊形',zhuyin:'ㄌㄧㄡˋ ㄅㄧㄢ ㄒㄧㄥˊ',life:'蜂巢的格子',color:'#F97316',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 72,22 72,58 40,76 8,58 8,22" fill="#F97316" stroke="#C2410C" stroke-width="3"/></svg>`},
+  {id:'oval',name:'橢圓形',zhuyin:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ',life:'雞蛋、橄欖球',color:'#A855F7',svg:`<svg viewBox="0 0 80 80"><ellipse cx="40" cy="40" rx="36" ry="24" fill="#A855F7" stroke="#7C3AED" stroke-width="3"/></svg>`},
+];
+
+function buildShapes(){
+  const grid=document.getElementById('shapesGrid');
+  SHAPES.forEach(s=>{
+    const item=document.createElement('div');item.className='shape-item';
+    item.innerHTML=`${s.svg}<div class="shape-name">${s.name}</div><div class="shape-zhuyin">${s.zhuyin}</div><div class="shape-life">${s.life}</div>`;
+    item.onclick=()=>{
+      document.querySelectorAll('.shape-item').forEach(i=>i.classList.remove('playing'));
+      item.classList.add('playing');
+      playAudio(`shapes/${s.id}.mp3`,()=>item.classList.remove('playing'));
+    };
+    grid.appendChild(item);
+  });
+}
+buildShapes();
+</script>
+</body>
+</html>

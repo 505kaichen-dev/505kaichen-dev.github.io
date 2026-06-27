@@ -30,6 +30,8 @@ header { position: relative; z-index: 10; padding: 20px 32px; display: flex; ali
 .welcome-title { font-size: clamp(30px,7vw,50px); font-weight: 900; background: linear-gradient(135deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
 .welcome-desc { font-size: 16px; color: #666; font-weight: 700; text-align: center; line-height: 1.6; }
 .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+.learn-link{display:block;width:100%;padding:14px;border-radius:16px;border:2.5px dashed #4ECDC4;background:white;color:#0F766E;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;text-align:center;text-decoration:none;transition:all 0.15s;}
+.learn-link:hover{background:#E0FAF8;border-style:solid;}
 .mode-card { background: white; border-radius: 20px; padding: 28px 20px; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s; }
 .mode-card:hover { transform: translateY(-4px); }
 .mode-card.practice { border-color: var(--primary); }
@@ -134,6 +136,7 @@ footer { position: relative; z-index: 1; text-align: center; padding: 20px; font
   <div class="welcome-cover"><img src="./addition.png" alt="加法練習"></div>
   <div class="welcome-title">加法練習</div>
   <div class="welcome-desc">從小數字到大數字，越算越厲害！<br>選擇你的練習模式吧 🎯</div>
+  <a href="learn-addition.html" class="learn-link">📖 先看教學，再來玩！</a>
   <div class="mode-grid">
     <div class="mode-card practice" onclick="showPage('page-practice-setup')">
       <div class="mode-icon">📖</div><div class="mode-title">練習模式</div>
@@ -253,10 +256,10 @@ footer { position: relative; z-index: 1; text-align: center; padding: 20px; font
 <footer>➕ 加法關卡</footer>
 
 <script>
-const LEVELS=[{aMax:4,sumMax:5},{aMax:9,sumMax:10},{aMax:10,sumMax:20},{aMax:25,sumMax:50},{aMax:50,sumMax:100}];
+const AUDIO_BASE="./audio/";let currentAudio=null;function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;const done=()=>{if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}function playQuestionVO(){playAudio("addition/question.mp3");}function playNumberVO(n){playAudio("numbers/"+ n +".mp3");}function playCorrectVO(a,b,onEnd){playSeq(["common/correct_"+(Math.floor(Math.random()*4)+1)+".mp3","numbers/"+ a +".mp3","operators/plus.mp3","numbers/"+ b +".mp3","operators/equals.mp3","numbers/"+(a+b)+".mp3"],onEnd);}function playWrongVO(onEnd){playAudio("common/wrong_"+(Math.floor(Math.random()*3)+1)+".mp3",onEnd);}function playSkipVO(onEnd){playAudio("common/skip.mp3",onEnd);}function playLevelUpVO(){playAudio("common/levelup.mp3");}function playLevelDownVO(){playAudio("common/leveldown.mp3");}const LEVELS=[{aMax:4,sumMax:5},{aMax:9,sumMax:10},{aMax:10,sumMax:20},{aMax:25,sumMax:50},{aMax:50,sumMax:100}];
 const XP_NEEDED=[5,10,20,30];
 const EMOJIS=['🍎','🍊','🍋','🐶','⭐','🌸','🎈','🦋','🍓','🐸'];
-const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+
 let PS={},CS={};
 
 function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
@@ -268,13 +271,13 @@ function selectOpt(btn,gid){
 }
 function getSelected(gid){ const b=document.querySelector('#'+gid+' .opt-btn.selected'); return b?b.dataset.val:null; }
 
-function playTone(f,d,t='sine',g=0.28){ const o=audioCtx.createOscillator(),gn=audioCtx.createGain(); o.connect(gn);gn.connect(audioCtx.destination); o.type=t;o.frequency.value=f; gn.gain.setValueAtTime(g,audioCtx.currentTime); gn.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d); o.start();o.stop(audioCtx.currentTime+d); }
-function playOK(){ playTone(523,0.12);setTimeout(()=>playTone(659,0.12),100);setTimeout(()=>playTone(784,0.2),200); }
-function playNG(){ playTone(250,0.35,'sawtooth',0.18); }
+
+function playOK(onEnd){playCorrectVO(PS.q?PS.q.a:0,PS.q?PS.q.b:0,onEnd);}
+function playNG(onEnd){playWrongVO(onEnd);}
 
 function spawnParticles(){ for(let i=0;i<7;i++){ const el=document.createElement('div');el.className='particle'; el.textContent=['⭐','🎉','✨','🌟','🎊'][Math.floor(Math.random()*5)]; el.style.left=(20+Math.random()*60)+'vw';el.style.top=(30+Math.random()*40)+'vh'; el.style.setProperty('--dx',(Math.random()*180-90)+'px');el.style.setProperty('--dy',(-70-Math.random()*100)+'px'); document.body.appendChild(el);setTimeout(()=>el.remove(),1000); } }
 function spawnExp(){ const el=document.createElement('div');el.className='exp-pop';el.textContent='+EXP'; el.style.cssText='left:50%;top:50%;transform:translateX(-50%)'; document.body.appendChild(el);setTimeout(()=>el.remove(),1000); }
-function showToast(msg){ const t=document.createElement('div');t.className='level-toast';t.textContent=msg; document.body.appendChild(t);setTimeout(()=>t.remove(),2000); }
+function showToast(msg,isUp){if(isUp)playLevelUpVO();else playLevelDownVO();_showToast(msg);}function _showToast(msg){ const t=document.createElement('div');t.className='level-toast';t.textContent=msg; document.body.appendChild(t);setTimeout(()=>t.remove(),2000); }
 
 function genQ(lv){ const cfg=LEVELS[lv]; let a,b,tries=0; do{ a=Math.floor(Math.random()*cfg.aMax)+1; const bMax=Math.min(cfg.aMax,cfg.sumMax-a); if(bMax<1){tries++;continue;} b=Math.floor(Math.random()*bMax)+1; tries++; }while(tries<60); return {a,b,answer:a+b,lv}; }
 
@@ -301,18 +304,17 @@ function pNext(){
   const q=genQ(PS.lv); PS.q=q;
   document.getElementById('p-lv-badge').textContent='Lv '+(PS.lv+1);
   renderVisual(q.a,q.b,'p-visual'); renderEq(q.a,q.b,'p-eq');
-  renderOpts(genOpts(q.answer,PS.lv),q.answer,'p-opts',(btn,val)=>{ if(PS.locked)return; document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');PS.sel=val;PS.selBtn=btn; document.getElementById('p-confirm').classList.add('ready'); });
-  if(PS.isAuto){ const need=XP_NEEDED[PS.lv]??1; document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%'; }
+  renderOpts(genOpts(q.answer,PS.lv),q.answer,'p-opts',(btn,val)=>{ if(PS.locked)return; document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');PS.sel=val;PS.selBtn=btn;playNumberVO(val);document.getElementById('p-confirm').classList.add('ready'); });
+  if(PS.isAuto){ const need=XP_NEEDED[PS.lv]??1; document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%'; }setTimeout(playQuestionVO,400);
 }
 function practiceConfirm(){
   if(!PS.sel||PS.locked)return; PS.locked=true;
   const ok=parseInt(PS.sel)===PS.q.answer; const fb=document.getElementById('p-fb');
   document.querySelectorAll('#p-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===PS.q.answer)b.classList.add('correct'); else if(b===PS.selBtn&&!ok)b.classList.add('wrong-sel'); b.disabled=true; });
-  if(ok){ fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)]; fb.className='feedback correct-msg'; playOK();spawnParticles();spawnExp(); PS.streak++;document.getElementById('p-streak').textContent=PS.streak; if(PS.isAuto){PS.xp++;const need=XP_NEEDED[PS.lv];if(need&&PS.xp>=need&&PS.lv<4){PS.lv++;PS.xp=0;showToast('🎯 升級！Lv '+(PS.lv+1));}} }
-  else{ fb.textContent=['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)]; fb.className='feedback wrong-msg'; playNG();PS.streak=0;document.getElementById('p-streak').textContent=0; }
-  setTimeout(pNext,1300);
+  if(ok){ fb.textContent=['太棒了！🎉','答對了！⭐','超厲害！🌟','完美！✨'][Math.floor(Math.random()*4)]; fb.className='feedback correct-msg';spawnParticles();spawnExp(); PS.streak++;document.getElementById('p-streak').textContent=PS.streak; if(PS.isAuto){PS.xp++;const need=XP_NEEDED[PS.lv];if(need&&PS.xp>=need&&PS.lv<4){PS.lv++;PS.xp=0;showToast('🎯 升級！Lv '+(PS.lv+1),true);}}playOK(pNext); }
+  else{ fb.textContent=['再試一次！💪','沒關係，加油！😊','很接近了！🤏'][Math.floor(Math.random()*3)]; fb.className='feedback wrong-msg';PS.streak=0;document.getElementById('p-streak').textContent=0;playNG(()=>{PS.selBtn.classList.remove('wrong-sel');PS.sel=null;PS.selBtn=null;PS.locked=false;document.getElementById('p-confirm').classList.remove('ready');document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.disabled=false);}); }
 }
-function practiceSkip(){ if(PS.locked)return;PS.streak=0;document.getElementById('p-streak').textContent=0; const fb=document.getElementById('p-fb');fb.textContent='跳過囉～下一題！';fb.className='feedback wrong-msg'; PS.locked=true;setTimeout(pNext,800); }
+function practiceSkip(){ if(PS.locked)return;PS.streak=0;document.getElementById('p-streak').textContent=0; const fb=document.getElementById('p-fb');fb.textContent='跳過囉～下一題！';fb.className='feedback wrong-msg'; PS.locked=true;playSkipVO(pNext); }
 
 /* ── 挑戰模式 ── */
 function startChallenge(){
@@ -332,8 +334,8 @@ function cLoad(i){
   document.getElementById('c-progress').textContent='第 '+(i+1)+' / '+CS.count+' 題';
   document.getElementById('c-prev').disabled=i===0;
   renderVisual(q.a,q.b,'c-visual');renderEq(q.a,q.b,'c-eq');
-  renderOpts(genOpts(q.answer,q.lv),q.answer,'c-opts',(btn,val)=>{ document.querySelectorAll('#c-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');CS.sel=val;CS.selBtn=btn; document.getElementById('c-confirm').classList.add('ready'); });
-  if(q.userAns!==null&&!q.skipped){ document.querySelectorAll('#c-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===q.userAns)b.classList.add('selected'); }); }
+  renderOpts(genOpts(q.answer,q.lv),q.answer,'c-opts',(btn,val)=>{ document.querySelectorAll('#c-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');CS.sel=val;CS.selBtn=btn;playNumberVO(val);document.getElementById('c-confirm').classList.add('ready'); });
+  if(q.userAns!==null&&!q.skipped){ document.querySelectorAll('#c-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===q.userAns)b.classList.add('selected'); }); }setTimeout(playQuestionVO,400);
 }
 function challengeConfirm(){ if(!CS.sel)return; CS.qs[CS.cur].userAns=parseInt(CS.sel);CS.qs[CS.cur].skipped=false; renderNav();cAdvance(); }
 function challengeSkip(){ CS.qs[CS.cur].userAns=null;CS.qs[CS.cur].skipped=true; renderNav();cAdvance(); }
@@ -360,7 +362,7 @@ function showResult(){
   else{emoji='😊';msg='沒關係，多練習就會進步！';}
   document.getElementById('r-emoji').textContent=emoji;
   document.getElementById('r-msg').textContent=msg;
-  if(score===100)spawnParticles(); playOK();
+  if(score===100)spawnParticles();playAudio(`common/correct_${Math.floor(Math.random()*4)+1}.mp3`);
   const wl=document.getElementById('r-wrong');wl.innerHTML='';
   if(wrong.length>0){
     const t=document.createElement('div');t.className='wrong-list-title';t.textContent='需要加強的題目';wl.appendChild(t);
