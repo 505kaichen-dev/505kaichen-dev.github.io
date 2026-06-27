@@ -336,7 +336,7 @@ function playOptionVO(name) {
 
 // 答對鼓勵（念完後執行 callback → 跳下一題）
 function playCorrectVO(onEnd) {
-  playAudio('common/correct_' + (Math.floor(Math.random()*4)+1) + '.mp3', onEnd);
+  playAudio('common/correct_2.mp3', onEnd);
 }
 // 答錯回饋（念完後解鎖，不跳題）
 function playWrongVO(onEnd) {
@@ -550,7 +550,7 @@ function practiceConfirm() {
       }
     }
     // 念鼓勵句，念完後跳下一題
-    playCorrectVO(()=>setTimeout(pNext,300));
+      playCorrectVO(pNext);
 
   } else {
     // 答錯：標示錯誤選項，念錯誤句，念完後解鎖讓重新選
