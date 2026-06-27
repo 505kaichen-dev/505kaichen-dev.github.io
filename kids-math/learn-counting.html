@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>數數字教學 🔢 數學樂園</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF9F0;--primary:#FFE66D;--primary-dark:#F59E0B;
+  --accent:#FF6B35;--ink:#1A1A2E;--card-radius:24px;
+  --shadow:0 8px 32px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 10% 20%,#FFE66D33 0%,transparent 45%),radial-gradient(circle at 90% 80%,#FF6B3522 0%,transparent 45%);pointer-events:none;z-index:0;}
+
+header{position:relative;z-index:10;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;padding:8px 16px;background:white;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.15s;}
+.back-link:hover{transform:translateY(-2px);}
+.back-link::before{content:'←';font-size:18px;}
+
+main{position:relative;z-index:1;flex:1;max-width:760px;width:100%;margin:0 auto;padding:0 24px 60px;display:flex;flex-direction:column;gap:28px;}
+
+/* 標題區 */
+.learn-hero{text-align:center;padding:20px 0 8px;}
+.learn-tag{display:inline-block;background:var(--primary);color:var(--ink);font-size:13px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:50px;margin-bottom:12px;}
+.learn-title{font-size:clamp(28px,6vw,44px);font-weight:900;background:linear-gradient(135deg,var(--primary-dark),#D97706);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.learn-subtitle{font-size:16px;color:#888;font-weight:700;}
+
+/* 概念卡片 */
+.concept-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:32px 28px;border-left:6px solid var(--primary);}
+.concept-card-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:16px;}
+
+/* 數字展示區 */
+.numbers-showcase{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:8px;}
+.num-item{background:white;border:3px solid var(--primary);border-radius:16px;padding:12px 6px;text-align:center;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 3px 0 #F59E0B44;}
+.num-item:hover{transform:translateY(-3px);box-shadow:0 6px 0 #F59E0B44;}
+.num-item.playing{background:var(--primary);animation:pulse 0.6s ease-in-out;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.num-big{font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
+.num-label{font-size:13px;font-weight:800;color:var(--primary-dark);margin-top:4px;}
+.num-hint{font-size:11px;color:#bbb;font-weight:700;}
+
+/* 示範區 */
+.demo-card{background:white;border-radius:var(--card-radius);box-shadow:var(--shadow);padding:28px;}
+.demo-title{font-size:14px;font-weight:800;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:20px;text-align:center;}
+.demo-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.demo-group{background:#FFFBEA;border-radius:16px;padding:16px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:200px;}
+.demo-emoji{font-size:32px;line-height:1;transition:transform 0.3s;}
+.demo-emoji.highlight{animation:pop 0.3s ease;}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.demo-arrow{font-size:28px;color:var(--primary-dark);}
+.demo-result{font-size:56px;font-weight:900;color:var(--primary-dark);background:var(--primary);border-radius:50%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;}
+
+.demo-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.demo-btn{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;padding:10px 22px;border-radius:50px;border:none;cursor:pointer;transition:transform 0.15s,opacity 0.15s;}
+.demo-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--ink);}
+.demo-btn.secondary{background:white;border:2.5px solid #ddd;color:#888;}
+.demo-btn:hover{transform:translateY(-2px);}
+.demo-btn:disabled{opacity:0.4;cursor:default;transform:none;}
+
+/* 說話泡泡 */
+.speech-bubble{background:white;border:3px solid var(--primary);border-radius:20px;padding:16px 20px;position:relative;text-align:center;font-size:18px;font-weight:800;color:var(--ink);box-shadow:var(--shadow);}
+.speech-bubble::after{content:'';position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);border:8px solid transparent;border-top-color:var(--primary);}
+.mascot-area{text-align:center;margin-top:8px;}
+.mascot-area svg{width:80px;height:80px;}
+
+/* 生活例子 */
+.examples-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.example-item{background:white;border-radius:20px;box-shadow:var(--shadow);padding:20px 16px;text-align:center;border-top:4px solid var(--primary);}
+.example-icon{font-size:40px;margin-bottom:8px;}
+.example-text{font-size:14px;font-weight:800;color:var(--ink);line-height:1.5;}
+.example-sub{font-size:12px;color:#aaa;font-weight:700;margin-top:4px;}
+
+/* 給家長區 */
+.parent-section{background:#F0F9FF;border-radius:var(--card-radius);padding:24px 28px;border-left:6px solid #3B82F6;}
+.parent-tag{display:inline-block;background:#3B82F6;color:white;font-size:12px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:50px;margin-bottom:14px;}
+.parent-title{font-size:18px;font-weight:900;color:#1E3A5F;margin-bottom:12px;}
+.parent-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.parent-list li{font-size:14px;font-weight:700;color:#334155;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.parent-list li::before{content:'✅';flex-shrink:0;}
+
+/* 開始按鈕 */
+.start-section{text-align:center;padding:12px 0;}
+.start-btn{font-family:'Nunito',sans-serif;display:inline-block;padding:20px 48px;border-radius:20px;border:none;font-size:22px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--ink);box-shadow:0 6px 0 #D97706,0 8px 24px rgba(245,158,11,0.35);transition:transform 0.15s,box-shadow 0.15s;text-decoration:none;}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 9px 0 #D97706,0 12px 32px rgba(245,158,11,0.4);}
+.start-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #D97706;}
+.start-hint{font-size:13px;color:#bbb;font-weight:700;margin-top:12px;}
+
+footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px;color:#bbb;font-weight:700;}
+
+@media(max-width:480px){
+  .numbers-showcase{grid-template-columns:repeat(5,1fr);gap:6px;}
+  .num-big{font-size:24px;}
+  .examples-grid{grid-template-columns:1fr 1fr;}
+  .start-btn{padding:16px 32px;font-size:18px;}
+}
+</style>
+</head>
+<body>
+<header>
+  <a href="counting.html" class="back-link">數數字</a>
+</header>
+
+<main>
+  <!-- 標題 -->
+  <div class="learn-hero">
+    <div class="learn-tag">學習主題</div>
+    <div class="learn-title">數數字 🔢</div>
+    <div class="learn-subtitle">1、2、3… 數字是我們的好朋友！</div>
+  </div>
+
+  <!-- 概念說明 -->
+  <div class="concept-card">
+    <div class="concept-card-title">數字長什麼樣子？</div>
+    <div class="numbers-showcase" id="numShowcase"></div>
+    <p style="font-size:13px;color:#aaa;font-weight:700;text-align:center;margin-top:12px;">👆 點數字可以聽聽看怎麼念！</p>
+  </div>
+
+  <!-- 互動示範 -->
+  <div class="demo-card">
+    <div class="demo-title">🍎 數一數看！</div>
+    <div class="demo-row" id="demoRow"></div>
+
+    <div style="text-align:center;margin-bottom:20px;">
+      <div class="speech-bubble" id="speechBubble">按下面的按鈕，一起來數數字吧！</div>
+      <div class="mascot-area">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
+          <circle cx="48" cy="50" r="7" fill="white"/><circle cx="72" cy="50" r="7" fill="white"/>
+          <circle cx="50" cy="51" r="4" fill="#1A1A2E"/><circle cx="74" cy="51" r="4" fill="#1A1A2E"/>
+          <circle cx="52" cy="49" r="1.5" fill="white"/><circle cx="76" cy="49" r="1.5" fill="white"/>
+          <path d="M 48 63 Q 60 74 72 63" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="42" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+          <ellipse cx="78" cy="62" rx="6" ry="4" fill="#FF6B35" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="demo-controls">
+      <button class="demo-btn secondary" onclick="prevDemo()" id="prevBtn" disabled>← 上一個</button>
+      <button class="demo-btn primary" onclick="nextDemo()" id="nextBtn">開始數數 →</button>
+    </div>
+  </div>
+
+  <!-- 生活例子 -->
+  <div class="concept-card">
+    <div class="concept-card-title">生活中的數字</div>
+    <div class="examples-grid">
+      <div class="example-item">
+        <div class="example-icon">🖐️</div>
+        <div class="example-text">手指有 5 根</div>
+        <div class="example-sub">伸出手數數看！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">👀</div>
+        <div class="example-text">眼睛有 2 個</div>
+        <div class="example-sub">照鏡子看看！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🦶</div>
+        <div class="example-text">腳趾有 10 根</div>
+        <div class="example-sub">脫掉鞋子數數！</div>
+      </div>
+      <div class="example-item">
+        <div class="example-icon">🌈</div>
+        <div class="example-text">彩虹有 7 種顏色</div>
+        <div class="example-sub">你能說出幾種？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 給家長看 -->
+  <div class="parent-section">
+    <div class="parent-tag">📌 給爸爸媽媽</div>
+    <div class="parent-title">這個關卡在學什麼？</div>
+    <ul class="parent-list">
+      <li>認識數字 1 到 100 的符號與名稱</li>
+      <li>培養「數量感」，看到一堆物品能快速判斷多少</li>
+      <li>Lv1–2 從 1 到 10 開始，循序漸進到 100</li>
+      <li>建議陪孩子一起玩，指著畫面上的 emoji 一起數出聲音</li>
+      <li>答錯沒關係，系統會自動調整到適合的難度</li>
+    </ul>
+  </div>
+
+  <!-- 開始按鈕 -->
+  <div class="start-section">
+    <a href="counting.html" class="start-btn">我準備好了！開始玩 🚀</a>
+    <div class="start-hint">點擊後可選擇練習模式或挑戰模式</div>
+  </div>
+</main>
+
+<footer>🔢 數數字教學</footer>
+
+<script>
+const AUDIO_BASE = './audio/';
+const NUMBER_WORDS = ['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+
+// ── 音檔播放工具 ──
+function playAudio(path, onEnd) {
+  const audio = new Audio(AUDIO_BASE + path);
+  audio.onended = onEnd || null;
+  audio.onerror = onEnd || null;
+  audio.play().catch(()=>{ if(onEnd) onEnd(); });
+  return audio;
+}
+
+function playSequence(paths, onDone) {
+  if(!paths.length){ if(onDone) onDone(); return; }
+  const [first, ...rest] = paths;
+  playAudio(first, ()=>playSequence(rest, onDone));
+}
+
+// ── 數字展示（1–10 + 選代表）──
+function buildNumberShowcase() {
+  const showcase = document.getElementById('numShowcase');
+  const display = [1,2,3,4,5,6,7,8,9,10];
+  display.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'num-item';
+    item.innerHTML = `<div class="num-big">${n}</div><div class="num-label">${NUMBER_WORDS[n]}</div>`;
+    item.onclick = () => {
+      document.querySelectorAll('.num-item').forEach(i=>i.classList.remove('playing'));
+      item.classList.add('playing');
+      playAudio(`numbers/${n}.mp3`, ()=>item.classList.remove('playing'));
+    };
+    showcase.appendChild(item);
+  });
+}
+
+// ── 示範：一顆一顆數蘋果 ──
+const DEMO_STEPS = [
+  { count:0, bubble:'按「開始數數」，我們一起來數蘋果吧！🍎', btnText:'開始數數 →' },
+  { count:1, bubble:'一 🍎\n這裡有 1 個蘋果！', playNum:1 },
+  { count:2, bubble:'二 🍎🍎\n又來了一個，現在有 2 個！', playNum:2 },
+  { count:3, bubble:'三 🍎🍎🍎\n再加一個，變成 3 個了！', playNum:3 },
+  { count:4, bubble:'四 🍎🍎🍎🍎\n越來越多，現在有 4 個！', playNum:4 },
+  { count:5, bubble:'五 🍎🍎🍎🍎🍎\n哇！5 個蘋果，數到 5 囉！', playNum:5 },
+];
+
+let demoStep = 0;
+
+function renderDemoRow(count) {
+  const row = document.getElementById('demoRow');
+  row.innerHTML = '';
+  const group = document.createElement('div');
+  group.className = 'demo-group';
+  for(let i=0;i<count;i++){
+    const e = document.createElement('span');
+    e.className = 'demo-emoji' + (i===count-1?' highlight':'');
+    e.textContent = '🍎';
+    group.appendChild(e);
+  }
+  if(count>0){
+    const arrow = document.createElement('div');
+    arrow.className = 'demo-arrow';
+    arrow.textContent = '=';
+    const result = document.createElement('div');
+    result.className = 'demo-result';
+    result.textContent = count;
+    row.append(group, arrow, result);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.style.cssText='font-size:48px;opacity:0.3;padding:20px;';
+    placeholder.textContent='🍎';
+    row.appendChild(placeholder);
+  }
+}
+
+function updateDemoUI() {
+  const step = DEMO_STEPS[demoStep];
+  document.getElementById('speechBubble').textContent = step.bubble;
+  document.getElementById('prevBtn').disabled = demoStep === 0;
+  const nextBtn = document.getElementById('nextBtn');
+  if(demoStep === DEMO_STEPS.length-1){
+    nextBtn.textContent = '再數一次 🔄';
+  } else if(demoStep === 0){
+    nextBtn.textContent = step.btnText || '下一個 →';
+  } else {
+    nextBtn.textContent = '下一個 →';
+  }
+  renderDemoRow(step.count);
+  if(step.playNum) playAudio(`numbers/${step.playNum}.mp3`);
+}
+
+function nextDemo() {
+  if(demoStep === DEMO_STEPS.length-1){ demoStep=0; }
+  else { demoStep++; }
+  updateDemoUI();
+}
+
+function prevDemo() {
+  if(demoStep>0){ demoStep--; updateDemoUI(); }
+}
+
+// ── 初始化 ──
+buildNumberShowcase();
+renderDemoRow(0);
+</script>
+</body>
+</html>
