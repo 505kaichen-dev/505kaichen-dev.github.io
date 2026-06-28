@@ -75,19 +75,15 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 /* 兒童觸控防誤縮放：保留正常頁面捲動 */
 html{touch-action:pan-x pan-y;}
 button,a{touch-action:manipulation;}
+@media (orientation:landscape) and (min-width:900px){
+  header{padding:14px 24px;}main{max-width:1100px;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:22px;padding-inline:24px;}
+  .learn-hero{grid-column:1/-1;}.concept-card,.judge-card,.parent-section,.start-section{height:100%;}
+}
 </style>
 </head>
 <body>
 <header><a href="mixed.html" class="back-link">加減綜合</a></header>
 <main>
-  <div class="voice-guide" aria-label="加減綜合語音導覽">
-    <button class="voice-btn" onclick="playAudio('learn/mixed_concept.mp3')">🔊 加減法概念</button>
-    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q1.mp3')">🔊 判斷題一</button>
-    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q2.mp3')">🔊 判斷題二</button>
-    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q3.mp3')">🔊 判斷題三</button>
-    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q4.mp3')">🔊 判斷題四</button>
-    <button class="voice-btn" onclick="playAudio('learn/mixed_judge_q5.mp3')">🔊 判斷題五</button>
-  </div>
   <div class="learn-hero">
     <div class="learn-tag">學習主題</div>
     <div class="learn-title">加減綜合 🔀</div>
@@ -96,6 +92,7 @@ button,a{touch-action:manipulation;}
 
   <div class="concept-card">
     <div class="concept-card-title">加法和減法有什麼不同？</div>
+    <div class="voice-guide" aria-label="加減法概念語音"><button class="voice-btn" onclick="playAudio('learn/mixed_concept.mp3')">🔊 聽加減法概念</button></div>
     <div class="compare-grid">
       <div class="compare-card add">
         <div class="compare-op">➕</div>
@@ -114,6 +111,7 @@ button,a{touch-action:manipulation;}
 
   <div class="judge-card">
     <div class="judge-title">🤔 練習判斷加法還是減法？</div>
+    <div class="voice-guide" aria-label="目前判斷題語音"><button class="voice-btn" onclick="playJudgeVO()">🔊 聽這一題</button></div>
     <div class="mascot-area">
       <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
         <polygon points="60,8 70,40 104,40 77,60 88,92 60,72 32,92 43,60 16,40 50,40" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/>
@@ -179,6 +177,10 @@ function loadJudge(){
   document.querySelectorAll('.judge-btn').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
 }
 
+function playJudgeVO(){
+  playAudio(`learn/mixed_judge_q${judgeIdx+1}.mp3`);
+}
+
 function judgeAnswer(type){
   if(judgeLocked)return;judgeLocked=true;
   const q=JUDGE_QS[judgeIdx];
@@ -190,16 +192,15 @@ function judgeAnswer(type){
   if(isOk){
     fb.textContent='答對了！你好棒！🎉';fb.className='judge-feedback ok';
     document.getElementById('judgeSpeech').textContent='對！這題要用'+(type==='add'?'加法➕':'減法➖')+'！';
-    playAudio('common/correct_1.mp3');
+    playAudio('sfx/correct_1.wav',()=>setTimeout(()=>{judgeIdx=(judgeIdx+1)%JUDGE_QS.length;loadJudge();},350));
   } else {
-    fb.textContent='再想想看！這題要用'+(q.ans==='add'?'加法➕':'減法➖');fb.className='judge-feedback ng';
+    fb.textContent='再想想看，再選一次！';fb.className='judge-feedback ng';
     document.getElementById('judgeSpeech').textContent='沒關係，再試一次！';
-    playAudio('common/wrong_1.mp3');
+    playAudio('sfx/wrong_1.wav',()=>{
+      btn.classList.remove('wrong');judgeLocked=false;
+      document.querySelectorAll('.judge-btn').forEach(b=>b.disabled=false);
+    });
   }
-  setTimeout(()=>{
-    judgeIdx=(judgeIdx+1)%JUDGE_QS.length;
-    loadJudge();
-  },2000);
 }
 
 loadJudge();

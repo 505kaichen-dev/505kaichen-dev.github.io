@@ -2,34 +2,47 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>遊戲關卡</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>遊戲區｜注音樂園</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Nunito','Noto Sans TC',sans-serif; background: #FFF9F0; min-height: 100vh; display:flex; flex-direction:column; align-items:center; }
-    header { width:100%; display:flex; align-items:center; justify-content:space-between; padding:16px 28px; background:#FF6B35; color:#fff; }
-    .back { text-decoration:none; color:#fff; font-weight:700; }
-    .title { font-size:1.4rem; font-weight:900; letter-spacing:3px; }
-    .center { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px 24px; text-align:center; }
-    .emoji { font-size:5rem; }
-    h1 { font-size:1.8rem; font-weight:900; color:#2C2C2C; }
-    p { font-size:1rem; color:#888; max-width:320px; line-height:1.6; }
-    footer { padding:20px; color:#aaa; font-size:0.8rem; }
+    :root{--primary:#FF6B35;--secondary:#4ECDC4;--ink:#292B3D;--muted:#73788f;--bg:#FFF9F0;--card:#fff;--radius:26px;--shadow:0 10px 30px rgba(52,45,80,.11)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{touch-action:manipulation}body{min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+    header{min-height:64px;padding:12px 24px;background:var(--primary);color:#fff;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;box-shadow:0 4px 16px rgba(255,107,53,.24)}.back{justify-self:start;color:#fff;text-decoration:none;font-weight:800}.title{font-size:1.4rem;font-weight:900;letter-spacing:3px}.spacer{justify-self:end}
+    main{width:min(1040px,100%);margin:auto;padding:24px;flex:1;display:flex;flex-direction:column;gap:24px}.hero{position:relative;overflow:hidden;border-radius:var(--radius);box-shadow:var(--shadow);aspect-ratio:1200/630;background:#FF9B42}.hero img{width:100%;height:100%;display:block;object-fit:cover}.hero-copy{position:absolute;left:0;right:0;bottom:0;padding:42px 24px 20px;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(72,39,15,.72))}.hero-copy h1{font-size:clamp(1.55rem,4vw,2.25rem);text-shadow:0 2px 8px rgba(0,0,0,.3)}.hero-copy p{margin-top:5px;font-weight:800;text-shadow:0 2px 6px rgba(0,0,0,.35)}
+    .games{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.game-card{position:relative;overflow:hidden;border-radius:var(--radius);background:#fff;color:var(--ink);text-decoration:none;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;text-align:center;border:3px solid transparent;transition:transform .15s,border-color .15s;padding-bottom:22px}.game-card:hover{transform:translateY(-4px);border-color:var(--secondary)}.game-art{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;margin-bottom:18px}.game-card h2{font-size:1.45rem;margin-bottom:8px}.game-card p{max-width:350px;padding:0 18px;color:var(--muted);font-weight:700;line-height:1.55}.play{margin-top:18px;min-width:145px;padding:11px 22px;border-radius:28px;background:var(--primary);color:#fff;font-size:1.05rem;font-weight:900;box-shadow:0 5px 0 #d94e1c}.picture .play{background:var(--secondary);box-shadow:0 5px 0 #319f98}.number{position:absolute;z-index:2;top:14px;left:16px;width:40px;height:40px;border-radius:50%;background:#fff;color:var(--primary);font-weight:900;display:grid;place-items:center;box-shadow:0 3px 12px rgba(0,0,0,.16)}footer{text-align:center;padding:18px;color:#aaa;font-size:.8rem}
+    @media(max-width:700px){header{padding:10px 14px}.title{font-size:1.1rem}.back{font-size:.86rem}main{padding:14px;gap:16px}.hero{aspect-ratio:16/9}.hero-copy{padding:34px 14px 14px}.hero-copy p{font-size:.85rem}.games{grid-template-columns:1fr}.game-card{padding-bottom:18px}.game-art{margin-bottom:14px}.game-card p{font-size:.88rem}.play{margin-top:12px}}
+    @media(orientation:landscape) and (max-height:700px){main{padding:12px 24px;gap:14px}.hero{aspect-ratio:4/1}.hero img{object-position:center 48%}.hero-copy{padding:28px 18px 10px}.hero-copy h1{font-size:1.35rem}.hero-copy p{display:none}.games{gap:16px}.game-art{aspect-ratio:16/8;object-position:center 42%}.game-card h2{font-size:1.2rem}.game-card p{display:none}.play{margin-top:8px;padding:8px 18px}}
   </style>
 </head>
 <body>
-  <header>
-    <a href="../index.html" class="back">← 回選單</a>
-    <span class="title">🎮 遊戲關卡</span>
-    <div style="width:80px"></div>
-  </header>
-  <div class="center">
-    <div class="emoji">🚧</div>
-    <h1>遊戲即將開放！</h1>
-    <p>我們正在努力製作好玩的注音遊戲，敬請期待！先去練習符號教學吧。</p>
-    <a href="../learn.html" style="padding:12px 28px;border-radius:50px;background:#FF6B35;color:#fff;text-decoration:none;font-weight:700;font-size:1rem;">去練習符號 →</a>
-  </div>
-  <footer>© 2025 505kaichen-dev</footer>
+  <!-- [COVER] 1200x630 注音樂園遊戲區封面，一隻幼兒感的可愛白兔吉祥物站在繽紛遊戲帳篷中央，左側是大型耳機、喇叭與柔和聲波，右側是豬、兔子、汽車等圖卡，白兔開心張開雙手邀請孩子選遊戲，圓潤 3D 黏土玩具插畫風格，暖橘色背景（#FF9B42 / #FFF9F0），薄荷綠（#4ECDC4）與亮黃（#FFD166）點綴，白兔約幼兒年齡感、紅潤臉頰、穿橘色吊帶褲，不放任何文字或品牌標誌 -->
+  <header><a href="../index.html" class="back">← 回首頁</a><div class="title">🎮 遊戲區</div><span class="spacer"></span></header>
+  <main>
+    <div class="hero"><img src="../image/game-cover.png" alt="白兔在注音遊戲帳篷邀請孩子一起玩" decoding="async" fetchpriority="high"><div class="hero-copy"><h1>今天想玩哪一個？</h1><p>選一張卡片，開始玩注音遊戲！</p></div></div>
+    <div class="games">
+      <a class="game-card listen" href="listen.html"><span class="number">1</span><img class="game-art" src="../image/game-listen.png" alt="戴著耳機聽聲音的白兔" loading="lazy" decoding="async"><h2>聽音找符號</h2><p>聽一個注音的聲音，找出正確的符號。</p><span class="play">開始 ▶</span></a>
+      <!-- [IMAGE] 800x600 「聽音找符號」遊戲卡插圖，一隻幼兒感的可愛白兔戴著大型薄荷綠耳機專心聆聽，周圍飄著橘色與黃色的柔和聲波、喇叭及音符形狀，呈現聽聲音並做選擇的情境，圓潤 3D 黏土玩具插畫風格，暖米白背景（#FFF9F0），主色薄荷綠（#4ECDC4）、亮橘色（#FF6B35）與亮黃（#FFD166），白兔紅潤臉頰、穿橘色吊帶褲，不放任何文字、注音或品牌標誌 -->
+      <a class="game-card picture" href="picture.html"><span class="number">2</span><img class="game-art" src="../image/game-picture.png" alt="白兔觀察小豬、小雞和汽車圖卡" loading="lazy" decoding="async"><h2>看圖找聲音</h2><p>看圖片、聽詞語，找出開頭的注音。</p><span class="play">開始 ▶</span></a>
+      <!-- [IMAGE] 800x600 「看圖找聲音」遊戲卡插圖，一隻幼兒感的可愛白兔拿著放大鏡觀察三張圓角圖卡，圖卡分別畫著粉紅小豬、黃色小雞與紅色小汽車，旁邊有小喇叭與柔和聲波，呈現看圖並聽詞語的情境，圓潤 3D 黏土玩具插畫風格，暖米白背景（#FFF9F0），主色亮橘色（#FF6B35）、薄荷綠（#4ECDC4）與淡粉色（#FFB5B5），白兔紅潤臉頰、穿橘色吊帶褲，不放任何文字、注音或品牌標誌 -->
+    </div>
+  </main>
+  <footer>© 2026 505kaichen-dev · 注音樂園</footer>
+  <script>
+    document.addEventListener('gesturestart',event=>event.preventDefault(),{passive:false});
+    document.addEventListener('dblclick',event=>event.preventDefault(),{passive:false});
+    document.addEventListener('touchmove',event=>{if(event.touches.length>1)event.preventDefault()},{passive:false});
+  </script>
+  <!--
+  === 產圖移交摘要 ===
+  本次頁面圖片需求如下，供 ChatGPT 掃描使用：
+
+  [COVER] 1200x630 注音樂園遊戲區封面，一隻幼兒感的可愛白兔吉祥物站在繽紛遊戲帳篷中央，左側是大型耳機、喇叭與柔和聲波，右側是豬、兔子、汽車等圖卡，白兔開心張開雙手邀請孩子選遊戲，圓潤 3D 黏土玩具插畫風格，暖橘色背景（#FF9B42 / #FFF9F0），薄荷綠（#4ECDC4）與亮黃（#FFD166）點綴，白兔約幼兒年齡感、紅潤臉頰、穿橘色吊帶褲，不放任何文字或品牌標誌
+
+  [IMAGE] 800x600 「聽音找符號」遊戲卡插圖，一隻幼兒感的可愛白兔戴著大型薄荷綠耳機專心聆聽，周圍飄著橘色與黃色的柔和聲波、喇叭及音符形狀，呈現聽聲音並做選擇的情境，圓潤 3D 黏土玩具插畫風格，暖米白背景（#FFF9F0），主色薄荷綠（#4ECDC4）、亮橘色（#FF6B35）與亮黃（#FFD166），白兔紅潤臉頰、穿橘色吊帶褲，不放任何文字、注音或品牌標誌
+
+  [IMAGE] 800x600 「看圖找聲音」遊戲卡插圖，一隻幼兒感的可愛白兔拿著放大鏡觀察三張圓角圖卡，圖卡分別畫著粉紅小豬、黃色小雞與紅色小汽車，旁邊有小喇叭與柔和聲波，呈現看圖並聽詞語的情境，圓潤 3D 黏土玩具插畫風格，暖米白背景（#FFF9F0），主色亮橘色（#FF6B35）、薄荷綠（#4ECDC4）與淡粉色（#FFB5B5），白兔紅潤臉頰、穿橘色吊帶褲，不放任何文字、注音或品牌標誌
+
+  ==================
+  -->
 </body>
 </html>

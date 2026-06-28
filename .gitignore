@@ -1,0 +1,8 @@
+# Local review archives and production handoff files
+_archive/
+**/_archive/
+handoffs/
+
+# Windows metadata
+Thumbs.db
+Desktop.ini

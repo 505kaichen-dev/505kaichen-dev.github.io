@@ -220,7 +220,7 @@ button,a{touch-action:manipulation;}
         <button class="opt-btn" data-val="2" onclick="selectOpt(this,'c-diff')">Lv 3</button>
         <button class="opt-btn" data-val="3" onclick="selectOpt(this,'c-diff')">Lv 4</button>
         <button class="opt-btn" data-val="4" onclick="selectOpt(this,'c-diff')">Lv 5</button>
-        <button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 自動</button>
+<button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 漸進挑戰</button>
       </div>
     </div>
     <div class="setup-section">
@@ -321,8 +321,8 @@ function playQuestionVO(q, btnId, onEnd) {
 // 選項點選：念形狀或顏色名稱
 const AUDIO_ID_MAP = {
   '圓形':'circle','正方形':'square','三角形':'triangle',
-  '星形':'star','菱形':'diamond','半圓形':'semicircle',
-  '心形':'heart','長方形':'rectangle','梯形':'trapezoid',
+  '星星':'star','菱形':'diamond','半圓形':'semicircle',
+  '愛心':'heart','長方形':'rectangle','梯形':'trapezoid',
   '平行四邊形':'parallelogram','五邊形':'pentagon',
   '六邊形':'hexagon','橢圓形':'oval','箭頭形':'arrow',
   '紅色':'red','橘色':'orange','黃色':'yellow',
@@ -367,22 +367,22 @@ const SHAPES = [
   {id:'circle',        name:'圓形',       zhuyin:'ㄩㄢˊ ㄒㄧㄥˊ',                     lvMin:1, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
   {id:'square',        name:'正方形',     zhuyin:'ㄓㄥˋ ㄈㄤ ㄒㄧㄥˊ',               lvMin:1, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><rect x="12" y="12" width="136" height="136" rx="6" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
   {id:'triangle',      name:'三角形',     zhuyin:'ㄙㄢ ㄐㄧㄠˇ ㄒㄧㄥˊ',             lvMin:1, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,10 152,148 8,148" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'star',          name:'星形',       zhuyin:'ㄒㄧㄥ ㄒㄧㄥˊ',                   lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 95,55 145,55 105,84 120,130 80,102 40,130 55,84 15,55 65,55" fill="${c}" stroke="${s||dk(c)}" stroke-width="3"/></svg>`},
-  {id:'diamond',       name:'菱形',       zhuyin:'ㄌㄧㄥˊ ㄒㄧㄥˊ',                 lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 150,80 80,152 10,80" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'semicircle',    name:'半圓形',     zhuyin:'ㄅㄢˋ ㄩㄢˊ ㄒㄧㄥˊ',             lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><path d="M12 90 A68 68 0 0 1 148 90 Z" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/><line x1="12" y1="90" x2="148" y2="90" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'heart',         name:'心形',       zhuyin:'ㄒㄧㄣ ㄒㄧㄥˊ',                   lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><path d="M80 130 C80 130 20 90 20 55 C20 35 35 20 55 20 C65 20 75 25 80 35 C85 25 95 20 105 20 C125 20 140 35 140 55 C140 90 80 130 80 130Z" fill="${c}" stroke="${s||dk(c)}" stroke-width="3"/></svg>`},
+  {id:'star',          name:'星星',       zhuyin:'ㄒㄧㄥ ㄒㄧㄥ',                    lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 95,55 145,55 105,84 120,130 80,102 40,130 55,84 15,55 65,55" fill="${c}" stroke="${s||dk(c)}" stroke-width="3"/></svg>`},
+  {id:'diamond',       name:'菱形',       zhuyin:'ㄌㄧㄥˊ ㄒㄧㄥˊ',                 lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 150,80 80,152 10,80" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'semicircle',    name:'半圓形',     zhuyin:'ㄅㄢˋ ㄩㄢˊ ㄒㄧㄥˊ',             lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><path d="M12 90 A68 68 0 0 1 148 90 Z" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/><line x1="12" y1="90" x2="148" y2="90" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'heart',         name:'愛心',       zhuyin:'ㄞˋ ㄒㄧㄣ',                      lvMin:2, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><path d="M80 130 C80 130 20 90 20 55 C20 35 35 20 55 20 C65 20 75 25 80 35 C85 25 95 20 105 20 C125 20 140 35 140 55 C140 90 80 130 80 130Z" fill="${c}" stroke="${s||dk(c)}" stroke-width="3"/></svg>`},
   {id:'rectangle',     name:'長方形',     zhuyin:'ㄔㄤˊ ㄈㄤ ㄒㄧㄥˊ',               lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><rect x="8" y="36" width="144" height="88" rx="6" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'trapezoid',     name:'梯形',       zhuyin:'ㄊㄧˊ ㄒㄧㄥˊ',                   lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="40,30 120,30 148,130 12,130" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'parallelogram', name:'平行四邊形', zhuyin:'ㄆㄧㄥˊ ㄒㄧㄥˊ ㄙˋ ㄅㄧㄢ ㄒㄧㄥˊ', lvMin:3, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="40,30 148,30 120,130 12,130" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'trapezoid',     name:'梯形',       zhuyin:'ㄊㄧ ㄒㄧㄥˊ',                    lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="40,30 120,30 148,130 12,130" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'parallelogram', name:'平行四邊形', zhuyin:'ㄆㄧㄥˊ ㄒㄧㄥˊ ㄙˋ ㄅㄧㄢ ㄒㄧㄥˊ', lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="40,30 148,30 120,130 12,130" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
   {id:'pentagon',      name:'五邊形',     zhuyin:'ㄨˇ ㄅㄧㄢ ㄒㄧㄥˊ',               lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 148,58 122,138 38,138 12,58" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'hexagon',       name:'六邊形',     zhuyin:'ㄌㄧㄡˋ ㄅㄧㄢ ㄒㄧㄥˊ',           lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 146,44 146,116 80,152 14,116 14,44" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
-  {id:'oval',          name:'橢圓形',     zhuyin:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ',           lvMin:4, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><ellipse cx="80" cy="80" rx="72" ry="44" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'hexagon',       name:'六邊形',     zhuyin:'ㄌㄧㄡˋ ㄅㄧㄢ ㄒㄧㄥˊ',           lvMin:5, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,8 146,44 146,116 80,152 14,116 14,44" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
+  {id:'oval',          name:'橢圓形',     zhuyin:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ',           lvMin:5, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><ellipse cx="80" cy="80" rx="72" ry="44" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
   {id:'arrow',         name:'箭頭形',     zhuyin:'ㄐㄧㄢˋ ㄊㄡˊ ㄒㄧㄥˊ',           lvMin:5, svg:(c,s)=>`<svg width="160" height="160" viewBox="0 0 160 160"><polygon points="80,10 148,80 110,80 110,148 50,148 50,80 12,80" fill="${c}" stroke="${s||dk(c)}" stroke-width="4"/></svg>`},
 ];
 
 const COLORS = [
   {id:'red',    name:'紅色', zhuyin:'ㄏㄨㄥˊ ㄙㄜˋ', hex:'#EF4444'},
-  {id:'orange', name:'橘色', zhuyin:'ㄩˋ ㄙㄜˋ',     hex:'#FF6B35'},
+  {id:'orange', name:'橘色', zhuyin:'ㄐㄩˊ ㄙㄜˋ',   hex:'#FF6B35'},
   {id:'yellow', name:'黃色', zhuyin:'ㄏㄨㄤˊ ㄙㄜˋ', hex:'#FFE66D'},
   {id:'green',  name:'綠色', zhuyin:'ㄌㄩˋ ㄙㄜˋ',   hex:'#22C55E'},
   {id:'blue',   name:'藍色', zhuyin:'ㄌㄢˊ ㄙㄜˋ',   hex:'#3B82F6'},
@@ -390,6 +390,17 @@ const COLORS = [
   {id:'black',  name:'黑色', zhuyin:'ㄏㄟ ㄙㄜˋ',    hex:'#1A1A2E'},
   {id:'white',  name:'白色', zhuyin:'ㄅㄞˊ ㄙㄜˋ',   hex:'#F8F9FA'},
 ];
+
+// 幼兒容易因發音或概念相近而混淆；同組形狀不互相作為干擾選項。
+const CONFUSION_GROUPS = [
+  ['star','heart'],
+  ['circle','semicircle','oval'],
+  ['square','rectangle'],
+  ['pentagon','hexagon'],
+];
+function isConfusingPair(answerId, candidateId) {
+  return CONFUSION_GROUPS.some(group => group.includes(answerId) && group.includes(candidateId));
+}
 
 // Lv設定
 const LEVEL_CFG = [
@@ -399,7 +410,7 @@ const LEVEL_CFG = [
   {lvMax:4, colorRate:0.40},
   {lvMax:5, colorRate:0.40},
 ];
-const XP_NEEDED = [5,10,20,30];
+const XP_NEEDED = [5,8,12,15];
 
 // ══════════════════════════════
 // 共用工具
@@ -464,12 +475,14 @@ function renderOpts(q, gid, onSel) {
   const cfg = LEVEL_CFG[q.lv];
   let pool = q.colorMode
     ? COLORS.map(c=>({name:c.name,zhuyin:c.zhuyin}))
-    : SHAPES.filter(s=>s.lvMin<=cfg.lvMax).map(s=>({name:s.name,zhuyin:s.zhuyin}));
+    : SHAPES.filter(s=>s.lvMin<=cfg.lvMax)
+        .filter(s=>s.id===q.shape.id || !isConfusingPair(q.shape.id,s.id))
+        .map(s=>({name:s.name,zhuyin:s.zhuyin}));
 
   const opts = new Set([q.answer]);
   pool.filter(p=>p.name!==q.answer).sort(()=>Math.random()-0.5).slice(0,2).forEach(p=>opts.add(p.name));
   if (opts.size<3) {
-    SHAPES.map(s=>s.name).filter(n=>!opts.has(n)).sort(()=>Math.random()-0.5)
+    SHAPES.filter(s=>!isConfusingPair(q.shape.id,s.id)).map(s=>s.name).filter(n=>!opts.has(n)).sort(()=>Math.random()-0.5)
       .slice(0,3-opts.size).forEach(n=>opts.add(n));
   }
   [...opts].sort(()=>Math.random()-0.5).forEach(name=>{
@@ -707,7 +720,7 @@ function showResult() {
   }
   showPage('page-result');
 }
-+function syncFullscreenButton(){
+function syncFullscreenButton(){
   const label=document.fullscreenElement?'退出全螢幕':'全螢幕遊玩';
   document.querySelectorAll('.fullscreen-btn span').forEach(el=>el.textContent=label);
 }

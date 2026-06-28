@@ -99,6 +99,10 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 /* 兒童觸控防誤縮放：保留正常頁面捲動 */
 html{touch-action:pan-x pan-y;}
 button,a{touch-action:manipulation;}
+@media (orientation:landscape) and (min-width:900px){
+  header{padding:14px 24px;}main{max-width:1100px;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:22px;padding-inline:24px;}
+  .learn-hero,.start-section{grid-column:1/-1;}.concept-card,.demo-card,.parent-section{height:100%;}
+}
 </style>
 </head>
 <body>
@@ -181,9 +185,9 @@ button,a{touch-action:manipulation;}
     <ul class="parent-list">
       <li>認識數字 1 到 100 的符號與名稱</li>
       <li>培養「數量感」，看到一堆物品能快速判斷多少</li>
-      <li>Lv1–2 從 1 到 10 開始，循序漸進到 100</li>
+      <li>Lv1 從 5 以內開始，依序進入 10、20、50、100 以內</li>
       <li>建議陪孩子一起玩，指著畫面上的 emoji 一起數出聲音</li>
-      <li>答錯沒關係，系統會自動調整到適合的難度</li>
+      <li>自動升級模式會依累積答對題數逐步提高難度，答錯不會降級</li>
     </ul>
   </div>
 
@@ -199,13 +203,15 @@ button,a{touch-action:manipulation;}
 <script>
 const AUDIO_BASE = './audio/';
 const NUMBER_WORDS = ['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+let currentAudio = null;
 
 // ── 音檔播放工具 ──
 function playAudio(path, onEnd) {
+  if(currentAudio){currentAudio.pause();currentAudio=null;}
   const audio = new Audio(AUDIO_BASE + path);
-  audio.onended = onEnd || null;
-  audio.onerror = onEnd || null;
-  audio.play().catch(()=>{ if(onEnd) onEnd(); });
+  currentAudio=audio;let finished=false;
+  const done=()=>{if(finished)return;finished=true;if(currentAudio===audio)currentAudio=null;if(onEnd)onEnd();};
+  audio.onended=done;audio.onerror=done;audio.play().catch(done);
   return audio;
 }
 

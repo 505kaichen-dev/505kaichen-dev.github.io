@@ -2,9 +2,8 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>注音樂園</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -61,7 +60,8 @@
     .main-card {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 32px 24px;
+      padding: 0 0 24px;
+      overflow: hidden;
       text-align: center;
       box-shadow: 0 6px 28px rgba(0,0,0,0.08);
       text-decoration: none;
@@ -75,9 +75,12 @@
     .main-card.learn:hover  { border-color: var(--primary); }
     .main-card.game:hover   { border-color: var(--accent); }
 
-    .card-icon { font-size: 3.5rem; }
-    .card-name { font-size: 1.3rem; font-weight: 900; }
-    .card-desc { font-size: 0.85rem; color: #888; line-height: 1.5; }
+    .card-image { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
+    .chart .card-image { object-position:center 50%; }
+    .learn .card-image { object-position:center 55%; }
+    .game .card-image { object-position:center 52%; }
+    .card-name { font-size: 1.3rem; font-weight: 900; margin-top:8px; }
+    .card-desc { font-size: 0.85rem; color: #888; line-height: 1.5; padding:0 20px; }
     .card-badge {
       padding: 6px 18px; border-radius: 50px;
       font-size: 0.8rem; font-weight: 700;
@@ -114,29 +117,37 @@
 <div class="cards-wrap">
 
   <a href="chart.html" class="main-card chart">
-    <div class="card-icon">📋</div>
+    <img class="card-image" src="image/chart-cover.png" alt="白兔整理注音學習圖卡" loading="lazy" decoding="async">
     <div class="card-name">注音總表</div>
     <div class="card-desc">一次看完所有 37 個注音符號，點符號可以聽發音</div>
     <span class="card-badge">認識符號</span>
   </a>
 
   <a href="learn.html" class="main-card learn">
-    <div class="card-icon">✍️</div>
+    <img class="card-image" src="image/learn-cover.png" alt="白兔使用描字板練習筆畫" loading="lazy" decoding="async">
     <div class="card-name">符號教學</div>
     <div class="card-desc">看筆順動畫、練習描字、聽例字發音，一個一個學</div>
     <span class="card-badge">跟著寫</span>
   </a>
 
   <a href="game/index.html" class="main-card game">
-    <div class="card-icon">🎮</div>
+    <img class="card-image" src="image/game-cover.png" alt="白兔在注音遊戲帳篷邀請孩子遊玩" loading="lazy" decoding="async">
     <div class="card-name">遊戲關卡</div>
-    <div class="card-desc">用遊戲練習注音，看圖選字、聽音答題，邊玩邊學</div>
-    <span class="card-badge">即將開放</span>
+    <div class="card-desc">聽發音找符號，分成練習與挑戰模式，從簡單慢慢升級</div>
+    <span class="card-badge">開始挑戰</span>
   </a>
 
 </div>
 
-<footer>© 2025 505kaichen-dev · 注音樂園</footer>
+<footer>© 2026 505kaichen-dev · 注音樂園</footer>
+
+<script>
+  document.addEventListener('gesturestart', event => event.preventDefault(), { passive:false });
+  document.addEventListener('dblclick', event => event.preventDefault(), { passive:false });
+  document.addEventListener('touchmove', event => {
+    if (event.touches.length > 1) event.preventDefault();
+  }, { passive:false });
+</script>
 
 </body>
 </html>

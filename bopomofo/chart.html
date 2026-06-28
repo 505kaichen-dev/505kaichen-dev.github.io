@@ -2,10 +2,9 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>注音符號大全表</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -39,6 +38,7 @@
     }
 
     .header-back {
+      flex: 1;
       text-decoration: none;
       color: #fff;
       font-weight: 700;
@@ -53,36 +53,13 @@
 
     .header-title { font-size: 1.6rem; font-weight: 900; letter-spacing: 4px; }
 
-    .header-teacher {
-      text-decoration: none;
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 700;
-      opacity: 0.7;
-      border: 2px solid rgba(255,255,255,0.5);
-      border-radius: 20px;
-      padding: 4px 12px;
-    }
+    .header-spacer { flex:1; }
 
-    .hero {
-      text-align: center;
-      padding: 40px 24px 28px;
-    }
-
-    .hero-emoji {
-      font-size: 3.5rem;
-      display: block;
-      margin-bottom: 12px;
-      animation: bounce 2s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-10px); }
-    }
-
-    .hero-title { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
-    .hero-sub   { font-size: 1rem; color: #888; }
+    .hero { text-align:center; padding:40px 24px 28px; }
+    .hero-emoji { font-size:3.5rem; display:block; margin-bottom:12px; animation:bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .hero-title { font-size:2rem; font-weight:900; margin-bottom:8px; }
+    .hero-sub { font-size:1rem; color:#888; }
 
     .chart-wrap {
       max-width: 900px;
@@ -201,11 +178,10 @@
   </style>
 </head>
 <body>
-
 <header>
   <a href="index.html" class="header-back">← 回首頁</a>
   <span class="header-title">注音符號大全表</span>
-  <a href="teacher.html" class="header-teacher">老師設定</a>
+  <span class="header-spacer" aria-hidden="true"></span>
 </header>
 
 <div class="hero">
@@ -254,62 +230,69 @@
       z-index:200; align-items:center; justify-content:center; gap:16px;
       border-top: 2px solid #f0f0f0;
     "></div>
-<footer>© 2025 505kaichen-dev · 注音學習小站</footer>
+<footer>© 2026 505kaichen-dev · 注音學習小站</footer>
 
 <script>
   const CONSONANTS = [
-    { char:'ㄅ', emoji:'🍼', example:'爸' },
-    { char:'ㄆ', emoji:'🫧', example:'婆' },
+    { char:'ㄅ', emoji:'👨', example:'爸爸' },
+    { char:'ㄆ', emoji:'🫧', example:'泡泡' },
     { char:'ㄇ', emoji:'🐴', example:'馬' },
-    { char:'ㄈ', emoji:'🏠', example:'房' },
+    { char:'ㄈ', emoji:'🏠', example:'房子' },
     { char:'ㄉ', emoji:'🥚', example:'蛋' },
-    { char:'ㄊ', emoji:'🐰', example:'兔' },
-    { char:'ㄋ', emoji:'🐟', example:'魚' },
-    { char:'ㄌ', emoji:'🦁', example:'虎' },
-    { char:'ㄍ', emoji:'🐢', example:'龜' },
+    { char:'ㄊ', emoji:'🐰', example:'兔子' },
+    { char:'ㄋ', emoji:'🐦', example:'鳥' },
+    { char:'ㄌ', emoji:'🌊', example:'浪' },
+    { char:'ㄍ', emoji:'🐶', example:'狗' },
     { char:'ㄎ', emoji:'👄', example:'口' },
-    { char:'ㄏ', emoji:'🦊', example:'狐' },
+    { char:'ㄏ', emoji:'🦊', example:'狐狸' },
     { char:'ㄐ', emoji:'🐔', example:'雞' },
-    { char:'ㄑ', emoji:'🎸', example:'琴' },
-    { char:'ㄒ', emoji:'🌟', example:'星' },
-    { char:'ㄓ', emoji:'🕷️', example:'蜘' },
+    { char:'ㄑ', emoji:'⚽', example:'球' },
+    { char:'ㄒ', emoji:'🌟', example:'星星' },
+    { char:'ㄓ', emoji:'🐷', example:'豬' },
     { char:'ㄔ', emoji:'🚂', example:'車' },
     { char:'ㄕ', emoji:'🐍', example:'蛇' },
     { char:'ㄖ', emoji:'☀️', example:'日' },
-    { char:'ㄗ', emoji:'✏️', example:'字' },
+    { char:'ㄗ', emoji:'🟣', example:'紫色' },
     { char:'ㄘ', emoji:'🌿', example:'草' },
-    { char:'ㄙ', emoji:'🧹', example:'掃' },
+    { char:'ㄙ', emoji:'☂️', example:'雨傘' },
   ];
 
   const VOWELS = [
-    { char:'ㄚ', emoji:'🦷', example:'啊' },
-    { char:'ㄛ', emoji:'🪺', example:'哦' },
-    { char:'ㄜ', emoji:'🐊', example:'鱷' },
-    { char:'ㄝ', emoji:'🧚', example:'耶' },
+    { char:'ㄚ', emoji:'😮', example:'啊' },
+    { char:'ㄛ', emoji:'🌊', example:'波浪' },
+    { char:'ㄜ', emoji:'🐊', example:'鱷魚' },
+    { char:'ㄝ', emoji:'👟', example:'鞋子' },
     { char:'ㄞ', emoji:'❤️', example:'愛' },
-    { char:'ㄟ', emoji:'👋', example:'欸' },
+    { char:'ㄟ', emoji:'✈️', example:'飛機' },
     { char:'ㄠ', emoji:'🐱', example:'貓' },
-    { char:'ㄡ', emoji:'👶', example:'幼' },
-    { char:'ㄢ', emoji:'🌅', example:'晚' },
-    { char:'ㄣ', emoji:'☁️', example:'恩' },
-    { char:'ㄤ', emoji:'🦅', example:'昂' },
+    { char:'ㄡ', emoji:'🐶', example:'狗' },
+    { char:'ㄢ', emoji:'⛰️', example:'山' },
+    { char:'ㄣ', emoji:'🚪', example:'門' },
+    { char:'ㄤ', emoji:'🐑', example:'羊' },
     { char:'ㄥ', emoji:'🐝', example:'嗡' },
     { char:'ㄦ', emoji:'👂', example:'耳' },
-    { char:'ㄧ', emoji:'1️⃣', example:'一' },
-    { char:'ㄨ', emoji:'🐸', example:'蛙' },
+    { char:'ㄧ', emoji:'🪑', example:'椅子' },
+    { char:'ㄨ', emoji:'🐸', example:'青蛙' },
     { char:'ㄩ', emoji:'🐠', example:'魚' },
   ];
 
   // 音效
   const audioCache = {};
+  let currentSymbolAudio = null;
   let voices = [];
   function loadVoices(){ voices = speechSynthesis.getVoices(); }
   if(window.speechSynthesis){ loadVoices(); speechSynthesis.addEventListener('voiceschanged', loadVoices); }
 
   function playSymbol(char) {
+    if (currentSymbolAudio) {
+      currentSymbolAudio.pause();
+      currentSymbolAudio.currentTime = 0;
+    }
+    if (window.speechSynthesis) speechSynthesis.cancel();
     const path = `audio/${char}.mp3`;
     if (!audioCache[char]) audioCache[char] = new Audio(path);
     const a = audioCache[char];
+    currentSymbolAudio = a;
     a.currentTime = 0;
     a.play().catch(() => {
       if(!window.speechSynthesis) return;
@@ -362,14 +345,13 @@
 
   renderGrid(CONSONANTS, 'consonant-grid', 'consonant');
   renderGrid(VOWELS,     'vowel-grid',     'vowel');
-</script>
 
-<!--
-=== 產圖移交摘要 ===
-本次為總表首頁（index.html），符號格以 Emoji 呈現，暫無圖片需求。
-v0.2 確認視覺方向後補充 COVER 標記。
-==================
--->
+  document.addEventListener('gesturestart', event => event.preventDefault(), { passive:false });
+  document.addEventListener('dblclick', event => event.preventDefault(), { passive:false });
+  document.addEventListener('touchmove', event => {
+    if (event.touches.length > 1) event.preventDefault();
+  }, { passive:false });
+</script>
 
 </body>
 </html>

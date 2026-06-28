@@ -66,17 +66,15 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 /* 兒童觸控防誤縮放：保留正常頁面捲動 */
 html{touch-action:pan-x pan-y;}
 button,a{touch-action:manipulation;}
+@media (orientation:landscape) and (min-width:900px){
+  header{padding:14px 24px;}main{max-width:1100px;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:22px;padding-inline:24px;}
+  .learn-hero,.start-section{grid-column:1/-1;}.concept-card,.demo-card,.parent-section{height:100%;}
+}
 </style>
 </head>
 <body>
 <header><a href="subtraction.html" class="back-link">減法</a></header>
 <main>
-  <div class="voice-guide" aria-label="減法語音導覽">
-    <button class="voice-btn" onclick="playAudio('learn/subtraction_concept.mp3')">🔊 減法概念</button>
-    <button class="voice-btn" onclick="playAudio('learn/subtraction_step1.mp3')">🔊 步驟一</button>
-    <button class="voice-btn" onclick="playAudio('learn/subtraction_step2.mp3')">🔊 步驟二</button>
-    <button class="voice-btn" onclick="playAudio('learn/subtraction_step3.mp3')">🔊 步驟三</button>
-  </div>
   <div class="learn-hero">
     <div class="learn-tag">學習主題</div>
     <div class="learn-title">減法 ➖</div>
@@ -85,6 +83,7 @@ button,a{touch-action:manipulation;}
 
   <div class="concept-card">
     <div class="concept-card-title">什麼是減法？</div>
+    <div class="voice-guide" aria-label="減法概念語音"><button class="voice-btn" onclick="playAudio('learn/subtraction_concept.mp3')">🔊 聽減法概念</button></div>
     <div class="concept-text">
       減法就是從一堆東西裡面<strong>拿走一些</strong>，看看還剩下幾個！<br><br>
       例如：有 <strong>5 顆糖</strong>，吃掉了 <strong>2 顆</strong>，<br>
@@ -95,6 +94,11 @@ button,a{touch-action:manipulation;}
 
   <div class="demo-card">
     <div class="demo-title">🍓 一起來試試看！</div>
+    <div class="voice-guide" aria-label="減法步驟語音">
+      <button class="voice-btn" onclick="playAudio('learn/subtraction_step1.mp3')">🔊 步驟一</button>
+      <button class="voice-btn" onclick="playAudio('learn/subtraction_step2.mp3')">🔊 步驟二</button>
+      <button class="voice-btn" onclick="playAudio('learn/subtraction_step3.mp3')">🔊 步驟三</button>
+    </div>
     <div class="demo-visual" id="demoVisual"></div>
     <div class="demo-equation" id="demoEquation">？ ➖ ？ = ？</div>
     <div class="speech-bubble" id="speechBubble">按「開始示範」看看減法怎麼做！</div>

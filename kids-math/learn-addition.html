@@ -77,17 +77,15 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 /* 兒童觸控防誤縮放：保留正常頁面捲動 */
 html{touch-action:pan-x pan-y;}
 button,a{touch-action:manipulation;}
+@media (orientation:landscape) and (min-width:900px){
+  header{padding:14px 24px;}main{max-width:1100px;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:22px;padding-inline:24px;}
+  .learn-hero,.start-section{grid-column:1/-1;}.concept-card,.demo-card,.parent-section{height:100%;}
+}
 </style>
 </head>
 <body>
 <header><a href="addition.html" class="back-link">加法</a></header>
 <main>
-  <div class="voice-guide" aria-label="加法語音導覽">
-    <button class="voice-btn" onclick="playAudio('learn/addition_concept.mp3')">🔊 加法概念</button>
-    <button class="voice-btn" onclick="playAudio('learn/addition_step1.mp3')">🔊 步驟一</button>
-    <button class="voice-btn" onclick="playAudio('learn/addition_step2.mp3')">🔊 步驟二</button>
-    <button class="voice-btn" onclick="playAudio('learn/addition_step3.mp3')">🔊 步驟三</button>
-  </div>
   <div class="learn-hero">
     <div class="learn-tag">學習主題</div>
     <div class="learn-title">加法 ➕</div>
@@ -96,6 +94,7 @@ button,a{touch-action:manipulation;}
 
   <div class="concept-card">
     <div class="concept-card-title">什麼是加法？</div>
+    <div class="voice-guide" aria-label="加法概念語音"><button class="voice-btn" onclick="playAudio('learn/addition_concept.mp3')">🔊 聽加法概念</button></div>
     <div class="concept-text">
       加法就是把<strong>兩堆東西合在一起</strong>數數看！<br><br>
       例如：左手有 <strong>3 顆蘋果</strong>，右手有 <strong>2 顆蘋果</strong>，<br>
@@ -106,6 +105,11 @@ button,a{touch-action:manipulation;}
 
   <div class="demo-card">
     <div class="demo-title">🍎 一起來試試看！</div>
+    <div class="voice-guide" aria-label="加法步驟語音">
+      <button class="voice-btn" onclick="playAudio('learn/addition_step1.mp3')">🔊 步驟一</button>
+      <button class="voice-btn" onclick="playAudio('learn/addition_step2.mp3')">🔊 步驟二</button>
+      <button class="voice-btn" onclick="playAudio('learn/addition_step3.mp3')">🔊 步驟三</button>
+    </div>
     <div class="demo-visual" id="demoVisual"></div>
     <div class="demo-equation" id="demoEquation">？ ➕ ？ = ？</div>
     <div class="speech-bubble" id="speechBubble">按「開始示範」看看加法怎麼做！</div>
@@ -160,7 +164,7 @@ button,a{touch-action:manipulation;}
       <li>Lv1 從結果不超過 5 開始，Lv5 可到 100 以內的加法</li>
       <li>低難度有 emoji 圖示輔助，高難度改為純算式</li>
       <li>建議陪孩子用手指或實物示範，加深理解</li>
-      <li>答錯沒關係，系統會自動降回合適的難度</li>
+      <li>自動升級模式會依累積答對題數提高難度，答錯不會降級</li>
     </ul>
   </div>
 

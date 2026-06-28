@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>聽音找符號｜注音樂園</title>
+  <style>
+    :root {
+      --primary:#FF6B35; --secondary:#4ECDC4; --yellow:#FFD166;
+      --ink:#292B3D; --muted:#73788f; --bg:#FFF9F0; --card:#fff;
+      --soft:#EEF1FF; --correct:#31b982; --wrong:#ef6262;
+      --radius:24px; --shadow:0 8px 28px rgba(52,45,80,.1);
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { touch-action:manipulation; }
+    body {
+      min-height:100vh; min-height:100dvh; background:var(--bg); color:var(--ink);
+      font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+      display:flex; flex-direction:column; overflow-x:hidden;
+      -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
+    }
+    button,a { font:inherit; }
+    button { touch-action:manipulation; }
+    header {
+      min-height:64px; padding:12px 22px; background:var(--primary); color:#fff;
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+      box-shadow:0 4px 16px rgba(255,107,53,.24); z-index:10;
+    }
+    .back { color:#fff; text-decoration:none; font-weight:800; justify-self:start; }
+    .title { font-size:1.35rem; font-weight:900; letter-spacing:2px; text-align:center; }
+    .fullscreen {
+      justify-self:end; width:42px; height:42px; border:2px solid rgba(255,255,255,.55);
+      border-radius:50%; background:transparent; color:#fff; font-size:1.2rem; cursor:pointer;
+    }
+    main { width:min(1060px,100%); margin:auto; padding:24px; flex:1; display:flex; }
+    .screen { display:none; width:100%; }
+    .screen.active { display:flex; flex-direction:column; }
+
+    /* 選單 */
+    #menu-screen { justify-content:center; gap:20px; }
+    .intro { text-align:center; }
+    .intro-icon { font-size:4rem; line-height:1.1; }
+    .intro h1 { font-size:clamp(1.65rem,4vw,2.35rem); margin:8px 0; }
+    .intro p { color:var(--muted); font-weight:700; }
+    .help-btn {
+      margin-top:12px; width:58px; height:58px; border:0; border-radius:50%;
+      background:var(--secondary); color:#fff; font-size:1.65rem; cursor:pointer;
+      box-shadow:0 5px 0 #319f98;
+    }
+    .mode-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    .mode-card {
+      border:3px solid transparent; border-radius:var(--radius); background:var(--card);
+      padding:22px; text-align:left; cursor:pointer; box-shadow:var(--shadow); color:var(--ink);
+      transition:transform .15s,border-color .15s;
+    }
+    .mode-card:hover { transform:translateY(-3px); }
+    .mode-card.selected { border-color:var(--primary); background:#fff7f2; }
+    .mode-icon { font-size:2.2rem; }
+    .mode-card h2 { margin:6px 0; font-size:1.25rem; }
+    .mode-card p { color:var(--muted); font-size:.9rem; line-height:1.55; }
+    .level-panel { background:var(--card); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); }
+    .level-panel h2 { font-size:1rem; text-align:center; margin-bottom:12px; }
+    .level-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+    .level-btn {
+      min-height:76px; border:2px solid #dfe3f3; border-radius:16px; background:#fff;
+      color:var(--ink); cursor:pointer; font-weight:900; padding:8px 5px;
+    }
+    .level-number { display:block; font-size:1.15rem; font-weight:900; }
+    .level-stars { display:block; color:#F4A900; font-size:.82rem; letter-spacing:1px; margin-top:4px; }
+    .level-note { display:block; color:var(--muted); font-size:.68rem; margin-top:4px; font-weight:700; }
+    .level-btn.selected { color:#fff; background:var(--secondary); border-color:var(--secondary); }
+    .level-btn.selected .level-stars,.level-btn.selected .level-note { color:#fff; }
+    .start-btn {
+      align-self:center; min-width:220px; min-height:54px; border:0; border-radius:30px;
+      background:var(--primary); color:#fff; font-size:1.15rem; font-weight:900;
+      box-shadow:0 7px 0 #d94e1c; cursor:pointer;
+    }
+    .start-btn:active { transform:translateY(4px); box-shadow:0 3px 0 #d94e1c; }
+
+    /* 遊戲 */
+    #game-screen { gap:14px; }
+    .status-row { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; }
+    .round,.score { font-weight:900; color:var(--muted); }
+    .score { justify-self:end; }
+    .hearts { font-size:1.25rem; letter-spacing:3px; text-align:center; min-height:26px; }
+    .timer-wrap { height:10px; border-radius:10px; background:#e7e8ef; overflow:hidden; }
+    .timer-bar { height:100%; width:100%; background:var(--secondary); transition:width .1s linear; }
+    .question-card {
+      flex:1; min-height:220px; background:var(--card); border-radius:var(--radius);
+      box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:12px; padding:20px;
+    }
+    .question-label { font-weight:900; color:var(--muted); font-size:1rem; }
+    .listen-btn {
+      width:112px; height:112px; border:0; border-radius:50%; cursor:pointer;
+      background:var(--secondary); color:#fff; font-size:3rem;
+      box-shadow:0 8px 0 #319f98; transition:transform .12s;
+    }
+    .listen-btn:active { transform:translateY(5px); box-shadow:0 3px 0 #319f98; }
+    .listen-hint { color:var(--muted); font-size:.84rem; }
+    .feedback { min-height:30px; font-size:1.18rem; font-weight:900; text-align:center; }
+    .feedback.correct { color:var(--correct); }
+    .feedback.wrong { color:var(--wrong); }
+    .choices { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .choice {
+      min-height:98px; border:3px solid #dfe3f3; border-radius:20px; background:#fff;
+      color:var(--ink); font-size:2.35rem; font-weight:900; cursor:pointer;
+      box-shadow:0 5px 0 #dfe3f3; transition:transform .12s,background .12s;
+    }
+    .choice:active { transform:translateY(4px); box-shadow:0 1px 0 #dfe3f3; }
+    .choice.correct { background:#e1f8ef; border-color:var(--correct); color:#14845b; box-shadow:0 5px 0 #a8e7cf; }
+    .choice.wrong { background:#fff0f0; border-color:var(--wrong); color:#c43d3d; box-shadow:0 5px 0 #f6baba; }
+    .choice:disabled { cursor:default; }
+    .game-actions { display:flex; justify-content:space-between; align-items:center; }
+    .small-btn { border:0; background:transparent; color:var(--muted); font-weight:800; padding:10px; cursor:pointer; }
+
+    /* 結果 */
+    #result-screen { justify-content:center; align-items:center; text-align:center; gap:16px; }
+    .result-card { width:min(520px,100%); background:#fff; border-radius:var(--radius); padding:32px 24px; box-shadow:var(--shadow); }
+    .result-emoji { font-size:4.5rem; }
+    .result-card h1 { font-size:2rem; margin:8px 0; }
+    .result-score { color:var(--primary); font-size:2.5rem; font-weight:900; margin:12px 0; }
+    .result-detail { color:var(--muted); font-weight:700; line-height:1.8; }
+    .result-actions { margin-top:20px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .result-actions button { min-height:48px; padding:0 22px; border-radius:25px; font-weight:900; cursor:pointer; }
+    .again { border:0; background:var(--primary); color:#fff; }
+    .to-menu { border:2px solid #dfe3f3; background:#fff; color:var(--ink); }
+
+    @media (orientation:landscape) and (min-width:700px) and (max-height:850px) {
+      main { padding:14px 24px; }
+      #game-screen { display:none; grid-template-columns:minmax(250px,.85fr) minmax(420px,1.5fr); grid-template-rows:auto 10px 1fr auto; }
+      #game-screen.active { display:grid; }
+      .status-row,.timer-wrap,.game-actions { grid-column:1/-1; }
+      .question-card { grid-column:1; min-height:0; }
+      .choices { grid-column:2; align-self:stretch; grid-template-columns:repeat(2,1fr); }
+      .choice { min-height:74px; }
+      .listen-btn { width:96px; height:96px; }
+    }
+    @media (max-width:640px) {
+      header { padding:10px 14px; }
+      .title { font-size:1.05rem; letter-spacing:1px; }
+      .back { font-size:.85rem; }
+      .fullscreen { width:38px; height:38px; }
+      main { padding:14px; }
+      .mode-grid { grid-template-columns:1fr; }
+      .mode-card { padding:16px; }
+      .level-grid { grid-template-columns:repeat(2,1fr); }
+      .level-btn:last-child { grid-column:1/-1; }
+      .choices { grid-template-columns:repeat(2,1fr); gap:10px; }
+      .choice { min-height:82px; font-size:2rem; }
+      .question-card { min-height:190px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="back">← 遊戲區</a>
+    <div class="title">🎧 聽音找符號</div>
+    <button class="fullscreen" id="fullscreen-btn" aria-label="切換全螢幕">⛶</button>
+  </header>
+
+  <main>
+    <section class="screen active" id="menu-screen">
+      <div class="intro">
+        <div class="intro-icon">👂</div>
+        <h1>聽一聽，是哪個注音？</h1>
+        <p>按下喇叭聽聲音，再選出正確的符號。</p>
+        <button class="help-btn" id="help-btn" aria-label="播放遊戲說明">🔊</button>
+      </div>
+      <div class="mode-grid">
+        <button class="mode-card selected" data-mode="practice">
+          <div class="mode-icon">🌱</div><h2>練習模式</h2>
+          <p>不限時間，答錯可以再試一次，適合慢慢熟悉每個聲音。</p>
+        </button>
+        <button class="mode-card" data-mode="challenge">
+          <div class="mode-icon">🏆</div><h2>挑戰模式</h2>
+          <p>每題 12 秒、共有 3 顆愛心，連續答對可獲得更多分數。</p>
+        </button>
+      </div>
+      <div class="level-panel">
+        <h2>選擇難度</h2>
+        <div class="level-grid" id="level-grid"></div>
+      </div>
+      <div class="menu-actions" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <button class="start-btn" id="start-btn">開始遊戲 ▶</button>
+        <a href="picture.html" style="min-height:54px;padding:0 20px;border:2px solid #dfe3f3;border-radius:30px;background:#fff;color:var(--ink);font-weight:900;text-decoration:none;display:flex;align-items:center;">🖼️ 看圖找聲音</a>
+      </div>
+    </section>
+
+    <section class="screen" id="game-screen">
+      <div class="status-row">
+        <div class="round" id="round-label">第 1 / 10 題</div>
+        <div class="hearts" id="hearts"></div>
+        <div class="score" id="score-label">0 分</div>
+      </div>
+      <div class="timer-wrap" id="timer-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+      <div class="question-card">
+        <div class="question-label">聽聽看是哪個符號</div>
+        <button class="listen-btn" id="listen-btn" aria-label="播放題目聲音">🔊</button>
+        <div class="listen-hint">可以重複播放</div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+      <div class="choices" id="choices"></div>
+      <div class="game-actions">
+        <button class="small-btn" id="quit-btn">✕ 結束</button>
+        <span aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <section class="screen" id="result-screen">
+      <div class="result-card">
+        <div class="result-emoji" id="result-emoji">🎉</div>
+        <h1 id="result-title">完成練習！</h1>
+        <div class="result-score" id="result-score">10 / 10</div>
+        <div class="result-detail" id="result-detail"></div>
+        <div class="result-actions">
+          <button class="again" id="again-btn">↻ 再玩一次</button>
+          <button class="to-menu" id="menu-btn">123 選難度</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CONSONANTS = ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ','ㄍ','ㄎ','ㄏ','ㄐ','ㄑ','ㄒ','ㄓ','ㄔ','ㄕ','ㄖ','ㄗ','ㄘ','ㄙ'];
+    const VOWELS = ['ㄚ','ㄛ','ㄜ','ㄝ','ㄞ','ㄟ','ㄠ','ㄡ','ㄢ','ㄣ','ㄤ','ㄥ','ㄦ','ㄧ','ㄨ','ㄩ'];
+    const ALL = [...CONSONANTS, ...VOWELS];
+    const CONFUSABLES = [
+      ['ㄅ','ㄆ','ㄇ','ㄈ'], ['ㄉ','ㄊ','ㄋ','ㄌ'], ['ㄍ','ㄎ','ㄏ'],
+      ['ㄐ','ㄑ','ㄒ'], ['ㄓ','ㄔ','ㄕ','ㄖ'], ['ㄗ','ㄘ','ㄙ'],
+      ['ㄚ','ㄛ','ㄜ','ㄝ'], ['ㄞ','ㄟ','ㄠ','ㄡ'], ['ㄢ','ㄣ','ㄤ','ㄥ'], ['ㄧ','ㄨ','ㄩ']
+    ];
+    const LEVELS = [
+      { name:'難度 1', note:'ㄅ～ㄌ・3 選 1', pool:CONSONANTS.slice(0,8), choices:3 },
+      { name:'難度 2', note:'全部聲母・4 選 1', pool:CONSONANTS, choices:4 },
+      { name:'難度 3', note:'全部韻母・4 選 1', pool:VOWELS, choices:4 },
+      { name:'難度 4', note:'相近音辨識・4 選 1', pool:ALL, choices:4, confusing:true },
+      { name:'難度 5', note:'37 音混合・6 選 1', pool:ALL, choices:6 }
+    ];
+
+    let mode = 'practice';
+    let levelIndex = 0;
+    let question = 0;
+    let correctCount = 0;
+    let score = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let lives = 3;
+    let answer = '';
+    let locked = false;
+    let timerId = null;
+    let timeLeft = 12;
+    let currentAudio = null;
+    let feedbackAudio = null;
+    let guideAudio = null;
+    let lastAnswer = '';
+
+    const screens = [...document.querySelectorAll('.screen')];
+    const levelGrid = document.getElementById('level-grid');
+    const choicesEl = document.getElementById('choices');
+    const feedbackEl = document.getElementById('feedback');
+
+    function showScreen(id) {
+      screens.forEach(screen => screen.classList.toggle('active', screen.id === id));
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function renderLevels() {
+      levelGrid.innerHTML = '';
+      LEVELS.forEach((level, index) => {
+        const button = document.createElement('button');
+        button.className = `level-btn${index === levelIndex ? ' selected' : ''}`;
+        button.innerHTML = `<span class="level-number">${levelIndex === index ? '● ' : ''}${index + 1}</span><span class="level-stars">${'★'.repeat(index + 1)}${'☆'.repeat(4 - index)}</span><span class="level-note">${level.note}</span>`;
+        button.addEventListener('click', () => { levelIndex = index; renderLevels(); });
+        levelGrid.appendChild(button);
+      });
+    }
+
+    function stopSounds() {
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      if (feedbackAudio) { feedbackAudio.pause(); feedbackAudio.currentTime = 0; }
+      if (guideAudio) { guideAudio.pause(); guideAudio.currentTime = 0; }
+    }
+
+    function playSymbol(char = answer) {
+      if (!char) return;
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      currentAudio = new Audio(`../audio/${char}.mp3`);
+      currentAudio.play().catch(() => {});
+    }
+
+    function playSfx(kind) {
+      if (feedbackAudio) { feedbackAudio.pause(); feedbackAudio.currentTime = 0; }
+      const max = kind === 'skip' ? 1 : 3;
+      const file = kind === 'skip' ? 'skip.wav' : `${kind}_${Math.floor(Math.random() * max) + 1}.wav`;
+      feedbackAudio = new Audio(`../audio/sfx/${file}`);
+      feedbackAudio.play().catch(() => {});
+    }
+
+    function playGuide(name) {
+      if (guideAudio) { guideAudio.pause(); guideAudio.currentTime = 0; }
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      guideAudio = new Audio(`../audio/game/${name}.mp3`);
+      guideAudio.play().catch(() => {});
+    }
+
+    function chooseAnswer(pool) {
+      const candidates = pool.filter(char => char !== lastAnswer);
+      answer = candidates[Math.floor(Math.random() * candidates.length)] || pool[0];
+      lastAnswer = answer;
+    }
+
+    function getChoices(level) {
+      let distractorPool = level.pool.filter(char => char !== answer);
+      if (level.confusing) {
+        const group = CONFUSABLES.find(items => items.includes(answer));
+        const close = group ? group.filter(char => char !== answer) : [];
+        distractorPool = [...close, ...shuffle(distractorPool.filter(char => !close.includes(char)))];
+      } else {
+        distractorPool = shuffle(distractorPool);
+      }
+      return shuffle([answer, ...distractorPool.slice(0, level.choices - 1)]);
+    }
+
+    function startGame() {
+      question = 0; correctCount = 0; score = 0; streak = 0; bestStreak = 0;
+      lives = 3; lastAnswer = ''; locked = false;
+      showScreen('game-screen');
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      clearTimer();
+      stopSounds();
+      if (question >= 10 || (mode === 'challenge' && lives <= 0)) return finishGame();
+      question += 1;
+      locked = false;
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
+      const level = LEVELS[levelIndex];
+      chooseAnswer(level.pool);
+      renderChoices(getChoices(level));
+      updateStatus();
+      setTimeout(() => playSymbol(), 220);
+      if (mode === 'challenge') startTimer();
+    }
+
+    function renderChoices(items) {
+      choicesEl.innerHTML = '';
+      items.forEach(char => {
+        const button = document.createElement('button');
+        button.className = 'choice';
+        button.textContent = char;
+        button.dataset.char = char;
+        button.addEventListener('click', () => checkAnswer(button, char));
+        choicesEl.appendChild(button);
+      });
+    }
+
+    function checkAnswer(button, selected) {
+      if (locked) return;
+      if (selected === answer) {
+        locked = true;
+        clearTimer();
+        button.classList.add('correct');
+        correctCount += 1;
+        streak += 1;
+        bestStreak = Math.max(bestStreak, streak);
+        score += mode === 'challenge' ? 100 + Math.min(streak - 1, 5) * 20 : 100;
+        feedbackEl.textContent = streak >= 3 ? `答對了！連續 ${streak} 題 ✨` : '答對了！好棒！';
+        feedbackEl.className = 'feedback correct';
+        playSfx('correct');
+        choicesEl.querySelectorAll('button').forEach(item => item.disabled = true);
+        updateStatus();
+        setTimeout(nextQuestion, mode === 'practice' ? 850 : 720);
+      } else {
+        button.classList.add('wrong');
+        button.disabled = true;
+        streak = 0;
+        feedbackEl.textContent = mode === 'practice' ? '再聽一次，慢慢找找看' : '再試一次！';
+        feedbackEl.className = 'feedback wrong';
+        playSfx('wrong');
+        if (mode === 'challenge') {
+          locked = true;
+          clearTimer();
+          lives -= 1;
+          revealAnswer();
+          updateStatus();
+          setTimeout(lives <= 0 ? finishGame : nextQuestion, 900);
+        } else {
+          setTimeout(() => playSymbol(), 320);
+        }
+      }
+    }
+
+    function revealAnswer() {
+      const correctButton = choicesEl.querySelector(`[data-char="${answer}"]`);
+      if (correctButton) correctButton.classList.add('correct');
+      choicesEl.querySelectorAll('button').forEach(item => item.disabled = true);
+    }
+
+    function updateStatus() {
+      document.getElementById('round-label').textContent = `第 ${question} / 10 題`;
+      document.getElementById('score-label').textContent = `${score} 分`;
+      document.getElementById('hearts').textContent = mode === 'challenge' ? '❤️'.repeat(Math.max(0,lives)) + '🤍'.repeat(Math.max(0,3-lives)) : '不限時間';
+      document.getElementById('timer-wrap').style.visibility = mode === 'challenge' ? 'visible' : 'hidden';
+    }
+
+    function startTimer() {
+      timeLeft = 12;
+      updateTimer();
+      timerId = setInterval(() => {
+        timeLeft -= .1;
+        updateTimer();
+        if (timeLeft <= 0) handleTimeout();
+      }, 100);
+    }
+
+    function updateTimer() {
+      const percent = Math.max(0, timeLeft / 12 * 100);
+      const bar = document.getElementById('timer-bar');
+      bar.style.width = `${percent}%`;
+      bar.style.background = percent < 30 ? 'var(--wrong)' : 'var(--secondary)';
+    }
+
+    function clearTimer() {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+    }
+
+    function handleTimeout() {
+      if (locked) return;
+      locked = true;
+      clearTimer();
+      lives -= 1; streak = 0;
+      feedbackEl.textContent = `時間到，答案是 ${answer}`;
+      feedbackEl.className = 'feedback wrong';
+      playSfx('skip');
+      revealAnswer();
+      updateStatus();
+      setTimeout(lives <= 0 ? finishGame : nextQuestion, 1000);
+    }
+
+    function finishGame() {
+      clearTimer(); stopSounds();
+      const rate = correctCount / Math.max(1, question);
+      document.getElementById('result-emoji').textContent = rate >= .8 ? '🎉' : rate >= .5 ? '🌟' : '🌱';
+      document.getElementById('result-title').textContent = rate >= .8 ? '太厲害了！' : rate >= .5 ? '進步很多喔！' : '再練習一次吧！';
+      document.getElementById('result-score').textContent = mode === 'challenge' ? `${score} 分` : `${correctCount} / ${question}`;
+      document.getElementById('result-detail').innerHTML = `答對 ${correctCount} 題<br>最高連續答對 ${bestStreak} 題<br>${LEVELS[levelIndex].name}・${mode === 'practice' ? '練習模式' : '挑戰模式'}`;
+      showScreen('result-screen');
+    }
+
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('click', () => {
+        mode = card.dataset.mode;
+        document.querySelectorAll('.mode-card').forEach(item => item.classList.toggle('selected', item === card));
+        playGuide(mode === 'practice' ? 'mode_practice' : 'mode_challenge');
+      });
+    });
+    document.getElementById('help-btn').addEventListener('click', () => playGuide('how_to_play'));
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('listen-btn').addEventListener('click', () => playSymbol());
+    document.getElementById('quit-btn').addEventListener('click', finishGame);
+    document.getElementById('again-btn').addEventListener('click', startGame);
+    document.getElementById('menu-btn').addEventListener('click', () => showScreen('menu-screen'));
+    document.getElementById('fullscreen-btn').addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+      } catch (_) {}
+    });
+
+    document.addEventListener('gesturestart', event => event.preventDefault(), { passive:false });
+    document.addEventListener('dblclick', event => event.preventDefault(), { passive:false });
+    document.addEventListener('touchmove', event => {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { passive:false });
+
+    renderLevels();
+  </script>
+</body>
+</html>

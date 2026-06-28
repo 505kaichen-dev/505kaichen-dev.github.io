@@ -2,9 +2,8 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>注音樂園 · 符號教學</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -221,7 +220,7 @@
     /* ===== 例字區 ===== */
     .examples-card {
       background:var(--card); border-radius:var(--radius);
-      padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.07);
+      padding:22px; box-shadow:0 4px 20px rgba(0,0,0,0.07);
     }
     .examples-grid {
       display:grid; grid-template-columns:repeat(3,1fr);
@@ -229,13 +228,39 @@
     }
     .example-item {
       background:var(--soft); border-radius:var(--radius-sm);
-      padding:14px 10px; text-align:center; cursor:pointer;
+      min-height:168px; padding:18px 12px; text-align:center; cursor:pointer;
+      display:flex; flex-direction:column; justify-content:center;
       transition:transform .15s; border:2px solid transparent;
     }
     .example-item:hover { transform:translateY(-3px); border-color:var(--secondary); }
-    .ex-emoji { font-size:2rem; display:block; margin-bottom:6px; }
-    .ex-word  { font-size:1.1rem; font-weight:900; display:block; }
-    .ex-note  { font-size:0.72rem; color:#888; display:block; margin-top:2px; }
+    .ex-emoji { font-size:2.35rem; display:block; margin-bottom:10px; line-height:1; }
+    .ex-word {
+      display:flex; justify-content:center; align-items:center;
+      gap:0.7rem; min-height:4.9rem;
+    }
+    .zhuyin-pair {
+      display:inline-flex; align-items:center; gap:0.24rem;
+      font-weight:900;
+    }
+    .zhuyin-hanzi { font-size:2.05rem; line-height:1; }
+    .zhuyin-reading {
+      position:relative; display:flex;
+      align-items:center; min-width:1.62rem; height:4rem;
+      color:#39456c; font-size:1rem; font-weight:900; line-height:1;
+    }
+    .zhuyin-symbols {
+      position:relative; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:0.08rem; white-space:nowrap;
+    }
+    .zhuyin-symbol { display:block; width:1rem; text-align:center; }
+    .zhuyin-tone {
+      position:absolute; left:1.02rem; bottom:0;
+      color:#39456c; line-height:1;
+    }
+    .zhuyin-neutral {
+      position:absolute; top:-0.82rem; left:0;
+      font-size:1.08rem; line-height:0.78rem;
+    }
 
     /* ===== FOOTER ===== */
     footer {
@@ -243,16 +268,22 @@
       font-size:0.8rem; border-top:1px solid #e8e8e8;
     }
 
+
     /* ===== 響應式 ===== */
     @media (max-width:640px) {
       .learn-grid { grid-template-columns:1fr; }
       .symbol-display { font-size:3.5rem; }
       .symbol-nav { display:none; }
+      .examples-grid { grid-template-columns:1fr; }
+      .example-item {
+        min-height:112px; display:grid; grid-template-columns:3.5rem 1fr;
+        align-items:center; padding:12px 18px;
+      }
+      .ex-emoji { margin:0; }
     }
   </style>
 </head>
 <body>
-
 <header>
   <a href="index.html" class="header-back">← 回選單</a>
   <span class="header-title">注音樂園</span>
@@ -311,7 +342,7 @@
   </div>
 </main>
 
-<footer>© 2025 505kaichen-dev · 注音樂園 · 筆順資料：AnimCJK SVG</footer>
+<footer>© 2026 505kaichen-dev · 注音樂園 · 筆順資料：AnimCJK SVG<br>例字注音參考：教育部《國語辭典簡編本》</footer>
 
 <script>
 // ===== 狀態變數 =====
@@ -320,42 +351,42 @@ let currentTab = 'anim';
 
 // ===== 符號資料 =====
 const ALL_SYMBOLS = [
-  { char:'ㄅ', type:'聲母', strokes:1, img:'01.png', examples:[{e:'🍼',w:'爸爸',n:'ㄅㄚˋ'},{e:'🎒',w:'背包',n:'ㄅㄟ ㄅㄠ'},{e:'🥛',w:'杯子',n:'ㄅㄟ ㄗ'}] },
-  { char:'ㄆ', type:'聲母', strokes:2, img:'02_1.png', examples:[{e:'🫧',w:'泡泡',n:'ㄆㄠˋ'},{e:'👴',w:'婆婆',n:'ㄆㄛˊ'},{e:'🍇',w:'葡萄',n:'ㄆㄨˊ ㄊㄠˊ'}] },
-  { char:'ㄇ', type:'聲母', strokes:2, img:'03_1.png', examples:[{e:'🐴',w:'馬',n:'ㄇㄚˇ'},{e:'🎩',w:'帽子',n:'ㄇㄠˋ ㄗ'},{e:'🚪',w:'門',n:'ㄇㄣˊ'}] },
-  { char:'ㄈ', type:'聲母', strokes:2, img:'04_1.png', examples:[{e:'🏠',w:'房子',n:'ㄈㄤˊ ㄗ'},{e:'🌬️',w:'風',n:'ㄈㄥ'},{e:'✈️',w:'飛機',n:'ㄈㄟ ㄐㄧ'}] },
-  { char:'ㄉ', type:'聲母', strokes:2, img:'05_1.png', examples:[{e:'🥚',w:'蛋',n:'ㄉㄢˋ'},{e:'🔦',w:'燈',n:'ㄉㄥ'},{e:'🐣',w:'弟弟',n:'ㄉㄧˋ'}] },
-  { char:'ㄊ', type:'聲母', strokes:3, img:'06_1.png', examples:[{e:'🐰',w:'兔子',n:'ㄊㄨˋ ㄗ'},{e:'🌞',w:'太陽',n:'ㄊㄞˋ ㄧㄤˊ'},{e:'🍬',w:'糖果',n:'ㄊㄤˊ ㄍㄨㄛˇ'}] },
-  { char:'ㄋ', type:'聲母', strokes:1, img:'07.png', examples:[{e:'🐦',w:'鳥',n:'ㄋㄧㄠˇ'},{e:'🐄',w:'牛',n:'ㄋㄧㄡˊ'},{e:'🌸',w:'奶奶',n:'ㄋㄞˇ'}] },
-  { char:'ㄌ', type:'聲母', strokes:2, img:'08_1.png', examples:[{e:'🦁',w:'老虎',n:'ㄌㄠˇ ㄏㄨˇ'},{e:'🍐',w:'梨子',n:'ㄌㄧˊ ㄗ'},{e:'🌊',w:'浪',n:'ㄌㄤˋ'}] },
+  { char:'ㄅ', type:'聲母', strokes:1, img:'01.png', examples:[{e:'👨',w:'爸爸',n:'ㄅㄚˋ ˙ㄅㄚ'},{e:'🎒',w:'背包',n:'ㄅㄟ ㄅㄠ'},{e:'🥛',w:'杯子',n:'ㄅㄟ ˙ㄗ'}] },
+  { char:'ㄆ', type:'聲母', strokes:2, img:'02_1.png', examples:[{e:'🫧',w:'泡泡',n:'ㄆㄠˋ ㄆㄠˋ'},{e:'👵',w:'婆婆',n:'ㄆㄛˊ ˙ㄆㄛ'},{e:'🍇',w:'葡萄',n:'ㄆㄨˊ ㄊㄠˊ'}] },
+  { char:'ㄇ', type:'聲母', strokes:2, img:'03_1.png', examples:[{e:'🐴',w:'馬',n:'ㄇㄚˇ'},{e:'🎩',w:'帽子',n:'ㄇㄠˋ ˙ㄗ'},{e:'🚪',w:'門',n:'ㄇㄣˊ'}] },
+  { char:'ㄈ', type:'聲母', strokes:2, img:'04_1.png', examples:[{e:'🏠',w:'房子',n:'ㄈㄤˊ ˙ㄗ'},{e:'🌬️',w:'風',n:'ㄈㄥ'},{e:'✈️',w:'飛機',n:'ㄈㄟ ㄐㄧ'}] },
+  { char:'ㄉ', type:'聲母', strokes:2, img:'05_1.png', examples:[{e:'🥚',w:'蛋',n:'ㄉㄢˋ'},{e:'🔦',w:'燈',n:'ㄉㄥ'},{e:'👦',w:'弟弟',n:'ㄉㄧˋ ˙ㄉㄧ'}] },
+  { char:'ㄊ', type:'聲母', strokes:3, img:'06_1.png', examples:[{e:'🐰',w:'兔子',n:'ㄊㄨˋ ˙ㄗ'},{e:'🌞',w:'太陽',n:'ㄊㄞˋ ㄧㄤˊ'},{e:'🍬',w:'糖果',n:'ㄊㄤˊ ㄍㄨㄛˇ'}] },
+  { char:'ㄋ', type:'聲母', strokes:1, img:'07.png', examples:[{e:'🐦',w:'鳥',n:'ㄋㄧㄠˇ'},{e:'🐄',w:'牛',n:'ㄋㄧㄡˊ'},{e:'👵',w:'奶奶',n:'ㄋㄞˇ ˙ㄋㄞ'}] },
+  { char:'ㄌ', type:'聲母', strokes:2, img:'08_1.png', examples:[{e:'🦁',w:'老虎',n:'ㄌㄠˇ ㄏㄨˇ'},{e:'🍐',w:'梨子',n:'ㄌㄧˊ ˙ㄗ'},{e:'🌊',w:'浪',n:'ㄌㄤˋ'}] },
   { char:'ㄍ', type:'聲母', strokes:2, img:'09_1.png', examples:[{e:'🐢',w:'烏龜',n:'ㄨ ㄍㄨㄟ'},{e:'🐶',w:'狗',n:'ㄍㄡˇ'},{e:'🏔️',w:'高山',n:'ㄍㄠ ㄕㄢ'}] },
-  { char:'ㄎ', type:'聲母', strokes:2, img:'10_1.png', examples:[{e:'👄',w:'口',n:'ㄎㄡˇ'},{e:'😢',w:'哭',n:'ㄎㄨ'},{e:'👖',w:'褲子',n:'ㄎㄨˋ ㄗ'}] },
+  { char:'ㄎ', type:'聲母', strokes:2, img:'10_1.png', examples:[{e:'👄',w:'口',n:'ㄎㄡˇ'},{e:'😢',w:'哭',n:'ㄎㄨ'},{e:'👖',w:'褲子',n:'ㄎㄨˋ ˙ㄗ'}] },
   { char:'ㄏ', type:'聲母', strokes:2, img:'11_1.png', examples:[{e:'🦊',w:'狐狸',n:'ㄏㄨˊ ㄌㄧˊ'},{e:'🌺',w:'花',n:'ㄏㄨㄚ'},{e:'🦋',w:'蝴蝶',n:'ㄏㄨˊ ㄉㄧㄝˊ'}] },
-  { char:'ㄐ', type:'聲母', strokes:2, img:'12_1.png', examples:[{e:'🐔',w:'雞',n:'ㄐㄧ'},{e:'🍊',w:'橘子',n:'ㄐㄩˊ ㄗ'},{e:'⚔️',w:'劍',n:'ㄐㄧㄢˋ'}] },
+  { char:'ㄐ', type:'聲母', strokes:2, img:'12_1.png', examples:[{e:'🐔',w:'雞',n:'ㄐㄧ'},{e:'🍊',w:'橘子',n:'ㄐㄩˊ ˙ㄗ'},{e:'⚔️',w:'劍',n:'ㄐㄧㄢˋ'}] },
   { char:'ㄑ', type:'聲母', strokes:1, img:'13.png', examples:[{e:'🎸',w:'琴',n:'ㄑㄧㄣˊ'},{e:'🐧',w:'企鵝',n:'ㄑㄧˋ ㄜˊ'},{e:'⚽',w:'球',n:'ㄑㄧㄡˊ'}] },
-  { char:'ㄒ', type:'聲母', strokes:2, img:'14_1.png', examples:[{e:'🌟',w:'星星',n:'ㄒㄧㄥ'},{e:'🍉',w:'西瓜',n:'ㄒㄧ ㄍㄨㄚ'},{e:'🐻',w:'熊貓',n:'ㄒㄩㄥˊ ㄇㄠ'}] },
-  { char:'ㄓ', type:'聲母', strokes:4, img:'15_1.png', examples:[{e:'🕷️',w:'蜘蛛',n:'ㄓ ㄓㄨ'},{e:'🪑',w:'桌子',n:'ㄓㄨㄛ ㄗ'},{e:'🐽',w:'豬',n:'ㄓㄨ'}] },
+  { char:'ㄒ', type:'聲母', strokes:2, img:'14_1.png', examples:[{e:'🌟',w:'星星',n:'ㄒㄧㄥ ㄒㄧㄥ'},{e:'🍉',w:'西瓜',n:'ㄒㄧ ㄍㄨㄚ'},{e:'🐻',w:'熊貓',n:'ㄒㄩㄥˊ ㄇㄠ'}] },
+  { char:'ㄓ', type:'聲母', strokes:4, img:'15_1.png', examples:[{e:'🕷️',w:'蜘蛛',n:'ㄓ ㄓㄨ'},{e:'🪑',w:'桌子',n:'ㄓㄨㄛ ˙ㄗ'},{e:'🐽',w:'豬',n:'ㄓㄨ'}] },
   { char:'ㄔ', type:'聲母', strokes:3, img:'16_1.png', examples:[{e:'🚂',w:'車',n:'ㄔㄜ'},{e:'🥬',w:'炒菜',n:'ㄔㄠˇ ㄘㄞˋ'},{e:'🍊',w:'橙',n:'ㄔㄥˊ'}] },
-  { char:'ㄕ', type:'聲母', strokes:3, img:'17_1.png', examples:[{e:'🐍',w:'蛇',n:'ㄕㄜˊ'},{e:'🌲',w:'樹',n:'ㄕㄨˋ'},{e:'🦁',w:'獅子',n:'ㄕ ㄗ'}] },
+  { char:'ㄕ', type:'聲母', strokes:3, img:'17_1.png', examples:[{e:'🐍',w:'蛇',n:'ㄕㄜˊ'},{e:'🌲',w:'樹',n:'ㄕㄨˋ'},{e:'🦁',w:'獅子',n:'ㄕ ˙ㄗ'}] },
   { char:'ㄖ', type:'聲母', strokes:4, img:'18_1.png', examples:[{e:'☀️',w:'日',n:'ㄖˋ'},{e:'🥩',w:'肉',n:'ㄖㄡˋ'},{e:'🧶',w:'柔軟',n:'ㄖㄡˊ ㄖㄨㄢˇ'}] },
-  { char:'ㄗ', type:'聲母', strokes:2, img:'19_1.png', examples:[{e:'✏️',w:'字',n:'ㄗˋ'},{e:'🟣',w:'紫色',n:'ㄗˇ ㄙㄜˋ'},{e:'🌅',w:'早上',n:'ㄗㄠˇ ㄕㄤ'}] },
+  { char:'ㄗ', type:'聲母', strokes:2, img:'19_1.png', examples:[{e:'✏️',w:'字',n:'ㄗˋ'},{e:'🟣',w:'紫色',n:'ㄗˇ ㄙㄜˋ'},{e:'🌅',w:'早上',n:'ㄗㄠˇ ㄕㄤˋ'}] },
   { char:'ㄘ', type:'聲母', strokes:2, img:'20_1.png', examples:[{e:'🌿',w:'草',n:'ㄘㄠˇ'},{e:'🌈',w:'彩虹',n:'ㄘㄞˇ ㄏㄨㄥˊ'},{e:'🥦',w:'菜',n:'ㄘㄞˋ'}] },
-  { char:'ㄙ', type:'聲母', strokes:2, img:'21_1.png', examples:[{e:'🏖️',w:'沙灘',n:'ㄙㄚ ㄊㄢ'},{e:'🎨',w:'色',n:'ㄙㄜˋ'},{e:'🧹',w:'掃地',n:'ㄙㄠˇ ㄉㄧˋ'}] },
-  { char:'ㄚ', type:'韻母', strokes:3, img:'22_1.png', examples:[{e:'🦷',w:'啊',n:'ㄚ'},{e:'🦆',w:'鴨子',n:'ㄧㄚ ㄗ'},{e:'👩',w:'阿姨',n:'ㄚ ㄧˊ'}] },
-  { char:'ㄛ', type:'韻母', strokes:2, img:'23_1.png', examples:[{e:'🪺',w:'哦',n:'ㄛ'},{e:'🕊️',w:'鴿子',n:'ㄍㄜ ㄗ'},{e:'🌊',w:'河',n:'ㄏㄜˊ'}] },
-  { char:'ㄜ', type:'韻母', strokes:2, img:'24_1.png', examples:[{e:'🐊',w:'鱷魚',n:'ㄜˋ ㄩˊ'},{e:'🕊️',w:'鴿子',n:'ㄍㄜ ㄗ'},{e:'😣',w:'餓',n:'ㄜˋ'}] },
-  { char:'ㄝ', type:'韻母', strokes:3, img:'25_1.png', examples:[{e:'🧚',w:'耶',n:'ㄝ'},{e:'🎉',w:'耶',n:'ㄝ'},{e:'😄',w:'耶',n:'ㄝ'}] },
-  { char:'ㄞ', type:'韻母', strokes:3, img:'26_1.png', examples:[{e:'❤️',w:'愛',n:'ㄞˋ'},{e:'🌊',w:'海',n:'ㄏㄞˇ'},{e:'🤗',w:'孩子',n:'ㄏㄞˊ ㄗ'}] },
-  { char:'ㄟ', type:'韻母', strokes:1, img:'27.png', examples:[{e:'👋',w:'欸',n:'ㄟ'},{e:'😄',w:'美',n:'ㄇㄟˇ'},{e:'🌹',w:'玫瑰',n:'ㄇㄟˊ ㄍㄨㄟˋ'}] },
-  { char:'ㄠ', type:'韻母', strokes:3, img:'28_1.png', examples:[{e:'🐱',w:'貓',n:'ㄇㄠ'},{e:'🌿',w:'草',n:'ㄘㄠˇ'},{e:'👶',w:'寶寶',n:'ㄅㄠˇ ㄅㄠ'}] },
+  { char:'ㄙ', type:'聲母', strokes:2, img:'21_1.png', examples:[{e:'☂️',w:'雨傘',n:'ㄩˇ ㄙㄢˇ'},{e:'🎨',w:'色',n:'ㄙㄜˋ'},{e:'🧹',w:'掃地',n:'ㄙㄠˇ ㄉㄧˋ'}] },
+  { char:'ㄚ', type:'韻母', strokes:3, img:'22_1.png', examples:[{e:'😮',w:'啊',n:'ㄚ'},{e:'🦆',w:'鴨子',n:'ㄧㄚ ˙ㄗ'},{e:'👩',w:'阿姨',n:'ㄚ ㄧˊ'}] },
+  { char:'ㄛ', type:'韻母', strokes:2, img:'23_1.png', examples:[{e:'😯',w:'哦',n:'ㄛˊ'},{e:'🌊',w:'波浪',n:'ㄅㄛ ㄌㄤˋ'},{e:'🙋',w:'我',n:'ㄨㄛˇ'}] },
+  { char:'ㄜ', type:'韻母', strokes:2, img:'24_1.png', examples:[{e:'🐊',w:'鱷魚',n:'ㄜˋ ㄩˊ'},{e:'🕊️',w:'鴿子',n:'ㄍㄜ ˙ㄗ'},{e:'😣',w:'餓',n:'ㄜˋ'}] },
+  { char:'ㄝ', type:'韻母', strokes:3, img:'25_1.png', examples:[{e:'👧',w:'姐姐',n:'ㄐㄧㄝˇ ˙ㄐㄧㄝ'},{e:'🦋',w:'蝴蝶',n:'ㄏㄨˊ ㄉㄧㄝˊ'},{e:'👟',w:'鞋子',n:'ㄒㄧㄝˊ ˙ㄗ'}] },
+  { char:'ㄞ', type:'韻母', strokes:3, img:'26_1.png', examples:[{e:'❤️',w:'愛',n:'ㄞˋ'},{e:'🌊',w:'海',n:'ㄏㄞˇ'},{e:'🤗',w:'孩子',n:'ㄏㄞˊ ˙ㄗ'}] },
+  { char:'ㄟ', type:'韻母', strokes:1, img:'27.png', examples:[{e:'✈️',w:'飛機',n:'ㄈㄟ ㄐㄧ'},{e:'😄',w:'美',n:'ㄇㄟˇ'},{e:'🌹',w:'玫瑰',n:'ㄇㄟˊ ㄍㄨㄟ'}] },
+  { char:'ㄠ', type:'韻母', strokes:3, img:'28_1.png', examples:[{e:'🐱',w:'貓',n:'ㄇㄠ'},{e:'🌿',w:'草',n:'ㄘㄠˇ'},{e:'👶',w:'寶寶',n:'ㄅㄠˇ ㄅㄠˇ'}] },
   { char:'ㄡ', type:'韻母', strokes:2, img:'29_1.png', examples:[{e:'👶',w:'幼兒',n:'ㄧㄡˋ ㄦˊ'},{e:'🐶',w:'狗',n:'ㄍㄡˇ'},{e:'⚽',w:'球',n:'ㄑㄧㄡˊ'}] },
-  { char:'ㄢ', type:'韻母', strokes:2, img:'30_1.png', examples:[{e:'🌅',w:'晚上',n:'ㄨㄢˇ ㄕㄤ'},{e:'⛰️',w:'山',n:'ㄕㄢ'},{e:'3️⃣',w:'三',n:'ㄙㄢ'}] },
-  { char:'ㄣ', type:'韻母', strokes:1, img:'31.png', examples:[{e:'☁️',w:'嗯',n:'ㄣ'},{e:'🫀',w:'心',n:'ㄒㄧㄣ'},{e:'🌲',w:'森林',n:'ㄙㄣ ㄌㄧㄣˊ'}] },
-  { char:'ㄤ', type:'韻母', strokes:3, img:'32_1.png', examples:[{e:'🦅',w:'昂',n:'ㄤˊ'},{e:'🌞',w:'太陽',n:'ㄊㄞˋ ㄧㄤˊ'},{e:'🍬',w:'糖',n:'ㄊㄤˊ'}] },
+  { char:'ㄢ', type:'韻母', strokes:2, img:'30_1.png', examples:[{e:'🌅',w:'晚上',n:'ㄨㄢˇ ㄕㄤˋ'},{e:'⛰️',w:'山',n:'ㄕㄢ'},{e:'3️⃣',w:'三',n:'ㄙㄢ'}] },
+  { char:'ㄣ', type:'韻母', strokes:1, img:'31.png', examples:[{e:'🤔',w:'嗯',n:'˙ㄣ'},{e:'🫀',w:'心',n:'ㄒㄧㄣ'},{e:'🌲',w:'森林',n:'ㄙㄣ ㄌㄧㄣˊ'}] },
+  { char:'ㄤ', type:'韻母', strokes:3, img:'32_1.png', examples:[{e:'🐑',w:'羊',n:'ㄧㄤˊ'},{e:'🌞',w:'太陽',n:'ㄊㄞˋ ㄧㄤˊ'},{e:'🍬',w:'糖',n:'ㄊㄤˊ'}] },
   { char:'ㄥ', type:'韻母', strokes:1, img:'33.png', examples:[{e:'🐝',w:'嗡嗡',n:'ㄨㄥ ㄨㄥ'},{e:'🌈',w:'彩虹',n:'ㄘㄞˇ ㄏㄨㄥˊ'},{e:'🐉',w:'龍',n:'ㄌㄨㄥˊ'}] },
-  { char:'ㄦ', type:'韻母', strokes:2, img:'34_1.png', examples:[{e:'👂',w:'耳朵',n:'ㄦˇ ㄉㄨㄛ'},{e:'🍀',w:'兒子',n:'ㄦˊ ㄗ'},{e:'🎪',w:'而且',n:'ㄦˊ ㄑㄧㄝˇ'}] },
-  { char:'ㄧ', type:'韻母', strokes:1, img:'35.png', examples:[{e:'1️⃣',w:'一',n:'ㄧ'},{e:'🪑',w:'椅子',n:'ㄧˇ ㄗ'},{e:'🩺',w:'醫生',n:'ㄧ ㄕㄥ'}] },
-  { char:'ㄨ', type:'韻母', strokes:2, img:'36_1.png', examples:[{e:'🐸',w:'青蛙',n:'ㄑㄧㄥ ㄨㄚ'},{e:'🐷',w:'豬',n:'ㄓㄨ'},{e:'🏡',w:'屋子',n:'ㄨ ㄗ'}] },
+  { char:'ㄦ', type:'韻母', strokes:2, img:'34_1.png', examples:[{e:'👂',w:'耳朵',n:'ㄦˇ ㄉㄨㄛˇ'},{e:'👦',w:'兒子',n:'ㄦˊ ˙ㄗ'},{e:'➕',w:'而且',n:'ㄦˊ ㄑㄧㄝˇ'}] },
+  { char:'ㄧ', type:'韻母', strokes:1, img:'35.png', examples:[{e:'1️⃣',w:'一',n:'ㄧ'},{e:'🪑',w:'椅子',n:'ㄧˇ ˙ㄗ'},{e:'🩺',w:'醫生',n:'ㄧ ㄕㄥ'}] },
+  { char:'ㄨ', type:'韻母', strokes:2, img:'36_1.png', examples:[{e:'🐸',w:'青蛙',n:'ㄑㄧㄥ ㄨㄚ'},{e:'🐷',w:'豬',n:'ㄓㄨ'},{e:'🏡',w:'屋子',n:'ㄨ ˙ㄗ'}] },
   { char:'ㄩ', type:'韻母', strokes:2, img:'37_1.png', examples:[{e:'🐠',w:'魚',n:'ㄩˊ'},{e:'🌧️',w:'雨',n:'ㄩˇ'},{e:'🌕',w:'月亮',n:'ㄩㄝˋ ㄌㄧㄤˋ'}] },
 ];
 
@@ -579,10 +610,10 @@ function completeCurrentStroke() {
   practiceEls.user.setAttribute('d','');
   if (currentPractice >= practiceEls.sweeps.length) {
     updatePracticeUI('ok', '✓ 太棒了！完成描字！🌟');
-    speakFeedback('太棒了！寫得非常好！');
+    playFeedbackSfx('correct');
   } else {
     updatePracticeUI('ok', `第 ${currentPractice} 筆完成！請繼續第 ${currentPractice + 1} 筆`);
-    speakFeedback('答對了！');
+    playFeedbackSfx('correct');
   }
 }
 
@@ -610,7 +641,7 @@ function bindPracticeEvents() {
     if (result.ok) completeCurrentStroke();
     else {
       updatePracticeUI('no', result.reason);
-      speakFeedback('再試試看！');
+      playFeedbackSfx('wrong');
       setTimeout(()=> practiceEls.user.setAttribute('d',''), 700);
     }
   }
@@ -708,12 +739,33 @@ function render() {
     div.className = 'example-item';
     div.innerHTML = `
       <span class="ex-emoji">${ex.e}</span>
-      <span class="ex-word">${ex.w}</span>
-      <span class="ex-note">${ex.n}</span>
+      ${renderAnnotatedWord(ex.w, ex.n)}
     `;
     div.addEventListener('click', () => speak(ex.w));
     grid.appendChild(div);
   });
+}
+
+function renderAnnotatedWord(word, reading) {
+  const chars = Array.from(word);
+  const syllables = reading.trim().split(/\s+/);
+  const pairs = chars.map((char, index) => {
+    const syllable = syllables[index] || '';
+    const neutral = syllable.startsWith('˙');
+    const toneMatch = syllable.match(/[ˊˇˋ]$/);
+    const tone = neutral ? '' : (toneMatch ? toneMatch[0] : '');
+    const symbols = `${neutral ? '<span class="zhuyin-symbol zhuyin-neutral">˙</span>' : ''}${Array.from(syllable.replace(/^˙|[ˊˇˋ]$/g, ''))
+      .map(symbol => `<span class="zhuyin-symbol">${symbol}</span>`)
+      .join('')}`;
+    return `<span class="zhuyin-pair" aria-hidden="true">
+      <span class="zhuyin-hanzi">${char}</span>
+      <span class="zhuyin-reading">
+        <span class="zhuyin-symbols">${symbols}${tone ? `<span class="zhuyin-tone">${tone}</span>` : ''}</span>
+      </span>
+    </span>`;
+  }).join('');
+
+  return `<span class="ex-word" aria-label="${word}，${reading}">${pairs}</span>`;
 }
 
 function goTo(idx) {
@@ -731,12 +783,19 @@ if (window.speechSynthesis) {
 }
 
 const audioCache = {};
+let currentSymbolAudio = null;
 function speak(text) {
   const sym = ALL_SYMBOLS[currentIndex];
   if (text === sym.char) {
+    if (currentSymbolAudio) {
+      currentSymbolAudio.pause();
+      currentSymbolAudio.currentTime = 0;
+    }
+    if (window.speechSynthesis) speechSynthesis.cancel();
     const path = `audio/${text}.mp3`;
     if (!audioCache[text]) audioCache[text] = new Audio(path);
     const a = audioCache[text];
+    currentSymbolAudio = a;
     a.currentTime = 0;
     a.play().catch(() => speakTTS(text));
   } else {
@@ -745,6 +804,10 @@ function speak(text) {
 }
 
 function speakTTS(text) {
+  if (currentSymbolAudio) {
+    currentSymbolAudio.pause();
+    currentSymbolAudio.currentTime = 0;
+  }
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
@@ -754,20 +817,28 @@ function speakTTS(text) {
   setTimeout(() => speechSynthesis.speak(u), 50);
 }
 
-function speakFeedback(text) {
-  if (!window.speechSynthesis) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-TW'; u.rate = 0.9;
-  const v = voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang.startsWith('zh'));
-  if (v) u.voice = v;
-  setTimeout(() => speechSynthesis.speak(u), 80);
+let feedbackAudio = null;
+function playFeedbackSfx(kind) {
+  if (feedbackAudio) { feedbackAudio.pause(); feedbackAudio = null; }
+  const index = Math.floor(Math.random() * 3) + 1;
+  const audio = new Audio(`audio/sfx/${kind}_${index}.wav`);
+  feedbackAudio = audio;
+  const done = () => { if (feedbackAudio === audio) feedbackAudio = null; };
+  audio.onended = done;
+  audio.onerror = done;
+  audio.play().catch(done);
 }
 
 // ===== 按鈕事件 =====
 document.getElementById('speak-btn').addEventListener('click', () => speak(ALL_SYMBOLS[currentIndex].char));
 document.getElementById('prev-btn').addEventListener('click', () => goTo(currentIndex - 1));
 document.getElementById('next-btn').addEventListener('click', () => goTo(currentIndex + 1));
+
+document.addEventListener('gesturestart', event => event.preventDefault(), { passive:false });
+document.addEventListener('dblclick', event => event.preventDefault(), { passive:false });
+document.addEventListener('touchmove', event => {
+  if (event.touches.length > 1) event.preventDefault();
+}, { passive:false });
 
 // ===== 符號列慣性拖拉 =====
 const bar = document.querySelector('.symbol-bar');
@@ -795,14 +866,6 @@ buildBar();
 render();
 updateBar();
 </script>
-
-<!--
-=== 產圖移交摘要 ===
-本頁（learn.html）無需額外產圖。
-筆順動畫與描字：AnimCJK SVG
-靜態底稿：教育部 EPUB 圖片（CC BY-NC-ND）
-==================
--->
 
 </body>
 </html>

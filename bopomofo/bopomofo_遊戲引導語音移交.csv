@@ -1,0 +1,4 @@
+檔案路徑,台詞,備註
+audio/game/how_to_play.mp3,按喇叭聽聲音，再選出正確的注音符號。,遊戲選單的喇叭按鈕
+audio/game/mode_practice.mp3,練習模式。答錯可以再試一次，慢慢聽，慢慢找。,點選練習模式時播放
+audio/game/mode_challenge.mp3,挑戰模式。每題都有時間限制，答錯會少一顆愛心。,點選挑戰模式時播放

@@ -234,7 +234,7 @@ button,a{touch-action:manipulation;}
         <button class="opt-btn" data-val="2" onclick="selectOpt(this,'c-diff')">Lv 3</button>
         <button class="opt-btn" data-val="3" onclick="selectOpt(this,'c-diff')">Lv 4</button>
         <button class="opt-btn" data-val="4" onclick="selectOpt(this,'c-diff')">Lv 5</button>
-        <button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 自動</button>
+<button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 漸進挑戰</button>
       </div>
     </div>
     <div class="setup-section">
@@ -303,8 +303,8 @@ button,a{touch-action:manipulation;}
 <footer>➕ 加法關卡</footer>
 
 <script>
-const AUDIO_BASE="./audio/";let currentAudio=null;function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;const done=()=>{if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}function playQuestionVO(){playAudio("addition/question.mp3");}function playNumberVO(n){playAudio("numbers/"+ n +".mp3");}function playCorrectVO(a,b,onEnd){playAudio("sfx/correct_"+(Math.floor(Math.random()*3)+1)+".wav",onEnd);}function playWrongVO(onEnd){playAudio("sfx/wrong_"+(Math.floor(Math.random()*3)+1)+".wav",onEnd);}function playSkipVO(onEnd){playAudio("sfx/skip.wav",onEnd);}function playLevelUpVO(){playAudio("common/levelup.mp3");}function playLevelDownVO(){playAudio("common/leveldown.mp3");}const LEVELS=[{aMax:4,sumMax:5},{aMax:9,sumMax:10},{aMax:10,sumMax:20},{aMax:25,sumMax:50},{aMax:50,sumMax:100}];
-const XP_NEEDED=[5,10,20,30];
+const AUDIO_BASE="./audio/";let currentAudio=null;function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;const done=()=>{if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}function playQuestionVO(q){if(q&&q.lv>=2)playSeq(["numbers/"+q.a+".mp3","operators/plus.mp3","numbers/"+q.b+".mp3","operators/equals.mp3","operators/question.mp3"]);else playAudio("addition/question.mp3");}function playNumberVO(n){playAudio("numbers/"+ n +".mp3");}function playCorrectVO(a,b,onEnd){playAudio("sfx/correct_"+(Math.floor(Math.random()*3)+1)+".wav",onEnd);}function playWrongVO(onEnd){playAudio("sfx/wrong_"+(Math.floor(Math.random()*3)+1)+".wav",onEnd);}function playSkipVO(onEnd){playAudio("sfx/skip.wav",onEnd);}function playLevelUpVO(){playAudio("common/levelup.mp3");}function playLevelDownVO(){playAudio("common/leveldown.mp3");}const LEVELS=[{aMax:4,sumMax:5},{aMax:9,sumMax:10},{aMax:19,sumMax:20},{aMax:25,sumMax:50},{aMax:50,sumMax:100}];
+const XP_NEEDED=[5,8,12,15];
 const EMOJIS=['🍎','🍊','🍋','🐶','⭐','🌸','🎈','🦋','🍓','🐸'];
 
 let PS={},CS={};
@@ -326,11 +326,11 @@ function spawnParticles(){ for(let i=0;i<7;i++){ const el=document.createElement
 function spawnExp(){ const el=document.createElement('div');el.className='exp-pop';el.textContent='+EXP'; el.style.cssText='left:50%;top:50%;transform:translateX(-50%)'; document.body.appendChild(el);setTimeout(()=>el.remove(),1000); }
 function showToast(msg,isUp){if(isUp)playLevelUpVO();else playLevelDownVO();_showToast(msg);}function _showToast(msg){ const t=document.createElement('div');t.className='level-toast';t.textContent=msg; document.body.appendChild(t);setTimeout(()=>t.remove(),2000); }
 
-function genQ(lv){ const cfg=LEVELS[lv]; let a,b,tries=0; do{ a=Math.floor(Math.random()*cfg.aMax)+1; const bMax=Math.min(cfg.aMax,cfg.sumMax-a); if(bMax<1){tries++;continue;} b=Math.floor(Math.random()*bMax)+1; tries++; }while(tries<60); return {a,b,answer:a+b,lv}; }
+function genQ(lv){const cfg=LEVELS[lv];let a,b,tries=0;do{a=Math.floor(Math.random()*cfg.aMax)+1;const bMax=Math.min(cfg.aMax,cfg.sumMax-a);if(bMax<1){tries++;continue;}b=Math.floor(Math.random()*bMax)+1;tries++;}while(tries<200&&lv===2&&(a%10+b%10>=10));return{a,b,answer:a+b,lv};}
 
-function genOpts(correct,lv){ const max=LEVELS[lv].sumMax; const s=new Set([correct]); let att=0; while(s.size<3&&att<100){ const d=Math.floor(Math.random()*5)+1,sg=Math.random()<0.5?1:-1,c=correct+sg*d; if(c>=1&&c<=max+5&&c!==correct)s.add(c); att++; } let f=1;while(s.size<3){if(!s.has(f))s.add(f);f++;} return [...s].sort(()=>Math.random()-0.5); }
+function genOpts(correct,lv){const max=LEVELS[lv].sumMax;const s=new Set([correct]);let att=0;while(s.size<3&&att<100){const d=Math.floor(Math.random()*5)+1,sg=Math.random()<0.5?1:-1,c=correct+sg*d;if(c>=1&&c<=max&&c!==correct)s.add(c);att++;}let f=1;while(s.size<3&&f<=max){if(!s.has(f))s.add(f);f++;}return[...s].sort(()=>Math.random()-0.5);}
 
-function renderVisual(a,b,vid){ const el=document.getElementById(vid); el.innerHTML=''; if(a>12||b>12){el.style.display='none';return;} el.style.display='flex'; const e1=EMOJIS[Math.floor(Math.random()*EMOJIS.length)]; let e2;do{e2=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];}while(e2===e1); const g1=document.createElement('div');g1.className='visual-group'; for(let i=0;i<a;i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=e1;g1.appendChild(s);} const op=document.createElement('div');op.className='op-sym';op.textContent='+'; const g2=document.createElement('div');g2.className='visual-group'; for(let i=0;i<b;i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=e2;g2.appendChild(s);} el.append(g1,op,g2); }
+function renderVisual(q,vid){const el=document.getElementById(vid);el.innerHTML='';if(q.lv>1){el.style.display='none';return;}el.style.display='flex';const e1=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];let e2;do{e2=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];}while(e2===e1);const g1=document.createElement('div');g1.className='visual-group';for(let i=0;i<q.a;i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=e1;g1.appendChild(s);}const op=document.createElement('div');op.className='op-sym';op.textContent='+';const g2=document.createElement('div');g2.className='visual-group';for(let i=0;i<q.b;i++){const s=document.createElement('span');s.className='visual-emoji';s.textContent=e2;g2.appendChild(s);}el.append(g1,op,g2);}
 
 function renderEq(a,b,eid){ document.getElementById(eid).innerHTML=`<span class="num">${a}</span><span class="op">+</span><span class="num">${b}</span><span class="op">=</span><span class="blank">?</span>`; }
 
@@ -350,9 +350,9 @@ function pNext(){
   document.getElementById('p-fb').textContent='';document.getElementById('p-fb').className='feedback';
   const q=genQ(PS.lv); PS.q=q;
   document.getElementById('p-lv-badge').textContent='Lv '+(PS.lv+1);
-  renderVisual(q.a,q.b,'p-visual'); renderEq(q.a,q.b,'p-eq');
+  renderVisual(q,'p-visual'); renderEq(q.a,q.b,'p-eq');
   renderOpts(genOpts(q.answer,PS.lv),q.answer,'p-opts',(btn,val)=>{ if(PS.locked)return; document.querySelectorAll('#p-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');PS.sel=val;PS.selBtn=btn;playNumberVO(val);document.getElementById('p-confirm').classList.add('ready'); });
-  if(PS.isAuto){ const need=XP_NEEDED[PS.lv]??1; document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%'; }setTimeout(playQuestionVO,400);
+  if(PS.isAuto){ const need=XP_NEEDED[PS.lv]??1; document.getElementById('p-xp-bar').style.width=(PS.xp/need*100)+'%'; }setTimeout(()=>playQuestionVO(q),400);
 }
 function practiceConfirm(){
   if(!PS.sel||PS.locked)return; PS.locked=true;
@@ -380,9 +380,9 @@ function cLoad(i){
   document.getElementById('c-lv-badge').textContent='Lv '+(q.lv+1);
   document.getElementById('c-progress').textContent='第 '+(i+1)+' / '+CS.count+' 題';
   document.getElementById('c-prev').disabled=i===0;
-  renderVisual(q.a,q.b,'c-visual');renderEq(q.a,q.b,'c-eq');
+  renderVisual(q,'c-visual');renderEq(q.a,q.b,'c-eq');
   renderOpts(genOpts(q.answer,q.lv),q.answer,'c-opts',(btn,val)=>{ document.querySelectorAll('#c-opts .option-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected');CS.sel=val;CS.selBtn=btn;playNumberVO(val);document.getElementById('c-confirm').classList.add('ready'); });
-  if(q.userAns!==null&&!q.skipped){ document.querySelectorAll('#c-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===q.userAns)b.classList.add('selected'); }); }setTimeout(playQuestionVO,400);
+  if(q.userAns!==null&&!q.skipped){ document.querySelectorAll('#c-opts .option-btn').forEach(b=>{ if(parseInt(b.dataset.val)===q.userAns)b.classList.add('selected'); }); }setTimeout(()=>playQuestionVO(q),400);
 }
 function challengeConfirm(){ if(!CS.sel)return; CS.qs[CS.cur].userAns=parseInt(CS.sel);CS.qs[CS.cur].skipped=false; renderNav();cAdvance(); }
 function challengeSkip(){ CS.qs[CS.cur].userAns=null;CS.qs[CS.cur].skipped=true; renderNav();cAdvance(); }
@@ -417,7 +417,7 @@ function showResult(){
   }
   showPage('page-result');
 }
-+function syncFullscreenButton(){
+function syncFullscreenButton(){
   const label=document.fullscreenElement?'退出全螢幕':'全螢幕遊玩';
   document.querySelectorAll('.fullscreen-btn span').forEach(el=>el.textContent=label);
 }

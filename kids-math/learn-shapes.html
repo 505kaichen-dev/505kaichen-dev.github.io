@@ -49,6 +49,10 @@ footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:13px
 /* 兒童觸控防誤縮放：保留正常頁面捲動 */
 html{touch-action:pan-x pan-y;}
 button,a{touch-action:manipulation;}
+@media (orientation:landscape) and (min-width:900px){
+  header{padding:14px 24px;}main{max-width:1100px;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:22px;padding-inline:24px;}
+  .learn-hero,.concept-card{grid-column:1/-1;}.shapes-grid{grid-template-columns:repeat(5,1fr);}.parent-section,.start-section{height:100%;}
+}
 </style>
 </head>
 <body>
@@ -71,7 +75,8 @@ button,a{touch-action:manipulation;}
     <div class="parent-title">這個關卡在學什麼？</div>
     <ul class="parent-list">
       <li>認識基本幾何形狀，從圓形、正方形、三角形開始</li>
-      <li>Lv1–3 辨識形狀名稱，Lv4–5 加入顏色辨識與旋轉形狀</li>
+      <li>形狀數量依等級從 3 種逐步增加到 14 種，所有形狀維持正向不旋轉</li>
+      <li>各等級都可能出現少量顏色辨識題，比例會隨等級逐步提高</li>
       <li>所有選項都有注音輔助，題目會自動語音朗讀</li>
       <li>建議在生活中找相同形狀，例如時鐘是圓形、書本是長方形</li>
       <li>進階孩子可以挑戰旋轉後的形狀辨識</li>
@@ -87,18 +92,24 @@ button,a{touch-action:manipulation;}
 
 <script>
 const AUDIO_BASE='./audio/';
-function playAudio(path,onEnd){const a=new Audio(AUDIO_BASE+path);a.onended=onEnd||null;a.onerror=onEnd||null;a.play().catch(()=>{if(onEnd)onEnd();});return a;}
+let currentAudio=null;
+function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;let finished=false;const done=()=>{if(finished)return;finished=true;if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
 
 const SHAPES=[
   {id:'circle',name:'圓形',zhuyin:'ㄩㄢˊ ㄒㄧㄥˊ',life:'時鐘、輪子',color:'#4ECDC4',svg:`<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#4ECDC4" stroke="#0F766E" stroke-width="3"/></svg>`},
   {id:'square',name:'正方形',zhuyin:'ㄓㄥˋ ㄈㄤ ㄒㄧㄥˊ',life:'骰子、積木',color:'#FF6B35',svg:`<svg viewBox="0 0 80 80"><rect x="8" y="8" width="64" height="64" rx="4" fill="#FF6B35" stroke="#C2410C" stroke-width="3"/></svg>`},
   {id:'triangle',name:'三角形',zhuyin:'ㄙㄢ ㄐㄧㄠˇ ㄒㄧㄥˊ',life:'山、三明治',color:'#A855F7',svg:`<svg viewBox="0 0 80 80"><polygon points="40,6 74,72 6,72" fill="#A855F7" stroke="#7C3AED" stroke-width="3"/></svg>`},
-  {id:'star',name:'星形',zhuyin:'ㄒㄧㄥ ㄒㄧㄥˊ',life:'夜空的星星',color:'#FFE66D',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 48,28 74,28 53,43 61,67 40,52 19,67 27,43 6,28 32,28" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/></svg>`},
+{id:'star',name:'星星',zhuyin:'ㄒㄧㄥ ㄒㄧㄥ',life:'夜空的星星',color:'#FFE66D',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 48,28 74,28 53,43 61,67 40,52 19,67 27,43 6,28 32,28" fill="#FFE66D" stroke="#F59E0B" stroke-width="2"/></svg>`},
+  {id:'heart',name:'愛心',zhuyin:'ㄞˋ ㄒㄧㄣ',life:'愛心貼紙',color:'#F43F5E',svg:`<svg viewBox="0 0 80 80"><path d="M40 68 C40 68 10 48 10 28 C10 16 19 9 29 9 C34 9 38 12 40 17 C43 12 47 9 52 9 C63 9 70 17 70 28 C70 48 40 68 40 68Z" fill="#F43F5E" stroke="#BE123C" stroke-width="2"/></svg>`},
   {id:'diamond',name:'菱形',zhuyin:'ㄌㄧㄥˊ ㄒㄧㄥˊ',life:'撲克牌圖案',color:'#F43F5E',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 74,40 40,76 6,40" fill="#F43F5E" stroke="#BE123C" stroke-width="3"/></svg>`},
+  {id:'semicircle',name:'半圓形',zhuyin:'ㄅㄢˋ ㄩㄢˊ ㄒㄧㄥˊ',life:'半片西瓜',color:'#4ECDC4',svg:`<svg viewBox="0 0 80 80"><path d="M6 48 A34 34 0 0 1 74 48 Z" fill="#4ECDC4" stroke="#0F766E" stroke-width="3"/></svg>`},
   {id:'rectangle',name:'長方形',zhuyin:'ㄔㄤˊ ㄈㄤ ㄒㄧㄥˊ',life:'書本、門',color:'#22C55E',svg:`<svg viewBox="0 0 80 80"><rect x="4" y="20" width="72" height="40" rx="4" fill="#22C55E" stroke="#15803D" stroke-width="3"/></svg>`},
+  {id:'trapezoid',name:'梯形',zhuyin:'ㄊㄧ ㄒㄧㄥˊ',life:'檯燈燈罩',color:'#F97316',svg:`<svg viewBox="0 0 80 80"><polygon points="22,14 58,14 74,66 6,66" fill="#F97316" stroke="#C2410C" stroke-width="3"/></svg>`},
+  {id:'parallelogram',name:'平行四邊形',zhuyin:'ㄆㄧㄥˊ ㄒㄧㄥˊ ㄙˋ ㄅㄧㄢ ㄒㄧㄥˊ',life:'斜斜的積木',color:'#A855F7',svg:`<svg viewBox="0 0 80 80"><polygon points="22,14 76,14 58,66 4,66" fill="#A855F7" stroke="#7C3AED" stroke-width="3"/></svg>`},
   {id:'pentagon',name:'五邊形',zhuyin:'ㄨˇ ㄅㄧㄢ ㄒㄧㄥˊ',life:'足球的黑色格',color:'#3B82F6',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 74,30 61,70 19,70 6,30" fill="#3B82F6" stroke="#1D4ED8" stroke-width="3"/></svg>`},
   {id:'hexagon',name:'六邊形',zhuyin:'ㄌㄧㄡˋ ㄅㄧㄢ ㄒㄧㄥˊ',life:'蜂巢的格子',color:'#F97316',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 72,22 72,58 40,76 8,58 8,22" fill="#F97316" stroke="#C2410C" stroke-width="3"/></svg>`},
   {id:'oval',name:'橢圓形',zhuyin:'ㄊㄨㄛˇ ㄩㄢˊ ㄒㄧㄥˊ',life:'雞蛋、橄欖球',color:'#A855F7',svg:`<svg viewBox="0 0 80 80"><ellipse cx="40" cy="40" rx="36" ry="24" fill="#A855F7" stroke="#7C3AED" stroke-width="3"/></svg>`},
+  {id:'arrow',name:'箭頭形',zhuyin:'ㄐㄧㄢˋ ㄊㄡˊ ㄒㄧㄥˊ',life:'方向指示牌',color:'#3B82F6',svg:`<svg viewBox="0 0 80 80"><polygon points="40,4 76,40 58,40 58,74 22,74 22,40 4,40" fill="#3B82F6" stroke="#1D4ED8" stroke-width="3"/></svg>`},
 ];
 
 function buildShapes(){

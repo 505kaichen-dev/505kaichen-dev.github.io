@@ -229,7 +229,7 @@ button,a{touch-action:manipulation;}
         <button class="opt-btn" data-val="2" onclick="selectOpt(this,'c-diff')">Lv 3</button>
         <button class="opt-btn" data-val="3" onclick="selectOpt(this,'c-diff')">Lv 4</button>
         <button class="opt-btn" data-val="4" onclick="selectOpt(this,'c-diff')">Lv 5</button>
-        <button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 自動</button>
+<button class="opt-btn" data-val="auto" onclick="selectOpt(this,'c-diff')">🚀 漸進挑戰</button>
       </div>
     </div>
     <div class="setup-section">
@@ -298,7 +298,7 @@ button,a{touch-action:manipulation;}
 <script>
 // Lv設定：[數量上限, 選項數量]
 const AUDIO_BASE='./audio/';
-const LEVELS=[{max:5,opts:5},{max:10,opts:10},{max:20,opts:10},{max:50,opts:10},{max:100,opts:10}];
+const LEVELS=[{max:5,opts:5},{max:10,opts:5},{max:20,opts:6},{max:50,opts:8},{max:100,opts:10}];
 let currentAudio=null;
 function playAudio(path,onEnd){if(currentAudio){currentAudio.pause();currentAudio=null;}const a=new Audio(AUDIO_BASE+path);currentAudio=a;let finished=false;const done=()=>{if(finished)return;finished=true;if(currentAudio===a)currentAudio=null;if(onEnd)onEnd();};a.onended=done;a.onerror=done;a.play().catch(done);return a;}
 function playSeq(paths,onDone){if(!paths.length){if(onDone)onDone();return;}const[first,...rest]=paths;playAudio(first,()=>playSeq(rest,onDone));}
@@ -311,7 +311,7 @@ function playQuestionVO(){playAudio('counting/question.mp3');}
 function playNumberVO(n){playAudio(`numbers/${n}.mp3`);}
 
 
-const XP_NEEDED=[5,10,20,30];
+const XP_NEEDED=[5,8,12,15];
 const EMOJIS=['🍎','🍊','🍋','🍇','🍓','🐶','🐱','🐸','🦊','🐼','⭐','🌸','🎈','🦋','🚀','🍕','🌈','🎵','🏀','🦄'];
 let PS={},CS={};
 
@@ -467,7 +467,7 @@ function showResult(){
   }
   showPage('page-result');
 }
-+function syncFullscreenButton(){
+function syncFullscreenButton(){
   const label=document.fullscreenElement?'退出全螢幕':'全螢幕遊玩';
   document.querySelectorAll('.fullscreen-btn span').forEach(el=>el.textContent=label);
 }
