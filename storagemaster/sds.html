@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>軟體定義儲存（SDS）全景 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-green td { background: rgba(63,185,80,.06); }
+    .highlight-amber td { background: rgba(210,153,34,.06); }
+    .route-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .route-card-title {
+      font-size: .9375rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .route-card-desc {
+      font-size: .8125rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .scene-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .scene-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+    }
+    .scene-icon { font-size: 20px; margin-bottom: 8px; }
+    .scene-title { font-size: .875rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .scene-solution { font-size: .8125rem; color: var(--primary-hi); font-family: var(--mono); margin-bottom: 4px; }
+    .scene-reason { font-size: .8125rem; color: var(--text-muted); line-height: 1.55; }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link active" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+      <a class="nav-link nav-sub" href="#concept">SDS 核心思想</a>
+      <a class="nav-link nav-sub" href="#ibm-sds">IBM SDS</a>
+      <a class="nav-link nav-sub" href="#vmware-sds">VMware vSAN</a>
+      <a class="nav-link nav-sub" href="#dell-sds">Dell PowerFlex</a>
+      <a class="nav-link nav-sub" href="#oss">開源生態</a>
+      <a class="nav-link nav-sub" href="#hci">HCI 陣營</a>
+      <a class="nav-link nav-sub" href="#dase">DASE 新架構</a>
+      <a class="nav-link nav-sub" href="#selection">選型判斷</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">SDS / SOFTWARE-DEFINED STORAGE</div>
+      <h1>軟體定義儲存（SDS）全景</h1>
+      <p class="page-desc">將儲存邏輯從硬體解耦，跑在通用 x86 或雲端上。從核心概念、三種路線分類，到 IBM / VMware / Dell / 開源 / HCI / 新架構的完整產品對照，以及場景對應選型邏輯。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-blue">SDS</span>
+        <span class="badge badge-green">開源</span>
+        <span class="badge badge-amber">通用概念</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#concept">SDS 核心思想</a></li>
+        <li><a href="#ibm-sds">IBM 旗下 SDS</a></li>
+        <li><a href="#vmware-sds">VMware vSAN</a></li>
+        <li><a href="#dell-sds">Dell PowerFlex</a></li>
+        <li><a href="#oss">開源生態（Ceph / Rook / MinIO / Longhorn）</a></li>
+        <li><a href="#hci">HCI 陣營（Nutanix / VxRail）</a></li>
+        <li><a href="#dase">DASE 新架構（VAST / NetApp AFX / HPE Alletra MP）</a></li>
+        <li><a href="#selection">選型判斷</a></li>
+      </ol>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SDS 核心思想 -->
+    <!-- ============================================================ -->
+    <section id="concept">
+      <div class="anchor-wrap">
+        <h2>SDS 核心思想<a class="anchor-link" href="#concept">#</a></h2>
+      </div>
+      <p>Software-Defined Storage（SDS）的核心是把儲存的管理邏輯、資料服務（複製、快照、重刪、壓縮）從特定硬體中解放出來，跑在通用 x86 伺服器或雲端環境上。採購時不再被特定廠商的硬體綁定，底層硬體可以替換，上層服務不受影響。</p>
+
+      <h3>SDS vs 傳統儲存的根本差異</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>傳統儲存（Appliance）</th><th>軟體定義儲存（SDS）</th></tr></thead>
+          <tbody>
+            <tr><td>智慧在哪裡</td><td>控制器韌體，與硬體不可分離</td><td>軟體層，可跑在任何相容硬體</td></tr>
+            <tr><td>硬體依賴</td><td>高（換硬體 = 換廠商）</td><td>低（底層硬體可替換）</td></tr>
+            <tr><td>擴展方式</td><td>向廠商購買特定規格硬體</td><td>加入通用 x86 節點即可擴展</td></tr>
+            <tr><td>初始成本</td><td>較高（專用硬體 + 授權）</td><td>較低（通用硬體 + 軟體授權）</td></tr>
+            <tr><td>效能可預測性</td><td>高（廠商驗證的固定組合）</td><td>依硬體組合而異，需自行調優</td></tr>
+            <tr class="highlight-row"><td>適合場景</td><td>使命關鍵、高可用性需求、不願冒風險的核心系統</td><td>雲原生、容器化、AI 訓練、成本敏感、私有雲建設</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>三種 SDS 路線</h3>
+      <div class="card-grid">
+        <div class="route-card">
+          <div class="route-card-title">🔧 傳統廠商 SDS</div>
+          <div class="route-card-desc">IBM、Dell、NetApp 等傳統儲存廠商推出的 SDS 版本，通常是其 Appliance 產品的軟體化，保留相同管理介面和功能集，有商業支援。</div>
+          <div style="font-size:.8125rem; color:var(--text-muted);">代表：IBM Storage Scale / Ceph、Dell PowerFlex、NetApp ONTAP Select</div>
+        </div>
+        <div class="route-card">
+          <div class="route-card-title">🌱 開源生態</div>
+          <div class="route-card-desc">Ceph、MinIO、Longhorn、Rook 等開源專案，免費使用，社群活躍，但需要自行維護，或採購商業支援版本（如 Red Hat Ceph Storage）。</div>
+          <div style="font-size:.8125rem; color:var(--text-muted);">代表：Ceph / Rook / MinIO / Longhorn</div>
+        </div>
+        <div class="route-card">
+          <div class="route-card-title">🚀 新架構平台</div>
+          <div class="route-card-desc">VAST Data、HPE Alletra MP 等採用 DASE（解耦架構）的新世代平台，打破傳統控制器和磁碟綁定的設計，專為 AI 和雲原生場景設計。</div>
+          <div style="font-size:.8125rem; color:var(--text-muted);">代表：VAST Data / HPE Alletra MP B10000 / NetApp AFX</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">重要認知：SDS 不等於「便宜」</div>
+        SDS 降低的是<strong>硬體</strong>的廠商鎖定，但軟體授權、維運人力、調優成本不見得比傳統 Appliance 低。尤其開源 SDS 的總擁有成本（TCO），需要把人力成本算進去才能公平比較。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- IBM SDS -->
+    <!-- ============================================================ -->
+    <section id="ibm-sds">
+      <div class="anchor-wrap">
+        <h2>IBM 旗下 SDS<a class="anchor-link" href="#ibm-sds">#</a></h2>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>產品</th><th>類型</th><th>協定</th><th>主要場景</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>IBM Storage Scale</strong><br><small>前 GPFS / Spectrum Scale</small></td>
+              <td>平行分散式檔案系統</td>
+              <td>NFS / SMB / S3 / POSIX</td>
+              <td>HPC、AI 訓練資料集、媒體製作</td>
+              <td>單一命名空間橫向擴展至 PB 級；可跑在 FlashSystem 後端或通用 x86；IBM 在 HPC 市場的核心產品</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>IBM Storage Ceph</strong><br><small>基於 Red Hat Ceph</small></td>
+              <td>三合一 SDS</td>
+              <td>Block（RBD）/ File（CephFS）/ Object（S3）</td>
+              <td>OpenStack 私有雲、Kubernetes PV、AI 資料湖</td>
+              <td>Red Hat 收購後整合入 IBM 生態；OpenShift 原生；商業支援版 Ceph</td>
+            </tr>
+            <tr>
+              <td><strong>IBM Storage Fusion</strong><br><small>前 Spectrum Fusion</small></td>
+              <td>容器原生儲存平台</td>
+              <td>Kubernetes CSI / PVC</td>
+              <td>Red Hat OpenShift 容器平台</td>
+              <td>整合 DR、備份、資料目錄；IBM Cloud Pak 解決方案的儲存基礎</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>IBM SDS 與 FlashSystem 的搭配</h3>
+      <p>IBM SDS 產品通常不是獨立部署，而是與 FlashSystem 搭配：FlashSystem 提供高效能 Block 儲存，Storage Scale 在上面建立高吞吐量的 File 層，讓 AI 訓練框架（PyTorch、TensorFlow）能直接高速存取訓練資料集。這個組合是 IBM 在 AI 基礎設施市場的主要方案。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VMware vSAN -->
+    <!-- ============================================================ -->
+    <section id="vmware-sds">
+      <div class="anchor-wrap">
+        <h2>VMware vSAN<a class="anchor-link" href="#vmware-sds">#</a></h2>
+      </div>
+      <p>vSAN 是目前企業市場部署最廣泛的 SDS / HCI 儲存解決方案，把 ESXi 叢集中每台主機的本機 SSD 聚合成共享儲存池，完全整合在 vSphere 管理介面中。</p>
+
+      <h3>vSAN 的核心設計</h3>
+      <ul>
+        <li><strong>本機儲存聚合：</strong>每台 ESXi 主機的 NVMe / SSD 通過 vSAN 軟體聚合成叢集共享儲存，不需要獨立的 SAN 設備</li>
+        <li><strong>物件儲存引擎：</strong>vSAN 在底層把 VMDK 切成物件（Component），分散在多台主機上保護，不是傳統 RAID 概念</li>
+        <li><strong>Storage Policy Based Management（SPBM）：</strong>以策略（Policy）定義 VM 的儲存要求（副本數、效能層），vSAN 自動執行</li>
+        <li><strong>Stretched Cluster：</strong>跨兩個站點的 vSAN 叢集，提供雙活能力，需要 Witness 節點仲裁</li>
+      </ul>
+
+      <h3>vSAN 版本演進</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>版本</th><th>重要特性</th></tr></thead>
+          <tbody>
+            <tr><td>vSAN 傳統架構</td><td>Hybrid（SSD Cache + HDD）或 All-Flash，以 RAID-1 / RAID-5 / RAID-6 保護物件</td></tr>
+            <tr class="highlight-row"><td><strong>vSAN ESA（Express Storage Architecture）</strong></td><td>2022 推出的全新架構，拋棄舊有 Hybrid 設計，All-NVMe 專屬；單層儲存池（不再區分 Cache / Capacity）；效能大幅提升；需要 vSAN ESA 認證硬體</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>vSAN 的適用場景與限制</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>適合</th><th>不適合</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                <ul style="margin:0; padding-left:16px; font-size:.875rem;">
+                  <li>已有大量 VMware 環境，想整合儲存</li>
+                  <li>VDI（虛擬桌面）</li>
+                  <li>非核心應用 / 測試環境</li>
+                  <li>邊緣節點 / 遠端辦公室</li>
+                </ul>
+              </td>
+              <td>
+                <ul style="margin:0; padding-left:16px; font-size:.875rem;">
+                  <li>需要獨立擴展計算和儲存的場景</li>
+                  <li>IBM i / AIX 等非 x86 工作負載</li>
+                  <li>超高 IOPS 核心資料庫（通常建議傳統 SAN）</li>
+                  <li>預算有限但節點數少（授權成本高）</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- Dell PowerFlex -->
+    <!-- ============================================================ -->
+    <section id="dell-sds">
+      <div class="anchor-wrap">
+        <h2>Dell PowerFlex<a class="anchor-link" href="#dell-sds">#</a></h2>
+      </div>
+      <p>PowerFlex（前身 ScaleIO）是 Dell 的純軟體定義 Block 儲存，可以跑在通用 x86 伺服器上，也有 Dell Appliance 版本。2025 年推出的 PowerFlex Ultra 大幅提升效率與可用性。</p>
+
+      <h3>PowerFlex 架構特點</h3>
+      <ul>
+        <li><strong>純 Block 儲存：</strong>只提供 Block（iSCSI / NVMe-oF），不提供 File 或 Object，定位清晰</li>
+        <li><strong>軟體部署彈性：</strong>可跑在任何 x86 伺服器，也可買 Dell Appliance 版本（硬體驗證，部署更快）</li>
+        <li><strong>PowerFlex Ultra（2025）：</strong>10個9資料可用性；80% 儲存效率；Dell Private Cloud 原生支援，與 PowerStore / PowerMax 並列</li>
+        <li><strong>OpenStack / Kubernetes 整合：</strong>有 Cinder Driver 和 CSI Driver，是大型 OpenStack 私有雲的常見儲存選項</li>
+      </ul>
+
+      <h3>對標 vSAN 和 Ceph</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>Dell PowerFlex</th><th>VMware vSAN</th><th>Ceph（開源）</th></tr></thead>
+          <tbody>
+            <tr><td>協定</td><td>Block（iSCSI / NVMe-oF）</td><td>Block（VMFS / RDM / vVol）</td><td>Block / File / Object</td></tr>
+            <tr><td>Hypervisor 依賴</td><td>無（Hypervisor 無關）</td><td>強依賴 VMware ESXi</td><td>無</td></tr>
+            <tr><td>授權成本</td><td>商業授權</td><td>商業授權（通常含在 vSphere 方案中）</td><td>免費（社群版）</td></tr>
+            <tr class="highlight-row"><td>適用場景</td><td>大型 OpenStack / Kubernetes / Dell 生態</td><td>VMware 環境整合</td><td>OpenStack / Kubernetes / 成本敏感</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 開源生態 -->
+    <!-- ============================================================ -->
+    <section id="oss">
+      <div class="anchor-wrap">
+        <h2>開源生態（Ceph / Rook / MinIO / Longhorn）<a class="anchor-link" href="#oss">#</a></h2>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>專案</th><th>類型</th><th>協定</th><th>特色</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Ceph</strong><br><small>CNCF / 開源社群</small></td>
+              <td>三合一 SDS</td>
+              <td>Block（RBD）/ File（CephFS）/ Object（RADOS GW / S3）</td>
+              <td>最廣泛部署的開源 SDS；Red Hat / IBM / SUSE 均有商業版；架構成熟但維運複雜</td>
+              <td>OpenStack 私有雲標配；Kubernetes PV；成本敏感的大規模環境</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>Rook</strong><br><small>CNCF / 開源社群</small></td>
+              <td>Kubernetes Operator</td>
+              <td>透過 Ceph 提供（Block / File / Object）</td>
+              <td>讓 Ceph 在 Kubernetes 上像原生資源一樣管理；自動化 Ceph 的部署、擴展、故障恢復</td>
+              <td>Kubernetes 環境整合 Ceph 的標準方式</td>
+            </tr>
+            <tr>
+              <td><strong>MinIO</strong><br><small>MinIO Inc.（開源）</small></td>
+              <td>S3 相容物件儲存</td>
+              <td>S3</td>
+              <td>極高效能（號稱最快的 S3 相容儲存）；純軟體，部署極簡；GPUDirect S3 整合；AI / ML pipeline 熱門選擇</td>
+              <td>AI 訓練資料湖；備份目標；S3 相容的資料歸檔</td>
+            </tr>
+            <tr>
+              <td><strong>Longhorn</strong><br><small>CNCF / Rancher（SUSE）</small></td>
+              <td>Kubernetes 原生 Block</td>
+              <td>Block（透過 CSI）</td>
+              <td>輕量；自動複製、快照、備份整合 S3；不需要額外硬體；中小型 K8s 叢集友善</td>
+              <td>中小型 Kubernetes 叢集的持久卷儲存</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Ceph 的商業支援版本</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>廠商</th><th>商業版名稱</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr><td><strong>IBM / Red Hat</strong></td><td>Red Hat Ceph Storage / IBM Storage Ceph</td><td>Red Hat OpenShift 深度整合，IBM 企業支援</td></tr>
+            <tr><td><strong>SUSE</strong></td><td>SUSE Enterprise Storage</td><td>Rancher / K3s 生態整合</td></tr>
+            <tr><td><strong>Ubuntu / Canonical</strong></td><td>MicroCeph / Charmed Ceph</td><td>輕量部署版本，適合小規模環境</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 開源 SDS 的維運成本</div>
+        Ceph 功能強大但維運複雜，需要深厚的 Linux 和分散式系統知識。建議：中大型環境評估商業支援版；小型環境若人力不足，考慮用 Rook + Ceph on Kubernetes 降低維運門檻；或評估 Longhorn / MinIO 等更輕量的替代方案。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- HCI 陣營 -->
+    <!-- ============================================================ -->
+    <section id="hci">
+      <div class="anchor-wrap">
+        <h2>HCI 陣營（Nutanix / VxRail）<a class="anchor-link" href="#hci">#</a></h2>
+      </div>
+      <p>HCI（超融合）把計算和儲存融合在同一節點，儲存層由軟體（SDS）提供。雖然對終端用戶看起來是買一台「超融合設備」，底層其實是跑在 x86 上的 SDS。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>產品</th><th>廠商</th><th>Hypervisor</th><th>儲存軟體</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>Nutanix AOS</strong></td>
+              <td>Nutanix</td>
+              <td>AHV（自研）/ ESXi / Hyper-V</td>
+              <td>Nutanix AOS（分散式儲存引擎）</td>
+              <td>HCI 發明者；管理介面最友善；AHV 是免費 Hypervisor；Nutanix Files / Objects 提供 NAS / S3 延伸</td>
+            </tr>
+            <tr>
+              <td><strong>Dell VxRail</strong></td>
+              <td>Dell</td>
+              <td>ESXi（VMware 專屬）</td>
+              <td>VMware vSAN</td>
+              <td>Dell 硬體 + VMware vSAN，整合認證；適合已有 VMware 授權的客戶</td>
+            </tr>
+            <tr>
+              <td><strong>HPE SimpliVity</strong></td>
+              <td>HPE</td>
+              <td>ESXi</td>
+              <td>HPE 自研（含硬體壓縮加速晶片）</td>
+              <td>內建硬體壓縮加速，備份和複製效能強</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>HCI vs 傳統 SAN 的思維轉換</h3>
+      <p>採用 HCI 最大的思維轉換是：儲存不再是獨立的設備，而是叢集的一部分。擴展計算就是擴展儲存，擴展儲存就是擴展計算。這在計算和儲存成長比例相近的環境很有效率，但在兩者成長比例差異大時（例如儲存快速成長但計算不需要增加）就會有浪費。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- DASE 新架構 -->
+    <!-- ============================================================ -->
+    <section id="dase">
+      <div class="anchor-wrap">
+        <h2>DASE 新架構（VAST / NetApp AFX / HPE Alletra MP）<a class="anchor-link" href="#dase">#</a></h2>
+      </div>
+      <p>DASE（Disaggregated Shared Everything）是近年最受關注的新儲存架構，解決了 HCI「計算和儲存必須同步擴展」的問題，同時保留 SDS 的靈活性，是 AI 時代儲存架構的重要方向。</p>
+
+      <h3>DASE vs 傳統架構的差異</h3>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 620 210" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- 傳統雙控 -->
+          <text x="100" y="18" text-anchor="middle" fill="#8B949E" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">傳統雙控陣列</text>
+          <rect x="20" y="28" width="160" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="100" y="52" text-anchor="middle" fill="#E6EDF3" font-size="11">控制器（計算）</text>
+          <text x="100" y="68" text-anchor="middle" fill="#8B949E" font-size="10">+ 磁碟（儲存）綁定</text>
+          <text x="100" y="100" text-anchor="middle" fill="#F85149" font-size="10">✗ 計算和儲存必須</text>
+          <text x="100" y="114" text-anchor="middle" fill="#F85149" font-size="10">同步擴展</text>
+
+          <!-- HCI -->
+          <text x="310" y="18" text-anchor="middle" fill="#8B949E" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">HCI</text>
+          <rect x="210" y="28" width="90" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="255" y="52" text-anchor="middle" fill="#E6EDF3" font-size="10">節點 A</text>
+          <text x="255" y="65" text-anchor="middle" fill="#8B949E" font-size="9">CPU+SSD</text>
+          <rect x="310" y="28" width="90" height="60" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="355" y="52" text-anchor="middle" fill="#E6EDF3" font-size="10">節點 B</text>
+          <text x="355" y="65" text-anchor="middle" fill="#8B949E" font-size="9">CPU+SSD</text>
+          <text x="310" y="100" text-anchor="middle" fill="#D29922" font-size="10">△ 計算和儲存仍</text>
+          <text x="310" y="114" text-anchor="middle" fill="#D29922" font-size="10">綁在同一節點</text>
+
+          <!-- DASE -->
+          <text x="540" y="18" text-anchor="middle" fill="#2F81F7" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">DASE</text>
+          <rect x="450" y="28" width="80" height="35" rx="4" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="490" y="50" text-anchor="middle" fill="#2F81F7" font-size="10">計算節點（CNode）</text>
+          <rect x="450" y="72" width="80" height="35" rx="4" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="490" y="94" text-anchor="middle" fill="#3FB950" font-size="10">儲存節點（DNode）</text>
+          <text x="540" y="120" text-anchor="middle" fill="#3FB950" font-size="10">✓ 各自獨立擴展</text>
+          <text x="540" y="134" text-anchor="middle" fill="#3FB950" font-size="10">✓ 全域共享命名空間</text>
+
+          <!-- 底部說明 -->
+          <text x="310" y="162" text-anchor="middle" fill="#484F58" font-size="10">DASE 讓計算和儲存完全解耦，AI 工作負載可以按需擴展 GPU 節點，不需要同時擴展儲存</text>
+          <text x="310" y="178" text-anchor="middle" fill="#484F58" font-size="10">VAST Data 是 DASE 的代表廠商；HPE Alletra MP B10000 和 NetApp AFX 也採用類似架構</text>
+        </svg>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>產品</th><th>廠商</th><th>架構</th><th>最強場景</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>VAST Data Platform</strong></td>
+              <td>VAST Data（新創）</td>
+              <td>完全解耦 DASE，Global Namespace</td>
+              <td>AI 訓練 / 推理；Block + File + Object + DB 四合一；GPUDirect 最佳化</td>
+            </tr>
+            <tr>
+              <td><strong>HPE Alletra MP B10000</strong></td>
+              <td>HPE</td>
+              <td>DASE，控制平面與資料平面分離</td>
+              <td>AI 工作負載；大規模虛擬化；NVMe-oF 後端</td>
+            </tr>
+            <tr>
+              <td><strong>NetApp AFX</strong></td>
+              <td>NetApp</td>
+              <td>解耦架構，NVMe-oF + RoCE 後端</td>
+              <td>高效能 NAS / S3；AI / ML 資料管線；HPC 工作負載</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 選型判斷 -->
+    <!-- ============================================================ -->
+    <section id="selection">
+      <div class="anchor-wrap">
+        <h2>選型判斷<a class="anchor-link" href="#selection">#</a></h2>
+      </div>
+      <p>SDS 的選型沒有標準答案，取決於工作負載特性、既有環境、人力能力和預算。以下是常見場景的建議方向。</p>
+
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-icon">🏦</div>
+          <div class="scene-title">企業核心應用（資料庫、ERP）</div>
+          <div class="scene-solution">→ 傳統 SAN Appliance 優先</div>
+          <div class="scene-reason">IBM FlashSystem / Dell PowerStore / NetApp AFF。SDS 在使命關鍵場景的可靠性和效能保證仍不如成熟的 Appliance，除非已有 SDS 專業能力。</div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-icon">☁️</div>
+          <div class="scene-title">私有雲 / OpenStack</div>
+          <div class="scene-solution">→ Ceph 或 PowerFlex</div>
+          <div class="scene-reason">Ceph 是 OpenStack 的事實標準儲存後端；若在 Dell 環境且想要商業支援，PowerFlex 是成熟選項。</div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-icon">🐳</div>
+          <div class="scene-title">Kubernetes 容器儲存</div>
+          <div class="scene-solution">→ Rook+Ceph / Longhorn / 傳統 SAN CSI</div>
+          <div class="scene-reason">小型叢集用 Longhorn（輕量）；中大型用 Rook+Ceph；若已有企業 SAN，各品牌 CSI Driver 是最簡單的整合方式。</div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-icon">🤖</div>
+          <div class="scene-title">AI 訓練資料儲存</div>
+          <div class="scene-solution">→ VAST Data / IBM Storage Scale / MinIO</div>
+          <div class="scene-reason">需要高吞吐量 + GPUDirect 支援。VAST Data 是新創首選；IBM Storage Scale 是 HPC 成熟方案；MinIO 適合 S3 為主的 AI pipeline。</div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-icon">💻</div>
+          <div class="scene-title">VMware 環境整合</div>
+          <div class="scene-solution">→ vSAN 或 VxRail</div>
+          <div class="scene-reason">已有大量 VMware 環境且授權可整合的情況下，vSAN / VxRail 是最省事的選擇；若需要傳統 SAN 效能，FlashSystem / PowerStore 配合 vSphere Plugin 也是常見組合。</div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-icon">💰</div>
+          <div class="scene-title">成本敏感 / 非核心應用</div>
+          <div class="scene-solution">→ Ceph（開源）/ Longhorn</div>
+          <div class="scene-reason">預算有限且有維運能力，開源 SDS 是最低成本選項；但需誠實評估人力成本，避免省了授權費但多花維運工時。</div>
+        </div>
+      </div>
+
+      <h3>快速選型對照表</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>場景</th><th>優先推薦</th><th>次選</th><th>避免</th></tr></thead>
+          <tbody>
+            <tr><td>使命關鍵 / 高可用</td><td>傳統 SAN Appliance</td><td>vSAN ESA</td><td>開源 SDS（維運複雜）</td></tr>
+            <tr><td>AI 訓練高吞吐</td><td>VAST Data / Storage Scale</td><td>MinIO + NVMe</td><td>傳統雙控 SAN</td></tr>
+            <tr><td>Kubernetes 原生</td><td>Rook+Ceph / Longhorn</td><td>商業 CSI Driver</td><td>傳統磁帶庫</td></tr>
+            <tr><td>VMware HCI</td><td>vSAN / VxRail</td><td>Nutanix</td><td>純軟體 SDS（維運複雜）</td></tr>
+            <tr class="highlight-row"><td>台灣大型企業核心</td><td>FlashSystem / PowerStore（傳統 SAN）</td><td>vSAN（VMware 環境）</td><td>VAST（市場滲透率仍低）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">相關頁面</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part4-platform.html#hci" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>
+            Part 4 — HCI 超融合架構完整說明
+          </a>
+          <a href="vendors-ibm.html#sds-ibm" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            IBM Storage Ceph / Fusion 詳細說明
+          </a>
+          <a href="vendors-others.html#vast" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            VAST Data 架構深度說明
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'SDS — 軟體定義儲存全景', keywords: 'SDS 軟體定義 Ceph vSAN PowerFlex Nutanix MinIO VAST Data Longhorn Rook Storage Scale Fusion HCI DASE', url: 'sds.html', path: 'sds.html' },
+  { title: 'SDS 核心思想', keywords: 'SDS 軟體定義 硬體解耦 三種路線 傳統廠商 開源 DASE 新架構', url: 'sds.html#concept', path: 'sds.html' },
+  { title: 'IBM SDS Storage Scale Ceph Fusion', keywords: 'IBM Storage Scale GPFS Ceph Fusion OpenShift Kubernetes AI HPC', url: 'sds.html#ibm-sds', path: 'sds.html' },
+  { title: 'VMware vSAN HCI', keywords: 'vSAN ESA ESXi SPBM Stretched Cluster HCI 超融合', url: 'sds.html#vmware-sds', path: 'sds.html' },
+  { title: 'Dell PowerFlex ScaleIO', keywords: 'PowerFlex ScaleIO Ultra Block iSCSI NVMe-oF OpenStack Kubernetes', url: 'sds.html#dell-sds', path: 'sds.html' },
+  { title: '開源 SDS Ceph Rook MinIO Longhorn', keywords: 'Ceph Rook MinIO Longhorn 開源 RBD CephFS RADOS S3 CSI', url: 'sds.html#oss', path: 'sds.html' },
+  { title: 'HCI Nutanix VxRail SimpliVity', keywords: 'HCI Nutanix AOS AHV VxRail SimpliVity 超融合', url: 'sds.html#hci', path: 'sds.html' },
+  { title: 'DASE 新架構 VAST NetApp AFX HPE Alletra', keywords: 'DASE Disaggregated VAST Data CNode DNode NetApp AFX HPE Alletra MP B10000 AI GPUDirect', url: 'sds.html#dase', path: 'sds.html' },
+  { title: 'SDS 選型判斷', keywords: '選型 場景 AI 訓練 Kubernetes 容器 VMware 核心應用 成本 開源', url: 'sds.html#selection', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

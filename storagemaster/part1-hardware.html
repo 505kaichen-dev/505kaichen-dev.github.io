@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 1 — 儲存基礎與硬體層 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-green td { background: rgba(63,185,80,.06); }
+    .highlight-red td { background: rgba(248,81,73,.06); }
+    .highlight-amber td { background: rgba(210,153,34,.06); }
+    .formula {
+      font-family: var(--mono);
+      font-size: .875rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 20px;
+      margin: 16px 0;
+      color: var(--primary-hi);
+      line-height: 1.9;
+    }
+    .media-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .media-card-icon { font-size: 28px; margin-bottom: 10px; }
+    .media-card-title { font-size: .9375rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .media-card-sub { font-size: .8125rem; color: var(--primary); font-family: var(--mono); margin-bottom: 8px; }
+    .media-card-desc { font-size: .8125rem; color: var(--text-muted); line-height: 1.6; }
+    .brand-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+    }
+    .brand-generic { background: rgba(63,185,80,.12); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+    .brand-ibm { background: rgba(47,129,247,.12); color: var(--primary-hi); border: 1px solid rgba(47,129,247,.3); }
+    .brand-others { background: rgba(210,153,34,.12); color: var(--amber); border: 1px solid rgba(210,153,34,.3); }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link active" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link nav-sub" href="#media">1.1 儲存媒介演進</a>
+      <a class="nav-link nav-sub" href="#raid">1.2 RAID 傳統架構</a>
+      <a class="nav-link nav-sub" href="#draid">1.3 分散式 RAID</a>
+      <a class="nav-link nav-sub" href="#controller">1.4 儲存控制器架構</a>
+      <a class="nav-link nav-sub" href="#allflash">1.5 All-Flash vs Hybrid</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 01 / CORE CURRICULUM</div>
+      <h1>儲存基礎與硬體層</h1>
+      <p class="page-desc">從儲存媒介的物理特性出發，理解 RAID 保護架構的演進邏輯，掌握控制器設計與 All-Flash 時代的取捨思維。本章為純通用概念，適用所有品牌儲存設備。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-green">通用概念</span>
+        <span class="badge badge-blue">基礎必讀</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#media">1.1 儲存媒介演進</a></li>
+        <li><a href="#raid">1.2 RAID 傳統架構</a></li>
+        <li><a href="#draid">1.3 分散式 RAID（各品牌實作對照）</a></li>
+        <li><a href="#controller">1.4 儲存控制器架構</a></li>
+        <li><a href="#allflash">1.5 All-Flash vs Hybrid 架構取捨</a></li>
+      </ol>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1.1 儲存媒介演進 -->
+    <!-- ============================================================ -->
+    <section id="media">
+      <div class="anchor-wrap">
+        <h2>1.1 儲存媒介演進<a class="anchor-link" href="#media">#</a></h2>
+      </div>
+      <p>企業儲存的效能與成本，從根本上取決於底層的儲存媒介。從機械硬碟到 NVMe SSD，每一次媒介的演進都帶來了根本性的效能躍升，也改變了容量規劃的邏輯。</p>
+
+      <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px,1fr));">
+        <div class="media-card">
+          <div class="media-card-icon">💿</div>
+          <div class="media-card-title">HDD</div>
+          <div class="media-card-sub">Hard Disk Drive</div>
+          <div class="media-card-desc">機械式旋轉磁碟，磁頭尋道讀寫。容量大、成本低，但延遲高（ms 等級），IOPS 受限於物理轉速。企業級有 7.2K / 10K / 15K RPM 之分。</div>
+        </div>
+        <div class="media-card">
+          <div class="media-card-icon">🔲</div>
+          <div class="media-card-title">SATA SSD</div>
+          <div class="media-card-sub">固態硬碟（SATA 介面）</div>
+          <div class="media-card-desc">NAND Flash 儲存，無機械動作。延遲降至 µs 等級，IOPS 大幅提升，但受限於 SATA 協定（AHCI）的指令佇列設計，理論頻寬上限約 600 MB/s。</div>
+        </div>
+        <div class="media-card" style="border-color:var(--primary);">
+          <div class="media-card-icon">⚡</div>
+          <div class="media-card-title">NVMe SSD</div>
+          <div class="media-card-sub">Non-Volatile Memory Express</div>
+          <div class="media-card-desc">直接走 PCIe 匯流排，擺脫 AHCI 協定限制。指令佇列從 1 個 32 深度擴展為 65,535 個 65,536 深度，延遲可低至 50 µs，頻寬可達數 GB/s。企業儲存的現行主流。</div>
+        </div>
+        <div class="media-card">
+          <div class="media-card-icon">🧠</div>
+          <div class="media-card-title">SCM</div>
+          <div class="media-card-sub">Storage Class Memory</div>
+          <div class="media-card-desc">介於 DRAM 和 NAND 之間的新層次（如 Intel Optane）。延遲接近 DRAM（ns 等級），但容量比 DRAM 大、比 NAND 貴。目前主要用於超低延遲的特殊場景，尚未大規模普及。</div>
+        </div>
+      </div>
+
+      <h3>各媒介典型規格對比</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>媒介</th><th>典型延遲</th><th>典型 IOPS（4K 隨機）</th><th>典型頻寬</th><th>單位容量成本</th></tr></thead>
+          <tbody>
+            <tr><td>15K SAS HDD</td><td>3 ~ 5 ms</td><td>175 ~ 210</td><td>~300 MB/s</td><td>最低</td></tr>
+            <tr><td>SATA SSD</td><td>0.1 ~ 0.5 ms</td><td>~80,000</td><td>~550 MB/s</td><td>低</td></tr>
+            <tr class="highlight-row"><td>企業 NVMe SSD</td><td>50 ~ 200 µs</td><td>500,000 ~ 1,500,000</td><td>3 ~ 7 GB/s</td><td>中</td></tr>
+            <tr><td>SCM（Optane 類）</td><td>2 ~ 10 µs</td><td>數百萬以上</td><td>~6 GB/s</td><td>最高</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>NAND Flash 的類型與耐久度取捨</h3>
+      <p>NVMe SSD 內部的 NAND Flash 依每個儲存單元可存放的 bit 數分為幾種類型，耐久度與成本呈反比：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>類型</th><th>Bits / Cell</th><th>耐久度（P/E Cycles）</th><th>成本</th><th>企業用途</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SLC</strong>（Single Level Cell）</td><td>1 bit</td><td>100,000+</td><td>最高</td><td>Cache 層、極高耐久需求</td></tr>
+            <tr><td><strong>MLC</strong>（Multi Level Cell）</td><td>2 bits</td><td>~10,000</td><td>高</td><td>企業 SSD 早期主流</td></tr>
+            <tr class="highlight-row"><td><strong>TLC</strong>（Triple Level Cell）</td><td>3 bits</td><td>~3,000</td><td>中</td><td>目前企業 NVMe 主流</td></tr>
+            <tr><td><strong>QLC</strong>（Quad Level Cell）</td><td>4 bits</td><td>~1,000</td><td>低</td><td>高容量、讀取密集場景（如歸檔）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>企業儲存陣列目前以 TLC 為主流，QLC 則用於高容量、讀取密集的歸檔層（如 IBM FlashSystem 7300 的 //C 型號、Everpure FlashArray //C）。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 1.2 RAID 傳統架構 -->
+    <!-- ============================================================ -->
+    <section id="raid">
+      <div class="anchor-wrap">
+        <h2>1.2 RAID 傳統架構<a class="anchor-link" href="#raid">#</a></h2>
+      </div>
+      <p>單顆磁碟都有故障的可能，RAID（Redundant Array of Independent Disks）透過將資料分散或複製到多顆磁碟，在磁碟故障時保護資料不遺失。</p>
+
+      <h3>常見 RAID 等級</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RAID 等級</th><th>最少磁碟數</th><th>可容忍故障</th><th>Usable 比例</th><th>讀寫特性</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>RAID 0</strong></td>
+              <td>2</td>
+              <td>0 顆（無保護）</td>
+              <td>100%</td>
+              <td>讀寫均快</td>
+              <td>暫存、不重要資料</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 1</strong></td>
+              <td>2</td>
+              <td>1 顆</td>
+              <td>50%</td>
+              <td>讀快、寫同速</td>
+              <td>作業系統磁碟、小量關鍵資料</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 5</strong></td>
+              <td>3</td>
+              <td>1 顆</td>
+              <td>(N-1)/N</td>
+              <td>讀快、寫有 Parity 計算開銷</td>
+              <td>一般讀取密集場景</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>RAID 6</strong></td>
+              <td>4</td>
+              <td>2 顆</td>
+              <td>(N-2)/N</td>
+              <td>讀快、寫開銷更高</td>
+              <td>企業儲存主流，雙重保護</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 10</strong></td>
+              <td>4</td>
+              <td>每組鏡像各 1 顆</td>
+              <td>50%</td>
+              <td>讀寫均快</td>
+              <td>高 IOPS + 高保護需求</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>RAID 5 vs RAID 6 的選擇</h3>
+      <p>RAID 5 只能容忍 1 顆磁碟故障。在大容量磁碟普及後，RAID 5 重建期間發生第二顆故障的機率顯著上升，因此企業儲存已逐漸從 RAID 5 轉向 RAID 6（雙 Parity）作為標準。</p>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 大容量磁碟的重建風險</div>
+        <p style="margin-bottom:8px;">HDD 的重建時間與磁碟容量成正比。以 12 TB HDD 為例，RAID 6 重建可能需要 24～48 小時，在這段期間陣列處於只剩單一 Parity 保護的狀態。</p>
+        <p style="margin-bottom:0;">NVMe SSD 因為讀取速度遠高於 HDD，重建時間大幅縮短（通常數小時內完成），這是 All-Flash 在資料保護方面的隱性優勢之一。</p>
+      </div>
+
+      <h3>傳統 RAID 的核心問題：重建瓶頸</h3>
+      <p>傳統 RAID 的重建只依賴固定的幾顆磁碟（故障磁碟的同組磁碟），其他磁碟閒置不參與。這造成兩個問題：</p>
+      <ul>
+        <li><strong>重建速度慢：</strong>只有少數磁碟參與 I/O，無法充分利用所有磁碟的頻寬</li>
+        <li><strong>重建期間效能衝擊：</strong>參與重建的磁碟同時要服務正常 I/O，競爭嚴重</li>
+      </ul>
+      <p>這個問題催生了分散式 RAID 的出現，見下一節。</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 1.3 分散式 RAID -->
+    <!-- ============================================================ -->
+    <section id="draid">
+      <div class="anchor-wrap">
+        <h2>1.3 分散式 RAID（各品牌實作對照）<a class="anchor-link" href="#draid">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <p>分散式 RAID（Distributed RAID）是對傳統 RAID 重建瓶頸的根本性解決方案。核心思想是：將 Parity 和資料條帶（Stripe）分散到陣列中的<strong>所有</strong>磁碟，而不是固定的幾顆，讓所有磁碟都能參與重建。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 620 220" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 傳統 RAID -->
+          <text x="155" y="20" text-anchor="middle" fill="#8B949E" font-size="12" font-weight="600" font-family="JetBrains Mono,monospace">傳統 RAID-6</text>
+          <!-- 磁碟 -->
+          <rect x="20" y="32" width="52" height="160" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="46" y="118" text-anchor="middle" fill="#E6EDF3" font-size="11">D1</text>
+          <rect x="80" y="32" width="52" height="160" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="106" y="118" text-anchor="middle" fill="#E6EDF3" font-size="11">D2</text>
+          <rect x="140" y="32" width="52" height="160" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="166" y="118" text-anchor="middle" fill="#E6EDF3" font-size="11">D3</text>
+          <rect x="200" y="32" width="52" height="160" rx="4" fill="#1C2128" stroke="#F85149" stroke-width="2"/>
+          <text x="226" y="108" text-anchor="middle" fill="#F85149" font-size="11">P1</text>
+          <text x="226" y="124" text-anchor="middle" fill="#F85149" font-size="9">Parity</text>
+          <rect x="260" y="32" width="52" height="160" rx="4" fill="#1C2128" stroke="#F85149" stroke-width="2"/>
+          <text x="286" y="108" text-anchor="middle" fill="#F85149" font-size="11">P2</text>
+          <text x="286" y="124" text-anchor="middle" fill="#F85149" font-size="9">Parity</text>
+
+          <!-- 重建箭頭 只有3顆 -->
+          <text x="155" y="205" text-anchor="middle" fill="#F85149" font-size="10">重建時只有 3 顆 Data 磁碟參與</text>
+
+          <!-- 分隔線 -->
+          <line x1="330" y1="10" x2="330" y2="215" stroke="#30363D" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- 分散式 RAID -->
+          <text x="475" y="20" text-anchor="middle" fill="#2F81F7" font-size="12" font-weight="600" font-family="JetBrains Mono,monospace">分散式 RAID-6</text>
+
+          <rect x="340" y="32" width="46" height="70" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="363" y="72" text-anchor="middle" fill="#E6EDF3" font-size="10">D</text>
+          <rect x="340" y="110" width="46" height="82" rx="4" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="363" y="156" text-anchor="middle" fill="#2F81F7" font-size="10">P</text>
+
+          <rect x="394" y="32" width="46" height="100" rx="4" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="417" y="87" text-anchor="middle" fill="#2F81F7" font-size="10">P</text>
+          <rect x="394" y="140" width="46" height="52" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="417" y="170" text-anchor="middle" fill="#E6EDF3" font-size="10">D</text>
+
+          <rect x="448" y="32" width="46" height="55" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="471" y="64" text-anchor="middle" fill="#E6EDF3" font-size="10">D</text>
+          <rect x="448" y="95" width="46" height="97" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="471" y="148" text-anchor="middle" fill="#E6EDF3" font-size="10">D</text>
+
+          <rect x="502" y="32" width="46" height="80" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="525" y="76" text-anchor="middle" fill="#E6EDF3" font-size="10">D</text>
+          <rect x="502" y="120" width="46" height="72" rx="4" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="525" y="160" text-anchor="middle" fill="#2F81F7" font-size="10">P</text>
+
+          <rect x="556" y="32" width="46" height="60" rx="4" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="579" y="66" text-anchor="middle" fill="#2F81F7" font-size="10">P</text>
+          <rect x="556" y="100" width="46" height="92" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="579" y="150" text-anchor="middle" fill="#E6EDF3" font-size="10">D</text>
+
+          <text x="475" y="205" text-anchor="middle" fill="#2F81F7" font-size="10">重建時所有磁碟都參與，速度大幅提升</text>
+        </svg>
+      </div>
+
+      <h3>分散式 RAID 的核心優勢</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>傳統 RAID-6</th><th>分散式 RAID-6</th></tr></thead>
+          <tbody>
+            <tr><td>Parity 分佈</td><td>固定在特定磁碟</td><td>分散在所有磁碟</td></tr>
+            <tr><td>重建時參與磁碟數</td><td>同組幾顆</td><td>所有磁碟</td></tr>
+            <tr class="highlight-row"><td>重建速度</td><td>慢（受限於少數磁碟頻寬）</td><td><strong>快</strong>（所有磁碟平行參與）</td></tr>
+            <tr><td>重建期間效能影響</td><td>大（同顆磁碟同時服務 I/O 和重建）</td><td>較小（負載分散）</td></tr>
+            <tr><td>Usable 比例</td><td>略高</td><td>略低（約 83%，依配置）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <h3>IBM FlashSystem 的 DRAID 實作</h3>
+      <p>IBM 將分散式 RAID 稱為 <strong>DRAID（Distributed RAID）</strong>，是 FlashSystem 全系列的預設 RAID 類型。常見配置為 DRAID-6（10+P+Q），代表每個 Stripe 有 10 個 Data 磁碟、1 個 P Parity、1 個 Q Parity，合計 12 個 Stripe 單元分散在所有磁碟上。</p>
+      <p>實際上 18 顆磁碟的 FS7300，DRAID-6（10+P+Q）的 Usable 約為物理容量的 83%，詳細計算可用 IBM Storage Modeller 驗證（見 <a href="part6-capacity.html#modeller">Part 6 Storage Modeller 章節</a>）。</p>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <h3>各品牌的分散式 RAID 實作名稱</h3>
+      <p>分散式 RAID 的概念各品牌都有，只是名稱和細節實作不同：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>產品</th><th>名稱</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td><strong>IBM</strong></td><td>FlashSystem 全系列</td><td>DRAID</td><td>本章示範，DRAID-6（10+P+Q）為常見配置</td></tr>
+            <tr><td><strong>NetApp</strong></td><td>ONTAP（AFF）</td><td>RAID-DP / RAID-TEC</td><td>RAID-DP 為雙 Parity，RAID-TEC 為三 Parity，Parity 分散在所有磁碟</td></tr>
+            <tr><td><strong>Dell</strong></td><td>PowerStore</td><td>Progressive RAID</td><td>動態調整保護等級，磁碟越多保護越強</td></tr>
+            <tr><td><strong>Everpure（Pure）</strong></td><td>FlashArray</td><td>RAID-3D</td><td>三維 Parity 保護，可容忍多顆同時故障</td></tr>
+            <tr><td><strong>HPE</strong></td><td>Alletra / Nimble</td><td>RAID 6 / Triple Parity</td><td>Nimble 採用 Triple+ Parity，保護能力更強</td></tr>
+            <tr><td><strong>Hitachi</strong></td><td>VSP</td><td>RAID 6（分散式實作）</td><td>Parity 分散設計，細節依型號而異</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">重點整理</div>
+        名稱不同，但核心邏輯一致：讓所有磁碟都參與重建，縮短重建時間、降低二次故障風險。評估不同品牌設備時，先確認它採用哪種 RAID 類型，再用各廠商的容量規劃工具計算實際 Usable。
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 1.4 儲存控制器架構 -->
+    <!-- ============================================================ -->
+    <section id="controller">
+      <div class="anchor-wrap">
+        <h2>1.4 儲存控制器架構<a class="anchor-link" href="#controller">#</a></h2>
+      </div>
+      <p>儲存控制器是磁碟和主機之間的大腦，負責處理所有 I/O 請求、執行 RAID 計算、管理 Cache、以及對主機呈現邏輯卷（LUN）。控制器的設計直接決定了儲存系統的可用性和效能特性。</p>
+
+      <h3>單控制器 vs 雙控制器</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>架構</th><th>說明</th><th>控制器故障影響</th><th>適用場景</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>單控制器</strong></td>
+              <td>一個控制器處理所有 I/O</td>
+              <td>儲存設備完全停止服務（單點故障）</td>
+              <td>入門級、非關鍵應用</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>雙控制器（Active-Active）</strong></td>
+              <td>兩個控制器同時服務 I/O，互相備援</td>
+              <td>另一個控制器接手，服務不中斷</td>
+              <td>企業級儲存標配</td>
+            </tr>
+            <tr>
+              <td><strong>雙控制器（Active-Passive）</strong></td>
+              <td>一個主動服務，一個待命</td>
+              <td>切換到待命控制器，短暫中斷</td>
+              <td>成本敏感的企業場景</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>現代企業儲存幾乎全部採用 Active-Active 雙控制器，IBM FlashSystem、NetApp AFF、Everpure FlashArray 均如此。兩個控制器同時服務 I/O，不只是備援，也是效能的水平擴展。</p>
+
+      <h3>Cache 的角色</h3>
+      <p>控制器內建 DRAM Cache，作為磁碟和主機之間的緩衝層，有兩個核心功能：</p>
+      <ul>
+        <li><strong>Read Cache：</strong>快取近期讀取的資料，下次讀取相同資料時直接從 Cache 回傳，不需要讀磁碟。Cache Hit Rate 越高，平均延遲越低。</li>
+        <li><strong>Write Cache（Write-back）：</strong>寫入請求先寫入 Cache 就回應主機完成，再非同步寫入磁碟，大幅降低寫入延遲。代價是需要斷電保護機制。</li>
+      </ul>
+
+      <h3>Write-back vs Write-through</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>模式</th><th>寫入流程</th><th>延遲</th><th>斷電風險</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>Write-back</strong></td>
+              <td>資料寫入 Cache → 回應主機完成 → 非同步寫磁碟</td>
+              <td>低（Cache 速度）</td>
+              <td>有（Cache 資料未寫入磁碟時斷電會遺失）→ 需要 NVRAM 或電池保護</td>
+            </tr>
+            <tr>
+              <td><strong>Write-through</strong></td>
+              <td>資料同步寫入 Cache 和磁碟 → 回應主機完成</td>
+              <td>高（磁碟速度）</td>
+              <td>無（資料已在磁碟）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cache 斷電保護</h3>
+      <p>Write-back Cache 必須有斷電保護機制，否則斷電瞬間 Cache 中未寫入磁碟的資料會遺失：</p>
+      <ul>
+        <li><strong>NVRAM（Non-Volatile RAM）：</strong>斷電後資料保留在 NVRAM 中，供電後繼續寫入磁碟。IBM FlashSystem 採用此方式。</li>
+        <li><strong>電池備援（BBU / Supercapacitor）：</strong>斷電時由電池供電，讓 Cache 資料有時間寫入磁碟。部分舊一代設備使用。</li>
+        <li><strong>Cache 鏡像：</strong>兩個控制器的 Cache 互相鏡像，一個控制器故障時資料在另一個控制器的 Cache 仍存在。</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 1.5 All-Flash vs Hybrid -->
+    <!-- ============================================================ -->
+    <section id="allflash">
+      <div class="anchor-wrap">
+        <h2>1.5 All-Flash vs Hybrid 架構取捨<a class="anchor-link" href="#allflash">#</a></h2>
+      </div>
+      <p>在 SSD 成本尚未大幅下降的早期，Hybrid 混合陣列（Flash + HDD 混合）是企業儲存的主流過渡方案。理解 Hybrid 的設計邏輯，有助於理解為什麼 All-Flash 最終取而代之。</p>
+
+      <h3>Hybrid 陣列的設計邏輯</h3>
+      <p>Hybrid 陣列的核心思想：用少量 SSD 作為 HDD 的 Cache 層，讓熱資料留在 SSD，冷資料降至 HDD。主機感受到的平均效能介於純 SSD 和純 HDD 之間，但成本遠低於純 SSD。</p>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">Hybrid 的根本限制</div>
+        Hybrid 的效能取決於 Cache Hit Rate。如果工作負載的熱資料集合（Working Set）超過 SSD Cache 的容量，大量 I/O 就會穿透到 HDD，效能驟降。這個不確定性讓效能難以保證，是 Hybrid 最大的弱點。
+      </div>
+
+      <h3>All-Flash 取代 Hybrid 的原因</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>Hybrid 陣列</th><th>All-Flash 陣列</th></tr></thead>
+          <tbody>
+            <tr><td>效能一致性</td><td>依賴 Cache Hit Rate，有不確定性</td><td>所有 I/O 都在 Flash，效能可預測</td></tr>
+            <tr><td>延遲</td><td>Cache Miss 時退化到 HDD 延遲（ms）</td><td>所有 I/O 均為 µs 等級延遲</td></tr>
+            <tr><td>容量規劃複雜度</td><td>需要評估 Working Set 大小</td><td>直接規劃總容量，無需考慮 Cache</td></tr>
+            <tr class="highlight-row"><td>成本趨勢</td><td>Flash 成本下降後優勢縮小</td><td>NVMe SSD 單位成本持續下降，TCO 已與 Hybrid 相當</td></tr>
+            <tr><td>功耗 / 空間</td><td>HDD 耗電多、佔空間大</td><td>All-Flash 功耗低、密度高</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>NVMe-oF：下一個演進方向</h3>
+      <p>NVMe over Fabrics（NVMe-oF）讓 NVMe 的低延遲特性可以透過網路（FC、RoCE、iWARP）傳遞到遠端儲存，打破了 NVMe 只能本機連接的限制。這是目前企業儲存網路的下一個演進方向，詳細說明見 <a href="part2-san.html#nvmeof">Part 2 SAN 網路層</a>。</p>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">下一步</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part2-san.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+            Part 2 — SAN 網路層（磁碟備妥後，如何讓主機連進來）
+          </a>
+          <a href="part6-capacity.html#capacity-layers" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Part 6 — 容量三層換算（Raw → Usable → Effective 的計算）
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe SCM RAID DRAID 控制器 Cache All-Flash Hybrid 儲存媒介 TLC QLC MLC SLC', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: '1.1 儲存媒介演進', keywords: 'HDD SSD NVMe SCM NAND TLC QLC MLC SLC SATA PCIe 延遲 IOPS', url: 'part1-hardware.html#media', path: 'part1-hardware.html' },
+  { title: '1.2 RAID 傳統架構', keywords: 'RAID 0 1 5 6 10 Parity Usable 重建 風險 磁碟故障', url: 'part1-hardware.html#raid', path: 'part1-hardware.html' },
+  { title: '1.3 分散式 RAID', keywords: 'DRAID Distributed RAID IBM NetApp RAID-DP RAID-TEC Dell Progressive Everpure RAID-3D HPE 重建速度', url: 'part1-hardware.html#draid', path: 'part1-hardware.html' },
+  { title: '1.4 儲存控制器架構', keywords: '控制器 Active-Active Cache Write-back Write-through NVRAM 電池 BBU 雙控', url: 'part1-hardware.html#controller', path: 'part1-hardware.html' },
+  { title: '1.5 All-Flash vs Hybrid', keywords: 'All-Flash Hybrid NVMe-oF Cache Hit Rate Working Set TCO 功耗', url: 'part1-hardware.html#allflash', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'FC iSCSI NVMe-oF Zoning MPIO', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 Mdisk Pool VDisk', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: 'Part 3 — 情境案例', keywords: 'FlashSystem Thin Provisioning 容量推導', url: 'part3-case.html', path: 'part3-case.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS Storage Modeller TiB TB 容量規劃', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

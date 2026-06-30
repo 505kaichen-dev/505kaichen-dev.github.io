@@ -103,6 +103,7 @@
 | 009 | html5-story | HTML5 的故事與創作可能性 | story | |
 | 010 | bopomofo | ㄅㄆㄇ 注音學習小站 | kids | |
 | 011 | kids-math | 數學樂園 | kids | |
+| 012 | storagemaster | Storage Master — 企業儲存技術知識庫 | works | |
 <!-- CARD_LIST_END -->
 
 ---
@@ -120,7 +121,7 @@
 
 1. 判讀子頁面標題、描述、主題風格
 2. 對照分類系統，決定 `data-category`
-3. 給下一個 `data-order` 序號（目前最新為 011，下一張為 012）
+3. 給下一個 `data-order` 序號（目前最新為 012，下一張為 013）
 4. 將新卡片插入 `work-grid`（順序不影響顯示，JS 自動排序）
 5. **更新本文件** 的卡片序號對照表
 6. 輸出完整更新的 `index.html`
@@ -139,6 +140,7 @@
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
+| 2026-06-30 | 新增 Storage Master | 加入企業儲存技術知識庫專案、首頁第 012 張卡片與 1200×630 封面圖 |
 | 2026-06-28 | CSS Bug 修復 | `@media (max-width: 900px)` 區塊括號錯誤，6 條手機版樣式跑到媒體查詢外，導致桌面版也套用手機排版（padding、單欄 About 等），已修正移回媒體查詢內 |
 | 2026-06-28 | card-tag 修正 | bopomofo（010）與 kids-math（011）的 card-tag 由「互動工具」/「互動遊戲」改為「親子學習」，符合分類系統規範 |
 | 2026-06-28 | 全站結構整理 | 建立 docs、handoffs、PROJECT.md 與可逆 `_archive`；正式頁驗證為 0 個本機斷鏈 |

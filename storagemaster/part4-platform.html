@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 4 — 前端平台與整合 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-green td { background: rgba(63,185,80,.06); }
+    .highlight-amber td { background: rgba(210,153,34,.06); }
+    .brand-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+    }
+    .brand-generic { background: rgba(63,185,80,.12); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+    .brand-ibm { background: rgba(47,129,247,.12); color: var(--primary-hi); border: 1px solid rgba(47,129,247,.3); }
+    .brand-others { background: rgba(210,153,34,.12); color: var(--amber); border: 1px solid rgba(210,153,34,.3); }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link active" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link nav-sub" href="#scope">本篇範圍說明</a>
+      <a class="nav-link nav-sub" href="#threetier">4.1 三層式架構</a>
+      <a class="nav-link nav-sub" href="#hci">4.2 超融合架構（HCI）</a>
+      <a class="nav-link nav-sub" href="#power">4.3 IBM Power 儲存接法</a>
+      <a class="nav-link nav-sub" href="#x86">4.4 x86 平台儲存整合</a>
+      <a class="nav-link nav-sub" href="#nas">4.5 NAS 整合與共存</a>
+      <a class="nav-link" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 04 / CORE CURRICULUM</div>
+      <h1>前端平台與整合</h1>
+      <p class="page-desc">將儲存基礎、SAN 網路、虛擬化層與實際的伺服器平台接起來。涵蓋三層式架構、HCI 超融合、IBM Power 生態、x86 平台（VMware / Linux / Windows）與 NAS 整合設計。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-green">通用概念</span>
+        <span class="badge badge-blue">IBM 示範</span>
+        <span class="badge badge-amber">跨品牌對照</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#scope">本篇範圍說明</a></li>
+        <li><a href="#threetier">4.1 三層式架構（3-Tier）</a></li>
+        <li><a href="#hci">4.2 超融合架構（HCI）</a></li>
+        <li><a href="#power">4.3 IBM Power + IBM i / AIX 儲存接法</a></li>
+        <li><a href="#x86">4.4 x86 平台儲存整合（VMware / Linux / Windows）</a></li>
+        <li><a href="#nas">4.5 NAS 整合與 File / Block 共存</a></li>
+      </ol>
+    </div>
+
+    <!-- 範圍說明 -->
+    <section id="scope">
+      <div class="anchor-wrap">
+        <h2>本篇範圍說明<a class="anchor-link" href="#scope">#</a></h2>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-title">閱讀前請注意</div>
+        <p style="margin-bottom:8px;">本章的<strong>架構概念</strong>（三層式、HCI、NAS 整合）適用於各品牌環境。<strong>伺服器平台</strong>分為兩個獨立的生態：</p>
+        <ul style="margin-bottom:8px; padding-left:18px; font-size:.875rem;">
+          <li><strong>IBM Power 生態</strong>（4.3）：IBM Power 伺服器、PowerVM Hypervisor、IBM i / AIX 作業系統，有自己的儲存接法，與 x86 完全不同</li>
+          <li><strong>x86 生態</strong>（4.4）：VMware ESXi、Linux、Windows Server，可搭配任何品牌的儲存設備</li>
+        </ul>
+        <p style="margin-bottom:0;">兩個生態不會混搭。IBM Power 不跑 VMware，VMware 不跑在 IBM Power 上。</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>標籤</th><th>意義</th></tr></thead>
+          <tbody>
+            <tr><td><span class="brand-note brand-generic">通用概念</span></td><td>適用所有品牌，核心邏輯不變</td></tr>
+            <tr><td><span class="brand-note brand-ibm">IBM 示範</span></td><td>IBM 環境的具體功能名稱或做法</td></tr>
+            <tr><td><span class="brand-note brand-others">跨品牌對照</span></td><td>其他主流品牌的對應做法</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4.1 三層式架構 -->
+    <!-- ============================================================ -->
+    <section id="threetier">
+      <div class="anchor-wrap">
+        <h2>4.1 三層式架構（3-Tier）<a class="anchor-link" href="#threetier">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <p>三層式架構（3-Tier Architecture）是傳統企業 IT 基礎設施的標準設計模式，將計算、網路、儲存三個層次明確分離，各自獨立擴展與維護。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 200" width="540" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 計算層 -->
+          <rect x="30" y="20" width="520" height="50" rx="6" fill="#1C2128" stroke="#30363D"/>
+          <text x="290" y="40" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace">COMPUTE LAYER — 計算層</text>
+          <text x="130" y="58" text-anchor="middle" fill="#E6EDF3" font-size="12">伺服器 A</text>
+          <text x="290" y="58" text-anchor="middle" fill="#E6EDF3" font-size="12">伺服器 B</text>
+          <text x="450" y="58" text-anchor="middle" fill="#E6EDF3" font-size="12">伺服器 C</text>
+
+          <!-- 網路層 -->
+          <rect x="30" y="90" width="520" height="40" rx="6" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="290" y="108" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">NETWORK LAYER — 網路層</text>
+          <text x="290" y="122" text-anchor="middle" fill="#8B949E" font-size="11">FC SAN Switch / Ethernet Switch</text>
+
+          <!-- 儲存層 -->
+          <rect x="30" y="150" width="520" height="40" rx="6" fill="#1C2128" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="290" y="168" text-anchor="middle" fill="#3FB950" font-size="10" font-family="JetBrains Mono,monospace">STORAGE LAYER — 儲存層</text>
+          <text x="290" y="182" text-anchor="middle" fill="#8B949E" font-size="11">儲存陣列（SAN / NAS）</text>
+
+          <!-- 連線 -->
+          <line x1="130" y1="70" x2="130" y2="90" stroke="#30363D" stroke-width="1.5"/>
+          <line x1="290" y1="70" x2="290" y2="90" stroke="#30363D" stroke-width="1.5"/>
+          <line x1="450" y1="70" x2="450" y2="90" stroke="#30363D" stroke-width="1.5"/>
+          <line x1="290" y1="130" x2="290" y2="150" stroke="#30363D" stroke-width="1.5"/>
+        </svg>
+      </div>
+
+      <h3>三層式的設計優勢</h3>
+      <ul>
+        <li><strong>獨立擴展：</strong>計算、網路、儲存可以各自擴展，不需要一起升級</li>
+        <li><strong>故障隔離：</strong>儲存設備故障不影響伺服器，伺服器故障不影響儲存資料</li>
+        <li><strong>靈活搭配：</strong>各層可以選擇最適合的廠商和產品</li>
+        <li><strong>效能可預測：</strong>儲存資源不受其他伺服器的計算負載影響</li>
+      </ul>
+
+      <h3>三層式的限制與適用規模</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>初始建置成本</td><td>需要獨立的 FC Switch、HBA、儲存陣列，前期投資較高</td></tr>
+            <tr><td>管理複雜度</td><td>三個層次各有獨立的管理介面，需要跨層次的技術能力</td></tr>
+            <tr class="highlight-row"><td>適用規模</td><td>中大型企業、對效能和可用性有嚴格要求的核心應用，仍是最主流選擇</td></tr>
+            <tr><td>小規模場景</td><td>小型企業或非核心應用，HCI 可能是更合適的選擇（見 4.2）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <p>三層式架構本身是通用設計，各品牌的產品都可以填入各層：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>層次</th><th>IBM</th><th>Dell</th><th>HPE</th></tr></thead>
+          <tbody>
+            <tr><td>計算層</td><td>IBM Power / x86</td><td>PowerEdge</td><td>ProLiant</td></tr>
+            <tr><td>網路層</td><td>Brocade FC（IBM OEM）/ Cisco</td><td>Brocade / Cisco MDS</td><td>Brocade / Cisco MDS</td></tr>
+            <tr><td>儲存層</td><td>FlashSystem + SVC</td><td>PowerStore / PowerMax</td><td>Alletra</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4.2 HCI -->
+    <!-- ============================================================ -->
+    <section id="hci">
+      <div class="anchor-wrap">
+        <h2>4.2 超融合架構（HCI）<a class="anchor-link" href="#hci">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>HCI 的核心思想</h3>
+      <p>超融合基礎設施（Hyper-Converged Infrastructure，HCI）打破三層式的分離設計，將計算和儲存融合在同一台伺服器節點上。多台節點的本機儲存透過軟體聚合成共享儲存池，提供給所有節點的虛擬機使用。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 560 180" width="520" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 節點 A -->
+          <rect x="20" y="20" width="155" height="140" rx="8" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="97" y="42" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">NODE A</text>
+          <rect x="35" y="52" width="125" height="30" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="97" y="72" text-anchor="middle" fill="#E6EDF3" font-size="11">CPU + RAM</text>
+          <rect x="35" y="90" width="125" height="30" rx="4" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="97" y="110" text-anchor="middle" fill="#3FB950" font-size="11">本機 NVMe SSD</text>
+          <rect x="35" y="128" width="125" height="24" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="97" y="144" text-anchor="middle" fill="#8B949E" font-size="10">軟體定義儲存層</text>
+
+          <!-- 節點 B -->
+          <rect x="203" y="20" width="155" height="140" rx="8" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="280" y="42" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">NODE B</text>
+          <rect x="218" y="52" width="125" height="30" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="280" y="72" text-anchor="middle" fill="#E6EDF3" font-size="11">CPU + RAM</text>
+          <rect x="218" y="90" width="125" height="30" rx="4" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="280" y="110" text-anchor="middle" fill="#3FB950" font-size="11">本機 NVMe SSD</text>
+          <rect x="218" y="128" width="125" height="24" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="280" y="144" text-anchor="middle" fill="#8B949E" font-size="10">軟體定義儲存層</text>
+
+          <!-- 節點 C -->
+          <rect x="386" y="20" width="155" height="140" rx="8" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="463" y="42" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">NODE C</text>
+          <rect x="401" y="52" width="125" height="30" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="463" y="72" text-anchor="middle" fill="#E6EDF3" font-size="11">CPU + RAM</text>
+          <rect x="401" y="90" width="125" height="30" rx="4" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="463" y="110" text-anchor="middle" fill="#3FB950" font-size="11">本機 NVMe SSD</text>
+          <rect x="401" y="128" width="125" height="24" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="463" y="144" text-anchor="middle" fill="#8B949E" font-size="10">軟體定義儲存層</text>
+
+          <!-- 橫向連線 -->
+          <line x1="175" y1="90" x2="203" y2="90" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="358" y1="90" x2="386" y2="90" stroke="#58A6FF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="280" y="172" text-anchor="middle" fill="#484F58" font-size="10">各節點本機 SSD 透過高速網路聚合成共享儲存池</text>
+        </svg>
+      </div>
+
+      <h3>HCI vs 三層式的取捨</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>三層式架構</th><th>HCI</th></tr></thead>
+          <tbody>
+            <tr><td>計算與儲存</td><td>完全分離，獨立擴展</td><td>融合在同一節點，必須同步擴展</td></tr>
+            <tr><td>初始建置成本</td><td>較高（需 FC 設備）</td><td>較低（標準 x86 伺服器）</td></tr>
+            <tr><td>效能</td><td>儲存效能不受計算負載影響</td><td>計算和儲存共用 CPU / 網路資源</td></tr>
+            <tr><td>擴展彈性</td><td>計算 / 儲存可各自擴展</td><td>擴展計算必須同時擴展儲存（反之亦然）</td></tr>
+            <tr class="highlight-row"><td>適用場景</td><td>核心應用、高效能需求、大規模環境</td><td>VDI、中小型環境、邊緣節點、快速部署</td></tr>
+            <tr><td>管理複雜度</td><td>三層各有介面，需跨層技能</td><td>單一管理介面，較簡單</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <h3>主流 HCI 產品</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>產品</th><th>Hypervisor</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td><strong>VMware（Broadcom）</strong></td><td>vSAN</td><td>ESXi</td><td>市占最大，與 vSphere 深度整合</td></tr>
+            <tr><td><strong>Nutanix</strong></td><td>AOS + AHV</td><td>AHV（自研）/ ESXi / Hyper-V</td><td>HCI 發明者，管理介面最友善</td></tr>
+            <tr><td><strong>Dell</strong></td><td>VxRail</td><td>ESXi</td><td>Dell 硬體 + VMware vSAN，整合認證</td></tr>
+            <tr><td><strong>HPE</strong></td><td>SimpliVity / Alletra dHCI</td><td>ESXi</td><td>SimpliVity 有硬體壓縮加速；dHCI 是解耦 HCI</td></tr>
+            <tr><td><strong>IBM</strong></td><td>Storage Scale（HPC / AI）</td><td>不限</td><td>不是傳統 HCI，而是橫向擴展分散式檔案系統，適合 AI 訓練和 HPC</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4.3 IBM Power -->
+    <!-- ============================================================ -->
+    <section id="power">
+      <div class="anchor-wrap">
+        <h2>4.3 IBM Power + IBM i / AIX 儲存接法<a class="anchor-link" href="#power">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <div class="callout callout-info">
+        <div class="callout-title">IBM Power 生態說明</div>
+        IBM Power 是完全獨立於 x86 的伺服器架構，使用 PowerVM 作為 Hypervisor，運行 IBM i 和 AIX 作業系統。這個生態有自己的儲存接法，與 VMware / Linux / Windows 的方式完全不同，不能混淆。
+      </div>
+
+      <h3>PowerVM 虛擬化下的儲存接法</h3>
+      <p>IBM Power 伺服器透過 PowerVM Hypervisor 提供虛擬化能力。儲存資源從實體 FC HBA 到虛擬機（LPAR）有兩種接法，各有不同的適用場景：</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 620 280" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- 標題 -->
+          <text x="155" y="18" text-anchor="middle" fill="#3FB950" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">VSCSI 模式</text>
+          <text x="465" y="18" text-anchor="middle" fill="#2F81F7" font-size="11" font-weight="600" font-family="JetBrains Mono,monospace">NPIV 模式</text>
+
+          <!-- 分隔線 -->
+          <line x1="310" y1="10" x2="310" y2="275" stroke="#30363D" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- VSCSI 左側 -->
+          <!-- LPAR -->
+          <rect x="20" y="28" width="100" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="70" y="51" text-anchor="middle" fill="#E6EDF3" font-size="11">LPAR A</text>
+          <rect x="135" y="28" width="100" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="185" y="51" text-anchor="middle" fill="#E6EDF3" font-size="11">LPAR B</text>
+
+          <!-- Virtual SCSI -->
+          <line x1="70" y1="64" x2="70" y2="88" stroke="#3FB950" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <line x1="185" y1="64" x2="185" y2="88" stroke="#3FB950" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <text x="127" y="82" text-anchor="middle" fill="#3FB950" font-size="9">Virtual SCSI</text>
+
+          <!-- VIOS -->
+          <rect x="30" y="88" width="230" height="40" rx="4" fill="#0D1117" stroke="#3FB950" stroke-width="1.5"/>
+          <text x="145" y="104" text-anchor="middle" fill="#3FB950" font-size="11" font-weight="500">VIOS</text>
+          <text x="145" y="118" text-anchor="middle" fill="#8B949E" font-size="10">Virtual I/O Server（中介層）</text>
+
+          <!-- FC HBA -->
+          <line x1="145" y1="128" x2="145" y2="152" stroke="#3FB950" stroke-width="1.5"/>
+          <rect x="80" y="152" width="130" height="30" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="145" y="172" text-anchor="middle" fill="#8B949E" font-size="11">實體 FC HBA</text>
+
+          <!-- FC SAN -->
+          <line x1="145" y1="182" x2="145" y2="206" stroke="#30363D" stroke-width="1.5"/>
+          <rect x="80" y="206" width="130" height="30" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="145" y="226" text-anchor="middle" fill="#8B949E" font-size="11">FC SAN / 儲存陣列</text>
+
+          <!-- VSCSI 說明 -->
+          <text x="145" y="255" text-anchor="middle" fill="#3FB950" font-size="10">LPAR 看到的是虛擬 SCSI 磁碟</text>
+          <text x="145" y="268" text-anchor="middle" fill="#8B949E" font-size="9">FC HBA 由 VIOS 統一管理</text>
+
+          <!-- NPIV 右側 -->
+          <!-- LPAR -->
+          <rect x="320" y="28" width="100" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="370" y="44" text-anchor="middle" fill="#E6EDF3" font-size="11">LPAR A</text>
+          <text x="370" y="58" text-anchor="middle" fill="#2F81F7" font-size="9">vFC（虛擬 FC）</text>
+          <rect x="500" y="28" width="100" height="36" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="550" y="44" text-anchor="middle" fill="#E6EDF3" font-size="11">LPAR B</text>
+          <text x="550" y="58" text-anchor="middle" fill="#2F81F7" font-size="9">vFC（虛擬 FC）</text>
+
+          <!-- NPIV HBA -->
+          <line x1="370" y1="64" x2="370" y2="118" stroke="#2F81F7" stroke-width="1.5"/>
+          <line x1="550" y1="64" x2="550" y2="118" stroke="#2F81F7" stroke-width="1.5"/>
+
+          <!-- 實體 FC HBA with NPIV -->
+          <rect x="330" y="118" width="270" height="40" rx="4" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="465" y="134" text-anchor="middle" fill="#2F81F7" font-size="11" font-weight="500">實體 FC HBA（支援 NPIV）</text>
+          <text x="465" y="148" text-anchor="middle" fill="#8B949E" font-size="10">每個 LPAR 有自己的 vWWPN</text>
+
+          <!-- FC SAN -->
+          <line x1="465" y1="158" x2="465" y2="182" stroke="#2F81F7" stroke-width="1.5"/>
+          <rect x="380" y="182" width="170" height="30" rx="4" fill="#1C2128" stroke="#30363D"/>
+          <text x="465" y="202" text-anchor="middle" fill="#8B949E" font-size="11">FC SAN / 儲存陣列</text>
+
+          <!-- NPIV 說明 -->
+          <text x="465" y="230" text-anchor="middle" fill="#2F81F7" font-size="10">LPAR 有自己的虛擬 WWPN</text>
+          <text x="465" y="243" text-anchor="middle" fill="#8B949E" font-size="9">可直接在 FC Switch 做 Zoning</text>
+          <text x="465" y="256" text-anchor="middle" fill="#8B949E" font-size="9">不需要 VIOS 中介</text>
+        </svg>
+      </div>
+
+      <h3>VSCSI vs NPIV 的選擇</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>VSCSI</th><th>NPIV</th></tr></thead>
+          <tbody>
+            <tr><td>中介層</td><td>需要 VIOS（Virtual I/O Server）</td><td>不需要 VIOS，LPAR 直接連 SAN</td></tr>
+            <tr><td>LPAR 看到的</td><td>虛擬 SCSI 磁碟（hdisk）</td><td>虛擬 FC HBA，可直接看到 SAN LUN</td></tr>
+            <tr><td>FC Zoning</td><td>以 VIOS 的 WWPN 設定 Zone</td><td>以各 LPAR 的 vWWPN 設定 Zone，更精細</td></tr>
+            <tr><td>效能</td><td>有 VIOS 中介開銷</td><td>較接近直連效能</td></tr>
+            <tr class="highlight-row"><td>適用場景</td><td>共享 HBA 資源，簡化管理</td><td>高效能需求、需要精細 Zoning 控制的場景</td></tr>
+            <tr><td>HA 設計</td><td>建議雙 VIOS 備援</td><td>建議雙 HBA + 雙 Fabric</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>VIOS 的角色</h3>
+      <p>VIOS（Virtual I/O Server）是一個特殊的 LPAR，負責將實體 I/O 資源（FC HBA、Ethernet）虛擬化後提供給其他 LPAR 使用。VIOS 本身不跑業務應用，只做 I/O 仲介。</p>
+      <ul>
+        <li>建議部署<strong>雙 VIOS</strong>做備援，兩個 VIOS 各連一個 FC Fabric</li>
+        <li>VIOS 故障會影響所有透過它存取儲存的 LPAR，因此 VIOS 的 HA 設計至關重要</li>
+        <li>VIOS 的軟體版本需定期更新，是 IBM Power 環境維護的重要項目</li>
+      </ul>
+
+      <h3>IBM i 和 AIX 的 MPIO 行為</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>作業系統</th><th>MPIO 機制</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr><td><strong>AIX</strong></td><td>AIX MPIO（內建）</td><td>支援 ALUA，IBM 儲存設備整合最佳，磁碟以 hdisk 命名</td></tr>
+            <tr><td><strong>IBM i</strong></td><td>內建多路徑（透明）</td><td>IBM i 作業系統自動處理多路徑，管理員通常不需要手動設定</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <h3>其他平台的類似虛擬化 I/O 機制</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>平台</th><th>類似機制</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td><strong>VMware ESXi</strong></td><td>NPIV（vSphere FC NPIV）</td><td>VM 可以有自己的 vWWPN，直接對應 SAN Zoning，概念與 IBM NPIV 相同</td></tr>
+            <tr><td><strong>Linux KVM</strong></td><td>virtio-scsi / SR-IOV</td><td>virtio-scsi 為虛擬 SCSI 中介；SR-IOV 讓 VM 直接存取實體 HBA，類似 NPIV</td></tr>
+            <tr><td><strong>Microsoft Hyper-V</strong></td><td>Virtual FC（vFC）</td><td>Hyper-V 支援虛擬 FC，VM 可直接連接 SAN，需 HBA 支援 NPIV</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4.4 x86 平台儲存整合 -->
+    <!-- ============================================================ -->
+    <section id="x86">
+      <div class="anchor-wrap">
+        <h2>4.4 x86 平台儲存整合（VMware / Linux / Windows）<a class="anchor-link" href="#x86">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <p>x86 伺服器平台（VMware ESXi、Linux、Windows Server）是目前企業 IT 的主流，可搭配任何品牌的 SAN 儲存設備。以下分三個常見作業系統環境說明儲存整合方式。</p>
+
+      <h3>VMware vSphere 儲存整合</h3>
+      <p>VMware vSphere 提供三種儲存存取模式，適用不同場景：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>模式</th><th>說明</th><th>適用場景</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>VMFS（Virtual Machine File System）</strong></td>
+              <td>ESXi 在 SAN LUN 上建立 VMFS 檔案系統，多台 ESXi 共享同一個 VMFS Datastore</td>
+              <td>一般虛擬機儲存，最常見</td>
+              <td>多 ESXi 主機可同時存取，支援 vMotion / HA</td>
+            </tr>
+            <tr>
+              <td><strong>RDM（Raw Device Mapping）</strong></td>
+              <td>將 SAN LUN 直接對應給虛擬機，虛擬機看到的是原始磁碟</td>
+              <td>資料庫（Oracle RAC）、需要直接存取磁碟的應用</td>
+              <td>效能接近裸機，但管理彈性較低</td>
+            </tr>
+            <tr>
+              <td><strong>vVol（Virtual Volumes）</strong></td>
+              <td>儲存陣列直接管理虛擬機層級的儲存物件，不需要傳統 LUN</td>
+              <td>支援 vVol 的現代儲存陣列</td>
+              <td>儲存原生功能（Snapshot / Clone）可直接對應到 VM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>VAAI（vStorage APIs for Array Integration）</h3>
+      <p>VAAI 讓 ESXi 可以把特定操作卸載（Offload）到儲存陣列執行，減少 ESXi 主機的 CPU 和網路負載：</p>
+      <ul>
+        <li><strong>Full Copy（XCOPY）：</strong>VM Clone 時，資料由儲存陣列直接複製，不需要流過 ESXi 主機</li>
+        <li><strong>Block Zeroing：</strong>新建 VM 磁碟清零時，由儲存陣列執行，速度大幅提升</li>
+        <li><strong>Atomic Test and Set（ATS）：</strong>VMFS 的鎖定機制，改由陣列硬體支援，提升多主機並行存取效率</li>
+      </ul>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <p>主流儲存品牌均支援 VAAI，以下是各品牌搭配 VMware 的常見整合方式：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>VMware 整合工具</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr><td><strong>IBM FlashSystem / SVC</strong></td><td>IBM Storage Enabler for VMware（vCenter Plugin）</td><td>從 vCenter 直接管理 FlashCopy、Volume 建立</td></tr>
+            <tr><td><strong>NetApp ONTAP</strong></td><td>ONTAP Tools for VMware vSphere</td><td>vVol 支援成熟，SnapCenter 備份整合</td></tr>
+            <tr><td><strong>Dell PowerStore / PowerMax</strong></td><td>Dell Storage vSphere Client Plugin</td><td>PowerMax 的 TimeFinder 可直接從 vCenter 觸發</td></tr>
+            <tr><td><strong>Everpure（Pure）</strong></td><td>Pure Storage Plugin for vSphere</td><td>vVol 原生支援，SafeMode 整合</td></tr>
+            <tr><td><strong>HPE Alletra</strong></td><td>HPE Primera / Alletra vSphere Plugin</td><td>Peer Persistence 雙活與 vSphere HA 整合</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Linux 儲存整合</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>場景</th><th>技術</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>多路徑</td><td>DM-Multipath（device-mapper-multipath）</td><td>設定 /etc/multipath.conf，各廠商提供設定範本</td></tr>
+            <tr><td>LVM over SAN</td><td>LVM2（Logical Volume Manager）</td><td>在 SAN LUN 上建立 PV → VG → LV，靈活管理邏輯卷大小</td></tr>
+            <tr><td>容器儲存</td><td>Kubernetes CSI（Container Storage Interface）</td><td>各品牌提供 CSI Driver，讓 Kubernetes PV 直接對應 SAN LUN 或 NAS</td></tr>
+            <tr><td>檔案系統</td><td>ext4 / XFS / GFS2（叢集）</td><td>單機用 ext4 / XFS；多節點同時掛載需 GFS2 或 OCFS2 叢集檔案系統</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Windows Server 儲存整合</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>場景</th><th>技術</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>多路徑</td><td>MPIO + DSM（Device Specific Module）</td><td>Windows 內建 MPIO 框架，各廠商提供 DSM 最佳化路徑管理</td></tr>
+            <tr><td>Failover Cluster</td><td>Windows Server Failover Cluster（WSFC）</td><td>多台 Windows 伺服器共享同一 SAN LUN，透過 WSFC 協調存取</td></tr>
+            <tr><td>CSV（Cluster Shared Volume）</td><td>CSV</td><td>WSFC 的進階功能，多節點同時讀寫同一 Volume，類似 VMFS 的概念</td></tr>
+            <tr><td>SQL Server</td><td>直接掛載 SAN LUN</td><td>SQL Server 資料庫檔案（.mdf / .ldf）直接放在 SAN LUN 上，最常見的企業資料庫儲存方式</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4.5 NAS 整合 -->
+    <!-- ============================================================ -->
+    <section id="nas">
+      <div class="anchor-wrap">
+        <h2>4.5 NAS 整合與 File / Block 共存<a class="anchor-link" href="#nas">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>什麼時候需要 NAS</h3>
+      <p>Block SAN 是核心應用的主力，但有些場景更適合 NAS（File 儲存）：</p>
+      <ul>
+        <li><strong>多使用者共享檔案：</strong>Home Directory、部門共享磁碟機、設計檔案共享</li>
+        <li><strong>應用原生 NFS/SMB 存取：</strong>部分應用（如 VMware Datastore over NFS、容器持久卷）直接使用 NFS</li>
+        <li><strong>非結構化資料：</strong>日誌檔案、備份目標、媒體檔案，不需要 Block 的嚴格 I/O 保證</li>
+        <li><strong>成本考量：</strong>NAS 管理簡單，不需要 FC 基礎設施，適合非關鍵資料</li>
+      </ul>
+
+      <h3>NFS vs SMB 的選擇</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>協定</th><th>適用作業系統</th><th>常見用途</th><th>效能特性</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>NFS（Network File System）</strong></td>
+              <td>Linux / Unix / VMware ESXi</td>
+              <td>Linux Home Dir、VMware NFS Datastore、容器 PV</td>
+              <td>高並行、低延遲，適合大量小檔案</td>
+            </tr>
+            <tr>
+              <td><strong>SMB / CIFS</strong></td>
+              <td>Windows（主要）/ macOS / Linux</td>
+              <td>Windows 共享磁碟機、Office 檔案共享</td>
+              <td>Windows 整合最佳，支援 AD 驗證</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <h3>IBM FlashSystem File 功能</h3>
+      <p>IBM FlashSystem 可以在同一台設備上同時提供 Block（SAN）和 File（NAS）服務，不需要額外的 NAS 設備：</p>
+      <ul>
+        <li>支援 NFS v3 / v4、SMB 2.x / 3.x</li>
+        <li>File 和 Block 共用同一個儲存池，統一管理容量</li>
+        <li>File 服務可以配置獨立的網路介面，與 SAN 流量隔離</li>
+      </ul>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <h3>各品牌的 File / Block 統一平台</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>Block</th><th>File（NAS）</th><th>統一管理</th></tr></thead>
+          <tbody>
+            <tr><td><strong>IBM FlashSystem</strong></td><td>SAN（FC / iSCSI）</td><td>NFS / SMB（FlashSystem File）</td><td>同一設備，統一管理</td></tr>
+            <tr><td><strong>NetApp ONTAP（AFF）</strong></td><td>FC / iSCSI / NVMe-oF</td><td>NFS / SMB / S3</td><td>ONTAP 統一管理，生態最完整</td></tr>
+            <tr><td><strong>Dell PowerStore</strong></td><td>FC / iSCSI / NVMe-oF</td><td>NFS / SMB</td><td>統一管理介面</td></tr>
+            <tr><td><strong>Everpure FlashArray</strong></td><td>FC / iSCSI / NVMe-oF</td><td>NFS / SMB（FlashArray//C 支援）</td><td>File 功能較新，仍在成熟中</td></tr>
+            <tr><td><strong>HPE Alletra</strong></td><td>FC / iSCSI / NVMe-oF</td><td>NFS / SMB（部分型號）</td><td>依型號而異</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">File 和 Block 共用資源的注意事項</div>
+        在同一台設備上同時跑 File 和 Block 服務時，兩者共用 CPU、Cache 和網路資源。大量 NAS 存取（如備份流量）可能影響 SAN 的效能。建議為 File 和 Block 服務設定獨立的 QoS 策略，避免互相干擾。
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">延伸閱讀</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part2-san.html#mpio" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+            Part 2 — 多路徑 MPIO（各作業系統的 MPIO 實作）
+          </a>
+          <a href="part3-svc.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            Part 3 — SVC 虛擬化層（主機看到的 VDisk 是如何產生的）
+          </a>
+          <a href="sds.html" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            SDS 全景（HCI 與軟體定義儲存的延伸）
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 4 — 前端平台與整合', keywords: '三層式 HCI 超融合 IBM Power AIX IBM i PowerVM VIOS VSCSI NPIV VMware vSphere VMFS RDM vVol VAAI Linux Windows NAS NFS SMB', url: 'part4-platform.html', path: 'part4-platform.html' },
+  { title: '4.1 三層式架構', keywords: '三層式 3-Tier Server Network Storage 分離 FC SAN', url: 'part4-platform.html#threetier', path: 'part4-platform.html' },
+  { title: '4.2 超融合架構 HCI', keywords: 'HCI 超融合 vSAN Nutanix VxRail SimpliVity AHV 軟體定義儲存', url: 'part4-platform.html#hci', path: 'part4-platform.html' },
+  { title: '4.3 IBM Power IBM i AIX 儲存接法', keywords: 'IBM Power PowerVM VIOS VSCSI NPIV IBM i AIX MPIO hdisk vWWPN', url: 'part4-platform.html#power', path: 'part4-platform.html' },
+  { title: '4.4 x86 平台儲存整合', keywords: 'VMware vSphere VMFS RDM vVol VAAI XCOPY Linux DM-Multipath LVM Kubernetes CSI Windows MPIO DSM CSV WSFC', url: 'part4-platform.html#x86', path: 'part4-platform.html' },
+  { title: '4.5 NAS 整合 File Block 共存', keywords: 'NAS NFS SMB CIFS File Block IBM FlashSystem File NetApp ONTAP PowerStore QoS', url: 'part4-platform.html#nas', path: 'part4-platform.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe RAID DRAID', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'FC iSCSI NVMe-oF Zoning MPIO', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 Mdisk Pool VDisk', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: 'Part 5 — 高可用與災難復原', keywords: 'HA DR RTO RPO HyperSwap FlashCopy Safeguarded Copy', url: 'part5-ha.html', path: 'part5-ha.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS Storage Modeller TiB TB 容量規劃', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>

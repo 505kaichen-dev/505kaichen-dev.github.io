@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 5 — 高可用與災難復原 — Storage Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:89; }
+    #sidebar-overlay.active { display:block; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg { display: block; margin: 0 auto; }
+    .highlight-row td { background: rgba(47,129,247,.06); }
+    .highlight-green td { background: rgba(63,185,80,.06); }
+    .highlight-red td { background: rgba(248,81,73,.06); }
+    .highlight-amber td { background: rgba(210,153,34,.06); }
+    .formula {
+      font-family: var(--mono);
+      font-size: .875rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 20px;
+      margin: 16px 0;
+      color: var(--primary-hi);
+      line-height: 1.9;
+    }
+    .brand-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+    }
+    .brand-generic { background: rgba(63,185,80,.12); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+    .brand-ibm { background: rgba(47,129,247,.12); color: var(--primary-hi); border: 1px solid rgba(47,129,247,.3); }
+    .brand-others { background: rgba(210,153,34,.12); color: var(--amber); border: 1px solid rgba(210,153,34,.3); }
+    .rto-rpo-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .rto-rpo-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+    }
+    .rto-rpo-label {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .rto-rpo-title { font-size: .9375rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .rto-rpo-desc { font-size: .8125rem; color: var(--text-muted); line-height: 1.6; }
+    @media (max-width: 640px) {
+      .rto-rpo-box { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay"></div>
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="開啟選單">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a class="topbar-logo" href="index.html">storage<span>://</span>wiki</a>
+    <div class="topbar-spacer"></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="搜尋（快捷鍵 /）" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">首頁</div>
+      <a class="nav-link" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>總覽</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">核心課程</div>
+      <a class="nav-link" href="part1-hardware.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>Part 1 — 儲存基礎與硬體層</a>
+      <a class="nav-link" href="part2-san.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Part 2 — SAN 網路層</a>
+      <a class="nav-link" href="part3-svc.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Part 3 — 虛擬化儲存層原理</a>
+      <a class="nav-link" href="part3-case.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Part 3 — 情境案例</a>
+      <a class="nav-link" href="part4-platform.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Part 4 — 前端平台與整合</a>
+      <a class="nav-link active" href="part5-ha.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Part 5 — 高可用與災難復原</a>
+      <a class="nav-link nav-sub" href="#scope">本篇範圍說明</a>
+      <a class="nav-link nav-sub" href="#ha-principle">5.1 HA 設計原則</a>
+      <a class="nav-link nav-sub" href="#snapshot">5.2 Snapshot / FlashCopy</a>
+      <a class="nav-link nav-sub" href="#replication">5.3 同步 / 非同步複製</a>
+      <a class="nav-link nav-sub" href="#hyperswap">5.4 雙活架構</a>
+      <a class="nav-link nav-sub" href="#sgc">5.5 不可變備份</a>
+      <a class="nav-link" href="part6-capacity.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Part 6 — 效能規劃與容量管理</a>
+      <a class="nav-link" href="part7-finance.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Part 7 — 企業實戰場景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">軟體定義儲存</div>
+      <a class="nav-link" href="sds.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SDS 全景</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">品牌產品線</div>
+      <a class="nav-link" href="vendors-ibm.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>IBM Storage</a>
+      <a class="nav-link" href="vendors-dell.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Dell Storage</a>
+      <a class="nav-link" href="vendors-others.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>其他品牌</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-hero">
+      <div class="page-eyebrow">PART 05 / CORE CURRICULUM</div>
+      <h1>高可用與災難復原</h1>
+      <p class="page-desc">從 RTO / RPO 定義出發，逐層理解 Snapshot、跨站複製、雙活架構到不可變備份的設計邏輯。通用概念適用各品牌，具體示範以 IBM 環境為例。</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-green">通用概念</span>
+        <span class="badge badge-blue">IBM 示範</span>
+        <span class="badge badge-amber">跨品牌對照</span>
+        <span class="badge badge-red">DR</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">本頁章節</div>
+      <ol>
+        <li><a href="#scope">本篇範圍說明</a></li>
+        <li><a href="#ha-principle">5.1 HA 設計原則</a></li>
+        <li><a href="#snapshot">5.2 Snapshot / FlashCopy</a></li>
+        <li><a href="#replication">5.3 同步 / 非同步複製</a></li>
+        <li><a href="#hyperswap">5.4 雙活架構（HyperSwap 與同類產品）</a></li>
+        <li><a href="#sgc">5.5 不可變備份（Safeguarded Copy 與同類產品）</a></li>
+      </ol>
+    </div>
+
+    <!-- 範圍說明 -->
+    <section id="scope">
+      <div class="anchor-wrap">
+        <h2>本篇範圍說明<a class="anchor-link" href="#scope">#</a></h2>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-title">閱讀前請注意</div>
+        <p style="margin-bottom:8px;">本章的<strong>設計概念與原則</strong>（RTO/RPO、Snapshot 原理、同步/非同步複製邏輯、雙活設計、不可變備份思維）適用於各品牌儲存環境。</p>
+        <p style="margin-bottom:8px;"><strong>具體示範</strong>以 IBM SVC / FlashSystem 環境為主，包含 FlashCopy、Metro Mirror、Global Mirror、HyperSwap、Safeguarded Copy 等 IBM 功能名稱與操作邏輯。</p>
+        <p style="margin-bottom:0;">使用其他品牌設備的讀者：通用概念直接適用，IBM 專屬功能請參照各節提供的<strong>跨品牌對照表</strong>，找到對應品牌的做法。</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>標籤</th><th>意義</th></tr></thead>
+          <tbody>
+            <tr><td><span class="brand-note brand-generic">通用概念</span></td><td>適用所有品牌，核心邏輯不變</td></tr>
+            <tr><td><span class="brand-note brand-ibm">IBM 示範</span></td><td>IBM 環境的具體功能名稱或做法</td></tr>
+            <tr><td><span class="brand-note brand-others">跨品牌對照</span></td><td>其他主流品牌的對應功能</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5.1 HA 設計原則 -->
+    <!-- ============================================================ -->
+    <section id="ha-principle">
+      <div class="anchor-wrap">
+        <h2>5.1 HA 設計原則<a class="anchor-link" href="#ha-principle">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>RTO 與 RPO：兩個最重要的指標</h3>
+      <p>在討論任何 HA 或 DR 方案之前，必須先釐清 RTO 和 RPO，因為這兩個數字直接決定了需要哪種技術方案，也決定了成本。</p>
+
+      <div class="rto-rpo-box">
+        <div class="rto-rpo-item">
+          <div class="rto-rpo-label" style="color:var(--primary-hi);">RTO</div>
+          <div class="rto-rpo-title">Recovery Time Objective</div>
+          <div class="rto-rpo-desc">災難發生後，系統需要在多長時間內恢復服務？這是「停機時間的上限」。<br><br>例：RTO = 4 小時，代表系統最多可以停機 4 小時，超過就違反 SLA。</div>
+        </div>
+        <div class="rto-rpo-item">
+          <div class="rto-rpo-label" style="color:var(--red);">RPO</div>
+          <div class="rto-rpo-title">Recovery Point Objective</div>
+          <div class="rto-rpo-desc">災難發生時，最多可以接受遺失多長時間的資料？這是「資料缺口的上限」。<br><br>例：RPO = 1 小時，代表最多可以接受遺失 1 小時內的資料。RPO = 0 代表零資料遺失。</div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">直覺記憶法</div>
+        RTO 是「時間」（Time），問的是「多快能回來」；RPO 是「點」（Point），問的是「能回到哪個時間點」。RTO 越短越貴，RPO 越小越貴，兩個都要極小化是最貴的方案（雙活架構）。
+      </div>
+
+      <h3>HA 不等於 DR</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>概念</th><th>保護對象</th><th>典型場景</th><th>RTO / RPO</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>HA（High Availability）</strong></td>
+              <td>單一設備或元件的故障</td>
+              <td>控制器故障、磁碟故障、網路路徑中斷</td>
+              <td>秒級 / 零</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>DR（Disaster Recovery）</strong></td>
+              <td>整個站點的災難</td>
+              <td>機房火災、淹水、斷電、地震</td>
+              <td>分鐘～小時 / 秒～小時</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>N+1 vs 2N 設計</h3>
+      <ul>
+        <li><strong>N+1：</strong>N 個運作中的元件，加上 1 個備援。成本較低，但備援元件閒置。例：2 個控制器中 1 個故障，另 1 個接手全部負載。</li>
+        <li><strong>2N：</strong>所有元件都有對等備援，任何一個故障都不影響容量或效能。成本較高，但保護能力更強。例：雙控制器 Active-Active，故障後另一個承擔全部 I/O 且效能不衰減。</li>
+      </ul>
+
+      <h3>儲存 HA 的典型保護層次</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>層次</th><th>保護對象</th><th>技術手段</th></tr></thead>
+          <tbody>
+            <tr><td>磁碟層</td><td>單顆磁碟故障</td><td>RAID / DRAID</td></tr>
+            <tr><td>控制器層</td><td>控制器故障</td><td>雙控制器 Active-Active</td></tr>
+            <tr><td>網路層</td><td>路徑中斷</td><td>雙 Fabric + MPIO</td></tr>
+            <tr><td>站點層</td><td>整個機房災難</td><td>跨站複製 / 雙活架構</td></tr>
+            <tr><td>資料層</td><td>資料誤刪 / 勒索加密</td><td>Snapshot / 不可變備份</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5.2 Snapshot / FlashCopy -->
+    <!-- ============================================================ -->
+    <section id="snapshot">
+      <div class="anchor-wrap">
+        <h2>5.2 Snapshot / FlashCopy<a class="anchor-link" href="#snapshot">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>Snapshot 的基本原理</h3>
+      <p>Snapshot（快照）是某個時間點的資料狀態記錄。建立 Snapshot 的瞬間極快（通常毫秒內完成），因為它不是複製資料，而是記錄「哪些 Block 在這個時間點是什麼狀態」的 Metadata。</p>
+
+      <h3>Copy-on-Write vs Redirect-on-Write</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>機制</th><th>運作方式</th><th>優點</th><th>缺點</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Copy-on-Write（CoW）</strong></td>
+              <td>有新寫入時，先把舊資料複製到 Snapshot 區，再寫入新資料。Snapshot 保存舊資料。</td>
+              <td>原始 Volume 不需要改變位置，讀取效能影響小</td>
+              <td>每次寫入需要額外的讀取+寫入操作（寫入放大）</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>Redirect-on-Write（RoW）</strong></td>
+              <td>有新寫入時，直接寫到新位置，Snapshot 指向舊位置。原始指標不動。</td>
+              <td>寫入效能更好（無需先讀再寫）</td>
+              <td>Snapshot 越多，讀取時需要追蹤的指標越複雜</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <h3>IBM FlashCopy</h3>
+      <p>IBM SVC / FlashSystem 的快照功能稱為 <strong>FlashCopy</strong>，特點是建立的是可讀寫的完整副本（Full Copy 或 Space-efficient Copy），而不只是唯讀的時間點記錄。</p>
+      <ul>
+        <li><strong>Space-efficient FlashCopy：</strong>只記錄差異，不佔用完整容量，適合短期快照和備份前的一致性快照</li>
+        <li><strong>Full Copy FlashCopy：</strong>完整複製資料到目標 Volume，完成後兩個 Volume 完全獨立，適合長期保存或測試環境</li>
+        <li><strong>Incremental FlashCopy：</strong>只複製自上次 FlashCopy 以來變更的 Block，減少複製時間和網路頻寬</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ Snapshot 不等於備份</div>
+        <p style="margin-bottom:8px;">Snapshot 和原始資料存放在同一台設備上。如果儲存設備本身故障（控制器損壞、陣列遭勒索加密），Snapshot 和原始資料會同時消失。</p>
+        <p style="margin-bottom:0;">完整的資料保護需要：Snapshot（快速回復誤刪）+ 跨設備備份（設備故障保護）+ 跨站複製（站點災難保護）。</p>
+      </div>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>Snapshot 功能名稱</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td><strong>IBM</strong></td><td>FlashCopy</td><td>可讀寫副本，Space-efficient / Full Copy 可選</td></tr>
+            <tr><td><strong>NetApp ONTAP</strong></td><td>Snapshot</td><td>RoW 機制，幾乎零空間佔用，可快速還原</td></tr>
+            <tr><td><strong>Dell PowerMax / PowerStore</strong></td><td>TimeFinder / Snapshot</td><td>TimeFinder 為企業級完整副本；PowerStore Snapshot 為輕量快照</td></tr>
+            <tr><td><strong>Everpure（Pure）</strong></td><td>Snapshot</td><td>所有 Snapshot 共用資料縮減，不額外佔用空間</td></tr>
+            <tr><td><strong>HPE Alletra / Nimble</strong></td><td>Snapshot / Volume Collection</td><td>支援多 Volume 一致性快照</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5.3 同步 / 非同步複製 -->
+    <!-- ============================================================ -->
+    <section id="replication">
+      <div class="anchor-wrap">
+        <h2>5.3 同步 / 非同步複製<a class="anchor-link" href="#replication">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>為什麼需要跨站複製</h3>
+      <p>Snapshot 保護資料不被誤刪，但無法應對整個站點的災難（火災、地震、淹水）。跨站複製（Replication）將資料即時或定期複製到另一個地理位置的儲存設備，讓站點災難發生時有資料可以恢復。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 180" width="540" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+
+          <!-- 主站 -->
+          <rect x="20" y="30" width="200" height="120" rx="8" fill="#1C2128" stroke="#30363D"/>
+          <text x="120" y="55" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace">PRIMARY SITE</text>
+          <text x="120" y="75" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">主站</text>
+          <rect x="45" y="88" width="150" height="40" rx="4" fill="#0D1117" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="120" y="113" text-anchor="middle" fill="#2F81F7" font-size="11">儲存陣列（主）</text>
+
+          <!-- 同步複製箭頭 -->
+          <line x1="220" y1="80" x2="360" y2="80" stroke="#2F81F7" stroke-width="2"/>
+          <polygon points="357,74 367,80 357,86" fill="#2F81F7"/>
+          <text x="290" y="68" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">同步複製</text>
+          <text x="290" y="96" text-anchor="middle" fill="#8B949E" font-size="9">寫入確認需等對方回應</text>
+
+          <!-- 非同步複製箭頭 -->
+          <line x1="220" y1="130" x2="360" y2="130" stroke="#D29922" stroke-width="2" stroke-dasharray="6,4"/>
+          <polygon points="357,124 367,130 357,136" fill="#D29922"/>
+          <text x="290" y="118" text-anchor="middle" fill="#D29922" font-size="10" font-family="JetBrains Mono,monospace">非同步複製</text>
+          <text x="290" y="145" text-anchor="middle" fill="#8B949E" font-size="9">寫入後背景傳送，有資料缺口</text>
+
+          <!-- 備援站 -->
+          <rect x="360" y="30" width="200" height="120" rx="8" fill="#1C2128" stroke="#30363D"/>
+          <text x="460" y="55" text-anchor="middle" fill="#8B949E" font-size="10" font-family="JetBrains Mono,monospace">SECONDARY SITE</text>
+          <text x="460" y="75" text-anchor="middle" fill="#E6EDF3" font-size="13" font-weight="500">備援站</text>
+          <rect x="385" y="88" width="150" height="40" rx="4" fill="#0D1117" stroke="#30363D"/>
+          <text x="460" y="113" text-anchor="middle" fill="#8B949E" font-size="11">儲存陣列（備）</text>
+
+          <!-- 距離說明 -->
+          <text x="290" y="168" text-anchor="middle" fill="#484F58" font-size="10">同步：距離受延遲限制（通常 &lt; 100km）｜非同步：無距離限制</text>
+        </svg>
+      </div>
+
+      <h3>同步 vs 非同步的核心取捨</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>同步複製</th><th>非同步複製</th></tr></thead>
+          <tbody>
+            <tr><td><strong>RPO</strong></td><td>零（資料不遺失）</td><td>秒～分鐘（有資料缺口）</td></tr>
+            <tr><td><strong>寫入延遲影響</strong></td><td>主機每次寫入需等備援站確認，延遲增加</td><td>主機寫入後立即確認，備援站背景同步</td></tr>
+            <tr><td><strong>距離限制</strong></td><td>有（延遲超過 ~5ms 會嚴重影響效能）</td><td>無（透過 WAN 長距離傳輸）</td></tr>
+            <tr class="highlight-row"><td><strong>適用場景</strong></td><td>同城雙活、金融核心系統</td><td>跨城市 / 跨國 DR 站</td></tr>
+            <tr><td><strong>成本</strong></td><td>高（需要低延遲專線）</td><td>相對較低（可用一般 WAN）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <h3>IBM Metro Mirror vs Global Mirror</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>功能</th><th>複製類型</th><th>RPO</th><th>典型距離</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>Metro Mirror</strong></td>
+              <td>同步</td>
+              <td>零</td>
+              <td>&lt; 300 km（延遲 &lt; 2ms）</td>
+              <td>同城雙活基礎，配合 HyperSwap</td>
+            </tr>
+            <tr>
+              <td><strong>Global Mirror</strong></td>
+              <td>非同步</td>
+              <td>秒級</td>
+              <td>無限制</td>
+              <td>跨城市 / 跨國的遠端 DR 站</td>
+            </tr>
+            <tr>
+              <td><strong>Global Mirror with Change Volumes</strong></td>
+              <td>非同步（一致性增強）</td>
+              <td>秒級</td>
+              <td>無限制</td>
+              <td>需要多 Volume 一致性的跨站 DR</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>同步複製</th><th>非同步複製</th></tr></thead>
+          <tbody>
+            <tr><td><strong>NetApp ONTAP</strong></td><td>SnapMirror Synchronous</td><td>SnapMirror（非同步）</td></tr>
+            <tr><td><strong>Dell PowerMax</strong></td><td>SRDF/S（Synchronous）</td><td>SRDF/A（Asynchronous）</td></tr>
+            <tr><td><strong>Everpure（Pure）</strong></td><td>ActiveDR（同步模式）</td><td>ActiveDR（非同步模式）</td></tr>
+            <tr><td><strong>HPE Alletra / 3PAR</strong></td><td>Peer Persistence（同步）</td><td>Remote Copy（非同步）</td></tr>
+            <tr><td><strong>Hitachi VSP</strong></td><td>TrueCopy（同步）</td><td>Universal Replicator（非同步）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5.4 雙活架構 -->
+    <!-- ============================================================ -->
+    <section id="hyperswap">
+      <div class="anchor-wrap">
+        <h2>5.4 雙活架構（HyperSwap 與同類產品）<a class="anchor-link" href="#hyperswap">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>從複製到雙活的演進</h3>
+      <p>同步複製（Metro Mirror）讓備援站有即時一致的資料，但當主站發生災難時，切換到備援站仍需要人工介入或自動化流程，這段切換時間就是 RTO。</p>
+      <p>雙活架構（Active-Active）更進一步：兩個站點同時對外服務，主站發生災難時，備援站<strong>無感知地繼續服務</strong>，RTO 趨近於零，主機層完全不需要切換。</p>
+
+      <h3>雙活的核心挑戰：腦裂（Split-brain）</h3>
+      <p>雙活架構的最大風險是腦裂：兩個站點因為網路中斷而互相失去聯繫，各自以為對方故障，同時接受寫入，造成資料不一致。解決方案是引入第三個節點（Quorum / Witness），作為仲裁者決定誰有資格繼續服務。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 220" width="540" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">
+          <!-- 站點 A -->
+          <rect x="20" y="40" width="160" height="100" rx="8" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="100" y="65" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">SITE A</text>
+          <text x="100" y="83" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">主站</text>
+          <text x="100" y="100" text-anchor="middle" fill="#8B949E" font-size="10">同時對外服務</text>
+          <text x="100" y="115" text-anchor="middle" fill="#3FB950" font-size="10">✓ Active</text>
+          <text x="100" y="128" text-anchor="middle" fill="#3FB950" font-size="10">RPO = 0</text>
+
+          <!-- 站點 B -->
+          <rect x="400" y="40" width="160" height="100" rx="8" fill="#1C2128" stroke="#2F81F7" stroke-width="1.5"/>
+          <text x="480" y="65" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">SITE B</text>
+          <text x="480" y="83" text-anchor="middle" fill="#E6EDF3" font-size="12" font-weight="500">備援站</text>
+          <text x="480" y="100" text-anchor="middle" fill="#8B949E" font-size="10">同時對外服務</text>
+          <text x="480" y="115" text-anchor="middle" fill="#3FB950" font-size="10">✓ Active</text>
+          <text x="480" y="128" text-anchor="middle" fill="#3FB950" font-size="10">RTO ≈ 0</text>
+
+          <!-- 同步複製連線 -->
+          <line x1="180" y1="90" x2="400" y2="90" stroke="#2F81F7" stroke-width="2"/>
+          <polygon points="170,84 180,90 170,96" fill="#2F81F7"/>
+          <polygon points="410,84 400,90 410,96" fill="#2F81F7"/>
+          <text x="290" y="78" text-anchor="middle" fill="#2F81F7" font-size="10" font-family="JetBrains Mono,monospace">同步複製（Metro Mirror）</text>
+
+          <!-- Quorum -->
+          <rect x="240" y="155" width="100" height="50" rx="6" fill="#1C2128" stroke="#D29922" stroke-width="1.5"/>
+          <text x="290" y="175" text-anchor="middle" fill="#D29922" font-size="10" font-family="JetBrains Mono,monospace">QUORUM</text>
+          <text x="290" y="190" text-anchor="middle" fill="#8B949E" font-size="10">第三個節點</text>
+          <text x="290" y="200" text-anchor="middle" fill="#8B949E" font-size="9">仲裁者</text>
+
+          <!-- Quorum 連線 -->
+          <line x1="100" y1="140" x2="260" y2="165" stroke="#D29922" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="480" y1="140" x2="320" y2="165" stroke="#D29922" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <text x="290" y="215" text-anchor="middle" fill="#484F58" font-size="10">站點互相失聯時，Quorum 決定哪個站點有資格繼續服務</text>
+        </svg>
+      </div>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <h3>IBM HyperSwap</h3>
+      <p>IBM HyperSwap 是建立在 Metro Mirror 基礎上的雙活架構，主機看到的是單一 Volume，底層同時寫入兩個站點。站點故障時主機無感知，I/O 自動切換到存活站點。</p>
+      <ul>
+        <li><strong>Quorum 機制：</strong>需要部署 Quorum 磁碟（Quorum Disk）或 Quorum 應用程式，作為第三個仲裁節點</li>
+        <li><strong>距離限制：</strong>基於同步複製，距離通常限制在 300 km 以內（延遲需 &lt; 2ms）</li>
+        <li><strong>SVC 版本要求：</strong>HyperSwap 需要 SVC 特定版本以上，且兩端 SVC 版本需相容</li>
+        <li><strong>切換方式：</strong>主站故障時，SVC 自動切換 I/O 路徑，主機不需要重新掛載 Volume</li>
+      </ul>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>雙活功能</th><th>Quorum 機制</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td><strong>IBM SVC</strong></td><td>HyperSwap</td><td>Quorum Disk / App</td><td>基於 Metro Mirror，主機無感知切換</td></tr>
+            <tr><td><strong>Dell VPLEX</strong></td><td>VPLEX Metro</td><td>Witness（雲端或本地）</td><td>跨異構儲存設備雙活，Dell 生態強</td></tr>
+            <tr><td><strong>NetApp ONTAP</strong></td><td>MetroCluster</td><td>Mediator</td><td>SAN + NAS 均支援，整合度高</td></tr>
+            <tr><td><strong>Everpure（Pure）</strong></td><td>ActiveCluster</td><td>Mediator</td><td>設定最簡單，Evergreen 整合</td></tr>
+            <tr><td><strong>HPE Alletra</strong></td><td>Peer Persistence</td><td>Quorum Witness</td><td>支援 VMware VAAI，vSphere 整合好</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5.5 不可變備份 -->
+    <!-- ============================================================ -->
+    <section id="sgc">
+      <div class="anchor-wrap">
+        <h2>5.5 不可變備份（Safeguarded Copy 與同類產品）<a class="anchor-link" href="#sgc">#</a></h2>
+      </div>
+
+      <div class="brand-note brand-generic">通用概念</div>
+      <h3>勒索軟體的威脅模型</h3>
+      <p>傳統的 HA 和 DR 設計，都假設「資料本身是正確的，只是設備或站點出了問題」。勒索軟體改變了這個假設——攻擊者會主動加密資料，而且會針對備份和快照下手，讓傳統保護機制失效。</p>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">勒索軟體的攻擊路徑</div>
+        <ol style="margin-bottom:0; padding-left:18px;">
+          <li>入侵系統，潛伏數週到數月，了解備份架構</li>
+          <li>刪除或加密 Snapshot 和備份資料</li>
+          <li>加密主要資料，索取贖金</li>
+        </ol>
+      </div>
+
+      <h3>Air-gap 與不可變備份的概念</h3>
+      <p>應對勒索軟體需要「不可變（Immutable）」的備份：無論攻擊者取得多高的系統權限，都無法刪除或修改這些備份。實現方式有兩種：</p>
+      <ul>
+        <li><strong>物理 Air-gap：</strong>備份完成後將備份媒介（磁帶）物理離線，攻擊者無法透過網路存取</li>
+        <li><strong>邏輯不可變（Logical Immutability）：</strong>備份資料寫入後，在設定的保留期間內任何人（包括系統管理員）都無法刪除，由儲存設備的韌體強制執行</li>
+      </ul>
+
+      <div class="brand-note brand-ibm">IBM 示範</div>
+      <h3>IBM Safeguarded Copy</h3>
+      <p>IBM Safeguarded Copy 是 IBM FlashSystem / SVC 的不可變快照功能。建立後在保留期間內無法被任何使用者或應用程式刪除，即使取得儲存設備的最高管理權限也無法繞過。</p>
+      <ul>
+        <li><strong>保留期間：</strong>可設定 1 天到數年，到期前任何刪除操作都被拒絕</li>
+        <li><strong>觸發方式：</strong>可手動建立，也可排程自動建立（如每天建立一份，保留 30 天）</li>
+        <li><strong>還原流程：</strong>發現勒索攻擊後，從 Safeguarded Copy 建立可讀寫的複本，確認資料完整後切換回服務</li>
+        <li><strong>容量影響：</strong>每份 Safeguarded Copy 只記錄差異（Space-efficient），不佔用完整容量</li>
+      </ul>
+
+      <div class="brand-note brand-others">跨品牌對照</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>品牌</th><th>不可變備份功能</th><th>機制</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td><strong>IBM</strong></td><td>Safeguarded Copy</td><td>邏輯不可變快照</td><td>韌體強制，管理員也無法刪除</td></tr>
+            <tr><td><strong>NetApp ONTAP</strong></td><td>SnapLock</td><td>WORM（Write Once Read Many）</td><td>符合 SEC 17a-4 等法規要求</td></tr>
+            <tr><td><strong>Dell PowerMax / PowerStore</strong></td><td>Cyber Recovery / SnapVX</td><td>隔離 Vault + 不可變快照</td><td>Cyber Recovery Vault 物理隔離</td></tr>
+            <tr><td><strong>Everpure（Pure）</strong></td><td>SafeMode</td><td>管理平台層不可變</td><td>Pure1 雲端控制，本地管理員無法關閉</td></tr>
+            <tr><td><strong>Cohesity / Rubrik</strong></td><td>DataLock / Immutable Backup</td><td>備份平台層不可變</td><td>獨立備份平台，不依賴主儲存</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">完整勒索軟體防護架構</div>
+        <p style="margin-bottom:8px;">單一技術無法完整應對勒索軟體威脅，建議的分層防護：</p>
+        <ol style="margin-bottom:0; padding-left:18px; font-size:.875rem;">
+          <li>端點防護（EDR）— 阻止攻擊者入侵</li>
+          <li>網路隔離 — 限制橫向移動</li>
+          <li>不可變快照（Safeguarded Copy 類）— 提供乾淨的還原點</li>
+          <li>離線備份（磁帶 Air-gap）— 最後防線，確保至少一份資料無法被網路攻擊</li>
+        </ol>
+      </div>
+
+      <div style="margin-top:40px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:.08em; text-transform:uppercase;">延伸閱讀</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="part2-san.html#mpio" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+            Part 2 — 多路徑 MPIO（HA 設計的網路層基礎）
+          </a>
+          <a href="part6-capacity.html#planning" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Part 6 — 容量規劃（FlashCopy 和 Safeguarded Copy 的容量影響）
+          </a>
+          <a href="part7-finance.html#migration" style="font-size:.875rem; font-weight:500; color:var(--primary-hi); text-decoration:none; display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Part 7 — 遷移期間的 HA 設計考量
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      storage://wiki &nbsp;·&nbsp; 企業儲存技術知識庫 &nbsp;·&nbsp; 持續更新中
+    </footer>
+
+  </main>
+</div>
+
+<script>
+window.SEARCH_INDEX = [
+  { title: '總覽', keywords: '首頁 總覽', url: 'index.html', path: 'index.html' },
+  { title: 'Part 1 — 儲存基礎與硬體層', keywords: 'HDD SSD NVMe RAID DRAID 控制器', url: 'part1-hardware.html', path: 'part1-hardware.html' },
+  { title: 'Part 2 — SAN 網路層', keywords: 'FC iSCSI NVMe-oF Zoning MPIO', url: 'part2-san.html', path: 'part2-san.html' },
+  { title: 'Part 3 — 虛擬化儲存層原理', keywords: 'SVC 虛擬化 Mdisk Pool VDisk', url: 'part3-svc.html', path: 'part3-svc.html' },
+  { title: 'Part 3 — 情境案例', keywords: 'FlashSystem Thin Provisioning 容量推導', url: 'part3-case.html', path: 'part3-case.html' },
+  { title: 'Part 5 — 高可用與災難復原', keywords: 'HA DR RTO RPO Snapshot FlashCopy Metro Mirror Global Mirror HyperSwap Safeguarded Copy 雙活 勒索 不可變備份 Quorum Air-gap', url: 'part5-ha.html', path: 'part5-ha.html' },
+  { title: '5.1 HA 設計原則', keywords: 'RTO RPO HA DR 高可用 災難復原 N+1 2N 單點故障', url: 'part5-ha.html#ha-principle', path: 'part5-ha.html' },
+  { title: '5.2 Snapshot / FlashCopy', keywords: 'Snapshot FlashCopy Copy-on-Write Redirect-on-Write Space-efficient 快照 NetApp SnapShot Dell TimeFinder Everpure', url: 'part5-ha.html#snapshot', path: 'part5-ha.html' },
+  { title: '5.3 同步 / 非同步複製', keywords: '同步 非同步 Metro Mirror Global Mirror SnapMirror SRDF ActiveDR TrueCopy 跨站 複製', url: 'part5-ha.html#replication', path: 'part5-ha.html' },
+  { title: '5.4 雙活架構 HyperSwap', keywords: 'HyperSwap 雙活 Active-Active Quorum 腦裂 Split-brain VPLEX Metro MetroCluster ActiveCluster Peer Persistence', url: 'part5-ha.html#hyperswap', path: 'part5-ha.html' },
+  { title: '5.5 不可變備份 Safeguarded Copy', keywords: 'Safeguarded Copy 不可變 勒索軟體 Air-gap SnapLock SafeMode Cyber Recovery Cohesity Rubrik WORM', url: 'part5-ha.html#sgc', path: 'part5-ha.html' },
+  { title: 'Part 6 — 效能規劃與容量管理', keywords: 'IOPS Storage Modeller TiB TB 容量規劃', url: 'part6-capacity.html', path: 'part6-capacity.html' },
+  { title: 'Part 7 — 企業實戰場景', keywords: '企業 EOS 汰換 遷移 建置計畫', url: 'part7-finance.html', path: 'part7-finance.html' },
+  { title: 'SDS — 軟體定義儲存', keywords: 'SDS Ceph vSAN PowerFlex Nutanix MinIO VAST', url: 'sds.html', path: 'sds.html' },
+  { title: 'IBM Storage 產品線', keywords: 'IBM FlashSystem DS8000 SVC Tape Scale', url: 'vendors-ibm.html', path: 'vendors-ibm.html' },
+  { title: 'Dell Storage 產品線', keywords: 'Dell PowerStore PowerMax VPLEX PowerProtect', url: 'vendors-dell.html', path: 'vendors-dell.html' },
+  { title: '其他品牌產品線', keywords: 'Everpure NetApp HPE Hitachi VAST Infinidat', url: 'vendors-others.html', path: 'vendors-others.html' },
+];
+</script>
+<script src="nav.js"></script>
+<script>
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>
