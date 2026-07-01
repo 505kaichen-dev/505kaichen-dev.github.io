@@ -1,5 +1,12 @@
 # 全站整理紀錄
 
+## 2026-07-01
+
+- 新增 `3mf-explorer/` 圖文文章，說明從 Windows 3MF 縮圖痛點到 Portable 應用程式的開發過程。
+- 加入 Windows File Explorer 問題畫面、3MF Explorer 正式版畫面與 1200×630 首頁封面。
+- 接上 Windows x64 Portable 測試版 OneDrive 公開分享連結，並標示未簽章提醒、版本資訊與 SHA-256；EXE 不納入網站 Git repository。
+- 新增首頁第 015 張作品分享卡片，更新專案總表、網站地圖與維護手冊。
+
 ## 2026-06-28
 
 - 建立根目錄 `README.md`。

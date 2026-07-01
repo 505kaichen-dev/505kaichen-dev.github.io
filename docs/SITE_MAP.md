@@ -28,6 +28,7 @@ index.html（作品首頁）
 ├─ storagemaster/index.html
 ├─ web-planner/index.html
 ├─ food-spinner/index.html
+├─ 3mf-explorer/index.html（Portable EXE 使用外部雲端分享）
 └─ gallery/index.html
 ```
 

@@ -106,6 +106,7 @@
 | 012 | storagemaster | Storage Master — 企業儲存技術知識庫 | works | |
 | 013 | web-planner | AI 網頁專案生成小幫手 | ai-guide | 免 API 公開版 |
 | 014 | food-spinner | 吃什麼？附近餐廳轉盤 | works | Google Maps / Places API |
+| 015 | 3mf-explorer | 3MF Explorer — 用縮圖找回你的模型 | works | Windows Portable 測試版 |
 <!-- CARD_LIST_END -->
 
 ---
@@ -123,7 +124,7 @@
 
 1. 判讀子頁面標題、描述、主題風格
 2. 對照分類系統，決定 `data-category`
-3. 給下一個 `data-order` 序號（目前最新為 014，下一張為 015）
+3. 給下一個 `data-order` 序號（目前最新為 015，下一張為 016）
 4. 將新卡片插入 `work-grid`（順序不影響顯示，JS 自動排序）
 5. **更新本文件** 的卡片序號對照表
 6. 輸出完整更新的 `index.html`
@@ -142,6 +143,7 @@
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
+| 2026-07-01 | 新增 3MF Explorer | 加入開發過程、功能介紹、社群測試文章、外部雲端下載規劃與首頁第 015 張卡片 |
 | 2026-07-01 | 新增 Food Spinner | 加入附近餐廳隨機轉盤、首頁第 014 張卡片與 1200×630 封面圖 |
 | 2026-06-30 | 新增 Web Planner | 加入免 API 的網頁需求規劃工具與首頁第 013 張卡片 |
 | 2026-06-30 | 新增 Storage Master | 加入企業儲存技術知識庫專案、首頁第 012 張卡片與 1200×630 封面圖 |
