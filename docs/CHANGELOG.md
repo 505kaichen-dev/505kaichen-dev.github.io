@@ -2,6 +2,8 @@
 
 ## 2026-07-01
 
+- 3MF Explorer 公開測試版更新至 v1.1.0，OneDrive 下載改為 Windows Portable ZIP，並同步更新 ZIP SHA-256。
+- 3MF Explorer 文章補入作者、作品來源、授權資訊與五套外觀主題等 v1.1 功能。
 - 將原本 8 張圖片的平面相簿重做為 `Visual Archive`，策展收錄 46 件跨專案視覺作品。
 - 新增 Kids Lab、視覺敘事、介面工具、品牌封面四間展間，以及精選篩選、瀑布流作品牆與專案導向燈箱。
 - 為 Visual Archive 製作專屬首頁圖卡，移除舊有四張縮圖拼貼。

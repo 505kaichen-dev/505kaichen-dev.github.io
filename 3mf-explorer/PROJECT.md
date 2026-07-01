@@ -6,8 +6,9 @@
 - 首頁分類：作品分享（`works`）
 - 首頁卡片序號：`015`
 - 封面圖片：`image/cover.png`（1200×630）
-- 測試版來源：`X:\3mf-explorer\release\3MF-Explorer-1.0.0-Portable.exe`
-- 公開下載：`https://1drv.ms/u/c/dda45afff18c6116/IQB_k6yvOaPcQ5IdTzX4LqIZAQ6Eerr-4sLQCmbfo81KNXg?e=G7EvLf`
+- 測試版來源：`X:\3mf-explorer\release\3MF-Explorer-1.1.0-Windows-Portable.zip`
+- 公開下載：`https://1drv.ms/u/c/dda45afff18c6116/IQAVjwCpVJ9fSZ-EGGc0LX0jAZPsvJzUlL5HUyF9rxn7A0k?e=MR1uLp`
+- 公開版本：`v1.1.0`（ZIP SHA-256：`022A7780CA95F818738B70670B55E34E00C2725274A0CF53E4289EE0017142E0`）
 - 下載策略：使用 OneDrive 外部分享，不將 EXE 納入網站 Git repository
 - 平台：Windows x64
 - 公開網址：`https://505kaichen-dev.github.io/3mf-explorer/`
@@ -28,6 +29,7 @@
 - 尚未進行程式碼簽章，Windows SmartScreen 可能顯示提醒。
 - 模型索引、縮圖、收藏、標籤與筆記均保留在使用者本機。
 - 測試版不包含自動更新；新版需重新下載。
+- v1.1 可顯示 3MF 內嵌的作品名稱、作者、授權、來源連結，並提供五套外觀主題。
 
 ## 發佈檢查
 

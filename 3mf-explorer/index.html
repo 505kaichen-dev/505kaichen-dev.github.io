@@ -149,10 +149,10 @@
       <h1>我只是想找一個模型來印，為什麼這麼難？</h1>
       <p class="hero-lead">3MF Explorer 把 Windows 裡一排長得一模一樣的檔案，變成可以用眼睛辨認、搜尋、收藏與整理的本機模型圖庫。</p>
       <div class="hero-actions">
-        <a class="button primary" href="https://1drv.ms/u/c/dda45afff18c6116/IQB_k6yvOaPcQ5IdTzX4LqIZAQ6Eerr-4sLQCmbfo81KNXg?e=G7EvLf" target="_blank" rel="noopener noreferrer">↓ 下載 Windows 測試版</a>
+        <a class="button primary" href="https://1drv.ms/u/c/dda45afff18c6116/IQAVjwCpVJ9fSZ-EGGc0LX0jAZPsvJzUlL5HUyF9rxn7A0k?e=MR1uLp" target="_blank" rel="noopener noreferrer">↓ 下載 Windows 測試版</a>
         <a class="button" href="#story">看看它怎麼誕生</a>
       </div>
-      <div class="micro">v1.0.0 Portable · Windows x64 · 76.7 MB · 免安裝</div>
+      <div class="micro">v1.1.0 Portable · Windows x64 · 76.7 MB · 免安裝</div>
     </div>
 
     <section id="story">
@@ -192,11 +192,11 @@
         <p class="section-intro">它不想取代切片軟體，只處理一件很具體的事：讓你更快找到下一個要印的模型。</p>
         <div class="feature-grid">
           <article class="feature"><div class="feature-icon">▦</div><h3>模型縮圖網格</h3><p>直接顯示 3MF 內嵌預覽圖，可調整卡片尺寸，從總覽到細看都順手。</p></article>
-          <article class="feature"><div class="feature-icon">⌕</div><h3>搜尋與排序</h3><p>用檔名搜尋，依修改時間、檔名或大小排序，不再用肉眼掃完整個資料夾。</p></article>
+          <article class="feature"><div class="feature-icon">⌕</div><h3>搜尋與作品資訊</h3><p>搜尋檔名、作品名稱或作者；檔案有提供 metadata 時，還能查看授權、作品來源與作者頁面。</p></article>
           <article class="feature"><div class="feature-icon">★</div><h3>收藏與標籤</h3><p>把常印、待印或特定專案的模型留下記號，建立自己的整理方式。</p></article>
           <article class="feature"><div class="feature-icon">↻</div><h3>自動首次掃描</h3><p>加入資料夾後立即建立索引；日後檔案有變動，仍可手動重新整理。</p></article>
           <article class="feature"><div class="feature-icon">☁</div><h3>理解 OneDrive</h3><p>辨識尚未下載的雲端佔位檔，不把它誤判成損壞模型。</p></article>
-          <article class="feature"><div class="feature-icon">⌁</div><h3>回到原始檔案</h3><p>雙擊開啟模型，或從右鍵選單在檔案總管中顯示，不改變既有工作流程。</p></article>
+          <article class="feature"><div class="feature-icon">◐</div><h3>五套外觀主題</h3><p>包含 AI 紫、竹青、熔岩、海洋與明亮模式；選擇會保留到下次啟動。</p></article>
         </div>
       </div>
     </section>
@@ -211,6 +211,8 @@
           <article class="step"><div class="step-num">03</div><div><h3>資料都對，畫面卻還是「無縮圖」</h3><p>資料庫 374 筆全是 <code>ok</code>，374 張 PNG 也存在。最後定位到自訂圖片網址塞入完整 Windows 路徑，改成受控的 <code>safe-file://thumbnail/&lt;id&gt;</code> 後，縮圖全部正常。</p></div></article>
           <article class="step"><div class="step-num">04</div><div><h3>從 DEV 專案變成能分享的軟體</h3><p>修正 production 打包設定，搬移到可管理的專案位置，產出單一 Portable EXE，並用正式版實際啟動驗證。</p></div></article>
           <article class="step"><div class="step-num">05</div><div><h3>把操作邏輯補到直覺</h3><p>新加入的模型庫不該再等使用者猜「下一步要按重新整理」。現在首次加入會自動掃描，重新整理則留給後續檔案變動。</p></div></article>
+          <article class="step"><div class="step-num">06</div><div><h3>讓模型記得它從哪裡來</h3><p>v1.1 解析 3MF 內的作品名稱、作者、授權與來源網址；遇到 MakerWorld、Printables 等連結時，可從模型資訊面板安全地回到原作者頁面。</p></div></article>
+          <article class="step"><div class="step-num">07</div><div><h3>工具好用，也可以長得像自己</h3><p>加入五套原創外觀主題與明亮模式，選擇保存在本機。視覺改變不影響模型資料與既有操作。</p></div></article>
         </div>
       </div>
     </section>
@@ -229,12 +231,12 @@
         <div class="download">
           <div class="download-grid">
             <div>
-              <h3>3MF Explorer v1.0.0 Portable</h3>
-              <p>下載後直接執行，不需安裝。第一次啟動會解壓縮執行環境，因此可能稍候數秒。</p>
+              <h3>3MF Explorer v1.1.0 Portable</h3>
+              <p>下載 ZIP、解壓縮後直接執行，不需安裝。第一次啟動會解壓縮執行環境，因此可能稍候數秒。</p>
               <div class="facts"><span class="pill">Windows x64</span><span class="pill">76.7 MB</span><span class="pill">免安裝</span><span class="pill">本機處理</span></div>
-              <div class="hash">SHA-256: 7FA3DD81680DF199C891151860CF23ED0C334B52387DFAD254974BA8D9EAE05B</div>
+              <div class="hash">ZIP SHA-256: 022A7780CA95F818738B70670B55E34E00C2725274A0CF53E4289EE0017142E0</div>
             </div>
-            <a class="button primary" href="https://1drv.ms/u/c/dda45afff18c6116/IQB_k6yvOaPcQ5IdTzX4LqIZAQ6Eerr-4sLQCmbfo81KNXg?e=G7EvLf" target="_blank" rel="noopener noreferrer">↓ 從 OneDrive 下載</a>
+            <a class="button primary" href="https://1drv.ms/u/c/dda45afff18c6116/IQAVjwCpVJ9fSZ-EGGc0LX0jAZPsvJzUlL5HUyF9rxn7A0k?e=MR1uLp" target="_blank" rel="noopener noreferrer">↓ 從 OneDrive 下載</a>
           </div>
         </div>
 

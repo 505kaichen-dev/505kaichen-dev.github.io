@@ -32,7 +32,7 @@
 
 ## 軟體下載
 
-- 3MF Explorer Windows Portable 測試版為 80,384,870 bytes（約 76.7 MiB）。
+- 3MF Explorer v1.1.0 Windows Portable 分享 ZIP 為 80,396,550 bytes（約 76.7 MiB）。
 - EXE 不納入網站 Git repository；公開下載改用 OneDrive 或 Google Drive 外部分享連結。
 - 網站只保存版本、大小、SHA-256 與分享網址。更新版本時應同步替換外部檔案與文章資訊。
 
