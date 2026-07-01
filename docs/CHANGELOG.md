@@ -1,5 +1,10 @@
 # 全站整理紀錄
 
+## 2026-07-02
+
+- 3MF Explorer 公開測試版更新至 v2.0.0 Beta；文章新增版本更新紀錄、3D 預覽、模型庫資料夾樹與可調側欄說明。
+- OneDrive 下載更新為 2.0 Beta Portable ZIP，同步更新檔案大小與 ZIP SHA-256。
+
 ## 2026-07-01
 
 - 3MF Explorer 公開測試版更新至 v1.1.0，OneDrive 下載改為 Windows Portable ZIP，並同步更新 ZIP SHA-256。
