@@ -105,6 +105,16 @@
     box-shadow: 0 20px 70px rgba(0,0,0,0.45);
   }
   .api-help-card h2 { color: #ffd166; margin-bottom: 12px; }
+  .api-help-intro {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    color: #eadfd4;
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+  .api-help-intro strong { color: #ffd166; }
   .api-help-card ol { padding-left: 22px; line-height: 1.7; }
   .api-help-card li { margin-bottom: 10px; }
   .api-help-card code {
@@ -681,30 +691,33 @@
 
 <!-- API Key Banner -->
 <div id="api-banner">
-  ⚠️ 目前為 <strong>Demo 模式</strong>（模擬資料）。填入
-  <a href="https://console.cloud.google.com/apis/library/places.googleapis.com" target="_blank">Google Places API Key</a>
-  後切換真實搜尋：
+  👋 目前顯示 <strong>Demo 模擬資料</strong>。若要搜尋你附近的真實店家，請使用自己的 Google Maps API Key：
   <div id="api-key-row">
     <input id="api-key-input" type="text" placeholder="貼上你的 API Key...">
     <button id="api-key-btn" class="btn" onclick="saveApiKey()">套用</button>
     <button id="api-key-verify" class="btn" onclick="verifyEnteredApiKey()">驗證 API Key</button>
     <button id="api-key-clear" class="btn" onclick="clearApiKey()">清除 Key</button>
-    <button class="api-help-btn" onclick="openApiHelp()">API 設定教學</button>
+    <button class="api-help-btn" onclick="openApiHelp()">第一次使用？看設定教學</button>
   </div>
 </div>
 
 <div id="api-help-modal" role="dialog" aria-modal="true" aria-labelledby="api-help-title" onclick="closeApiHelp(event)">
   <div class="api-help-card">
-    <h2 id="api-help-title">Google Maps API 設定教學</h2>
+    <h2 id="api-help-title">第一次使用：設定 Google Maps API</h2>
+    <p class="api-help-intro">
+      為了保護網站額度與你的使用安全，本站<strong>不共用公開 API Key</strong>。
+      你建立的金鑰只會儲存在目前瀏覽器中，不會上傳給本站，也不會讓站長看到。
+      設定一次後，下次使用同一個瀏覽器會自動沿用。
+    </p>
     <ol>
-      <li>前往 <a href="https://console.cloud.google.com/google/maps-apis/overview" target="_blank">Google Maps Platform</a>，建立或選擇一個 Google Cloud 專案，並確認專案已連結有效帳單。</li>
-      <li>在「API 和服務 → 程式庫」中，分別啟用：<strong>Maps JavaScript API</strong>、<strong>Places API (New)</strong>、<strong>Geocoding API</strong>。</li>
-      <li>在「API 和服務 → 憑證」建立 API 金鑰。</li>
-      <li>編輯金鑰，將「應用程式限制」設為「網站」。LAN 測試可加入：<code>http://192.168.10.100/*</code>GitHub Pages 可加入：<code>https://505kaichen-dev.github.io/food-spinner/*</code></li>
-      <li>將「API 限制」設為「限制金鑰」，只保留上述三項 API，然後儲存。</li>
-      <li>回到本頁，把金鑰貼入輸入框並按「驗證 API Key」。第一次設定可能需等待數分鐘才生效；三項測試都成功後才會顯示 LIVE。</li>
+      <li>使用你的 Google 帳號前往 <a href="https://console.cloud.google.com/google/maps-apis/overview" target="_blank">Google Maps Platform</a>，建立一個專案，並依 Google 的指示啟用帳單。實際費用依 Google 當時的方案與你的用量計算。</li>
+      <li>開啟「API 和服務 → 程式庫」，搜尋並啟用以下三項：<strong>Maps JavaScript API</strong>、<strong>Places API (New)</strong>、<strong>Geocoding API</strong>。</li>
+      <li>前往「API 和服務 → 憑證」，選擇「建立憑證 → API 金鑰」。複製建立好的金鑰，但先不要關閉設定頁。</li>
+      <li>點進剛建立的金鑰，將「應用程式限制」選為「網站」，並在允許的網站中加入本站網址：<code>https://505kaichen-dev.github.io/food-spinner/*</code></li>
+      <li>將「API 限制」選為「限制金鑰」，只勾選前面啟用的三項 API，然後按下儲存。這一步可以避免金鑰被拿去使用其他 Google 服務。</li>
+      <li>回到這個頁面，將金鑰貼入上方欄位，再按「驗證 API Key」。看到綠色 LIVE 就完成了；Google 的新設定偶爾需要等待約 5 分鐘才會生效。</li>
     </ol>
-    <p class="api-help-note">請勿把未限制來源的 API Key 公開。若出現 ERROR，可開啟瀏覽器開發者工具查看 Google 回傳的錯誤名稱。</p>
+    <p class="api-help-note">🔐 共用電腦使用完畢時，請按「清除 Key」。若驗證失敗，畫面會告訴你缺少哪一項權限；通常不需要開啟開發者工具。</p>
     <div class="api-help-actions">
       <button class="btn" onclick="closeApiHelp()">關閉</button>
     </div>
@@ -854,7 +867,7 @@ function setApiBanner(state, message) {
   banner.innerHTML = `${message} <span class="demo-badge">${badge}</span>
     <button id="api-key-clear" class="btn" onclick="clearApiKey()">清除 API Key</button>
     <button id="api-key-verify" class="btn" onclick="verifyApiAccess()">重新驗證</button>
-    <button class="api-help-btn" onclick="openApiHelp()">API 設定教學</button>`;
+    <button class="api-help-btn" onclick="openApiHelp()">API 使用說明</button>`;
 }
 
 function openApiHelp() {
