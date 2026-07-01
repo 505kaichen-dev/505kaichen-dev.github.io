@@ -29,7 +29,8 @@
 ## 首頁設計系統
 
 - 檔案：`/index.html`
-- 色彩：`--bg: #F8F9FC` / `--blue: #2563EB` / `--ink: #0D0F14`
+- 品牌：Kai AI Workshop
+- 色彩：暖白底、紫藍主色、橘色強調與薄荷綠 Kids Lab
 - 字型：Space Grotesk（標題）/ Inter（內文）
 - 最大寬度：1280px
 - 響應式斷點：900px / 600px
@@ -40,12 +41,11 @@
 
 | 分類名稱 | data-category | 說明 |
 |---------|--------------|------|
-| 隨筆雜談 | story | 敘事、歷史、野史、有趣的故事 |
-| 自造日誌 | diy | 3D列印、改裝、硬體、動手做 |
-| 作品分享 | works | 設計、開發、實作成果 |
-| AI 指南 | ai-guide | AI 工具教學、指南 |
-| 親子學習 | kids | 兒童學習工具、注音、數學等互動頁面 |
-| 創作圖集 | gallery | AI 生成圖像創作集 |
+| Explore | explore | AI、技術、觀點、故事與知識內容 |
+| Build | build | 網頁工具、Windows 軟體與實作成果 |
+| Gallery | gallery | AI 生成圖像創作集 |
+
+兒童內容不使用 `work-card`，統一放在首頁 Kids Lab 區塊及 `/kids/` 導覽頁，避免進入一般作品排序與篩選。
 
 ---
 

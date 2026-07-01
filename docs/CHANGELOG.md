@@ -2,6 +2,13 @@
 
 ## 2026-07-01
 
+- 將原本 8 張圖片的平面相簿重做為 `Visual Archive`，策展收錄 46 件跨專案視覺作品。
+- 新增 Kids Lab、視覺敘事、介面工具、品牌封面四間展間，以及精選篩選、瀑布流作品牆與專案導向燈箱。
+- 為 Visual Archive 製作專屬首頁圖卡，移除舊有四張縮圖拼貼。
+- 首頁正式更新為 `Kai AI Workshop`，改用精簡品牌開場與 Explore、Build、Gallery 分類。
+- 新增 `kids/` 兒童子站入口；注音樂園與數學樂園保留原網址並移入獨立 Kids Lab 分區。
+- 卡片補上技術故事、AI 實戰、網頁工具、Windows 軟體等內容形式標籤。
+- 同步更新專案總表、網站地圖、首頁維護規範與改版紀錄。
 - 新增 `3mf-explorer/` 圖文文章，說明從 Windows 3MF 縮圖痛點到 Portable 應用程式的開發過程。
 - 加入 Windows File Explorer 問題畫面、3MF Explorer 正式版畫面與 1200×630 首頁封面。
 - 接上 Windows x64 Portable 測試版 OneDrive 公開分享連結，並標示未簽章提醒、版本資訊與 SHA-256；EXE 不納入網站 Git repository。

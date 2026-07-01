@@ -1,7 +1,10 @@
 # 網站地圖與頁面關係
 
 ```text
-index.html（作品首頁）
+index.html（Kai AI Workshop 首頁）
+├─ kids/index.html（Kids Lab 入口）
+│  ├─ → bopomofo/index.html
+│  └─ → kids-math/index.html
 ├─ opensource-story/index.html
 ├─ claude-web-guide/index.html
 ├─ dradvice01/index.html
@@ -35,6 +38,7 @@ index.html（作品首頁）
 ## 全站共用關係
 
 - 根首頁直接引用各專案的封面圖片。
+- `kids/` 只負責兒童專案導覽，既有專案網址不搬動。
 - `gallery/` 的展示圖片來自其他專案，不維護重複圖片副本。
 - `bopomofo/` 與 `kids-math/` 各自維護音訊及互動邏輯，不共用執行期檔案。
 - 圖片生成規格由根目錄 `image-handoff-spec.md` 統一管理。

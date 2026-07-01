@@ -12,6 +12,7 @@
 - 整理規則：`docs/FILE_ORGANIZATION.md`
 - 封存紀錄：`docs/ARCHIVE_LOG.md`
 - 驗證報告：`docs/LINK_AUDIT.md`
+- 首頁改版待辦：`docs/HOMEPAGE_REDESIGN_TODO.md`
 
 ## 資料夾分類
 

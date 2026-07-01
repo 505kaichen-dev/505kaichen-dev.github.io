@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kai Chen — 創作者</title>
+<title>Kai AI Workshop — 把好奇心做成真的</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫠</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -822,6 +822,129 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  /* ── KAI AI WORKSHOP 2026 ── */
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FFFEFB;
+    --ink: #171A21;
+    --ink-muted: #666B78;
+    --ink-faint: #979BA5;
+    --blue: #5B5FEF;
+    --blue-light: #EFEEFF;
+    --blue-mid: #C9C8FF;
+    --orange: #FF7448;
+    --mint: #35B98A;
+    --line: #E3E0D9;
+    --radius: 16px;
+  }
+
+  nav { background: rgba(245,243,238,0.9); }
+  .nav-logo { font-size: 1rem; letter-spacing: -0.01em; }
+  .nav-logo strong { color: var(--blue); font-weight: 700; }
+
+  .hero {
+    min-height: 0;
+    padding-top: 64px;
+    background:
+      linear-gradient(rgba(91,95,239,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,95,239,.045) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .hero::before {
+    top: -240px; right: -120px; width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(255,116,72,.13) 0%, transparent 68%);
+  }
+  .hero::after { display: none; }
+  .hero-inner {
+    padding: 58px 48px 52px;
+    display: grid;
+    grid-template-columns: minmax(0,1.5fr) minmax(280px,.75fr);
+    gap: 64px;
+    align-items: center;
+  }
+  .hero-eyebrow { margin-bottom: 16px; color: var(--blue); }
+  .hero-title { font-size: clamp(2.25rem,4.2vw,4.25rem); max-width: 850px; margin-bottom: 18px; }
+  .hero-title em { color: var(--orange); }
+  .hero-desc { max-width: 660px; margin: 0; font-size: 1rem; }
+  .hero-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+  .hero-chip {
+    padding:6px 12px; border:1px solid var(--line); border-radius:100px;
+    background:rgba(255,255,255,.72); color:var(--ink-muted); font-size:.75rem; font-weight:600;
+  }
+  .workshop-note {
+    background: #1D2030; color:#E9EAF8; border-radius:18px; padding:18px;
+    box-shadow: 12px 14px 0 rgba(91,95,239,.13); transform:rotate(1.5deg);
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .note-top { display:flex; gap:6px; margin-bottom:22px; }
+  .note-dot { width:8px; height:8px; border-radius:50%; background:#FF6B6B; }
+  .note-dot:nth-child(2){background:#FFD166}.note-dot:nth-child(3){background:#35B98A}
+  .note-code { font-size:.86rem; line-height:1.8; color:#BFC3D9; }
+  .note-code strong { color:#fff; }
+  .note-status { margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,.1); font-size:.72rem; color:#858BA8; }
+  .note-status span { color:#75E1B9; }
+  .hero-cta,.hero-scroll { display:none; }
+
+  .section { padding-top: 56px; }
+  .section-label { color: var(--blue); }
+  .latest-label-bar { background: var(--orange); }
+  .latest-label-text { color: var(--orange); }
+  .card-tag { color:var(--ink); letter-spacing:.04em; text-transform:none; }
+
+  .kids-lab {
+    padding: 72px 48px;
+    background: #FFF7E8;
+    border-top:1px solid #F2DEC1;
+    border-bottom:1px solid #F2DEC1;
+    position:relative; overflow:hidden;
+  }
+  .kids-lab::after {
+    content:'✦'; position:absolute; right:5%; top:26px; font-size:8rem;
+    color:rgba(255,174,66,.16); transform:rotate(12deg); pointer-events:none;
+  }
+  .kids-inner { max-width:1280px; margin:0 auto; position:relative; z-index:1; }
+  .kids-header { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:28px; }
+  .kids-kicker { font-size:.72rem; font-weight:800; letter-spacing:.14em; color:#E57232; margin-bottom:8px; }
+  .kids-title { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.7rem,3vw,2.6rem); line-height:1.15; }
+  .kids-title em { color:#E57232; font-style:normal; }
+  .kids-desc { margin-top:10px; color:#776858; max-width:660px; }
+  .kids-enter {
+    display:inline-flex; align-items:center; gap:8px; flex-shrink:0; text-decoration:none;
+    color:#fff; background:#E57232; padding:11px 18px; border-radius:100px; font-size:.85rem; font-weight:700;
+  }
+  .kids-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+  .kids-project-card {
+    display:grid; grid-template-columns:190px 1fr; background:#fff; border:1px solid #F0D9B9;
+    border-radius:20px; overflow:hidden; text-decoration:none; color:var(--ink);
+    transition:transform .2s,box-shadow .2s;
+  }
+  .kids-project-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(151,91,35,.11); }
+  .kids-project-card img { width:100%; height:100%; min-height:150px; object-fit:cover; }
+  .kids-project-body { padding:22px; display:flex; flex-direction:column; justify-content:center; }
+  .kids-project-type { font-size:.68rem; color:#E57232; font-weight:800; letter-spacing:.08em; margin-bottom:6px; }
+  .kids-project-name { font-size:1.15rem; font-weight:800; margin-bottom:6px; }
+  .kids-project-text { font-size:.84rem; color:#776F67; line-height:1.55; }
+
+  @media (max-width: 900px) {
+    .hero-inner { padding:44px 24px 40px; grid-template-columns:1fr; gap:28px; }
+    .workshop-note { max-width:520px; transform:none; }
+    .kids-lab { padding:56px 24px; }
+    .kids-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width: 600px) {
+    .nav-inner { height:58px; }
+    .hero { padding-top:58px; }
+    .hero-inner { padding:34px 20px 32px; }
+    .hero-title { font-size:2.25rem; }
+    .workshop-note { display:none; }
+    .section { padding-top:40px; }
+    .kids-lab { padding:44px 20px; }
+    .kids-header { align-items:flex-start; flex-direction:column; }
+    .kids-project-card { grid-template-columns:120px 1fr; }
+    .kids-project-body { padding:16px; }
+    .kids-project-card img { min-height:130px; }
+  }
 </style>
 </head>
 <body>
@@ -829,9 +952,10 @@
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="#" class="nav-logo">Kai<span>.</span></a>
+    <a href="#" class="nav-logo">Kai <strong>AI Workshop</strong></a>
     <ul class="nav-links">
-      <li><a href="#works">作品</a></li>
+      <li><a href="#works">探索</a></li>
+      <li><a href="#kids">Kids Lab</a></li>
       <li><a href="#about">關於</a></li>
       <li><a href="mailto:505.kai.chen@gmail.com">聯絡</a></li>
     </ul>
@@ -841,22 +965,19 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
-  <div class="hero-eyebrow">Kai 的個人基地</div>
-  <h1 class="hero-title">
-    不是部落格。不是作品集。<br><em>就是我覺得很酷所以做了。</em>
-  </h1>
-    從 AI 到歷史，從商業到設計——好奇心驅動，沒有主題限制。
-  </p>
-  <a href="#works" class="hero-cta">
-    👉 用力點這裡
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M3 8h10M9 4l4 4-4 4"/>
-    </svg>
-  </a>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    SCROLL
-  </div>
+    <div class="hero-copy">
+      <div class="hero-eyebrow">Curiosity in progress</div>
+      <h1 class="hero-title">把好奇心丟給 AI，<br><em>然後做成真的。</em></h1>
+      <p class="hero-desc">技術筆記、網頁工具、Windows 軟體，還有陪孩子一起玩的互動學習。這裡收著我研究過、做出來，而且覺得值得分享的東西。</p>
+      <div class="hero-chips" aria-label="網站內容類型">
+        <span class="hero-chip">AI 探索</span><span class="hero-chip">技術筆記</span><span class="hero-chip">軟體工具</span><span class="hero-chip">Kids Lab</span>
+      </div>
+    </div>
+    <div class="workshop-note" aria-hidden="true">
+      <div class="note-top"><span class="note-dot"></span><span class="note-dot"></span><span class="note-dot"></span></div>
+      <div class="note-code">const idea = <strong>curiosity</strong>;<br>const prototype = ask(AI, idea);<br>if (prototype.isCool) {<br>&nbsp;&nbsp;build(); test(); share();<br>}</div>
+      <div class="note-status"><span>●</span> workshop is always building something</div>
+    </div>
   </div>
 </section>
 
@@ -867,8 +988,8 @@
   <div class="section">
     <div class="section-header">
       <div>
-        <div class="section-label">Portfolio</div>
-        <h2 class="section-title">這些是我做的，隨便逛逛看看吧。</h2>
+        <div class="section-label">Workshop Index</div>
+        <h2 class="section-title">讀得到、玩得到，也有真的能用的工具。</h2>
       </div>
     </div>
 
@@ -898,22 +1019,19 @@
     <!-- TABS -->
     <div class="category-tabs">
       <button class="tab-btn active" data-filter="all">全部</button>
-      <button class="tab-btn" data-filter="story">隨筆雜談</button>
-      <button class="tab-btn" data-filter="diy">自造日誌</button>
-      <button class="tab-btn" data-filter="works">作品分享</button>
-      <button class="tab-btn" data-filter="ai-guide">AI 指南</button>
-      <button class="tab-btn" data-filter="kids">親子學習</button>
-      <button class="tab-btn" data-filter="gallery">創作圖集</button>
+      <button class="tab-btn" data-filter="explore">Explore 探索</button>
+      <button class="tab-btn" data-filter="build">Build 實作</button>
+      <button class="tab-btn" data-filter="gallery">Gallery 圖像</button>
     </div>
 
     <!-- GRID -->
     <div class="work-grid" id="workGrid">
 
       <!-- Featured: opensource story -->
-      <a class="work-card reveal" href="./opensource-story/" data-category="story" data-card-id="opensource-story" data-order="001">
+      <a class="work-card reveal" href="./opensource-story/" data-category="explore" data-card-id="opensource-story" data-order="001">
         <div class="card-thumb">
           <img src="./opensource-story/image/opensource-story.png" alt="開源運動的誕生">
-          <span class="card-tag">隨筆雜談</span>
+          <span class="card-tag">技術故事</span>
         </div>
         <div class="card-body" style="flex:1;">
           <div class="card-title">開源運動的誕生——當程式碼成為一種信仰</div>
@@ -929,10 +1047,10 @@
       </a>
 
       <!-- Card: Claude web guide -->
-      <a class="work-card reveal" href="./claude-web-guide/" data-category="ai-guide" data-card-id="claude-web-guide" data-order="002">
+      <a class="work-card reveal" href="./claude-web-guide/" data-category="explore" data-card-id="claude-web-guide" data-order="002">
         <div class="card-thumb">
           <img src="./claude-web-guide/image/claude-web-guide.png" alt="Claude 網頁開發指南">
-          <span class="card-tag">AI 指南</span>
+          <span class="card-tag">AI 實戰</span>
         </div>
         <div class="card-body">
           <div class="card-title">Claude 網頁開發指南</div>
@@ -948,10 +1066,10 @@
       </a>
 
       <!-- Card: dradvice01 (password protected) -->
-      <a class="work-card reveal" href="./dradvice01/" data-category="works" data-card-id="dradvice01" data-password="health2025" data-order="003">
+      <a class="work-card reveal" href="./dradvice01/" data-category="build" data-card-id="dradvice01" data-password="health2025" data-order="003">
         <div class="card-thumb">
           <img src="./dradvice01/image/dradvice01.png" alt="健康力益生菌品牌落地頁">
-          <span class="card-tag">作品分享</span>
+          <span class="card-tag">品牌網頁</span>
         </div>
         <div class="card-body">
           <div class="card-title">健康力益生菌 — 品牌落地頁</div>
@@ -968,10 +1086,10 @@
       </a>
 
       <!-- Card: LocalAI Image -->
-      <a class="work-card reveal" href="./localai-image/" data-category="ai-guide" data-card-id="localai-image" data-order="004">
+      <a class="work-card reveal" href="./localai-image/" data-category="explore" data-card-id="localai-image" data-order="004">
         <div class="card-thumb">
           <img src="./localai-image/image/LocalAI_Image.png" alt="LocalAI Image 介面">
-          <span class="card-tag">AI 指南</span>
+          <span class="card-tag">AI 教材</span>
         </div>
         <div class="card-body">
           <div class="card-title">LocalAI Image — 本地 AI 圖像介面</div>
@@ -987,7 +1105,7 @@
       </a>
 
       <!-- Card: AI Guide -->
-      <a class="work-card reveal" href="./ai-guide/" data-category="ai-guide" data-card-id="ai-guide" data-order="005">
+      <a class="work-card reveal" href="./ai-guide/" data-category="explore" data-card-id="ai-guide" data-order="005">
         <div class="card-thumb">
           <img src="./ai-guide/image/ai-guide.png" alt="AI 宇宙指南">
           <span class="card-tag">AI 指南</span>
@@ -1006,10 +1124,10 @@
       </a>
 
       <!-- Card: AI Coding Guide -->
-      <a class="work-card reveal" href="./ai-coding-guide/" data-category="ai-guide" data-card-id="ai-coding-guide" data-order="006">
+      <a class="work-card reveal" href="./ai-coding-guide/" data-category="explore" data-card-id="ai-coding-guide" data-order="006">
         <div class="card-thumb">
           <img src="./ai-coding-guide/image/cover.png" alt="AI 寫程式工具指南">
-          <span class="card-tag">AI 指南</span>
+          <span class="card-tag">開發指南</span>
         </div>
         <div class="card-body">
           <div class="card-title">AI 寫程式工具指南</div>
@@ -1025,10 +1143,10 @@
       </a>
 
       <!-- Card: Form Guide -->
-      <a class="work-card reveal" href="./form-guide/" data-category="ai-guide" data-card-id="form-guide" data-order="007">
+      <a class="work-card reveal" href="./form-guide/" data-category="explore" data-card-id="form-guide" data-order="007">
         <div class="card-thumb">
           <img src="./form-guide/image/cover.png" alt="讓網頁會收資料">
-          <span class="card-tag">AI 指南</span>
+          <span class="card-tag">網頁教學</span>
         </div>
         <div class="card-body">
           <div class="card-title">讓你的網頁會收資料</div>
@@ -1044,10 +1162,10 @@
       </a>
 
       <!-- Card: 3D Print Traps -->
-      <a class="work-card reveal" href="./3dprint-traps/" data-category="diy" data-card-id="3dprint-traps" data-order="008">
+      <a class="work-card reveal" href="./3dprint-traps/" data-category="explore" data-card-id="3dprint-traps" data-order="008">
         <div class="card-thumb">
           <img src="./3dprint-traps/image/cover.png" alt="FDM 入坑指南">
-          <span class="card-tag">自造日誌</span>
+          <span class="card-tag">自造筆記</span>
         </div>
         <div class="card-body">
           <div class="card-title">FDM 入坑指南：這些坑你早晚要踩</div>
@@ -1063,10 +1181,10 @@
       </a>
 
       <!-- Card: HTML5 Story -->
-      <a class="work-card reveal" href="./html5-story/" data-category="story" data-card-id="html5-story" data-order="009">
+      <a class="work-card reveal" href="./html5-story/" data-category="explore" data-card-id="html5-story" data-order="009">
         <div class="card-thumb">
           <img src="./html5-story/image/cover.png" alt="HTML5 的故事與創作可能性">
-          <span class="card-tag">隨筆雜談</span>
+          <span class="card-tag">技術故事</span>
         </div>
         <div class="card-body">
           <div class="card-title">HTML5 的故事與創作可能性</div>
@@ -1082,7 +1200,7 @@
       </a>
 
       <!-- Card: Bopomofo -->
-      <a class="work-card reveal" href="./bopomofo/" data-category="kids" data-card-id="bopomofo" data-order="010">
+      <a class="kids-source-card" hidden href="./bopomofo/" data-card-id="bopomofo" data-order="010">
         <div class="card-thumb">
           <img src="./bopomofo/image/cover.png" alt="ㄅㄆㄇ 注音學習小站">
           <span class="card-tag">親子學習</span>
@@ -1101,7 +1219,7 @@
       </a>
 
       <!-- Card: Kids Math -->
-      <a class="work-card reveal" href="./kids-math/" data-category="kids" data-card-id="kids-math" data-order="011">
+      <a class="kids-source-card" hidden href="./kids-math/" data-card-id="kids-math" data-order="011">
         <div class="card-thumb">
           <img src="./kids-math/image/cover.png" alt="數學樂園">
           <span class="card-tag">親子學習</span>
@@ -1120,10 +1238,10 @@
       </a>
 
       <!-- Card: Storage Master -->
-      <a class="work-card reveal" href="./storagemaster/" data-category="works" data-card-id="storagemaster" data-order="012">
+      <a class="work-card reveal" href="./storagemaster/" data-category="explore" data-card-id="storagemaster" data-order="012">
         <div class="card-thumb">
           <img src="./storagemaster/image/cover.png" alt="Storage Master 企業儲存技術知識庫">
-          <span class="card-tag">作品分享</span>
+          <span class="card-tag">技術知識庫</span>
         </div>
         <div class="card-body">
           <div class="card-title">Storage Master — 企業儲存技術知識庫</div>
@@ -1139,10 +1257,10 @@
       </a>
 
       <!-- Card: Web Planner -->
-      <a class="work-card reveal" href="./web-planner/" data-category="ai-guide" data-card-id="web-planner" data-order="013">
+      <a class="work-card reveal" href="./web-planner/" data-category="build" data-card-id="web-planner" data-order="013">
         <div class="card-thumb">
           <img src="./web-planner/image/cover.png" alt="AI 網頁專案生成小幫手">
-          <span class="card-tag">AI 指南</span>
+          <span class="card-tag">網頁工具</span>
         </div>
         <div class="card-body">
           <div class="card-title">AI 網頁專案生成小幫手</div>
@@ -1158,10 +1276,10 @@
       </a>
 
       <!-- Card: Food Spinner -->
-      <a class="work-card reveal" href="./food-spinner/" data-category="works" data-card-id="food-spinner" data-order="014">
+      <a class="work-card reveal" href="./food-spinner/" data-category="build" data-card-id="food-spinner" data-order="014">
         <div class="card-thumb">
           <img src="./food-spinner/image/cover.png" alt="吃什麼轉盤">
-          <span class="card-tag">作品分享</span>
+          <span class="card-tag">網頁工具</span>
         </div>
         <div class="card-body">
           <div class="card-title">吃什麼？附近餐廳轉盤</div>
@@ -1177,10 +1295,10 @@
       </a>
 
       <!-- Card: 3MF Explorer -->
-      <a class="work-card reveal" href="./3mf-explorer/" data-category="works" data-card-id="3mf-explorer" data-order="015">
+      <a class="work-card reveal" href="./3mf-explorer/" data-category="build" data-card-id="3mf-explorer" data-order="015">
         <div class="card-thumb">
           <img src="./3mf-explorer/image/cover.png" alt="3MF Explorer 模型縮圖瀏覽器">
-          <span class="card-tag">作品分享</span>
+          <span class="card-tag">Windows 軟體</span>
         </div>
         <div class="card-body">
           <div class="card-title">3MF Explorer — 用縮圖找回你的模型</div>
@@ -1197,16 +1315,13 @@
 
       <!-- Card: Gallery -->
       <a class="work-card reveal" href="./gallery/" data-category="gallery" data-card-id="gallery">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #0D0F14 0%, #1a1f35 50%, #0D0F14 100%); display:flex; align-items:center; justify-content:center; gap: 12px; flex-wrap:wrap; padding: 20px;">
-          <img src="./dradvice01/image/dradvice01.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
-          <img src="./opensource-story/image/opensource-story.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
-          <img src="./ai-guide/image/ai-guide.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
-          <img src="./localai-image/image/LocalAI_Image.png" alt="" style="width:48%; height:100px; object-fit:cover; border-radius:6px; opacity:0.85;">
-          <span class="card-tag" style="color:#fff; background:rgba(37,99,235,0.8);">創作圖集</span>
+        <div class="card-thumb">
+          <img src="./gallery/image/cover.png" alt="Visual Archive 視覺檔案館">
+          <span class="card-tag">視覺檔案館</span>
         </div>
         <div class="card-body">
-          <div class="card-title">AI 圖像創作集</div>
-          <div class="card-desc">用 AI 工具生成的視覺創作，探索提示詞與圖像之間的無限可能。</div>
+          <div class="card-title">Visual Archive — 每個專案都有畫面</div>
+          <div class="card-desc">從封面、角色到介面與製作過程，逛逛工作室一路累積下來的視覺足跡。</div>
         </div>
         <div class="card-footer">
           <div class="card-arrow">
@@ -1218,10 +1333,10 @@
       </a>
 
       <!-- Placeholder: Coming soon -->
-      <div class="work-card reveal" style="border-style:dashed;cursor:default;opacity:0.5;" data-category="story">
+      <div class="work-card reveal" style="border-style:dashed;cursor:default;opacity:0.5;" data-category="explore">
         <div class="card-thumb" style="background:#f3f4f6;">
           <div class="card-thumb-placeholder" style="opacity:0.3;">?</div>
-          <span class="card-tag" style="color:var(--ink-muted);">隨筆雜談</span>
+          <span class="card-tag" style="color:var(--ink-muted);">持續施工</span>
         </div>
         <div class="card-body">
           <div class="card-title" style="color:var(--ink-muted);">別問，問就是在做了</div>
@@ -1234,6 +1349,40 @@
     </div>
   </div>
 </div>
+
+<div class="full-divider"></div>
+
+<!-- KIDS LAB -->
+<section class="kids-lab" id="kids">
+  <div class="kids-inner">
+    <div class="kids-header reveal">
+      <div>
+        <div class="kids-kicker">KAI AI WORKSHOP · KIDS LAB</div>
+        <h2>用 AI 做點孩子真的玩得懂的東西。</h2>
+        <p>這裡是工作室裡比較繽紛的一間房：少一點說明書，多一點聲音、圖像與動手玩。</p>
+      </div>
+      <a class="kids-enter" href="./kids/">進入 Kids Lab →</a>
+    </div>
+    <div class="kids-grid">
+      <a class="kids-project-card reveal" href="./bopomofo/">
+        <img src="./bopomofo/image/cover.png" alt="注音樂園">
+        <div class="kids-project-body">
+          <span class="kids-project-type">ㄅ ㄆ ㄇ</span>
+          <h3 class="kids-project-name">注音樂園</h3>
+          <p class="kids-project-text">看筆順、練描字、聽發音，再用遊戲熟悉注音。</p>
+        </div>
+      </a>
+      <a class="kids-project-card reveal" href="./kids-math/">
+        <img src="./kids-math/image/cover.png" alt="數學樂園">
+        <div class="kids-project-body">
+          <span class="kids-project-type">1 ＋ 2</span>
+          <h3 class="kids-project-name">數學樂園</h3>
+          <p class="kids-project-text">從數數、形狀到加減法，用適合觸控的關卡慢慢長大。</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
 
 <div class="full-divider"></div>
 
@@ -1290,7 +1439,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Kai<span>.</span></div>
+  <div class="footer-logo">Kai <span>AI Workshop</span></div>
   <div class="footer-note">Built with HTML5 · Hosted on GitHub Pages</div>
 </footer>
 

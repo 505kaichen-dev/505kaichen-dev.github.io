@@ -1,614 +1,112 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 圖像創作集 — Kai</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫠</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #F8F9FC;
-    --surface: #FFFFFF;
-    --ink: #0D0F14;
-    --ink-muted: #6B7280;
-    --ink-faint: #9CA3AF;
-    --blue: #2563EB;
-    --blue-light: #EFF4FF;
-    --line: #E5E7EB;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(248,249,252,0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .nav-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 48px;
-    height: 64px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .nav-logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--ink);
-    text-decoration: none;
-    letter-spacing: -0.02em;
-  }
-
-  .nav-logo span { color: var(--blue); }
-
-  .nav-back {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--ink-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .nav-back:hover { color: var(--ink); }
-
-  .nav-back svg { width: 16px; height: 16px; }
-
-  /* ── HEADER ── */
-  .page-header {
-    padding: 100px 48px 48px;
-    max-width: 1280px;
-    margin: 0 auto;
-  }
-
-  .page-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--blue);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  .page-eyebrow::before {
-    content: '';
-    width: 24px; height: 1px;
-    background: var(--blue);
-  }
-
-  .page-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(2rem, 4vw, 3.5rem);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-bottom: 16px;
-  }
-
-  .page-desc {
-    font-size: 1rem;
-    color: var(--ink-muted);
-    max-width: 480px;
-    line-height: 1.7;
-  }
-
-  /* ── MASONRY GRID ── */
-  .gallery-wrap {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 48px 80px;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .gallery-item {
-    border-radius: var(--radius);
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    background: var(--blue-light);
-    display: block;
-    aspect-ratio: 40 / 21;
-  }
-
-  .gallery-item img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-  }
-
-  /* Hover overlay */
-  .gallery-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(13,15,20,0.75) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-  }
-
-  .gallery-item:hover .gallery-overlay { opacity: 1; }
-  .gallery-item:hover img { transform: scale(1.03); }
-
-  .gallery-tool {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 100px;
-    margin-bottom: 8px;
-    width: fit-content;
-  }
-
-  .gallery-caption {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #fff;
-    line-height: 1.3;
-  }
-
-  /* Expand icon */
-  .gallery-expand {
-    position: absolute;
-    top: 12px; right: 12px;
-    width: 32px; height: 32px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s;
-    color: #fff;
-  }
-
-  .gallery-item:hover .gallery-expand { opacity: 1; }
-
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    display: none;
-    position: fixed; inset: 0; z-index: 500;
-    background: rgba(13,15,20,0.92);
-    backdrop-filter: blur(20px);
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .lightbox.open { display: flex; }
-
-  .lightbox-inner {
-    position: relative;
-    max-width: 90vw;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .lightbox-img {
-    max-width: 100%;
-    max-height: 80vh;
-    border-radius: var(--radius);
-    object-fit: contain;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-  }
-
-  .lightbox-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .lightbox-tool {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 4px 12px;
-    border-radius: 100px;
-  }
-
-  .lightbox-caption {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    color: rgba(255,255,255,0.85);
-  }
-
-  .lightbox-close {
-    position: fixed;
-    top: 20px; right: 20px;
-    width: 44px; height: 44px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: #fff;
-    transition: background 0.2s;
-    backdrop-filter: blur(8px);
-  }
-
-  .lightbox-close:hover { background: rgba(255,255,255,0.2); }
-
-  /* Nav arrows */
-  .lightbox-prev, .lightbox-next {
-    position: fixed;
-    top: 50%; transform: translateY(-50%);
-    width: 44px; height: 44px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: #fff;
-    transition: background 0.2s;
-    backdrop-filter: blur(8px);
-  }
-
-  .lightbox-prev { left: 20px; }
-  .lightbox-next { right: 20px; }
-  .lightbox-prev:hover, .lightbox-next:hover { background: rgba(255,255,255,0.2); }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 80px 24px;
-    color: var(--ink-faint);
-    display: none;
-  }
-
-  .empty-state.show { display: block; }
-
-  .empty-state p { font-size: 0.95rem; margin-top: 8px; }
-
-  /* ── COUNT ── */
-  .gallery-count {
-    font-size: 0.8rem;
-    color: var(--ink-faint);
-    margin-bottom: 24px;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    padding: 32px 48px;
-    border-top: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .footer-logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--ink);
-    letter-spacing: -0.02em;
-    text-decoration: none;
-  }
-
-  .footer-logo span { color: var(--blue); }
-
-  .footer-note {
-    font-size: 0.8rem;
-    color: var(--ink-faint);
-  }
-
-  /* ── REVEAL ── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .nav-inner { padding: 0 24px; }
-    .page-header { padding: 90px 24px 36px; }
-    .filter-bar { padding: 0 24px 32px; }
-    .gallery-wrap { padding: 0 24px 60px; }
-    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-    footer { padding: 24px; flex-direction: column; gap: 10px; text-align: center; }
-  }
-
-  @media (max-width: 540px) {
-    .gallery-grid { grid-template-columns: 1fr; }
-    .page-title { font-size: 1.8rem; }
-    .lightbox-prev { left: 8px; }
-    .lightbox-next { right: 8px; }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#15151b">
+  <title>Visual Archive｜Kai AI Workshop</title>
+  <meta name="description" content="Kai AI Workshop 的視覺檔案館：專案封面、兒童世界、技術故事與製作過程。">
+  <style>
+    :root{--ink:#17171d;--muted:#73717b;--paper:#f6f3ed;--line:#ded9d0;--orange:#ff6b3d;--purple:#6965e8;--mint:#87d7bf}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-font-smoothing:antialiased}button,a{font:inherit}a{color:inherit;text-decoration:none}button{color:inherit}
+    nav{height:68px;border-bottom:1px solid var(--line);background:rgba(246,243,237,.92);backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}.nav-inner{max-width:1240px;height:100%;margin:auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between}.logo{font-weight:900;letter-spacing:-.03em}.logo span{color:var(--purple)}.back{font-size:.82rem;font-weight:800;color:var(--muted)}
+    .hero{max-width:1240px;margin:auto;padding:84px 28px 70px;display:grid;grid-template-columns:1.2fr .8fr;gap:60px;align-items:end}.eyebrow{font-size:.72rem;font-weight:900;letter-spacing:.16em;color:var(--orange);text-transform:uppercase}.hero h1{font-size:clamp(3.2rem,8vw,7.2rem);line-height:.9;letter-spacing:-.075em;margin:16px 0 24px}.hero h1 em{display:block;color:var(--purple);font-style:normal}.hero-copy{max-width:520px;color:var(--muted);line-height:1.85;font-size:.98rem}.hero-note{border-left:1px solid var(--line);padding:10px 0 10px 28px;color:var(--muted);font-size:.82rem;line-height:1.8}.hero-note strong{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:6px}
+    .rooms{max-width:1240px;margin:auto;padding:0 28px 76px}.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}.section-head h2{font-size:1.55rem;margin:0}.section-head p{font-size:.8rem;color:var(--muted);margin:0}.room-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.room{position:relative;min-height:230px;border:0;border-radius:22px;overflow:hidden;padding:0;cursor:pointer;text-align:left;background:#222}.room img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .45s}.room:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 25%,rgba(10,10,14,.82))}.room:hover img{transform:scale(1.045)}.room-copy{position:absolute;z-index:1;left:20px;right:18px;bottom:18px;color:#fff}.room-copy span{font-size:.66rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;opacity:.78}.room-copy h3{font-size:1.2rem;margin:5px 0 0}
+    .archive{border-top:1px solid var(--line);padding:68px 0 90px}.archive-inner{max-width:1240px;margin:auto;padding:0 28px}.archive-top{display:flex;gap:25px;justify-content:space-between;align-items:end;margin-bottom:28px}.archive-title h2{font-size:clamp(2rem,4vw,3.2rem);letter-spacing:-.045em;margin:0 0 7px}.archive-title p{margin:0;color:var(--muted);font-size:.85rem}.filters{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.filter{border:1px solid var(--line);background:transparent;border-radius:999px;padding:9px 14px;font-size:.75rem;font-weight:800;cursor:pointer;transition:.2s}.filter:hover,.filter.active{background:var(--ink);border-color:var(--ink);color:#fff}.count{font-size:.72rem;color:var(--muted);margin-bottom:18px}
+    .wall{columns:4 250px;column-gap:14px}.art{position:relative;break-inside:avoid;margin:0 0 14px;border-radius:16px;overflow:hidden;background:#e9e5dd;cursor:zoom-in}.art img{display:block;width:100%;height:auto;min-height:150px;object-fit:cover;transition:transform .35s,filter .35s}.art:hover img{transform:scale(1.025);filter:brightness(.72)}.art-info{position:absolute;inset:auto 0 0;padding:42px 16px 15px;color:#fff;background:linear-gradient(transparent,rgba(10,10,14,.88));opacity:0;transform:translateY(6px);transition:.25s}.art:hover .art-info{opacity:1;transform:none}.art-project{font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;opacity:.72}.art-title{font-size:.9rem;font-weight:800;margin-top:4px;line-height:1.35}.empty{text-align:center;color:var(--muted);padding:80px 20px;display:none}
+    .lightbox{position:fixed;inset:0;background:rgba(12,12,16,.94);z-index:50;display:none;align-items:center;justify-content:center;padding:28px}.lightbox.open{display:flex}.lightbox-card{width:min(1120px,100%);height:min(780px,92vh);display:grid;grid-template-columns:minmax(0,1fr) 280px;background:#1c1c23;border:1px solid #33333d;border-radius:22px;overflow:hidden;color:#fff}.lightbox-stage{position:relative;display:flex;align-items:center;justify-content:center;background:#111116;min-width:0}.lightbox-stage img{max-width:100%;max-height:100%;object-fit:contain}.lightbox-info{padding:28px;display:flex;flex-direction:column}.lightbox-kicker{color:#aaa7b6;font-size:.67rem;letter-spacing:.12em;text-transform:uppercase}.lightbox-info h2{font-size:1.45rem;line-height:1.25;margin:10px 0}.lightbox-index{font-size:.72rem;color:#888693}.project-link{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#17171d;border-radius:999px;padding:12px;font-size:.76rem;font-weight:900}.close{position:absolute;right:18px;top:16px;z-index:2;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:1.1rem;cursor:pointer}.nav-arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:52px;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:1.3rem;cursor:pointer}.prev{left:12px}.next{right:12px}footer{border-top:1px solid var(--line);padding:28px;text-align:center;color:var(--muted);font-size:.75rem}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:58px;gap:22px}.hero-note{max-width:520px}.room-grid{grid-template-columns:repeat(2,1fr)}.room{min-height:210px}.archive-top{display:block}.filters{justify-content:flex-start;margin-top:22px}.lightbox-card{grid-template-columns:1fr;height:92vh}.lightbox-info{padding:18px;min-height:145px}.project-link{margin-top:14px}.lightbox-stage{min-height:0}}
+    @media(max-width:560px){nav{height:58px}.nav-inner,.hero,.rooms,.archive-inner{padding-left:18px;padding-right:18px}.hero{padding-top:46px;padding-bottom:52px}.hero h1{font-size:3.35rem}.room-grid{grid-template-columns:1fr 1fr;gap:9px}.room{min-height:175px;border-radius:17px}.room-copy{left:14px;bottom:14px}.room-copy h3{font-size:.96rem}.section-head p{display:none}.wall{columns:2 145px;column-gap:9px}.art{margin-bottom:9px;border-radius:12px}.art-info{opacity:1;transform:none;padding:30px 10px 10px}.art-project{display:none}.art-title{font-size:.72rem}.lightbox{padding:8px}.lightbox-card{border-radius:15px}.lightbox-info h2{font-size:1.1rem}}
+  </style>
 </head>
 <body>
-
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <a href="../" class="nav-logo">Kai<span>.</span></a>
-    <a href="../" class="nav-back">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M10 4l-4 4 4 4"/>
-      </svg>
-      回首頁
-    </a>
-  </div>
-</nav>
-
-<!-- PAGE HEADER -->
-<div class="page-header">
-  <div class="page-eyebrow">AI Creative Gallery</div>
-  <h1 class="page-title">AI 圖像創作集</h1>
-  <p class="page-desc">用 AI 工具生成的視覺創作，探索提示詞與圖像之間的無限可能。</p>
-</div>
-
-<!-- GALLERY -->
-<div class="gallery-wrap">
-  <div class="gallery-count" id="galleryCount"></div>
-
-  <div class="gallery-grid" id="galleryGrid">
-
-    <!-- ★ 範例圖片區塊開始 — 之後新增圖片只要複製下面這個區塊 ★ -->
-
-    <div class="gallery-item reveal" data-caption="益暢敏益生菌品牌封面">
-      <img src="../dradvice01/image/dradvice01.png" alt="益暢敏益生菌品牌封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">益暢敏益生菌品牌封面</div>
+  <nav><div class="nav-inner"><a class="logo" href="../">Kai <span>AI Workshop</span></a><a class="back" href="../">← 回到工作室</a></div></nav>
+  <main>
+    <section class="hero">
+      <div><div class="eyebrow">Visual Archive · 視覺檔案館</div><h1>每個專案，<em>都有畫面。</em></h1><p class="hero-copy">這裡不只是漂亮圖片的集合。它們是概念第一次有了形狀、工具開始能被理解，以及一個小世界逐漸長出來的紀錄。</p></div>
+      <div class="hero-note"><strong>不是素材倉庫，是工作室的視覺足跡。</strong>封面、角色、介面與過程，各自回到它誕生的專案裡；也可以只憑感覺，隨意逛逛。</div>
+    </section>
+    <section class="rooms">
+      <div class="section-head"><h2>先選一間展間</h2><p>或繼續往下瀏覽全部作品</p></div>
+      <div class="room-grid">
+        <button class="room" data-room="kids"><img src="../kids/image/kids-lab-cover.png" alt="兒童世界"><span class="room-copy"><span>Kids Lab</span><h3>兒童世界</h3></span></button>
+        <button class="room" data-room="story"><img src="../html5-story/image/cover.png" alt="視覺敘事"><span class="room-copy"><span>Visual stories</span><h3>視覺敘事</h3></span></button>
+        <button class="room" data-room="build"><img src="../3mf-explorer/image/3mf-explorer-library.png" alt="介面與工具"><span class="room-copy"><span>Tools & UI</span><h3>介面與工具</h3></span></button>
+        <button class="room" data-room="brand"><img src="../dradvice01/image/dradvice01.png" alt="品牌與封面"><span class="room-copy"><span>Identity</span><h3>品牌與封面</h3></span></button>
       </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="本地 AI 商業圖片生成教材封面">
-      <img src="../localai-image/image/LocalAI_Image.png" alt="本地 AI 圖像封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">本地 AI 商業圖片生成教材封面</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="代碼烏托邦 — 開源故事封面">
-      <img src="../opensource-story/image/opensource-story.png" alt="代碼烏托邦封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">代碼烏托邦 — 開源故事封面</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="AI 宇宙指南封面">
-      <img src="../ai-guide/image/ai-guide.png" alt="AI 宇宙指南封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">AI 宇宙指南封面</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="用 Claude 做網站封面">
-      <img src="../claude-web-guide/image/claude-web-guide.png" alt="Claude 網頁開發封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">用 Claude 做網站封面</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="HTML5 的故事與創作可能性">
-      <img src="../html5-story/image/cover.png" alt="HTML5 的故事與創作可能性">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">HTML5 的故事與創作可能性</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="FDM 入坑指南：這些坑你早晚要踩">
-      <img src="../3dprint-traps/image/cover.png" alt="FDM 入坑指南封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">FDM 入坑指南：這些坑你早晚要踩</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="gallery-item reveal" data-caption="讓網頁會收資料：靜態網頁 × Google Sheets">
-      <img src="../form-guide/image/cover.png" alt="讓網頁會收資料封面">
-      <div class="gallery-overlay">
-        <div class="gallery-caption">讓網頁會收資料：靜態網頁 × Google Sheets</div>
-      </div>
-      <div class="gallery-expand">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M1 1h4M1 1v4M13 1h-4M13 1v4M1 13h4M1 13v-4M13 13h-4M13 13v-4"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- ★ 範例圖片區塊結束 — 新增圖片從這裡往下加 ★ -->
-
-  </div>
-
-  <div class="empty-state" id="emptyState">
-    <div style="font-size:2rem;">🖼</div>
-    <p>這個分類還沒有圖片</p>
-  </div>
-</div>
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-inner">
-    <img class="lightbox-img" id="lightboxImg" src="" alt="">
-    <div class="lightbox-info">
-      <span class="lightbox-caption" id="lightboxCaption"></span>
-    </div>
-  </div>
-  <button class="lightbox-close" id="lightboxClose">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M2 2l12 12M14 2L2 14"/>
-    </svg>
-  </button>
-  <button class="lightbox-prev" id="lightboxPrev">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M10 4l-4 4 4 4"/>
-    </svg>
-  </button>
-  <button class="lightbox-next" id="lightboxNext">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M6 4l4 4-4 4"/>
-    </svg>
-  </button>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <a href="../" class="footer-logo">Kai<span>.</span></a>
-  <div class="footer-note">AI Creative Gallery · Built with HTML5</div>
-</footer>
-
-<script>
-  // ── LIGHTBOX ──
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxCaption = document.getElementById('lightboxCaption');
-  let currentIndex = 0;
-  let allItems = [];
-
-  function getItems() {
-    return Array.from(document.querySelectorAll('.gallery-item'));
+    </section>
+    <section class="archive" id="archive"><div class="archive-inner">
+      <div class="archive-top"><div class="archive-title"><h2>作品牆</h2><p>從成品到過程，點開圖片可以回到它的原始專案。</p></div><div class="filters" id="filters">
+        <button class="filter active" data-filter="all">全部</button><button class="filter" data-filter="featured">精選</button><button class="filter" data-filter="kids">Kids Lab</button><button class="filter" data-filter="story">視覺敘事</button><button class="filter" data-filter="build">介面工具</button><button class="filter" data-filter="brand">品牌封面</button>
+      </div></div>
+      <div class="count" id="count"></div><div class="wall" id="wall"></div><div class="empty" id="empty">這間展間還沒有作品。</div>
+    </div></section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="圖片檢視器"><div class="lightbox-card"><div class="lightbox-stage"><button class="close" id="close" aria-label="關閉">×</button><button class="nav-arrow prev" id="prev" aria-label="上一張">‹</button><img id="lightboxImg" alt=""><button class="nav-arrow next" id="next" aria-label="下一張">›</button></div><div class="lightbox-info"><div class="lightbox-kicker" id="lightboxProject"></div><h2 id="lightboxTitle"></h2><div class="lightbox-index" id="lightboxIndex"></div><a class="project-link" id="projectLink" href="#">前往原專案 →</a></div></div></div>
+  <footer>Kai AI Workshop · Visual Archive</footer>
+  <script>
+  const works=[
+    {src:'../kids/image/kids-lab-cover.png',title:'通往想像世界的入口',project:'Kids Lab',cat:'kids',href:'../kids/',featured:1},
+    {src:'../kids/image/kids-lab-icon.png',title:'Kids Lab 兔子書籤圖示',project:'Kids Lab',cat:'kids',href:'../kids/'},
+    {src:'../bopomofo/image/cover.png',title:'注音樂園主視覺',project:'注音樂園',cat:'kids',href:'../bopomofo/',featured:1},
+    {src:'../bopomofo/image/chart-cover.png',title:'注音總表入口',project:'注音樂園',cat:'kids',href:'../bopomofo/'},
+    {src:'../bopomofo/image/learn-cover.png',title:'符號教學入口',project:'注音樂園',cat:'kids',href:'../bopomofo/'},
+    {src:'../bopomofo/image/game-cover.png',title:'遊戲關卡入口',project:'注音樂園',cat:'kids',href:'../bopomofo/'},
+    {src:'../bopomofo/image/game-listen.png',title:'聽音辨識遊戲',project:'注音樂園',cat:'kids',href:'../bopomofo/game/'},
+    {src:'../bopomofo/image/game-picture.png',title:'看圖找注音遊戲',project:'注音樂園',cat:'kids',href:'../bopomofo/game/'},
+    {src:'../kids-math/image/cover.png',title:'兒童數學學習樂園',project:'數學樂園',cat:'kids',href:'../kids-math/',featured:1},
+    {src:'../kids-math/counting.png',title:'數數小世界',project:'數學樂園',cat:'kids',href:'../kids-math/'},
+    {src:'../kids-math/addition.png',title:'加法練習世界',project:'數學樂園',cat:'kids',href:'../kids-math/'},
+    {src:'../kids-math/subtraction.png',title:'減法練習世界',project:'數學樂園',cat:'kids',href:'../kids-math/'},
+    {src:'../kids-math/shapes.png',title:'圖形探索世界',project:'數學樂園',cat:'kids',href:'../kids-math/'},
+    {src:'../kids-math/mixed.png',title:'綜合挑戰世界',project:'數學樂園',cat:'kids',href:'../kids-math/'},
+    {src:'../opensource-story/image/opensource-story.png',title:'開源運動的誕生',project:'開源故事',cat:'story',href:'../opensource-story/',featured:1},
+    {src:'../html5-story/image/cover.png',title:'HTML5 的故事與創作可能性',project:'HTML5 Story',cat:'story',href:'../html5-story/',featured:1},
+    {src:'../html5-story/image/image01.png',title:'從標準之爭開始',project:'HTML5 Story',cat:'story',href:'../html5-story/'},
+    {src:'../html5-story/image/image02.png',title:'瀏覽器裡的新世界',project:'HTML5 Story',cat:'story',href:'../html5-story/'},
+    {src:'../html5-story/image/image03.png',title:'網頁開始會動',project:'HTML5 Story',cat:'story',href:'../html5-story/'},
+    {src:'../html5-story/image/image04.png',title:'創作者的工具箱',project:'HTML5 Story',cat:'story',href:'../html5-story/'},
+    {src:'../html5-story/image/image05.png',title:'一個人的創作時代',project:'HTML5 Story',cat:'story',href:'../html5-story/'},
+    {src:'../html5-story/image/chart01.png',title:'HTML5 發展圖表',project:'HTML5 Story',cat:'story',href:'../html5-story/'},
+    {src:'../3dprint-traps/image/cover.png',title:'FDM 入坑指南',project:'3D 列印筆記',cat:'story',href:'../3dprint-traps/',featured:1},
+    {src:'../3dprint-traps/image/image01.png',title:'踏入 3D 列印現場',project:'3D 列印筆記',cat:'story',href:'../3dprint-traps/'},
+    {src:'../3dprint-traps/image/image02.png',title:'列印中的真實日常',project:'3D 列印筆記',cat:'story',href:'../3dprint-traps/'},
+    {src:'../3dprint-traps/image/image03.png',title:'那些早晚會踩的坑',project:'3D 列印筆記',cat:'story',href:'../3dprint-traps/'},
+    {src:'../3dprint-traps/image/image04.png',title:'從失敗裡調整',project:'3D 列印筆記',cat:'story',href:'../3dprint-traps/'},
+    {src:'../3mf-explorer/image/cover.png',title:'3MF Explorer',project:'3MF Explorer',cat:'build',href:'../3mf-explorer/',featured:1},
+    {src:'../3mf-explorer/image/windows-explorer-problem.png',title:'檔案總管的模型辨識困境',project:'3MF Explorer',cat:'build',href:'../3mf-explorer/'},
+    {src:'../3mf-explorer/image/3mf-explorer-library.png',title:'模型縮圖資料庫',project:'3MF Explorer',cat:'build',href:'../3mf-explorer/'},
+    {src:'../web-planner/image/cover.png',title:'AI 網頁專案生成小幫手',project:'Web Planner',cat:'build',href:'../web-planner/',featured:1},
+    {src:'../web-planner/image/image01.png',title:'需求引導介面',project:'Web Planner',cat:'build',href:'../web-planner/'},
+    {src:'../web-planner/image/image02.png',title:'逐步整理網站想法',project:'Web Planner',cat:'build',href:'../web-planner/'},
+    {src:'../web-planner/image/image03.png',title:'生成可交付需求單',project:'Web Planner',cat:'build',href:'../web-planner/'},
+    {src:'../form-guide/image/cover.png',title:'讓網頁會收資料',project:'Form Guide',cat:'build',href:'../form-guide/'},
+    {src:'../form-guide/image/image01.png',title:'靜態網頁串接資料',project:'Form Guide',cat:'build',href:'../form-guide/'},
+    {src:'../form-guide/image/image02.png',title:'表單設定過程',project:'Form Guide',cat:'build',href:'../form-guide/'},
+    {src:'../form-guide/image/image03.png',title:'資料流動方式',project:'Form Guide',cat:'build',href:'../form-guide/'},
+    {src:'../form-guide/image/image04.png',title:'完成後的資料表',project:'Form Guide',cat:'build',href:'../form-guide/'},
+    {src:'../food-spinner/image/cover.png',title:'附近餐廳轉盤',project:'吃什麼？',cat:'build',href:'../food-spinner/'},
+    {src:'../storagemaster/image/cover.png',title:'企業儲存技術知識庫',project:'Storage Master',cat:'build',href:'../storagemaster/'},
+    {src:'../ai-guide/image/ai-guide.png',title:'AI 宇宙指南',project:'AI Guide',cat:'brand',href:'../ai-guide/',featured:1},
+    {src:'../claude-web-guide/image/claude-web-guide.png',title:'Claude 網頁開發指南',project:'Claude Web Guide',cat:'brand',href:'../claude-web-guide/'},
+    {src:'../ai-coding-guide/image/cover.png',title:'AI 寫程式工具指南',project:'AI Coding Guide',cat:'brand',href:'../ai-coding-guide/'},
+    {src:'../localai-image/image/LocalAI_Image.png',title:'本地 AI 商業圖片教材',project:'LocalAI Image',cat:'brand',href:'../localai-image/'},
+    {src:'../dradvice01/image/dradvice01.png',title:'益生菌品牌落地頁',project:'健康力品牌設計',cat:'brand',href:'../dradvice01/',featured:1}
+  ];
+  const wall=document.getElementById('wall'),count=document.getElementById('count'),empty=document.getElementById('empty');let current='all',visible=[],activeIndex=0;
+  function render(filter='all'){
+    current=filter;visible=works.filter(w=>filter==='all'||(filter==='featured'?w.featured:w.cat===filter));
+    wall.innerHTML=visible.map((w,i)=>`<article class="art" data-index="${i}" tabindex="0"><img src="${w.src}" alt="${w.title}" loading="lazy"><div class="art-info"><div class="art-project">${w.project}</div><div class="art-title">${w.title}</div></div></article>`).join('');
+    count.textContent=`目前展出 ${visible.length} 件作品`;empty.style.display=visible.length?'none':'block';
+    document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===filter));
   }
-
-  function openLightbox(item) {
-    allItems = getItems();
-    currentIndex = allItems.indexOf(item);
-    showLightboxItem(currentIndex);
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function showLightboxItem(index) {
-    const item = allItems[index];
-    if (!item) return;
-    const img = item.querySelector('img');
-    lightboxImg.src = img.src;
-    lightboxImg.alt = img.alt;
-    lightboxCaption.textContent = item.dataset.caption || '';
-    currentIndex = index;
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  // Init
-  allItems = getItems();
-  document.getElementById('galleryCount').textContent = `共 ${allItems.length} 張`;
-
-  allItems.forEach(item => {
-    item.addEventListener('click', () => openLightbox(item));
-  });
-
-  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-
-  document.getElementById('lightboxPrev').addEventListener('click', e => {
-    e.stopPropagation();
-    showLightboxItem((currentIndex - 1 + allItems.length) % allItems.length);
-  });
-
-  document.getElementById('lightboxNext').addEventListener('click', e => {
-    e.stopPropagation();
-    showLightboxItem((currentIndex + 1) % allItems.length);
-  });
-
-  lightbox.addEventListener('click', e => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  document.addEventListener('keydown', e => {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') showLightboxItem((currentIndex - 1 + allItems.length) % allItems.length);
-    if (e.key === 'ArrowRight') showLightboxItem((currentIndex + 1) % allItems.length);
-  });
-
-  // ── SCROLL REVEAL ──
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 60);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.05 });
-  reveals.forEach(el => observer.observe(el));
-</script>
+  function openLightbox(i){activeIndex=i;const w=visible[i];document.getElementById('lightboxImg').src=w.src;document.getElementById('lightboxImg').alt=w.title;document.getElementById('lightboxProject').textContent=w.project;document.getElementById('lightboxTitle').textContent=w.title;document.getElementById('lightboxIndex').textContent=`${i+1} / ${visible.length}`;document.getElementById('projectLink').href=w.href;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden'}
+  function closeLightbox(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow=''}
+  function move(step){openLightbox((activeIndex+step+visible.length)%visible.length)}
+  document.getElementById('filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b)render(b.dataset.filter)});
+  document.querySelector('.room-grid').addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(b){render(b.dataset.room);document.getElementById('archive').scrollIntoView({behavior:'smooth'})}});
+  wall.addEventListener('click',e=>{const a=e.target.closest('.art');if(a)openLightbox(+a.dataset.index)});wall.addEventListener('keydown',e=>{const a=e.target.closest('.art');if(a&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openLightbox(+a.dataset.index)}});
+  document.getElementById('close').onclick=closeLightbox;document.getElementById('prev').onclick=()=>move(-1);document.getElementById('next').onclick=()=>move(1);document.getElementById('lightbox').addEventListener('click',e=>{if(e.target.id==='lightbox')closeLightbox()});document.addEventListener('keydown',e=>{if(!document.getElementById('lightbox').classList.contains('open'))return;if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1)});render();
+  </script>
 </body>
 </html>

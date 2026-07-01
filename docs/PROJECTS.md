@@ -4,21 +4,22 @@
 
 | 資料夾 | 類型 | 正式入口 | 首頁卡片 | 補充頁面 |
 |---|---|---|---|---|
-| `opensource-story/` | 故事文章 | `index.html` | 001 | — |
-| `claude-web-guide/` | AI 指南 | `index.html` | 002 | 舊版本已封存 |
-| `dradvice01/` | 作品分享 | `index.html` | 003，密碼保護 | 重複頁已封存 |
+| `opensource-story/` | Explore／技術故事 | `index.html` | 001 | — |
+| `claude-web-guide/` | Explore／AI 實戰 | `index.html` | 002 | 舊版本已封存 |
+| `dradvice01/` | Build／品牌網頁 | `index.html` | 003，密碼保護 | 重複頁已封存 |
 | `localai-image/` | AI 指南 | `index.html` | 004 | `ai_image_slides.html` |
 | `ai-guide/` | AI 指南 | `index.html` | 005 | — |
 | `ai-coding-guide/` | AI 指南 | `index.html` | 006 | — |
 | `form-guide/` | AI 指南 | `index.html` | 007 | `presentation.html` |
 | `3dprint-traps/` | 自造日誌 | `index.html` | 008 | — |
 | `html5-story/` | 故事文章 | `index.html` | 009 | — |
-| `bopomofo/` | 親子學習 | `index.html` | 010 | 總表、教學、兩款遊戲 |
-| `kids-math/` | 親子學習 | `index.html` | 011 | 五類教學與遊戲 |
-| `storagemaster/` | 作品分享 | `index.html` | 012 | — |
-| `web-planner/` | AI 指南 | `index.html` | 013 | 免 API 公開版 |
-| `food-spinner/` | 作品分享 | `index.html` | 014 | Google Maps / Places API |
-| `3mf-explorer/` | 作品分享 | `index.html` | 015 | Windows Portable 測試版 |
+| `kids/` | Kids Lab 導覽 | `index.html` | 獨立分區 | 兒童子站入口 |
+| `bopomofo/` | Kids Lab／親子學習 | `index.html` | 原序號 010 | 總表、教學、兩款遊戲 |
+| `kids-math/` | Kids Lab／親子學習 | `index.html` | 原序號 011 | 五類教學與遊戲 |
+| `storagemaster/` | Explore／技術知識庫 | `index.html` | 012 | — |
+| `web-planner/` | Build／網頁工具 | `index.html` | 013 | 免 API 公開版 |
+| `food-spinner/` | Build／網頁工具 | `index.html` | 014 | Google Maps / Places API |
+| `3mf-explorer/` | Build／Windows 軟體 | `index.html` | 015 | Windows Portable 測試版 |
 | `gallery/` | 創作圖集 | `index.html` | 無序號 | — |
 
 ## 本機管理資料
