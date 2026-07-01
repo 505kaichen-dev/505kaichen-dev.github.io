@@ -15,6 +15,9 @@
 | `html5-story/` | 故事文章 | `index.html` | 009 | — |
 | `bopomofo/` | 親子學習 | `index.html` | 010 | 總表、教學、兩款遊戲 |
 | `kids-math/` | 親子學習 | `index.html` | 011 | 五類教學與遊戲 |
+| `storagemaster/` | 作品分享 | `index.html` | 012 | — |
+| `web-planner/` | AI 指南 | `index.html` | 013 | 免 API 公開版 |
+| `food-spinner/` | 作品分享 | `index.html` | 014 | Google Maps / Places API |
 | `gallery/` | 創作圖集 | `index.html` | 無序號 | — |
 
 ## 本機管理資料
@@ -29,4 +32,4 @@
 
 ## 下一張首頁卡片
 
-下一個正式專案使用 `data-order="012"`，並同步更新 `website-maintenance.md`。
+下一個正式專案使用 `data-order="015"`，並同步更新 `website-maintenance.md`。

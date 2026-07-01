@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吃什麼轉盤 🍽️</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 6px;
+    text-shadow: 0 0 20px rgba(255,180,0,0.6);
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    color: #aaa;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+
+  /* API Key banner */
+  #api-banner {
+    background: linear-gradient(90deg, #ff6b35, #f7c59f);
+    color: #1a1a2e;
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+  }
+  #api-banner a { color: #1a1a2e; font-weight: bold; }
+  #api-key-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  #api-key-input {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8rem;
+    background: rgba(255,255,255,0.9);
+    color: #333;
+  }
+  #api-key-btn, #api-key-verify, #api-key-clear {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #1a1a2e;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  #api-key-clear {
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.55);
+  }
+  .api-help-btn {
+    margin-left: 8px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.18);
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: bold;
+  }
+  #api-help-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(5,10,25,0.82);
+    padding: 20px;
+    overflow-y: auto;
+  }
+  #api-help-modal.open { display: flex; align-items: center; justify-content: center; }
+  .api-help-card {
+    width: min(680px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #182744;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 18px;
+    padding: 24px;
+    text-align: left;
+    box-shadow: 0 20px 70px rgba(0,0,0,0.45);
+  }
+  .api-help-card h2 { color: #ffd166; margin-bottom: 12px; }
+  .api-help-card ol { padding-left: 22px; line-height: 1.7; }
+  .api-help-card li { margin-bottom: 10px; }
+  .api-help-card code {
+    display: block;
+    margin-top: 5px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    color: #7ce8df;
+    word-break: break-all;
+  }
+  .api-help-note { margin: 14px 0; color: #ffcf70; font-size: 0.85rem; }
+  .api-help-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+  /* Meal time tabs */
+  .meal-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .meal-tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .meal-tab.active {
+    background: linear-gradient(135deg, #f7c59f, #ff6b35);
+    color: #1a1a2e;
+    border-color: transparent;
+    font-weight: bold;
+  }
+
+  /* Location section */
+  .location-box {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 16px 20px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  .location-box label {
+    font-size: 0.8rem;
+    color: #aaa;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .location-row {
+    display: flex;
+    gap: 8px;
+  }
+  #address-input {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 0.95rem;
+  }
+  #address-input::placeholder { color: #666; }
+  .btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  #gps-btn {
+    background: linear-gradient(135deg, #4ecdc4, #45b7aa);
+    color: #fff;
+    white-space: nowrap;
+  }
+  #search-btn {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #1a1a2e;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+  .btn:active { transform: translateY(0); }
+
+  #location-status {
+    font-size: 0.78rem;
+    color: #4ecdc4;
+    margin-top: 8px;
+    min-height: 18px;
+  }
+
+  /* Spinner section */
+  .spinner-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .wheel-wrapper {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin-bottom: 20px;
+  }
+
+  #wheel-canvas {
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(255,180,0,0.3), 0 0 80px rgba(255,100,0,0.1);
+  }
+
+  /* Pointer */
+  .pointer {
+    position: absolute;
+    top: 50%;
+    right: -18px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 16px solid transparent;
+    border-bottom: 16px solid transparent;
+    border-right: 32px solid #ffd700;
+    filter: drop-shadow(0 0 6px rgba(255,215,0,0.8));
+    z-index: 10;
+  }
+
+  /* Center dot */
+  .center-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.8);
+    z-index: 10;
+  }
+
+  #spin-btn {
+    background: linear-gradient(135deg, #ff6b35, #ffd700);
+    color: #1a1a2e;
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 20px rgba(255,180,0,0.4);
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  #spin-btn:hover { transform: scale(1.05); }
+  #spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Result card */
+  #result-card {
+    display: none;
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,53,0.15));
+    border: 2px solid rgba(255,215,0,0.4);
+    border-radius: 20px;
+    padding: 20px 28px;
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: center;
+    animation: popIn 0.4s ease;
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  #result-card h2 { font-size: 1.5rem; color: #ffd700; margin-bottom: 6px; }
+  #result-card .result-type { font-size: 0.85rem; color: #aaa; margin-bottom: 10px; }
+  #result-card .result-status {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .status-open { background: rgba(78,205,196,0.2); color: #4ecdc4; border: 1px solid #4ecdc4; }
+  .status-closed { background: rgba(255,107,107,0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
+  #result-card .result-distance { color: #ccc; font-size: 0.88rem; }
+  #result-card .result-address { color: #aaa; font-size: 0.8rem; margin-top: 4px; }
+  #result-card { cursor: pointer; }
+  #result-map-link {
+    margin-top: 14px;
+    background: linear-gradient(135deg, #4D96FF, #118AB2);
+    color: #fff;
+  }
+
+  /* Restaurant list */
+  .list-section {
+    max-width: 600px;
+    width: 100%;
+  }
+  .list-title {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+  .restaurant-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .restaurant-list::-webkit-scrollbar { width: 4px; }
+  .restaurant-list::-webkit-scrollbar-track { background: transparent; }
+  .restaurant-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  .filter-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    color: #ccc;
+    font-size: 0.8rem;
+  }
+  .filter-row select {
+    padding: 5px 8px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: #223253;
+    color: #fff;
+  }
+  .filter-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+  .restaurant-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .restaurant-item:hover { background: rgba(255,255,255,0.1); }
+  .restaurant-item.highlighted {
+    border-color: #ffd700;
+    background: rgba(255,215,0,0.1);
+  }
+  .item-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .item-name { flex: 1; font-size: 0.9rem; font-weight: 500; }
+  .item-meta { font-size: 0.75rem; color: #888; }
+  .item-open { font-size: 0.72rem; font-weight: bold; }
+  .item-open.open { color: #4ecdc4; }
+  .item-open.closed { color: #ff6b6b; }
+  .item-open.unknown { color: #aaa; }
+
+  #loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-size: 0.9rem;
+  }
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.2s steps(4) infinite;
+  }
+  @keyframes dots {
+    0%,100% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px;
+    color: #555;
+    font-size: 0.9rem;
+  }
+
+  /* Demo badge */
+  .demo-badge {
+    display: inline-block;
+    background: rgba(255,180,0,0.2);
+    color: #ffd700;
+    border: 1px solid rgba(255,215,0,0.3);
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* 2026 warm food-market visual refresh */
+  :root {
+    --cream: #fff8eb;
+    --cream-muted: #d9c9b5;
+    --tomato: #ff5a36;
+    --orange: #ff8a2a;
+    --gold: #ffc84a;
+    --mint: #57d2b5;
+    --ink: #21140f;
+    --panel: rgba(43, 24, 20, 0.82);
+    --panel-strong: rgba(58, 31, 24, 0.94);
+    --line: rgba(255, 231, 194, 0.15);
+  }
+
+  body {
+    position: relative;
+    overflow-x: hidden;
+    color: var(--cream);
+    padding: 30px 20px 42px;
+    background:
+      radial-gradient(circle at 18% 5%, rgba(255, 129, 54, 0.22), transparent 30%),
+      radial-gradient(circle at 85% 28%, rgba(190, 56, 34, 0.18), transparent 28%),
+      linear-gradient(145deg, #160e0c 0%, #2b1713 48%, #170f0e 100%);
+    background-attachment: fixed;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(to bottom, #000, transparent 75%);
+  }
+
+  h1 {
+    position: relative;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    color: #fff5df;
+    text-shadow: 0 6px 24px rgba(255, 90, 54, 0.28);
+  }
+  h1::after {
+    content: '今天，交給好運選一道';
+    display: block;
+    margin-top: 10px;
+    color: var(--gold);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+  }
+  .subtitle {
+    color: var(--cream-muted);
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+  }
+
+  #api-banner,
+  .location-box,
+  .filter-row,
+  #result-card,
+  .api-help-card {
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.05);
+    backdrop-filter: blur(16px);
+  }
+  #api-banner {
+    padding: 13px 18px;
+    border-radius: 16px;
+    margin-bottom: 22px;
+  }
+  #api-key-row { flex-wrap: wrap; justify-content: center; }
+  #api-key-input {
+    min-width: 220px;
+    min-height: 38px;
+    border: 1px solid rgba(70,35,24,0.14);
+  }
+
+  .meal-tabs {
+    padding: 5px;
+    gap: 4px;
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(20, 11, 9, 0.52);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .meal-tab {
+    min-width: 92px;
+    padding: 9px 18px;
+    border: 0;
+    color: #cdbbab;
+  }
+  .meal-tab:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  .meal-tab.active {
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    box-shadow: 0 6px 18px rgba(255, 113, 38, 0.32);
+  }
+
+  .location-box {
+    position: relative;
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(66,36,29,0.9), rgba(38,22,19,0.86));
+  }
+  .location-box label {
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  #address-input {
+    min-width: 0;
+    min-height: 44px;
+    color: #fff9ef;
+    background: rgba(13, 8, 7, 0.38);
+    border: 1px solid rgba(255,226,190,0.18);
+    outline: none;
+  }
+  #address-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(255, 200, 74, 0.13);
+  }
+  #address-input::placeholder { color: #8f7b70; }
+  #gps-btn { background: #3ebca2; box-shadow: 0 7px 20px rgba(62,188,162,0.2); }
+  #search-btn { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+  #location-status { color: #80dbc7; }
+
+  .spinner-section { margin: 8px 0 26px; }
+  .wheel-wrapper {
+    width: min(320px, 82vw);
+    height: min(320px, 82vw);
+    isolation: isolate;
+  }
+  .wheel-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    z-index: -1;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f8d27c, #7b351d 42%, #180d0a 78%);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.46), 0 0 44px rgba(255,111,40,0.18);
+  }
+  #wheel-canvas {
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 28px rgba(0,0,0,0.2);
+  }
+  .center-dot {
+    width: 30px;
+    height: 30px;
+    border: 7px solid #fff1d3;
+    background: #3b1d17;
+    box-shadow: 0 4px 14px rgba(0,0,0,.55);
+  }
+  .pointer {
+    right: -24px;
+    border-right-color: var(--gold);
+    filter: drop-shadow(0 4px 5px rgba(0,0,0,.45));
+  }
+  #spin-btn {
+    position: relative;
+    padding: 15px 38px;
+    color: #2b160d;
+    background: linear-gradient(135deg, #ff6238, #ffc433 72%);
+    box-shadow: 0 10px 30px rgba(255, 93, 40, 0.32), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  #spin-btn:hover { transform: translateY(-2px) scale(1.025); }
+
+  #result-card {
+    position: relative;
+    overflow: hidden;
+    padding: 24px 28px;
+    border-color: rgba(255,200,74,.55);
+    background: linear-gradient(145deg, rgba(77,38,27,.96), rgba(39,24,22,.95));
+    box-shadow: 0 20px 55px rgba(0,0,0,.32), 0 0 40px rgba(255,145,48,.08);
+  }
+  #result-card::before {
+    content: 'TODAY’S PICK';
+    position: absolute;
+    top: 14px;
+    right: -33px;
+    transform: rotate(38deg);
+    padding: 4px 38px;
+    color: #4a2516;
+    background: var(--gold);
+    font-size: .58rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+  #result-card h2 { color: var(--gold); font-size: 1.65rem; }
+  #result-card .result-type { color: #e0c9b7; }
+  #result-card .result-distance { color: #f4e5d7; }
+  #result-card .result-address { color: #bca99d; }
+  #result-map-link { background: linear-gradient(135deg, #367edc, #26a9c4); }
+
+  .list-section {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(25, 14, 12, 0.46);
+    box-shadow: 0 18px 50px rgba(0,0,0,.2);
+  }
+  .filter-row {
+    padding: 11px 12px;
+    background: rgba(75, 42, 33, 0.72);
+  }
+  .filter-row select {
+    min-height: 34px;
+    color: #fff4e7;
+    background: #321e19;
+    border-color: rgba(255,224,185,.2);
+  }
+  .filter-row input { accent-color: var(--orange); }
+  .list-title { color: #d3c0b0; padding: 3px 4px; }
+  .restaurant-list { gap: 9px; max-height: 320px; }
+  .restaurant-item {
+    min-height: 48px;
+    border-color: rgba(255,231,194,.09);
+    background: rgba(70, 38, 31, 0.54);
+  }
+  .restaurant-item:hover {
+    transform: translateX(3px);
+    border-color: rgba(255,200,74,.32);
+    background: rgba(91, 47, 36, 0.76);
+  }
+  .restaurant-item.highlighted {
+    border-color: var(--gold);
+    background: linear-gradient(90deg, rgba(255,176,48,.16), rgba(89,43,31,.75));
+    box-shadow: 0 7px 22px rgba(0,0,0,.18);
+  }
+  .item-name { color: #fff7ea; }
+  .item-meta { color: #ae998b; }
+  .item-open.open, .status-open { color: #70dfc6; }
+  .item-open.closed, .status-closed { color: #ff806d; }
+  .item-open.unknown { color: #bba99d; }
+  .restaurant-list::-webkit-scrollbar-thumb { background: rgba(255,200,74,.3); }
+
+  @media (max-width: 640px) {
+    body { padding: 22px 12px 32px; }
+    h1 { font-size: 2rem; }
+    h1::after { letter-spacing: 2px; }
+    #api-banner { font-size: .78rem; }
+    #api-key-row { flex-direction: column; }
+    #api-key-input, #api-key-btn, #api-key-verify, #api-key-clear, .api-help-btn {
+      width: 100%;
+      margin-left: 0;
+      min-height: 40px;
+    }
+    .meal-tab { min-width: 0; padding: 9px 15px; }
+    .location-row { display: grid; grid-template-columns: 1fr 1fr; }
+    #address-input { grid-column: 1 / -1; }
+    .filter-row { align-items: flex-start; }
+    .filter-row > span { width: 100%; }
+    .filter-row select { flex: 1; }
+    .restaurant-item { flex-wrap: wrap; }
+    .item-name { min-width: calc(100% - 28px); }
+    .item-meta { margin-left: 22px; }
+    #result-card { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🍽️ 吃什麼？</h1>
+<p class="subtitle">偵測位置 · 搜尋周邊 · 轉盤決定</p>
+
+<!-- API Key Banner -->
+<div id="api-banner">
+  ⚠️ 目前為 <strong>Demo 模式</strong>（模擬資料）。填入
+  <a href="https://console.cloud.google.com/apis/library/places.googleapis.com" target="_blank">Google Places API Key</a>
+  後切換真實搜尋：
+  <div id="api-key-row">
+    <input id="api-key-input" type="text" placeholder="貼上你的 API Key...">
+    <button id="api-key-btn" class="btn" onclick="saveApiKey()">套用</button>
+    <button id="api-key-verify" class="btn" onclick="verifyEnteredApiKey()">驗證 API Key</button>
+    <button id="api-key-clear" class="btn" onclick="clearApiKey()">清除 Key</button>
+    <button class="api-help-btn" onclick="openApiHelp()">API 設定教學</button>
+  </div>
+</div>
+
+<div id="api-help-modal" role="dialog" aria-modal="true" aria-labelledby="api-help-title" onclick="closeApiHelp(event)">
+  <div class="api-help-card">
+    <h2 id="api-help-title">Google Maps API 設定教學</h2>
+    <ol>
+      <li>前往 <a href="https://console.cloud.google.com/google/maps-apis/overview" target="_blank">Google Maps Platform</a>，建立或選擇一個 Google Cloud 專案，並確認專案已連結有效帳單。</li>
+      <li>在「API 和服務 → 程式庫」中，分別啟用：<strong>Maps JavaScript API</strong>、<strong>Places API (New)</strong>、<strong>Geocoding API</strong>。</li>
+      <li>在「API 和服務 → 憑證」建立 API 金鑰。</li>
+      <li>編輯金鑰，將「應用程式限制」設為「網站」。LAN 測試可加入：<code>http://192.168.10.100/*</code>GitHub Pages 可加入：<code>https://505kaichen-dev.github.io/food-spinner/*</code></li>
+      <li>將「API 限制」設為「限制金鑰」，只保留上述三項 API，然後儲存。</li>
+      <li>回到本頁，把金鑰貼入輸入框並按「驗證 API Key」。第一次設定可能需等待數分鐘才生效；三項測試都成功後才會顯示 LIVE。</li>
+    </ol>
+    <p class="api-help-note">請勿把未限制來源的 API Key 公開。若出現 ERROR，可開啟瀏覽器開發者工具查看 Google 回傳的錯誤名稱。</p>
+    <div class="api-help-actions">
+      <button class="btn" onclick="closeApiHelp()">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- Meal Tabs -->
+<div class="meal-tabs">
+  <button class="meal-tab" id="tab-breakfast" onclick="setMeal('breakfast')">🍳 早餐</button>
+  <button class="meal-tab" id="tab-lunch" onclick="setMeal('lunch')">🍱 中餐</button>
+  <button class="meal-tab" id="tab-dinner" onclick="setMeal('dinner')">🍜 晚餐</button>
+</div>
+
+<!-- Location -->
+<div class="location-box">
+  <label>📍 所在位置</label>
+  <div class="location-row">
+    <input id="address-input" type="text" placeholder="輸入地址（如：台北市信義區市府路1號）">
+    <button id="gps-btn" class="btn" onclick="getGPS()">📡 GPS</button>
+    <button id="search-btn" class="btn" onclick="searchNearby()">搜尋</button>
+  </div>
+  <div id="location-status"></div>
+</div>
+
+<!-- Loading -->
+<div id="loading"><span class="loading-dots">搜尋中</span></div>
+
+<!-- Spinner -->
+<div class="spinner-section">
+  <div class="wheel-wrapper">
+    <canvas id="wheel-canvas" width="320" height="320"></canvas>
+    <div class="pointer"></div>
+    <div class="center-dot"></div>
+  </div>
+  <button id="spin-btn" onclick="spin()" disabled>🎰 轉！決定吃什麼！</button>
+</div>
+
+<!-- Result -->
+<div id="result-card" onclick="openRestaurantMap(highlightedIndex)" title="點擊前往 Google Maps">
+  <div class="result-type" id="result-meal"></div>
+  <h2 id="result-name"></h2>
+  <div>
+    <span class="result-status" id="result-status"></span>
+  </div>
+  <div class="result-distance" id="result-distance"></div>
+  <div class="result-address" id="result-address"></div>
+  <button id="result-map-link" class="btn" onclick="event.stopPropagation(); openRestaurantMap(highlightedIndex)">🗺️ 在 Google Maps 查看</button>
+</div>
+
+<!-- Hidden map node for PlacesService -->
+<div id="map-node" style="width:1px;height:1px;position:absolute;opacity:0;pointer-events:none"></div>
+
+<!-- List -->
+<div class="list-section">
+  <div class="filter-row">
+    <span>篩選：</span>
+    <select id="distance-filter" onchange="applyFilters()" aria-label="距離篩選">
+      <option value="auto" selected>自動（500→1,500公尺）</option>
+      <option value="500">500 公尺內</option>
+      <option value="900">900 公尺內</option>
+      <option value="1500">1,500 公尺內</option>
+    </select>
+    <label><input id="open-filter" type="checkbox" onchange="applyFilters()"> 只顯示營業中</label>
+    <label><input id="exclude-store-filter" type="checkbox" onchange="applyFilters()"> 排除便利商店</label>
+  </div>
+  <div class="list-title" id="list-title">搜尋後顯示周邊餐廳</div>
+  <div class="restaurant-list" id="restaurant-list">
+    <div class="empty-state">請先選擇位置並搜尋</div>
+  </div>
+</div>
+
+<script>
+// ────────────────────────────────
+// State
+// ────────────────────────────────
+let apiKey = localStorage.getItem('gplaces_key') || '';
+let currentMeal = 'lunch';
+let restaurants = [];
+let visibleRestaurants = [];
+let currentMaxDistance = 500;
+let autoDistance = true;
+let onlyOpen = false;
+let excludeConvenienceStores = false;
+let userLat = null, userLng = null;
+let isSpinning = false;
+let currentAngle = 0;
+let highlightedIndex = -1;
+
+const COLORS = [
+  '#FF6B6B','#FF8E53','#FFC154','#47B39C','#4D96FF',
+  '#C77DFF','#06D6A0','#EF476F','#FFD166','#118AB2',
+  '#F4A261','#E76F51','#2A9D8F','#E9C46A','#A8DADC'
+];
+
+// ────────────────────────────────
+// Demo Data (模擬台北中山區)
+// ────────────────────────────────
+const DEMO_DATA = {
+  breakfast: [
+    { name:'阜杭豆漿', type:'早餐店', distance:320, open:true,  address:'台北市中正區忠孝東路一段108號', lat:25.046, lng:121.518 },
+    { name:'鐵板燒早午餐', type:'早午餐', distance:450, open:true,  address:'台北市中山區南京東路二段100號', lat:25.052, lng:121.524 },
+    { name:'麥當勞早餐', type:'速食', distance:180, open:true,  address:'台北市中山區中山北路一段50號', lat:25.050, lng:121.520 },
+    { name:'世界豆漿大王', type:'早餐店', distance:600, open:false, address:'台北市大安區新生南路一段88號', lat:25.044, lng:121.529 },
+    { name:'五木早餐', type:'早餐店', distance:280, open:true,  address:'台北市中山區民生東路一段20號', lat:25.056, lng:121.527 },
+    { name:'拉亞漢堡', type:'早餐店', distance:500, open:true,  address:'台北市中山區長安東路一段45號', lat:25.051, lng:121.522 },
+  ],
+  lunch: [
+    { name:'鼎泰豐（本店）', type:'台式料理', distance:750, open:true,  address:'台北市大安區信義路二段194號', lat:25.033, lng:121.534 },
+    { name:'四海遊龍鍋貼', type:'鍋貼', distance:320, open:true,  address:'台北市中山區新生北路三段82號', lat:25.058, lng:121.528 },
+    { name:'85度C', type:'飲料/輕食', distance:200, open:true,  address:'台北市中山區中山北路二段30號', lat:25.053, lng:121.519 },
+    { name:'胡椒廚房', type:'台灣料理', distance:480, open:false, address:'台北市中山區民族東路78號', lat:25.063, lng:121.531 },
+    { name:'春水堂人文茶館', type:'台式茶館', distance:680, open:true,  address:'台北市中山區南京東路三段219號', lat:25.051, lng:121.543 },
+    { name:'麻辣火鍋', type:'火鍋', distance:540, open:true,  address:'台北市中山區林森北路398號', lat:25.058, lng:121.522 },
+    { name:'爌肉飯', type:'台灣小吃', distance:150, open:true,  address:'台北市中山區北安路501號', lat:25.073, lng:121.544 },
+    { name:'韓式石鍋拌飯', type:'韓式料理', distance:390, open:true,  address:'台北市中山區龍江路23號', lat:25.053, lng:121.540 },
+  ],
+  dinner: [
+    { name:'寒舍艾美 - 食艾', type:'Fine Dining', distance:920, open:true,  address:'台北市信義區松仁路38號', lat:25.040, lng:121.566 },
+    { name:'添財日本料理', type:'日式料理', distance:560, open:true,  address:'台北市中山區南京東路一段56號', lat:25.052, lng:121.519 },
+    { name:'貓下去', type:'台灣料理', distance:720, open:true,  address:'台北市中山區中山北路一段121巷1號', lat:25.055, lng:121.520 },
+    { name:'蒙古烤肉', type:'燒烤', distance:430, open:false, address:'台北市中山區吉林路85號', lat:25.054, lng:121.526 },
+    { name:'義大利麵工房', type:'義式料理', distance:350, open:true,  address:'台北市中山區民生東路三段45號', lat:25.057, lng:121.547 },
+    { name:'豆腐川 麻辣鍋', type:'麻辣鍋', distance:280, open:true,  address:'台北市中山區復興北路168號', lat:25.051, lng:121.544 },
+    { name:'鮨三味 壽司', type:'日式壽司', distance:810, open:true,  address:'台北市松山區南京東路五段236號', lat:25.051, lng:121.578 },
+  ]
+};
+
+// ────────────────────────────────
+// Init
+// ────────────────────────────────
+let mapsApiLoaded = false;
+let mapsApiVerified = false;
+let pendingApiVerification = false;
+
+function setApiBanner(state, message) {
+  const banner = document.getElementById('api-banner');
+  if (!banner) return;
+
+  const styles = {
+    loading: ['linear-gradient(90deg,#ffd166,#f4a261)', '#1a1a2e', 'CHECKING'],
+    live: ['linear-gradient(90deg,#4ecdc4,#45b7aa)', '#fff', 'LIVE'],
+    error: ['linear-gradient(90deg,#ff6b6b,#e63946)', '#fff', 'ERROR']
+  };
+  const [background, color, badge] = styles[state];
+  banner.style.background = background;
+  banner.style.color = color;
+  banner.innerHTML = `${message} <span class="demo-badge">${badge}</span>
+    <button id="api-key-clear" class="btn" onclick="clearApiKey()">清除 API Key</button>
+    <button id="api-key-verify" class="btn" onclick="verifyApiAccess()">重新驗證</button>
+    <button class="api-help-btn" onclick="openApiHelp()">API 設定教學</button>`;
+}
+
+function openApiHelp() {
+  document.getElementById('api-help-modal').classList.add('open');
+}
+
+function closeApiHelp(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('api-help-modal').classList.remove('open');
+}
+
+// Google Maps 的授權錯誤不會觸發 script.onerror，而是呼叫這個全域函式。
+window.gm_authFailure = () => {
+  mapsApiLoaded = false;
+  mapsApiVerified = false;
+  setApiBanner('error', '❌ <strong>Google Maps 授權失敗</strong>：請確認 API Key、Maps JavaScript API、帳單與網域限制');
+  setStatus('❌ Google Maps 授權失敗（API Key 或專案設定有誤）');
+  showLoading(false);
+};
+
+window.onload = () => {
+  autoDetectMeal();
+  drawWheel([]);
+  if (apiKey) {
+    document.getElementById('api-key-input').value = apiKey;
+    loadMapsScript(apiKey);
+  }
+};
+
+// ────────────────────────────────
+// API Key
+// ────────────────────────────────
+function saveApiKey() {
+  apiKey = document.getElementById('api-key-input').value.trim();
+  if (!apiKey) return;
+  localStorage.setItem('gplaces_key', apiKey);
+  loadMapsScript(apiKey);
+}
+
+function verifyEnteredApiKey() {
+  const enteredKey = document.getElementById('api-key-input').value.trim();
+  if (!enteredKey) {
+    setStatus('⚠️ 請先輸入 API Key');
+    return;
+  }
+
+  const keyChanged = enteredKey !== apiKey;
+  apiKey = enteredKey;
+  localStorage.setItem('gplaces_key', apiKey);
+  pendingApiVerification = true;
+
+  if (keyChanged) {
+    mapsApiLoaded = false;
+    mapsApiVerified = false;
+  }
+
+  setApiBanner('loading', '🔎 正在驗證 Maps JavaScript、Geocoding 與 Places API (New)…');
+  if (mapsApiLoaded) verifyApiAccess();
+  else loadMapsScript(apiKey);
+}
+
+function clearApiKey() {
+  localStorage.removeItem('gplaces_key');
+  apiKey = '';
+  mapsApiLoaded = false;
+  mapsApiVerified = false;
+  location.reload();
+}
+
+function loadMapsScript(key) {
+  if (mapsApiLoaded) { onMapsReady(); return; }
+  // Remove any old script
+  const old = document.getElementById('gmaps-script');
+  if (old) old.remove();
+  const s = document.createElement('script');
+  s.id = 'gmaps-script';
+  s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=zh-TW&loading=async&callback=onMapsReady`;
+  s.async = true;
+  s.onerror = () => setStatus('❌ API Key 無效或 Maps API 未啟用');
+  document.head.appendChild(s);
+}
+
+window.onMapsReady = () => {
+  mapsApiLoaded = true;
+  mapsApiVerified = false;
+  setApiBanner('loading', '⚠️ Google Maps 程式已載入，尚未驗證 API 權限');
+  setStatus('⚠️ API 尚未驗證，搜尋成功後才會顯示 LIVE');
+  if (pendingApiVerification) verifyApiAccess();
+};
+
+async function verifyApiAccess() {
+  if (!mapsApiLoaded || !window.google?.maps) {
+    pendingApiVerification = true;
+    setStatus('⏳ 正在載入 Google Maps…');
+    return;
+  }
+
+  pendingApiVerification = false;
+  setApiBanner('loading', '🔎 正在驗證 Maps JavaScript、Geocoding 與 Places API (New)…');
+  setStatus('🔎 API 驗證中…');
+
+  try {
+    const testLocation = await geocodeAddress('台北車站');
+    const testResults = await Promise.race([
+      realSearch(testLocation.lat, testLocation.lng, false),
+      new Promise((_, reject) => setTimeout(
+        () => reject(new Error('驗證逾時，請稍後重試')),
+        12000
+      ))
+    ]);
+    mapsApiVerified = true;
+    setApiBanner('live', `✅ <strong>API 驗證成功</strong>：Maps、Geocoding、Places API (New) 均可使用（測試取得 ${testResults.length} 筆）`);
+    setStatus('✅ API Key 驗證成功，可以開始搜尋');
+  } catch (error) {
+    mapsApiVerified = false;
+    const rawMessage = error?.message || String(error);
+    const isPlacesBlocked = /PERMISSION_DENIED|SearchText|places\.googleapis\.com|blocked/i.test(rawMessage);
+    const help = isPlacesBlocked
+      ? '請在同一個 Google Cloud 專案「啟用 Places API (New)」，並在此金鑰的 API 限制中允許 Places API (New)，儲存後等待約 5 分鐘再驗證。'
+      : '請檢查 API 是否啟用、帳單、API 限制與網站來源限制。';
+    setApiBanner('error', `❌ <strong>API 驗證失敗</strong>：${help}`);
+    setStatus(`❌ 驗證失敗：${rawMessage}`);
+  }
+}
+
+// ────────────────────────────────
+// Meal detection
+// ────────────────────────────────
+function autoDetectMeal() {
+  const h = new Date().getHours();
+  if (h >= 6 && h < 10)       setMeal('breakfast');
+  else if (h >= 11 && h < 15) setMeal('lunch');
+  else if (h >= 17 && h < 22) setMeal('dinner');
+  else setMeal('lunch');
+}
+
+function setMeal(meal) {
+  currentMeal = meal;
+  document.querySelectorAll('.meal-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + meal).classList.add('active');
+  if (restaurants.length > 0) renderAll(restaurants);
+}
+
+// ────────────────────────────────
+// GPS
+// ────────────────────────────────
+function getGPS() {
+  setStatus('偵測 GPS 中…');
+  if (!navigator.geolocation) {
+    setStatus('❌ 此瀏覽器不支援 GPS');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      setStatus(`✅ GPS：${userLat.toFixed(5)}, ${userLng.toFixed(5)}`);
+      document.getElementById('address-input').value = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+      searchNearby();
+    },
+    err => {
+      setStatus('❌ GPS 取得失敗，請手動輸入地址');
+    }
+  );
+}
+
+function setStatus(msg) {
+  document.getElementById('location-status').textContent = msg;
+}
+
+// ────────────────────────────────
+// Geocode (address → lat/lng) via Maps JS API
+// ────────────────────────────────
+function geocodeAddress(address) {
+  return new Promise((resolve, reject) => {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+      address,
+      region: 'TW',
+      componentRestrictions: { country: 'TW' }
+    }, (results, status) => {
+      if (status === 'OK') {
+        resolve({
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng()
+        });
+      } else {
+        reject(new Error('Geocode 失敗：' + status));
+      }
+    });
+  });
+}
+
+// ────────────────────────────────
+// Nearby Search
+// ────────────────────────────────
+async function searchNearby() {
+  const address = document.getElementById('address-input').value.trim();
+  if (!address && userLat === null) {
+    setStatus('❌ 請輸入地址或使用 GPS');
+    return;
+  }
+
+  showLoading(true);
+  setStatus('搜尋中…');
+
+  try {
+    if (!apiKey || !mapsApiLoaded) {
+      // Demo mode
+      const results = await demoSearch();
+      restaurants = results;
+      renderAll(restaurants);
+      setStatus(`✅ Demo 模式：顯示 ${restaurants.length} 間模擬餐廳`);
+    } else {
+      // Real mode via Maps JS API
+      if (!document.getElementById('address-input').value.match(/^[\d.\-]+,\s*[\d.\-]+$/)) {
+        const loc = await geocodeAddress(address);
+        userLat = loc.lat;
+        userLng = loc.lng;
+      }
+      const results = await Promise.race([
+        realSearch(userLat, userLng),
+        new Promise((_, reject) => setTimeout(
+          () => reject(new Error('Google Places API 回應逾時，請檢查 API 是否啟用與金鑰限制')),
+          12000
+        ))
+      ]);
+      restaurants = results;
+      renderAll(restaurants);
+      mapsApiVerified = true;
+      setApiBanner('live', '✅ <strong>真實模式</strong>：Google Maps／Places API 驗證成功');
+      setStatus(`✅ 顯示 ${visibleRestaurants.length} 間店家（搜尋取得 ${restaurants.length} 間）`);
+    }
+  } catch(e) {
+    mapsApiVerified = false;
+    setApiBanner('error', `❌ <strong>API 驗證失敗</strong>：${e.message}`);
+    setStatus('❌ 搜尋失敗：' + e.message);
+  }
+  showLoading(false);
+}
+
+// Demo search
+function demoSearch() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(DEMO_DATA[currentMeal] || DEMO_DATA.lunch), 800);
+  });
+}
+
+// Real search via Places API (New) Text Search
+async function realSearch(lat, lng, allowSupplemental = true) {
+  const { Place, SearchByTextRankPreference } = await google.maps.importLibrary('places');
+  const queryGroups = {
+    breakfast: ['附近早餐', '早餐店', '早午餐'],
+    lunch: ['附近的食物', '附近餐廳', '附近小吃'],
+    dinner: ['附近的食物', '附近餐廳', '附近小吃']
+  };
+  const queries = queryGroups[currentMeal] || queryGroups.lunch;
+  const placeMap = new Map();
+
+  const toRestaurant = p => {
+      if (!p.location) return null;
+      const plat = p.location.lat();
+      const plng = p.location.lng();
+      const dist = haversine(lat, lng, plat, plng);
+      const isOpen = getCurrentOpenStatus(p.currentOpeningHours, p.utcOffsetMinutes);
+      const types = p.types || [];
+      return {
+        name: p.displayName,
+        type: (p.primaryType || types[0] || 'restaurant').replace(/_/g, ' '),
+        types,
+        isConvenienceStore: p.primaryType === 'convenience_store' || types.includes('convenience_store'),
+        distance: Math.round(dist),
+        open: isOpen,
+        address: p.formattedAddress,
+        lat: plat,
+        lng: plng,
+        placeId: p.id
+      };
+  };
+
+  const passesActiveFilters = restaurant =>
+    restaurant.distance <= 1500
+    && (!onlyOpen || restaurant.open === true)
+    && (!excludeConvenienceStores || !restaurant.isConvenienceStore);
+
+  // Text Search 每次最多回傳 20 筆。篩選後不足時，以其他餐飲關鍵字補搜並依 placeId 去重。
+  const maxQueries = allowSupplemental && (onlyOpen || excludeConvenienceStores) ? queries.length : 1;
+  for (let index = 0; index < maxQueries; index++) {
+    if (index > 0) setStatus(`🔎 篩選後店家較少，正在補搜第 ${index + 1} 組餐飲結果…`);
+    const { places } = await Place.searchByText({
+      fields: [
+        'id', 'displayName', 'location', 'formattedAddress',
+        'primaryType', 'types', 'currentOpeningHours', 'utcOffsetMinutes'
+      ],
+      textQuery: queries[index],
+      locationBias: { center: { lat, lng }, radius: 1500 },
+      rankPreference: SearchByTextRankPreference.DISTANCE,
+      language: 'zh-TW',
+      region: 'TW',
+      maxResultCount: 20,
+      isOpenNow: onlyOpen
+    });
+
+    (places || []).forEach(place => {
+      const restaurant = toRestaurant(place);
+      if (restaurant && restaurant.distance <= 1500) {
+        placeMap.set(restaurant.placeId || `${restaurant.name}|${restaurant.address}`, restaurant);
+      }
+    });
+
+    const usableCount = [...placeMap.values()].filter(passesActiveFilters).length;
+    if (usableCount >= 12) break;
+  }
+
+  return [...placeMap.values()].sort((a, b) => a.distance - b.distance);
+}
+
+// Place.isOpen() 目前只在 Maps JavaScript API beta 提供；
+// stable 版本改用 currentOpeningHours.periods 與店家時區自行判斷。
+function getCurrentOpenStatus(openingHours, utcOffsetMinutes) {
+  if (!openingHours || !Array.isArray(openingHours.periods)) return null;
+  if (openingHours.periods.length === 0) return false;
+  if (!Number.isFinite(utcOffsetMinutes)) return null;
+
+  const WEEK_MINUTES = 7 * 24 * 60;
+  const localNow = new Date(Date.now() + utcOffsetMinutes * 60 * 1000);
+  const nowMinute = localNow.getUTCDay() * 1440
+    + localNow.getUTCHours() * 60
+    + localNow.getUTCMinutes();
+
+  return openingHours.periods.some(period => {
+    if (!period.open) return false;
+    const start = period.open.day * 1440 + period.open.hour * 60 + period.open.minute;
+    // 沒有 close 代表全天候營業。
+    if (!period.close) return true;
+    let end = period.close.day * 1440 + period.close.hour * 60 + period.close.minute;
+    if (end <= start) end += WEEK_MINUTES;
+    return (nowMinute >= start && nowMinute < end)
+      || (nowMinute + WEEK_MINUTES >= start && nowMinute + WEEK_MINUTES < end);
+  });
+}
+
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ────────────────────────────────
+// Render
+// ────────────────────────────────
+function renderAll(list) {
+  const baseList = apiKey ? list : (DEMO_DATA[currentMeal] || list);
+  const candidates = baseList.filter(r =>
+    (!onlyOpen || r.open === true) &&
+    (!excludeConvenienceStores || !isConvenienceStore(r))
+  );
+
+  if (autoDistance) {
+    const steps = [500, 900, 1500];
+    currentMaxDistance = steps.find(distance =>
+      candidates.filter(r => r.distance <= distance).length >= 6
+    ) || 1500;
+  }
+
+  const mealList = candidates.filter(r => r.distance <= currentMaxDistance);
+  visibleRestaurants = mealList;
+  drawWheel(mealList);
+  renderList(mealList);
+  document.getElementById('spin-btn').disabled = mealList.length === 0;
+  document.getElementById('result-card').style.display = 'none';
+  highlightedIndex = -1;
+
+  const mealLabel = { breakfast:'早餐', lunch:'中餐', dinner:'晚餐' }[currentMeal];
+  const filterLabel = onlyOpen ? '，僅營業中' : '';
+  const storeLabel = excludeConvenienceStores ? '，已排除便利商店' : '';
+  const autoLabel = autoDistance && currentMaxDistance > 500 ? '，結果較少已自動擴大' : '';
+  document.getElementById('list-title').textContent =
+    `附近${mealLabel}（${mealList.length} 間，${currentMaxDistance.toLocaleString()}公尺內${filterLabel}${storeLabel}${autoLabel}）${!apiKey ? '　⚠️ Demo資料' : ''}`;
+}
+
+function applyFilters() {
+  const distanceValue = document.getElementById('distance-filter').value;
+  autoDistance = distanceValue === 'auto';
+  if (!autoDistance) currentMaxDistance = Number(distanceValue);
+  onlyOpen = document.getElementById('open-filter').checked;
+  excludeConvenienceStores = document.getElementById('exclude-store-filter').checked;
+  renderAll(restaurants);
+}
+
+function isConvenienceStore(restaurant) {
+  return restaurant.isConvenienceStore === true ||
+    restaurant.type === 'convenience_store' ||
+    restaurant.type === '便利商店';
+}
+
+function renderList(list) {
+  const container = document.getElementById('restaurant-list');
+  if (!list.length) {
+    container.innerHTML = '<div class="empty-state">此時段未找到餐廳</div>';
+    return;
+  }
+  container.innerHTML = list.map((r, i) => `
+    <div class="restaurant-item" id="item-${i}" onclick="openRestaurantMap(${i})" title="點擊前往 Google Maps">
+      <div class="item-color" style="background:${COLORS[i % COLORS.length]}"></div>
+      <span class="item-name">${r.name}</span>
+      <span class="item-meta">${r.distance}m · ${walkTime(r.distance)}分鐘</span>
+      <span class="item-open ${getOpenStatus(r.open).className}">${getOpenStatus(r.open).label}</span>
+    </div>
+  `).join('');
+}
+
+function walkTime(m) { return Math.round(m / 80); }
+
+function getOpenStatus(open) {
+  if (open === true) return { className: 'open', label: '營業中' };
+  if (open === false) return { className: 'closed', label: '休息中' };
+  return { className: 'unknown', label: '狀態未知' };
+}
+
+function openRestaurantMap(idx) {
+  const restaurant = visibleRestaurants[idx];
+  if (!restaurant) return;
+
+  const query = [restaurant.name, restaurant.address].filter(Boolean).join(' ');
+  const params = new URLSearchParams({ api: '1', query });
+  if (restaurant.placeId) params.set('query_place_id', restaurant.placeId);
+  window.open(`https://www.google.com/maps/search/?${params.toString()}`, '_blank', 'noopener,noreferrer');
+}
+
+// ────────────────────────────────
+// Wheel Drawing
+// ────────────────────────────────
+function drawWheel(list, highlightIdx = -1) {
+  const canvas = document.getElementById('wheel-canvas');
+  const ctx = canvas.getContext('2d');
+  const cx = 160, cy = 160, r = 150;
+
+  ctx.clearRect(0, 0, 320, 320);
+
+  if (!list.length) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('搜尋後顯示轉盤', cx, cy);
+    return;
+  }
+
+  const n = list.length;
+  const arc = (Math.PI * 2) / n;
+
+  for (let i = 0; i < n; i++) {
+    const start = currentAngle + i * arc - Math.PI/2;
+    const end   = start + arc;
+    const color = COLORS[i % COLORS.length];
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = i === highlightIdx ? '#FFD700' : color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc/2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${n > 8 ? 11 : 13}px sans-serif`;
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 3;
+
+    const name = list[i].name.length > 8 ? list[i].name.slice(0,7)+'…' : list[i].name;
+    ctx.fillText(name, r - 12, 5);
+    ctx.restore();
+  }
+
+  // Inner circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, 24, 0, Math.PI*2);
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// ────────────────────────────────
+// Spin Animation
+// ────────────────────────────────
+function spin() {
+  const mealList = visibleRestaurants;
+  if (isSpinning || mealList.length === 0) return;
+
+  isSpinning = true;
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('result-card').style.display = 'none';
+  document.querySelectorAll('.restaurant-item').forEach(el => el.classList.remove('highlighted'));
+
+  const totalRotation = (Math.PI * 2) * (8 + Math.random() * 8); // 8~16圈
+  const duration = 4000 + Math.random() * 1500;
+  const startAngle = currentAngle;
+  const startTime = performance.now();
+
+  function easeOut(t) {
+    return 1 - Math.pow(1 - t, 4);
+  }
+
+  function frame(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    currentAngle = startAngle + totalRotation * easeOut(progress);
+
+    drawWheel(mealList);
+
+    if (progress < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      isSpinning = false;
+      document.getElementById('spin-btn').disabled = false;
+      showResult(mealList, currentAngle, totalRotation);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function showResult(list, angle, totalRotation) {
+  const n = list.length;
+  const arc = (Math.PI * 2) / n;
+  // Pointer is at angle = 0 (right side), wheel rotates so:
+  // sector that lands at pointer = which segment is at angle 0 after rotation
+  const normalised = ((angle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  // We want which segment center aligns with right side (angle=0)
+  // Segment i starts at: angle + i*arc - PI/2 = 0 → i = (PI/2 - angle) / arc
+  const pointerAngle = Math.PI / 2; // top of wheel (since we start at -PI/2)
+  let idx = Math.floor(((pointerAngle - (angle % (Math.PI*2)) + Math.PI*4) % (Math.PI*2)) / arc);
+  idx = ((idx % n) + n) % n;
+
+  const winner = list[idx];
+  highlightedIndex = idx;
+  drawWheel(list, idx);
+  highlightItem(idx);
+
+  const mealLabel = { breakfast:'早餐', lunch:'中餐', dinner:'晚餐' }[currentMeal];
+  const card = document.getElementById('result-card');
+  card.style.display = 'block';
+  document.getElementById('result-meal').textContent = `🎯 ${mealLabel}推薦`;
+  document.getElementById('result-name').textContent = winner.name;
+
+  const statusEl = document.getElementById('result-status');
+  if (winner.open === true) {
+    statusEl.textContent = '✅ 現在營業中';
+    statusEl.className = 'result-status status-open';
+  } else if (winner.open === false) {
+    statusEl.textContent = '❌ 目前休息中';
+    statusEl.className = 'result-status status-closed';
+  } else {
+    statusEl.textContent = '⏰ 營業狀態未知';
+    statusEl.className = 'result-status';
+  }
+
+  document.getElementById('result-distance').textContent =
+    `📍 距離約 ${winner.distance} 公尺，步行約 ${walkTime(winner.distance)} 分鐘`;
+  document.getElementById('result-address').textContent = winner.address || '';
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function highlightItem(idx) {
+  document.querySelectorAll('.restaurant-item').forEach(el => el.classList.remove('highlighted'));
+  const el = document.getElementById('item-' + idx);
+  if (el) {
+    el.classList.add('highlighted');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function showLoading(show) {
+  document.getElementById('loading').style.display = show ? 'block' : 'none';
+}
+
+// Auto-load demo on page load to show something
+setTimeout(() => {
+  if (!userLat) {
+    userLat = 25.0478; userLng = 121.5170;
+    document.getElementById('address-input').value = '台北車站（Demo 位置）';
+    demoSearch().then(r => {
+      restaurants = r;
+      renderAll(r);
+      setStatus('✅ Demo 模式：顯示台北車站周邊模擬資料');
+    });
+  }
+}, 300);
+</script>
+</body>
+</html>

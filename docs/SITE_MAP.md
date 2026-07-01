@@ -25,6 +25,9 @@ index.html（作品首頁）
 │  ├─ learn-subtraction.html → subtraction.html
 │  ├─ learn-shapes.html → shapes.html
 │  └─ learn-mixed.html → mixed.html
+├─ storagemaster/index.html
+├─ web-planner/index.html
+├─ food-spinner/index.html
 └─ gallery/index.html
 ```
 
