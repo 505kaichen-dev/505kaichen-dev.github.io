@@ -32,7 +32,7 @@
 
 ## 軟體下載
 
-- 3MF Explorer v2.0.0 Beta Windows Portable 分享 ZIP 為 81,469,979 bytes（約 77.7 MiB）。
+- 3MF Explorer v2.0.0 Windows Portable 正式版 EXE 為 81,805,479 bytes（約 78.0 MiB）。
 - EXE 不納入網站 Git repository；公開下載改用 OneDrive 或 Google Drive 外部分享連結。
 - 網站只保存版本、大小、SHA-256 與分享網址。更新版本時應同步替換外部檔案與文章資訊。
 
