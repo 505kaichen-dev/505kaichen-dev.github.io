@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4f1e9">
+  <meta name="description" content="一位工程師，在 AI 時代重新找到工作的熱情。AI 沒有替他思考，而是讓那些來不及開始的想法，終於有了被完成的可能。">
+  <meta property="og:title" content="Episode 01 — 原來，我不是在跟 AI 聊天">
+  <meta property="og:description" content="一位工程師，與 AI 協作的日常。">
+  <title>Episode 01 — 原來，我不是在跟 AI 聊天</title>
+  <style>
+    :root{--paper:#f5f2ea;--paper-2:#ecefe9;--ink:#28312e;--muted:#707873;--line:rgba(40,49,46,.14);--blue:#66849a;--blue-soft:#dfe8ea;--green:#789184;--green-soft:#dfe8df;--cream:#eae0ce;--white:#fbfaf6;--serif:"Iowan Old Style","Palatino Linotype","Noto Serif TC","Songti TC",serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--paper)}body{margin:0;color:var(--ink);font-family:var(--sans);background:var(--paper);line-height:1.9;-webkit-font-smoothing:antialiased}::selection{background:#cfdcd6;color:#1f2925}
+    .progress{position:fixed;z-index:50;top:0;left:0;width:100%;height:3px;background:transparent}.progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .1s linear}
+    .topline{position:absolute;z-index:2;top:0;left:0;width:100%;display:flex;justify-content:space-between;padding:28px clamp(24px,5vw,72px);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#69716d}.topline span:last-child{font-variant-numeric:tabular-nums}
+    .hero{min-height:100svh;display:grid;place-items:center;position:relative;overflow:hidden;padding:120px 24px 80px;background:radial-gradient(circle at 18% 20%,rgba(207,221,215,.66),transparent 30%),radial-gradient(circle at 85% 78%,rgba(206,218,224,.72),transparent 31%),linear-gradient(145deg,#f7f4ed,#f1eee6 55%,#eef1ec)}
+    .hero:before,.hero:after{content:"";position:absolute;border:1px solid rgba(86,110,100,.12);border-radius:50%;width:38vw;height:38vw;min-width:320px;min-height:320px}.hero:before{left:-17vw;bottom:-22vw}.hero:after{right:-19vw;top:-20vw}.hero-inner{text-align:center;max-width:970px;position:relative;z-index:1}.eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--green);margin-bottom:44px;font-weight:650}.hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(42px,7vw,88px);line-height:1.24;letter-spacing:-.045em;margin:0}.hero .lead{font-family:var(--serif);font-size:clamp(18px,2vw,25px);line-height:1.9;color:#58615d;margin:44px auto 0;max-width:660px}.scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.2em;color:#7b817e;text-transform:uppercase}.scroll:after{content:"";display:block;margin:12px auto 0;width:1px;height:34px;background:var(--line);animation:breathe 2s ease-in-out infinite}@keyframes breathe{50%{transform:scaleY(.45);transform-origin:top;opacity:.45}}
+    main{overflow:hidden}.chapter{max-width:720px;margin:0 auto;padding:clamp(110px,16vw,210px) 24px}.chapter.wide{max-width:1120px}.kicker{display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin-bottom:40px}.kicker:before{content:"";width:34px;height:1px;background:currentColor}.chapter h2{font-family:var(--serif);font-size:clamp(34px,5vw,62px);font-weight:500;line-height:1.3;letter-spacing:-.035em;margin:0 0 42px}.copy{font-family:var(--serif);font-size:clamp(18px,2vw,22px);color:#4f5854}.copy p{margin:0 0 1.7em}.copy .short{font-size:1.14em;line-height:2.15;color:var(--ink)}
+    .dropcap:first-letter{float:left;font-size:5em;line-height:.78;padding:.12em .12em 0 0;color:var(--green)}
+    .scene{background:#25302d;color:#eef0eb;position:relative}.scene:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 22%,rgba(116,145,132,.22),transparent 25%),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:auto,100% 42px}.scene .chapter{position:relative}.scene .kicker{color:#a6bdb2}.scene h2{color:#faf8f1}.scene .copy{color:#c7cfca}.night-line{display:grid;grid-template-columns:90px 1fr;gap:30px;padding:24px 0;border-top:1px solid rgba(255,255,255,.12)}.night-line time{font-size:12px;color:#8fa69b;letter-spacing:.12em}.night-line p{margin:0;font-family:var(--serif);font-size:clamp(18px,2vw,23px)}
+    .pull{padding:clamp(120px,18vw,230px) 24px;text-align:center;background:var(--white)}.pull blockquote{font-family:var(--serif);font-size:clamp(32px,5.8vw,70px);line-height:1.42;letter-spacing:-.04em;max-width:1080px;margin:0 auto;font-weight:500}.pull small{display:block;margin:34px auto 0;color:var(--muted);font-size:12px;letter-spacing:.12em}.accent{color:var(--blue)}
+    .then-now{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:26px;overflow:hidden;background:rgba(255,255,255,.34)}.tn{padding:clamp(30px,5vw,66px)}.tn+ .tn{border-left:1px solid var(--line);background:var(--green-soft)}.tn .label{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}.tn h3{font-family:var(--serif);font-size:clamp(27px,3.6vw,45px);font-weight:500;line-height:1.35;margin:25px 0}.tn p{color:#59625e;margin:0}
+    .workflow{margin-top:70px;display:grid;grid-template-columns:1fr 58px 1fr 58px 1fr;align-items:center}.flow-card{min-height:220px;padding:30px;border:1px solid var(--line);border-radius:22px;background:var(--white);display:flex;flex-direction:column;justify-content:space-between}.flow-card svg{width:48px;height:48px;color:var(--green)}.flow-card b{font-family:var(--serif);font-size:25px;font-weight:500}.flow-card p{font-size:14px;color:var(--muted);margin:8px 0 0;line-height:1.7}.arrow{text-align:center;color:#8a9690}.arrow svg{width:28px}
+    .aside-note{max-width:880px;margin:0 auto;padding:0 24px 120px;display:grid;grid-template-columns:160px 1fr;gap:46px}.aside-note .index{font-size:12px;letter-spacing:.16em;color:var(--green);padding-top:8px}.aside-note p{font-family:var(--serif);font-size:clamp(22px,3vw,34px);line-height:1.7;margin:0}
+    .cases{background:#e9ece6;padding:clamp(110px,15vw,190px) 24px}.cases-inner{max-width:1120px;margin:auto}.cases-head{max-width:700px;margin-bottom:74px}.cases-head h2{font-family:var(--serif);font-size:clamp(38px,5vw,60px);font-weight:500;line-height:1.28;margin:0 0 24px}.cases-head p{color:var(--muted);font-size:17px}.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.case{border:1px solid rgba(40,49,46,.12);border-radius:28px;background:rgba(251,250,246,.76);padding:clamp(30px,4vw,50px);position:relative;overflow:hidden}.case-no{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green)}.case h3{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3vw,40px);margin:24px 0 18px;line-height:1.3}.case p{color:#59625e;margin:0 0 30px}.case-stat{display:flex;align-items:flex-end;gap:12px;padding-top:30px;border-top:1px solid var(--line)}.case-stat strong{font-family:var(--serif);font-size:58px;line-height:1;font-weight:500;color:var(--blue)}.case-stat span{font-size:13px;color:var(--muted);padding-bottom:5px}.case-tag{display:inline-block;margin-top:30px;border-radius:999px;background:var(--green-soft);padding:8px 14px;font-size:11px;letter-spacing:.08em;color:#4c6559}
+    .timeline{position:relative;margin-top:70px}.timeline:before{content:"";position:absolute;top:13px;bottom:13px;left:8px;width:1px;background:var(--line)}.moment{position:relative;display:grid;grid-template-columns:40px 130px 1fr;gap:12px;padding-bottom:54px}.moment:last-child{padding-bottom:0}.dot{width:17px;height:17px;margin-top:5px;border-radius:50%;background:var(--paper);border:5px solid var(--green);position:relative;z-index:1}.moment time{font-size:12px;letter-spacing:.12em;color:var(--muted);padding-top:2px}.moment h3{font-family:var(--serif);font-size:25px;font-weight:500;margin:0 0 8px}.moment p{margin:0;color:var(--muted)}
+    .stats-band{background:var(--cream);padding:80px 24px}.stats{max-width:1050px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr)}.stat{text-align:center;padding:25px}.stat+ .stat{border-left:1px solid rgba(40,49,46,.16)}.stat strong{display:block;font-family:var(--serif);font-weight:500;font-size:clamp(48px,7vw,78px);line-height:1;color:#506b61}.stat span{font-size:13px;color:#69736f;display:block;margin-top:16px}.stats-caption{text-align:center;max-width:590px;margin:45px auto 0;color:#6a716e;font-family:var(--serif)}
+    .reframe{background:var(--white)}.beliefs{margin-top:65px}.belief{display:grid;grid-template-columns:1fr 40px 1fr;gap:26px;align-items:center;padding:30px 0;border-top:1px solid var(--line)}.belief:last-child{border-bottom:1px solid var(--line)}.belief .old{color:#8c918e;text-decoration:line-through;text-decoration-thickness:1px}.belief .turn{text-align:center;color:var(--green)}.belief .new{font-family:var(--serif);font-size:22px}
+    .human{padding:clamp(120px,18vw,220px) 24px;background:linear-gradient(160deg,#e3ebe7,#f2efe7 60%)}.human-inner{max-width:940px;margin:auto}.human h2{font-family:var(--serif);font-weight:500;font-size:clamp(40px,6vw,72px);line-height:1.32;letter-spacing:-.04em;margin:0 0 55px}.human p{font-family:var(--serif);font-size:clamp(19px,2.4vw,26px);max-width:700px;margin:0 0 1.5em;color:#4e5954}.human .answer{margin-left:auto;margin-top:90px;border-left:1px solid var(--green);padding-left:34px;max-width:580px;color:var(--ink)}
+    .ending{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 24px 50px;background:#f5f2ea;position:relative}.ending:before{content:"";width:1px;height:72px;background:var(--line);margin-bottom:65px}.ending blockquote{font-family:var(--serif);font-size:clamp(27px,4vw,50px);line-height:1.65;max-width:850px;margin:0;letter-spacing:-.025em}.year{position:absolute;bottom:38px;font-size:11px;letter-spacing:.35em;color:#858b87}
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.scroll:after{animation:none}}
+    @media(max-width:760px){.topline{padding:22px}.topline span:last-child{display:none}.hero{padding-top:100px}.eyebrow{margin-bottom:30px}.hero .lead{margin-top:30px}.chapter{padding-left:22px;padding-right:22px}.then-now,.case-grid{grid-template-columns:1fr}.tn+ .tn{border-left:0;border-top:1px solid var(--line)}.workflow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);padding:13px}.flow-card{min-height:170px}.aside-note{grid-template-columns:1fr;gap:14px}.case-grid{gap:16px}.moment{grid-template-columns:32px 1fr}.moment time{grid-column:2}.moment>div:last-child{grid-column:2}.stats{grid-template-columns:1fr}.stat+ .stat{border-left:0;border-top:1px solid rgba(40,49,46,.16)}.belief{grid-template-columns:1fr;gap:8px}.belief .turn{text-align:left;transform:rotate(90deg);width:20px}.human .answer{margin-top:60px}.ending blockquote br{display:none}}
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+  <header class="hero" id="top">
+    <div class="topline"><span>Episode 01 · A new way of working</span><span id="readState">00%</span></div>
+    <div class="hero-inner reveal">
+      <div class="eyebrow">原來，我不是在跟 AI 聊天。</div>
+      <h1>一位工程師，<br>與 AI 協作的日常</h1>
+      <p class="lead">AI 並沒有替我完成工作。<br>它只是讓我終於有時間，<br>去完成那些一直想做的事情。</p>
+    </div>
+    <div class="scroll">Scroll to read</div>
+  </header>
+
+  <main>
+    <section class="chapter">
+      <div class="reveal">
+        <div class="kicker">寫給最常看見我的人</div>
+        <h2>最近，我好像一直在跟電腦說話。</h2>
+        <div class="copy">
+          <p class="dropcap">如果從客廳看過來，畫面大概有點奇怪。我坐在螢幕前，把一句話打進去，等它回覆；又打另一句，皺眉，重來。偶爾突然很開心，偶爾對著空氣喊：「Token 又爆了。」</p>
+          <p>妳可能會想：他最近到底在忙什麼？那個 AI，真的有這麼好玩嗎？</p>
+          <p class="short">其實，我不是在玩 AI。<br>我正在學一種全新的工作方式。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="chapter wide">
+        <div class="kicker reveal">一個普通的晚上</div>
+        <h2 class="reveal">看起來像聊天。<br>其實更像一間安靜的工作室。</h2>
+        <div class="night-line reveal"><time>21:08</time><p>我把腦中還模糊的想法說出來。</p></div>
+        <div class="night-line reveal"><time>22:17</time><p>AI 先做資料整理，我開始看見問題真正的形狀。</p></div>
+        <div class="night-line reveal"><time>23:42</time><p>它寫下重複的部分，我負責判斷：這是不是我要的？</p></div>
+        <div class="night-line reveal"><time>01:16</time><p>一個本來只存在筆記裡的念頭，第一次可以被打開、被使用。</p></div>
+      </div>
+    </section>
+
+    <section class="pull">
+      <blockquote class="reveal">AI 沒有拿走我的工作。<br>它拿走的是工作裡，<br><span class="accent">那些讓我沒有力氣創作的部分。</span></blockquote>
+      <small class="reveal">不是代替思考，而是騰出思考的空間</small>
+    </section>
+
+    <section class="chapter wide">
+      <div class="kicker reveal">一次關鍵的誤解</div>
+      <h2 class="reveal">以前，我以為一個人只能做自己來得及做的事。</h2>
+      <div class="then-now reveal">
+        <div class="tn"><span class="label">Before</span><h3>一個點子，<br>停在筆記本。</h3><p>研究、整理、寫程式、測試、修正、做畫面。每一步都需要時間。光想到前面的路，就先把念頭收起來。</p></div>
+        <div class="tn"><span class="label">Now</span><h3>一個點子，<br>開始有了下一步。</h3><p>我仍然決定方向、取捨與品質；AI 接住搜尋、整理、草稿與反覆驗證，讓有限的晚上不再只夠做準備。</p></div>
+      </div>
+      <div class="workflow reveal" aria-label="從想法到產品的 AI 協作流程">
+        <div class="flow-card"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 31c-3-2-5-6-5-10a12 12 0 1 1 24 0c0 4-2 8-5 10-2 2-2 3-2 5H19c0-2 0-3-2-5Z"/><path d="M19 40h10M21 44h6M19 25h10"/></svg><div><b>Idea</b><p>痛點、直覺，或一句「要是有這個就好了」。</p></div></div>
+        <div class="arrow"><svg viewBox="0 0 30 16" fill="none" stroke="currentColor"><path d="M1 8h26M21 2l6 6-6 6"/></svg></div>
+        <div class="flow-card"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="24" cy="24" r="15"/><path d="M24 3v6m0 30v6M3 24h6m30 0h6M12 12l4 4m16 16 4 4m0-24-4 4M16 32l-4 4"/><path d="M19 27c3 3 7 3 10 0M19 21h.01M29 21h.01"/></svg><div><b>AI collaboration</b><p>拆解、執行、檢查、重來。人始終握著方向盤。</p></div></div>
+        <div class="arrow"><svg viewBox="0 0 30 16" fill="none" stroke="currentColor"><path d="M1 8h26M21 2l6 6-6 6"/></svg></div>
+        <div class="flow-card"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="9" width="34" height="27" rx="3"/><path d="M17 42h14M24 36v6M13 16h22M13 22h13"/></svg><div><b>Product</b><p>不只可以想像，而是真的能使用、分享與繼續改進。</p></div></div>
+      </div>
+    </section>
+
+    <div class="aside-note reveal"><span class="index">01 — 真正的分工</span><p>AI 很會快速地做很多事。<br>但「什麼值得做」，仍然是我的工作。</p></div>
+
+    <section class="cases">
+      <div class="cases-inner">
+        <div class="cases-head reveal"><div class="kicker">兩個成果，不是兩個主角</div><h2>這些工具，只是工作方式留下的痕跡。</h2><p>它們不是為了證明 AI 多厲害，而是證明：一個人的經驗與念頭，現在有機會變成別人也能用的東西。</p></div>
+        <div class="case-grid">
+          <article class="case reveal"><div class="case-no">Case study 01</div><h3>IBM Knowledge Base</h3><p>一開始，只是想讓 AI 查產品資料時，不要再引用過時或不可靠的答案。後來，它慢慢長成可追溯來源、可安全分享、能讓同事使用的知識包。</p><div class="case-stat"><strong>137</strong><span>項測試<br>把「應該可以」變成「真的可信」</span></div><span class="case-tag">經驗 → 可分享的知識</span></article>
+          <article class="case reveal"><div class="case-no">Case study 02</div><h3>3MF Explorer</h3><p>Windows 裡的 3D 模型都長得像同一個圖示。我只是想更快找到要列印的那一個。這個小困擾，最後變成了能看縮圖、搜尋、收藏與預覽的工具。</p><div class="case-stat"><strong>374</strong><span>個模型<br>從檔名重新變回看得見的作品</span></div><span class="case-tag">困擾 → 真正可用的工具</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter">
+      <div class="kicker reveal">工作的形狀改變了</div>
+      <h2 class="reveal">不是一句指令，<br>然後奇蹟發生。</h2>
+      <div class="copy reveal"><p>真實的過程比較像這樣：我先描述問題，AI 做出第一版。我發現它誤會了，指出哪裡不對；它修正，我再測試。途中我們會走錯路，會推翻原本的設計，也會遇到那句熟悉的「Token 不夠了」。</p><p>差別只是，過去要花幾天才能知道一條路走不通；現在，一個晚上就能試過幾種可能。</p></div>
+      <div class="timeline reveal">
+        <div class="moment"><i class="dot"></i><time>01 / 想清楚</time><div><h3>把模糊說成具體</h3><p>我必須先回答：誰會用？真正痛的是什麼？什麼才算完成？</p></div></div>
+        <div class="moment"><i class="dot"></i><time>02 / 一起做</time><div><h3>讓 AI 接下反覆工作</h3><p>蒐集、整理、撰寫、測試；快，但不假裝第一次就正確。</p></div></div>
+        <div class="moment"><i class="dot"></i><time>03 / 做判斷</time><div><h3>保留人的品味與責任</h3><p>答案是否可信、設計是否舒服、風險能否接受，最後都由我決定。</p></div></div>
+        <div class="moment"><i class="dot"></i><time>04 / 留下來</time><div><h3>把過程變成下一次的起點</h3><p>文件、測試與決策被保存。AI 可以換，但累積下來的經驗不會消失。</p></div></div>
+      </div>
+    </section>
+
+    <section class="stats-band">
+      <div class="stats reveal"><div class="stat"><strong>1</strong><span>個人最初的小困擾</span></div><div class="stat"><strong>×</strong><span>與 AI 反覆協作</span></div><div class="stat"><strong>∞</strong><span>原本來不及開始的可能</span></div></div>
+      <p class="stats-caption reveal">數字不是生產力競賽。真正的改變，是「我沒有時間」不再那麼容易成為故事的句點。</p>
+    </section>
+
+    <section class="chapter reframe">
+      <div class="kicker reveal">原來如此</div>
+      <h2 class="reveal">我沒有把思考交給 AI。<br>我把時間拿了回來。</h2>
+      <div class="beliefs reveal">
+        <div class="belief"><span class="old">AI 是聊天。</span><span class="turn">→</span><span class="new">AI 是一起工作。</span></div>
+        <div class="belief"><span class="old">AI 會取代工程師。</span><span class="turn">→</span><span class="new">AI 放大了工程師。</span></div>
+        <div class="belief"><span class="old">等有空，再開始。</span><span class="turn">→</span><span class="new">先讓想法走出第一步。</span></div>
+      </div>
+    </section>
+
+    <section class="human">
+      <div class="human-inner">
+        <div class="kicker reveal">所以，妳看到的那些晚上</div>
+        <h2 class="reveal">不是我消失在電腦裡。<br>是我重新出現在自己的工作裡。</h2>
+        <p class="reveal">很久以前，我喜歡工程，是因為可以把腦中的東西做出來。只是工作久了，時間常常只夠處理眼前的事。那些真正想做的，總被放到以後。</p>
+        <p class="reveal">AI 沒有給我新的夢想。那些念頭本來就在。它只是讓準備、重複與試錯變得比較輕，讓我重新有力氣，走到創造的那一段。</p>
+        <p class="answer reveal">所以如果妳又聽到我在深夜喊「Token 又爆了」，那不是一場人機爭吵。那只是某個還不肯放棄的點子，正在努力長出它的樣子。</p>
+      </div>
+    </section>
+
+    <section class="ending">
+      <blockquote class="reveal">AI 沒有替我完成夢想。<br>它只是讓我終於有勇氣，<br>開始那些曾經因為時間不足，<br>而一次次放棄的夢想。</blockquote>
+      <div class="year">2026</div>
+    </section>
+  </main>
+
+  <script>
+    const bar=document.getElementById('progressBar');
+    const state=document.getElementById('readState');
+    const updateProgress=()=>{const h=document.documentElement;const max=h.scrollHeight-h.clientHeight;const p=max?Math.min(100,Math.round(h.scrollTop/max*100)):0;bar.style.width=p+'%';state.textContent=String(p).padStart(2,'0')+'%'};
+    addEventListener('scroll',updateProgress,{passive:true});updateProgress();
+    const reveal=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');reveal.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -5%'});
+    document.querySelectorAll('.reveal').forEach(el=>reveal.observe(el));
+  </script>
+</body>
+</html>

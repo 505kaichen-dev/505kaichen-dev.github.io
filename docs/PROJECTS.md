@@ -22,6 +22,14 @@
 | `3mf-explorer/` | Build／Windows 軟體 | `index.html` | 015 | Windows Portable 測試版 |
 | `gallery/` | 創作圖集 | `index.html` | 無序號 | — |
 
+## 完成、待決定是否公開
+
+| 資料夾 | 類型 | 本機入口 | 首頁卡片 | 補充頁面 |
+|---|---|---|---|---|
+| `episode-01/` | Explore／人物敘事／AI 工作方式 | `index.html` | 尚未建立 | `extra.html` 番外篇 |
+
+`episode-01/` 已完成主篇與番外篇，但作者尚未決定是否公開。它不占用首頁卡片序號，也不應在未確認前加入根目錄首頁。發布步驟與內容依據見 `episode-01/PROJECT.md`。
+
 ## 本機管理資料
 
 | 路徑 | 用途 | 是否為公開卡片 |
