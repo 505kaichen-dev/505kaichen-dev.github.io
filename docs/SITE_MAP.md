@@ -32,6 +32,7 @@ index.html（Kai AI Workshop 首頁）
 ├─ web-planner/index.html
 ├─ food-spinner/index.html
 ├─ 3mf-explorer/index.html（Portable EXE 使用外部雲端分享）
+├─ fortigate-ipv6-hinet/index.html
 └─ gallery/index.html
 ```
 
@@ -42,7 +43,7 @@ episode-01/index.html（主篇：一位工程師，與 AI 協作的日常）
 └─ extra.html（番外篇：一個人，和一支看不見的團隊）
 ```
 
-這兩頁目前可由本機路徑直接預覽，但根首頁沒有入口。作者確認公開前，不加入上方正式網站樹。
+這些頁面目前可由本機路徑直接預覽，但根首頁沒有入口。作者確認公開前，不加入上方正式網站樹。
 
 ## 全站共用關係
 

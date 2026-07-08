@@ -20,6 +20,7 @@
 | `web-planner/` | Build／網頁工具 | `index.html` | 013 | 免 API 公開版 |
 | `food-spinner/` | Build／網頁工具 | `index.html` | 014 | Google Maps / Places API |
 | `3mf-explorer/` | Build／Windows 軟體 | `index.html` | 015 | Windows Portable 測試版 |
+| `fortigate-ipv6-hinet/` | Explore／自造日誌／網路技術戰報 | `index.html` | 016 | `PROJECT.md` |
 | `gallery/` | 創作圖集 | `index.html` | 無序號 | — |
 
 ## 完成、待決定是否公開
@@ -42,4 +43,4 @@
 
 ## 下一張首頁卡片
 
-下一個正式專案使用 `data-order="016"`，並同步更新 `website-maintenance.md`。
+下一個正式專案使用 `data-order="017"`，並同步更新 `website-maintenance.md`。

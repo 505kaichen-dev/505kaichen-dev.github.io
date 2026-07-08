@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FortiGate 60F + HiNet PPPoE IPv6 全紀錄</title>
+<meta name="description" content="從 IPv4 老兵重新理解 IPv6：FortiGate 60F、FortiOS 7.2.13、中華電信 PPPoE、DHCPv6-PD、RA、SD-WAN IPv6 路由與完整除錯紀錄。">
+<meta property="og:title" content="FortiGate 60F + HiNet PPPoE IPv6 全紀錄">
+<meta property="og:description" content="從 IPv4 老兵重新理解 IPv6，完整記錄 FortiGate 60F 與 HiNet PPPoE 的 IPv6 設定與除錯。">
+<meta property="og:image" content="./image/cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f7f4;
+    --paper: #fffaf1;
+    --panel: #ffffff;
+    --ink: #17201f;
+    --muted: #66736f;
+    --line: #d9e0db;
+    --teal: #147f7c;
+    --teal-dark: #075a58;
+    --amber: #d88a25;
+    --red: #c94a3d;
+    --charcoal: #111a1c;
+    --code: #101719;
+    --soft: #e9f4ef;
+    --radius: 8px;
+    --shadow: 0 22px 60px rgba(28, 45, 42, .13);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Noto Sans TC", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.75;
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  code, pre { font-family: Consolas, "SFMono-Regular", monospace; }
+
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 20;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(18px, 4vw, 56px);
+    background: rgba(245, 247, 244, .82);
+    border-bottom: 1px solid rgba(217, 224, 219, .8);
+    backdrop-filter: blur(18px);
+  }
+  .brand {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    letter-spacing: .01em;
+    text-decoration: none;
+  }
+  .nav {
+    display: flex;
+    gap: 22px;
+    font-size: .86rem;
+    color: var(--muted);
+  }
+  .nav a { text-decoration: none; }
+  .nav a:hover { color: var(--teal-dark); }
+
+  .hero {
+    min-height: 96vh;
+    display: grid;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: #071012;
+  }
+  .hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(7,16,18,.9) 0%, rgba(7,16,18,.72) 42%, rgba(7,16,18,.22) 72%, rgba(7,16,18,.08) 100%);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    width: min(1180px, calc(100% - 36px));
+    margin: 0 auto;
+    padding-top: 72px;
+    color: white;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 11px;
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 999px;
+    color: #b8fff4;
+    background: rgba(4, 14, 16, .48);
+    font-size: .84rem;
+  }
+  h1 {
+    max-width: 780px;
+    margin: 24px 0 12px;
+    font-family: "Space Grotesk", "Noto Sans TC", sans-serif;
+    font-size: clamp(2.5rem, 6.8vw, 6.1rem);
+    line-height: .98;
+    letter-spacing: 0;
+  }
+  .subtitle {
+    max-width: 680px;
+    margin: 0;
+    font-size: clamp(1.12rem, 2vw, 1.55rem);
+    color: rgba(255,255,255,.82);
+  }
+  .hero-note {
+    max-width: 740px;
+    margin-top: 28px;
+    padding-left: 18px;
+    border-left: 3px solid var(--amber);
+    color: rgba(255,255,255,.78);
+    font-size: 1.02rem;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .meta {
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.82);
+    border-radius: 999px;
+    font-size: .86rem;
+  }
+
+  main { overflow: hidden; }
+  .section {
+    width: min(1120px, calc(100% - 34px));
+    margin: 0 auto;
+    padding: clamp(62px, 9vw, 112px) 0;
+  }
+  .section[id] { scroll-margin-top: 78px; }
+  .section.wide { width: min(1240px, calc(100% - 34px)); }
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, .86fr) minmax(280px, .52fr);
+    gap: clamp(28px, 6vw, 72px);
+    align-items: end;
+    margin-bottom: 34px;
+  }
+  .kicker {
+    margin: 0 0 10px;
+    color: var(--teal-dark);
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-size: .78rem;
+  }
+  h2 {
+    margin: 0;
+    font-family: "Space Grotesk", "Noto Sans TC", sans-serif;
+    font-size: clamp(2rem, 4.2vw, 3.9rem);
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+  h3 {
+    margin: 0 0 14px;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    line-height: 1.25;
+  }
+  p { margin: 0 0 1em; }
+  .lead {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .body-copy {
+    max-width: 780px;
+    font-size: 1.05rem;
+  }
+
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: -28px;
+    position: relative;
+    z-index: 2;
+  }
+  .toc a {
+    min-height: 112px;
+    padding: 16px;
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 28px rgba(28,45,42,.08);
+  }
+  .toc span {
+    display: block;
+    color: var(--amber);
+    font-family: "Space Grotesk", sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+  }
+  .toc strong {
+    display: block;
+    margin-top: 8px;
+    font-size: .94rem;
+    line-height: 1.35;
+  }
+
+  .story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, .82fr) minmax(320px, .58fr);
+    gap: 36px;
+    align-items: stretch;
+  }
+  .quote-panel {
+    padding: clamp(24px, 4vw, 38px);
+    background: var(--paper);
+    border: 1px solid #eadcc8;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .quote-panel p {
+    font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+    line-height: 1.6;
+    font-weight: 700;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .stat {
+    padding: 18px;
+    min-height: 120px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .stat b {
+    display: block;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+  .stat span { color: var(--muted); font-size: .92rem; }
+
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .concept {
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+  }
+  .concept .num {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: var(--soft);
+    color: var(--teal-dark);
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+  }
+  .concept p { color: var(--muted); font-size: .96rem; }
+
+  .diagram-card, .code-card, .table-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 14px 44px rgba(28,45,42,.08);
+    overflow: hidden;
+  }
+  .diagram-title, .code-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .88rem;
+  }
+  .diagram-body { padding: 18px; }
+  .addr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .addr div { padding: 20px; }
+  .addr .prefix { background: #e6f5f2; }
+  .addr .host { background: #fff1dc; }
+  .addr code {
+    display: block;
+    margin-bottom: 8px;
+    font-size: clamp(1.05rem, 2vw, 1.45rem);
+    color: var(--charcoal);
+    overflow-wrap: anywhere;
+  }
+  .addr small { color: var(--muted); }
+
+  svg { max-width: 100%; height: auto; }
+  .path-label {
+    font: 700 15px "Noto Sans TC", sans-serif;
+    fill: #17201f;
+  }
+  .path-small {
+    font: 500 12px "Noto Sans TC", sans-serif;
+    fill: #66736f;
+  }
+
+  .steps {
+    display: grid;
+    gap: 18px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 18px;
+    padding: 22px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .step > div { min-width: 0; }
+  .step h3 { overflow-wrap: anywhere; }
+  .step-no {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--charcoal);
+    color: white;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+  }
+  .step p { color: var(--muted); }
+  pre {
+    margin: 14px 0 0;
+    padding: 16px;
+    max-width: 100%;
+    overflow-x: auto;
+    color: #e7f6f3;
+    background: var(--code);
+    border-radius: var(--radius);
+    line-height: 1.55;
+    font-size: .9rem;
+  }
+
+  .image-band {
+    margin: 20px 0 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .debug-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .debug-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 5px solid var(--red);
+    border-radius: var(--radius);
+  }
+  .debug-card:nth-child(2) { border-top-color: var(--amber); }
+  .debug-card:nth-child(3) { border-top-color: var(--teal); }
+  .debug-card ul {
+    margin: 0;
+    padding-left: 1.15em;
+    color: var(--muted);
+  }
+  .debug-card li { margin: 0 0 8px; }
+  .pill {
+    display: inline-flex;
+    width: fit-content;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--soft);
+    color: var(--teal-dark);
+    font-size: .78rem;
+    font-weight: 700;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .96rem;
+  }
+  th, td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #eff5f1;
+    color: var(--teal-dark);
+    font-size: .86rem;
+  }
+  tr:last-child td { border-bottom: 0; }
+
+  .closing {
+    background: var(--charcoal);
+    color: white;
+  }
+  .closing .section {
+    display: grid;
+    grid-template-columns: minmax(0, .82fr) minmax(260px, .5fr);
+    gap: 42px;
+    align-items: center;
+  }
+  .closing h2 { color: white; }
+  .closing p { color: rgba(255,255,255,.74); }
+  .closing .note {
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: var(--radius);
+    background: rgba(255,255,255,.06);
+  }
+
+  footer {
+    padding: 30px 18px;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 980px) {
+    .nav { display: none; }
+    .toc, .concept-grid, .debug-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .section-head, .story-grid, .closing .section { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 680px) {
+    .hero { min-height: 88vh; }
+    .hero::after { background: linear-gradient(180deg, rgba(7,16,18,.72), rgba(7,16,18,.88)); }
+    .toc, .concept-grid, .debug-grid, .stat-grid, .addr { grid-template-columns: 1fr; }
+    .step { grid-template-columns: 1fr; }
+    .step-no { width: 46px; height: 46px; }
+    th, td { display: block; width: 100%; }
+    th { border-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../">Kai AI Workshop</a>
+  <nav class="nav" aria-label="頁面導覽">
+    <a href="#why">重新學 IPv6</a>
+    <a href="#concepts">基礎概念</a>
+    <a href="#practice">FortiGate 實作</a>
+    <a href="#debug">除錯紀錄</a>
+    <a href="#final">最終設定</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <img src="./image/hero.png" alt="深夜網路設備除錯插畫">
+  <div class="hero-content">
+    <div class="eyebrow">FortiGate 60F / FortiOS 7.2.13 / HiNet PPPoE</div>
+    <h1>FortiGate 60F + HiNet PPPoE IPv6 全紀錄</h1>
+    <p class="subtitle">從 IPv4 老兵重新理解 IPv6</p>
+    <p class="hero-note">原本以為只是 GUI 點一點，結果一路查到 DHCPv6-PD、RA、SD-WAN Zone 與 IPv6 靜態路由。這是一份真的踩過坑、跑通之後整理出來的工程筆記。</p>
+    <div class="meta-row">
+      <span class="meta">日期：2026-07-07</span>
+      <span class="meta">設備：FortiGate 60F</span>
+      <span class="meta">場景：中華電信光世代 PPPoE</span>
+      <span class="meta">重點：IPv6 / SD-WAN / DHCPv6-PD</span>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="section wide" aria-label="章節目錄">
+    <div class="toc">
+      <a href="#why"><span>01</span><strong>為什麼要重新學 IPv6</strong></a>
+      <a href="#concepts"><span>02</span><strong>把 IPv4 的直覺搬過來</strong></a>
+      <a href="#topology"><span>03</span><strong>PPPoE + DHCPv6-PD 路徑</strong></a>
+      <a href="#practice"><span>04</span><strong>FortiGate 60F 實作步驟</strong></a>
+      <a href="#debug"><span>05</span><strong>真正卡住的三個地方</strong></a>
+      <a href="#final"><span>06</span><strong>最終設定總覽</strong></a>
+    </div>
+  </section>
+
+  <section class="section" id="why">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Why This Took Time</p>
+        <h2>不是 IPv6 難，是每一層都牽在一起。</h2>
+      </div>
+      <p class="lead">IPv4 時代熟悉的 NAT、固定 IP、預設閘道直覺，在 IPv6 裡不會完全消失，但會換一種方式出現。這次真正麻煩的不是單一設定，而是 WAN、LAN、RA、防火牆政策、SD-WAN 與路由必須一起對上。</p>
+    </div>
+    <div class="story-grid">
+      <div class="body-copy">
+        <p>家裡的 FortiGate 60F 一直只有 IPv4 在跑。這次想說中華電信光世代 PPPoE 本來就有雙協定，乾脆順手把 IPv6 開起來。原本以為就是 GUI 勾一勾，結果從「WAN 端要不要 IPv6」一路查到「SD-WAN Zone 底層路由邏輯」。</p>
+        <p>如果你也是 IPv4 時代學網路、對 IPv6 一直有種「看得懂但不熟」的感覺，這份紀錄的價值不只是設定步驟，而是把整個判斷鏈補回來。</p>
+      </div>
+      <aside class="quote-panel">
+        <p>這不是一篇抄文件的設定教學，而是一份把腦子快燒起來之後，終於把鏈路串起來的現場紀錄。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section wide" id="concepts">
+    <div class="section-head">
+      <div>
+        <p class="kicker">IPv6 Concepts</p>
+        <h2>先把 IPv4 直覺翻譯成 IPv6 語言。</h2>
+      </div>
+      <p class="lead">IPv6 看起來可怕，主要是十六進位位址很長。真正要先抓住的是位址結構、縮寫規則、Link-Local、SLAAC、DHCPv6-PD，以及「為什麼不靠 NAT」。</p>
+    </div>
+
+    <div class="concept-grid">
+      <article class="concept">
+        <div class="num">1</div>
+        <h3>128 bit，8 段，16 進位</h3>
+        <p>IPv4 是 4 段、32 bit；IPv6 是 8 段、128 bit。每段 16 bit，用 4 位十六進位剛好表示。</p>
+      </article>
+      <article class="concept">
+        <div class="num">2</div>
+        <h3>`::` 不是固定幾個 0</h3>
+        <p>`::` 代表連續整段 0，實際補幾段要看已寫出的段數，而且一條位址只能出現一次。</p>
+      </article>
+      <article class="concept">
+        <div class="num">3</div>
+        <h3>/64 是基本單位</h3>
+        <p>前 64 bit 是網路 Prefix，後 64 bit 是裝置端 Interface ID。這跟 IPv4 常見 /24 直覺不同。</p>
+      </article>
+      <article class="concept">
+        <div class="num">4</div>
+        <h3>fe80:: 是 Link-Local</h3>
+        <p>它不是異常，而是 IPv6 網路裡每個介面都會有的本地鏈路位址，RA 與鄰居探索都會用到。</p>
+      </article>
+      <article class="concept">
+        <div class="num">5</div>
+        <h3>SLAAC 與 DHCPv6</h3>
+        <p>用 RA 告訴 client Prefix，再讓 client 自己組位址；DNS 等資訊則可能由 RA/RDNSS 或 DHCPv6 補上。</p>
+      </article>
+      <article class="concept">
+        <div class="num">6</div>
+        <h3>Prefix Delegation</h3>
+        <p>ISP 不是只給你一個 IPv6，而是委派一段 Prefix，讓 LAN 端設備能拿到真正可路由的 IPv6 位址。</p>
+      </article>
+    </div>
+
+    <div class="diagram-card" style="margin-top:18px">
+      <div class="diagram-title"><strong>IPv6 位址拆解</strong><span>Prefix / Interface ID</span></div>
+      <div class="diagram-body">
+        <div class="addr">
+          <div class="prefix">
+            <code>2001:b011:2009:fe05</code>
+            <strong>前 64 bit：網路 Prefix</strong>
+            <small>可以想成 IPv4 的網段概念，但通常用 /64 作為 LAN 基本單位。</small>
+          </div>
+          <div class="host">
+            <code>59c6:384d:0c2d:d944</code>
+            <strong>後 64 bit：Interface ID</strong>
+            <small>可由 SLAAC 自動產生，也可在特定需求下做固定配置。</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wide" id="topology">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Topology</p>
+        <h2>這次要跑通的不是一條線，而是一整串條件。</h2>
+      </div>
+      <p class="lead">WAN 端 PPPoE 取得 IPv6 與委派 Prefix，LAN 端用 delegated prefix 發 RA，防火牆政策放行 IPv6，SD-WAN member 要有 gateway6，最後 static6 指向 SD-WAN Zone。</p>
+    </div>
+
+    <div class="diagram-card">
+      <div class="diagram-title"><strong>HiNet PPPoE IPv6 路徑</strong><span>ISP → FortiGate → LAN Clients</span></div>
+      <div class="diagram-body">
+        <svg viewBox="0 0 1120 420" role="img" aria-label="HiNet PPPoE IPv6 設定路徑圖">
+          <defs>
+            <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 Z" fill="#147f7c"/>
+            </marker>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect x="20" y="64" width="210" height="120" rx="8" fill="#eaf6f5" stroke="#9ccac7"/>
+          <text x="125" y="114" text-anchor="middle" class="path-label">HiNet BRAS</text>
+          <text x="125" y="142" text-anchor="middle" class="path-small">PPPoE / RA / DHCPv6-PD</text>
+          <rect x="330" y="46" width="230" height="156" rx="8" fill="#fff4e4" stroke="#e3b06e"/>
+          <text x="445" y="93" text-anchor="middle" class="path-label">FortiGate wan2</text>
+          <text x="445" y="122" text-anchor="middle" class="path-small">ip6-mode pppoe</text>
+          <text x="445" y="147" text-anchor="middle" class="path-small">dhcp6-prefix-delegation enable</text>
+          <rect x="660" y="44" width="210" height="76" rx="8" fill="#f5f7f4" stroke="#cbd7d1"/>
+          <text x="765" y="76" text-anchor="middle" class="path-label">SD-WAN Zone</text>
+          <text x="765" y="101" text-anchor="middle" class="path-small">virtual-wan-link + gateway6</text>
+          <rect x="660" y="166" width="210" height="86" rx="8" fill="#f5f7f4" stroke="#cbd7d1"/>
+          <text x="765" y="199" text-anchor="middle" class="path-label">static6 route</text>
+          <text x="765" y="225" text-anchor="middle" class="path-small">sdwan-zone virtual-wan-link</text>
+          <rect x="330" y="278" width="230" height="92" rx="8" fill="#eaf6f5" stroke="#9ccac7"/>
+          <text x="445" y="312" text-anchor="middle" class="path-label">internal LAN</text>
+          <text x="445" y="338" text-anchor="middle" class="path-small">delegated prefix + RA/SLAAC</text>
+          <rect x="930" y="136" width="160" height="174" rx="8" fill="#fff" stroke="#d9e0db"/>
+          <text x="1010" y="181" text-anchor="middle" class="path-label">LAN Clients</text>
+          <text x="1010" y="209" text-anchor="middle" class="path-small">2001:... 位址</text>
+          <text x="1010" y="234" text-anchor="middle" class="path-small">test-ipv6.com</text>
+          <path d="M230 124 C268 124 290 124 330 124" stroke="#147f7c" stroke-width="5" fill="none" marker-end="url(#arrow)" filter="url(#glow)"/>
+          <path d="M560 124 C604 124 618 82 660 82" stroke="#147f7c" stroke-width="5" fill="none" marker-end="url(#arrow)" filter="url(#glow)"/>
+          <path d="M765 120 L765 166" stroke="#147f7c" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+          <path d="M445 202 L445 278" stroke="#147f7c" stroke-width="5" fill="none" marker-end="url(#arrow)" filter="url(#glow)"/>
+          <path d="M560 324 C735 324 790 226 930 226" stroke="#147f7c" stroke-width="5" fill="none" marker-end="url(#arrow)" filter="url(#glow)"/>
+          <path d="M870 82 C960 82 970 136 1010 136" stroke="#d88a25" stroke-width="3" fill="none" stroke-dasharray="8 8"/>
+          <text x="285" y="101" class="path-small">Prefix Delegation</text>
+          <text x="475" y="251" class="path-small">RA advertises Prefix</text>
+          <text x="840" y="126" class="path-small">routing chain</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="practice">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Implementation</p>
+        <h2>FortiGate 60F + HiNet PPPoE 實作步驟。</h2>
+      </div>
+      <p class="lead">以下以 `wan2` 作為 PPPoE 介面，`internal` 作為 LAN，且 `wan2` 已在 `virtual-wan-link` SD-WAN Zone 內。這裡保留可核對的 CLI 指令。</p>
+    </div>
+
+    <div class="steps">
+      <article class="step">
+        <div class="step-no">0</div>
+        <div>
+          <h3>確認 IPv6 功能已開啟</h3>
+          <p>到 System → Feature Visibility，確認 IPv6 相關功能已啟用。否則 GUI 裡很多 IPv6 欄位不會出現。</p>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-no">1</div>
+        <div>
+          <h3>wan2 啟用 PPPoE IPv6 與 DHCPv6-PD</h3>
+          <p>WAN 端要向 HiNet 取得 Prefix Delegation。若第一次沒有協商成功，可先 disable 再 enable DHCPv6-PD 觸發重新協商。</p>
+<pre><code>config system interface
+    edit "wan2"
+        config ipv6
+            set ip6-mode pppoe
+            set ip6-allowaccess ping https http
+            set dhcp6-prefix-delegation enable
+        end
+    next
+end</code></pre>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-no">2</div>
+        <div>
+          <h3>internal LAN 使用 delegated prefix 並發送 RA</h3>
+          <p>LAN 端不能只是自己亂填 IPv6，而是要吃 WAN 端拿到的 delegated prefix。這裡 IAID 要跟 WAN 端實際 DHCPv6-PD 的 IAID 對上。</p>
+<pre><code>config system interface
+    edit "internal"
+        config ipv6
+            set ip6-mode delegated
+            set ip6-upstream-interface "wan2"
+            set ip6-subnet ::1/64
+            set ip6-send-adv enable
+            set ip6-max-interval 30
+            set ip6-min-interval 10
+            config ip6-delegated-prefix-list
+                edit 1
+                    set upstream-interface "wan2"
+                    set autonomous-flag enable
+                    set onlink-flag enable
+                    set subnet ::/64
+                next
+            end
+        end
+    next
+end</code></pre>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-no">3</div>
+        <div>
+          <h3>新增獨立 IPv6 防火牆政策</h3>
+          <p>FortiOS 的 IPv4 / IPv6 policy 是分開的。IPv4 policy 放行不代表 IPv6 也放行，而且 IPv6 不要開 NAT。</p>
+<pre><code>config firewall policy
+    edit &lt;policy-id&gt;
+        set name "SD-WAN-IPv6"
+        set srcintf "internal"
+        set dstintf "virtual-wan-link"
+        set action accept
+        set srcaddr6 "all"
+        set dstaddr6 "all"
+        set schedule "always"
+        set service "ALL"
+    next
+end</code></pre>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-no">4</div>
+        <div>
+          <h3>SD-WAN 成員補上 IPv6 gateway</h3>
+          <p>這是這次卡最久的一關。wan2 在 SD-WAN Zone 裡時，IPv6 也需要讓 SD-WAN member 知道 gateway6，通常會是 HiNet BRAS 的 link-local 位址。</p>
+<pre><code>diagnose sniffer packet ppp2 "icmp6 and ip6[40]==134" 4 1
+
+config system sdwan
+    config members
+        edit &lt;wan2-member-id&gt;
+            set gateway6 fe80::6aab:9ff:fe31:c01
+        next
+    end
+end</code></pre>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-no">5</div>
+        <div>
+          <h3>IPv6 靜態路由指向 SD-WAN Zone</h3>
+          <p>既然流量要走 SD-WAN Zone，IPv6 default route 也要指到 `virtual-wan-link`，不要直接寫死到 `wan2`。</p>
+<pre><code>config router static6
+    edit 1
+        set sdwan-zone "virtual-wan-link"
+    next
+end</code></pre>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-no">6</div>
+        <div>
+          <h3>驗證路由、位址與 client 連線</h3>
+<pre><code>diagnose ipv6 address list
+diagnose firewall proute6 list
+get router info6 kernel
+execute ping6 2606:4700:4700::1111</code></pre>
+          <p>LAN 端 Windows 再用 `ipconfig /all` 檢查是否取得 `2001:...` 位址，最後用 test-ipv6.com 驗證。</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section wide" id="debug">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Debug Record</p>
+        <h2>真正卡住的三個地方。</h2>
+      </div>
+      <p class="lead">這篇最有價值的不是「最後設定長什麼樣」，而是知道卡住時應該查哪一層，以及怎麼判斷問題不在你原本以為的地方。</p>
+    </div>
+
+    <div class="debug-grid">
+      <article class="debug-card">
+        <span class="pill">坑一</span>
+        <h3>WAN 端 DHCPv6-PD 第一次沒協商成功</h3>
+        <ul>
+          <li>症狀：wan2 有 link-local，但沒有拿到 delegated prefix。</li>
+          <li>查法：`diagnose debug application dhcp6c -1` 看 SOLICIT / ADVERTISE / REQUEST / REPLY。</li>
+          <li>解法：重新觸發 DHCPv6-PD 協商，必要時 disable/enable。</li>
+        </ul>
+      </article>
+      <article class="debug-card">
+        <span class="pill">坑二</span>
+        <h3>LAN 端 RA 沒有帶 Prefix 資訊</h3>
+        <ul>
+          <li>症狀：client 收不到可用的 `2001:...` IPv6 位址。</li>
+          <li>查法：`diagnose sniffer packet internal "icmp6 and ip6[40]==134" 6 3`。</li>
+          <li>解法：確認 delegated-prefix IAID 與 WAN 端實際 IAID 對上，並檢查 prefix list。</li>
+        </ul>
+      </article>
+      <article class="debug-card">
+        <span class="pill">坑三</span>
+        <h3>SD-WAN Zone 底下 IPv6 沒有路由</h3>
+        <ul>
+          <li>症狀：FortiGate 自己能 ping6，但 LAN client 不通。</li>
+          <li>查法：`diagnose firewall proute6 list`、`get router info6 kernel`、`show system sdwan`。</li>
+          <li>解法：補上 member `gateway6`，並讓 static6 指向 SD-WAN Zone。</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="image-band">
+      <img src="./image/clarity.png" alt="IPv6 網路路徑終於串起來的插畫">
+    </div>
+  </section>
+
+  <section class="section wide" id="final">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Final State</p>
+        <h2>最終設定總覽。</h2>
+      </div>
+      <p class="lead">這張表不是取代完整設定，而是讓你快速確認該看的鏈路都有對上。</p>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr><th>設定項目</th><th>值 / 判斷</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>WAN 介面</td><td>`wan2`，PPPoE 撥號介面。</td></tr>
+          <tr><td>IPv6 取得方式</td><td>PPPoE + DHCPv6 Prefix Delegation。</td></tr>
+          <tr><td>LAN 介面</td><td>`internal`，使用 delegated prefix 並發送 RA。</td></tr>
+          <tr><td>Delegated Prefix IAID</td><td>依 WAN 端實際 DHCPv6-PD IAID 對應；本次案例為 `6`。</td></tr>
+          <tr><td>RA 發送間隔</td><td>本次調整為 10～30 秒，方便測試與快速收斂。</td></tr>
+          <tr><td>LAN prefix flag</td><td>Autonomous flag / Onlink flag 需要正確啟用。</td></tr>
+          <tr><td>防火牆政策</td><td>新增獨立 IPv6 policy，`srcaddr6 all` → `dstaddr6 all`，不開 NAT。</td></tr>
+          <tr><td>SD-WAN wan2 member</td><td>補上 IPv6 gateway6，通常是 HiNet BRAS link-local 位址。</td></tr>
+          <tr><td>IPv6 default route</td><td>`static6` 指向 `virtual-wan-link` SD-WAN Zone。</td></tr>
+          <tr><td>驗證</td><td>`ping6`、`proute6`、kernel route、LAN client `ipconfig /all`、test-ipv6.com。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="section">
+      <div>
+        <p class="kicker">Afterthought</p>
+        <h2>IPv6 沒有想像中難，難的是不能只靠 IPv4 的習慣硬套。</h2>
+        <p>真正要補起來的是整條鏈：PPPoE、DHCPv6-PD、IAID、RA、SLAAC、防火牆政策、SD-WAN member、IPv6 default route。只要其中一段沒有對上，表面症狀可能會讓你誤判問題在完全不同的地方。</p>
+        <p>IPv4 跟 IPv6 應該還會共存很長一段時間。與其把 IPv6 當成一套陌生系統，不如把它理解成「網路位址與路由邏輯變得更直接，但中間協調環節更多」。</p>
+      </div>
+      <aside class="note">
+        <strong>版本註記</strong>
+        <p>本文記錄的是 2026-07-07 的實作經驗，設備為 FortiGate 60F / FortiOS 7.2.13，中華電信 PPPoE 環境。不同 FortiOS 版本、ISP 或 SD-WAN 架構可能需要調整。</p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Kai AI Workshop · 自造日誌 · FortiGate 60F + HiNet PPPoE IPv6
+</footer>
+<script>
+  window.addEventListener("load", () => {
+    if (!location.hash) return;
+    const target = document.querySelector(location.hash);
+    if (target) target.scrollIntoView();
+  });
+</script>
+</body>
+</html>

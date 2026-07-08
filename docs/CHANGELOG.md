@@ -1,5 +1,11 @@
 # 全站整理紀錄
 
+## 2026-07-07
+
+- 新增 `fortigate-ipv6-hinet/index.html` 圖文長頁〈FortiGate 60F + HiNet PPPoE IPv6 全紀錄〉，整理 FortiGate 60F / FortiOS 7.2.13 / 中華電信 PPPoE IPv6 的基礎概念、實作步驟與三個實際除錯點。
+- 製作頁面專用視覺素材：`image/hero.png`、`image/clarity.png`，並由 hero 圖裁切 `image/cover.png` 作為 1200×630 首頁封面候選。
+- 將 `fortigate-ipv6-hinet/` 加入首頁第 016 張卡片，分類為 Explore／自造日誌；下一個正式首頁序號為 017。
+
 ## 2026-07-05
 
 - 完成 `episode-01/index.html` 長篇敘事頁〈原來，我不是在跟 AI 聊天〉，以一般讀者與家人能理解的方式描述工程師的 AI 協作日常。

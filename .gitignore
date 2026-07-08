@@ -1,4 +1,4 @@
-# Local review archives and production handoff files
+﻿# Local review archives and production handoff files
 _archive/
 **/_archive/
 handoffs/
@@ -6,3 +6,43 @@ handoffs/
 # Windows metadata
 Thumbs.db
 Desktop.ini
+
+# OS/editor junk
+.DS_Store
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.swp
+*.swo
+~$*
+
+# Logs and local caches
+*.log
+.cache/
+**/.cache/
+.vite/
+**/.vite/
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+coverage/
+**/coverage/
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+**/.pytest_cache/
+
+# Local secrets - never publish
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+*token*
+*secret*
+*credential*
