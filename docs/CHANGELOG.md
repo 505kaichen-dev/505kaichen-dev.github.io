@@ -1,5 +1,12 @@
 # 全站整理紀錄
 
+## 2026-09-11
+
+- 新增 `downloader/index.html` 長頁〈Downloader：我只想貼一個網址，剩下的交給它〉，整理單頁影片／圖片解析、下載佇列、獨立登入與可換主題介面。
+- 使用 0.1.0-beta.7 紫晶航線實際畫面、原創角色與水晶品牌素材，製作 1200×630 首頁封面及文章視覺。
+- 將 `downloader/` 加入首頁第 017 張卡片，分類為 Build／Windows 軟體；下一個正式首頁序號為 018。
+- 作者確認 Portable 成品可公開供個人、非商業使用；文章新增版本、容量、SHA-256 與等待狀態下載按鈕，外部雲端分享連結稍後補入，原始碼仍不公開。
+
 ## 2026-07-07
 
 - 新增 `fortigate-ipv6-hinet/index.html` 圖文長頁〈FortiGate 60F + HiNet PPPoE IPv6 全紀錄〉，整理 FortiGate 60F / FortiOS 7.2.13 / 中華電信 PPPoE IPv6 的基礎概念、實作步驟與三個實際除錯點。

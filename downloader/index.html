@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Downloader：從貼上一個網址開始，做成支援影片、圖片、登入、下載佇列與可換主題的 Windows Portable 工具。">
+  <meta property="og:title" content="Downloader：我只想貼一個網址，剩下的交給它">
+  <meta property="og:description" content="一個個人用的單頁媒體下載工具，如何從功能原型一路長成有角色、有主題，也有清楚邊界的桌面作品。">
+  <meta property="og:url" content="https://505kaichen-dev.github.io/downloader/">
+  <meta property="og:image" content="https://505kaichen-dev.github.io/downloader/image/cover.png">
+  <title>Downloader：我只想貼一個網址，剩下的交給它</title>
+  <style>
+    :root {
+      --ink: #211a40;
+      --muted: #696080;
+      --paper: #f8f7ff;
+      --surface: rgba(255,255,255,.88);
+      --line: rgba(101,80,178,.18);
+      --purple: #714fe7;
+      --purple-dark: #3d2a83;
+      --blue: #3f96f4;
+      --sky: #dfeeff;
+      --green: #22a77a;
+      --max: 1160px;
+      --shadow: 0 24px 70px rgba(54,39,111,.13);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 4%, rgba(113,79,231,.12), transparent 27rem),
+        radial-gradient(circle at 92% 22%, rgba(63,150,244,.12), transparent 30rem),
+        var(--paper);
+      font-family: Inter, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      background: linear-gradient(90deg, rgba(52,35,119,.94), rgba(86,91,205,.92));
+      color: white;
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; letter-spacing: -.01em; }
+    .brand img { width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(176,190,255,.75)); }
+    .back { color: rgba(255,255,255,.78); font-size: 14px; text-decoration: none; }
+    .back:hover { color: white; }
+
+    .hero {
+      position: relative;
+      min-height: 690px;
+      overflow: hidden;
+      isolation: isolate;
+      background-image: linear-gradient(90deg, rgba(241,239,255,.97) 0%, rgba(241,239,255,.88) 40%, rgba(241,239,255,.10) 73%), url("image/theme-canvas.png");
+      background-size: cover;
+      background-position: center top;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 150px;
+      z-index: -1;
+      background: linear-gradient(transparent, var(--paper));
+    }
+    .hero-inner { min-height: 690px; display: flex; align-items: center; position: relative; }
+    .hero-copy { width: min(650px, 56%); padding: 70px 0 100px; position: relative; z-index: 2; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--purple); font-size: 12px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 38px; height: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); }
+    h1 { margin: 18px 0 20px; max-width: 650px; font-size: clamp(44px, 6.4vw, 78px); line-height: 1.08; letter-spacing: -.055em; }
+    h1 span { color: var(--purple); }
+    .hero-lead { max-width: 610px; margin: 0; color: var(--muted); font-size: clamp(18px, 2.1vw, 23px); }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.75); color: var(--purple-dark); font-weight: 800; text-decoration: none; transition: transform .2s, box-shadow .2s; }
+    .button.primary { border: 0; color: white; background: linear-gradient(135deg, var(--purple), var(--blue)); box-shadow: 0 14px 35px rgba(90,82,220,.3); }
+    .button:hover { transform: translateY(-2px); }
+    .button[disabled] { cursor: wait; opacity: .62; transform: none; box-shadow: none; }
+    .status { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .status span { padding: 6px 10px; border: 1px solid rgba(91,75,154,.13); border-radius: 999px; background: rgba(255,255,255,.66); color: #615779; font-size: 12px; font-weight: 700; }
+    .chibi { position: absolute; width: 190px; left: 540px; bottom: 70px; z-index: 1; filter: drop-shadow(0 20px 28px rgba(49,34,105,.2)); }
+
+    section { padding: 82px 0; }
+    .section-kicker { color: var(--purple); font-size: 12px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+    h2 { margin: 8px 0 15px; max-width: 850px; font-size: clamp(32px, 4.5vw, 52px); line-height: 1.18; letter-spacing: -.035em; }
+    .section-intro { max-width: 760px; color: var(--muted); font-size: 18px; }
+
+    .quote {
+      margin: 34px 0 0;
+      padding: 34px 38px;
+      border: 1px solid rgba(113,79,231,.2);
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(113,79,231,.10), rgba(63,150,244,.08));
+      box-shadow: var(--shadow);
+      font-size: clamp(22px, 3vw, 33px);
+      font-weight: 760;
+      line-height: 1.48;
+    }
+    .quote small { display: block; margin-top: 13px; color: var(--purple); font-size: 13px; font-weight: 800; }
+
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+    .feature { min-height: 190px; padding: 25px; border: 1px solid var(--line); border-radius: 19px; background: var(--surface); box-shadow: 0 12px 35px rgba(55,42,105,.06); }
+    .feature-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 13px; color: white; background: linear-gradient(135deg, var(--purple), var(--blue)); font-weight: 900; }
+    .feature h3 { margin: 15px 0 7px; font-size: 19px; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .support-panel { margin-top: 18px; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(235,238,255,.82)); }
+    .support-panel h3 { margin: 0 0 6px; font-size: 22px; }
+    .support-panel > p { margin: 0; color: var(--muted); }
+    .support-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 20px; }
+    .support-group { padding: 17px; border-radius: 14px; background: rgba(255,255,255,.75); }
+    .support-group strong { display: block; margin-bottom: 4px; color: var(--purple-dark); }
+    .support-group span { color: var(--muted); font-size: 13px; }
+
+    .stage { background: linear-gradient(180deg, rgba(235,240,255,.7), rgba(248,247,255,0)); }
+    .screen-frame { margin: 34px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 24px; background: rgba(255,255,255,.82); box-shadow: var(--shadow); }
+    .screen-frame img { width: 100%; border-radius: 15px; }
+    .screen-frame figcaption { padding: 13px 7px 5px; color: var(--muted); font-size: 14px; }
+
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 34px; }
+    .mode { position: relative; overflow: hidden; padding: 30px; border-radius: 22px; border: 1px solid var(--line); background: white; }
+    .mode::after { content: attr(data-mark); position: absolute; right: 18px; bottom: -32px; color: rgba(113,79,231,.08); font-size: 110px; font-weight: 900; line-height: 1; }
+    .mode h3 { margin: 0 0 9px; font-size: 25px; }
+    .mode p { margin: 0; color: var(--muted); }
+
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 34px; }
+    .flow-step { position: relative; min-height: 130px; padding: 20px 16px; border-radius: 16px; background: white; border: 1px solid var(--line); }
+    .flow-step:not(:last-child)::after { content: "→"; position: absolute; right: -17px; top: 47px; z-index: 2; color: var(--purple); font-size: 22px; font-weight: 900; }
+    .flow-num { color: var(--purple); font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+    .flow-step strong { display: block; margin-top: 8px; }
+    .flow-step span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
+
+    .timeline { margin-top: 36px; }
+    .step { position: relative; display: grid; grid-template-columns: 92px 1fr; gap: 24px; padding-bottom: 36px; }
+    .step:not(:last-child)::before { content: ""; position: absolute; left: 41px; top: 54px; bottom: 8px; width: 2px; background: linear-gradient(var(--purple), rgba(113,79,231,.1)); }
+    .step-num { width: 84px; height: 48px; display: grid; place-items: center; border-radius: 15px; color: white; background: linear-gradient(135deg, var(--purple-dark), var(--purple)); font-weight: 900; }
+    .step h3 { margin: 0 0 7px; font-size: 22px; }
+    .step p { max-width: 850px; margin: 0; color: var(--muted); }
+    code { padding: 2px 6px; border-radius: 6px; color: var(--purple-dark); background: #eeeaff; }
+
+    .theme-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 18px; margin-top: 34px; }
+    .theme-card { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: white; box-shadow: var(--shadow); }
+    .theme-card img { width: 100%; height: 100%; min-height: 330px; object-fit: cover; object-position: top left; }
+    .theme-copy { display: flex; flex-direction: column; justify-content: center; padding: 34px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(145deg, rgba(113,79,231,.13), rgba(255,255,255,.92)); }
+    .theme-copy h3 { margin: 0 0 10px; font-size: 27px; }
+    .theme-copy p { margin: 0; color: var(--muted); }
+    .theme-copy img { width: 118px; margin: 22px auto 0; filter: drop-shadow(0 16px 22px rgba(83,55,185,.24)); }
+
+    .privacy { background: #211a40; color: white; }
+    .privacy .section-kicker { color: #a9cfff; }
+    .privacy .section-intro { color: #bdb7d0; }
+    .boundary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 34px; }
+    .boundary { padding: 29px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: rgba(255,255,255,.055); }
+    .boundary.good { border-color: rgba(96,223,180,.35); }
+    .boundary.warn { border-color: rgba(180,170,255,.3); }
+    .boundary h3 { margin: 0 0 10px; }
+    .boundary p { margin: 0; color: #c7c1d8; }
+
+    .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
+    .fact { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    .fact strong { display: block; color: var(--purple); font-size: 21px; }
+    .fact span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+
+    .release { background: linear-gradient(180deg, rgba(229,235,255,.55), rgba(248,247,255,0)); }
+    .release-card { margin-top: 34px; overflow: hidden; border: 1px solid rgba(113,79,231,.25); border-radius: 25px; background: white; box-shadow: var(--shadow); }
+    .release-main { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 28px; padding: 34px; background: linear-gradient(135deg, rgba(113,79,231,.12), rgba(63,150,244,.08)); }
+    .release-main h3 { margin: 0 0 7px; font-size: 28px; }
+    .release-main p { margin: 0; color: var(--muted); }
+    .release-meta { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .release-meta div { padding: 19px 24px; }
+    .release-meta div + div { border-left: 1px solid var(--line); }
+    .release-meta strong { display: block; font-size: 14px; }
+    .release-meta span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .release-hash { padding: 19px 24px 22px; color: var(--muted); font: 12px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+    .license-note { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+    .license-note article { padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.82); }
+    .license-note h3 { margin: 0 0 6px; font-size: 17px; }
+    .license-note p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .closing { padding-top: 56px; text-align: center; }
+    .closing-panel { position: relative; overflow: hidden; padding: 58px 30px; border: 1px solid var(--line); border-radius: 27px; background: linear-gradient(135deg, #fff, #eeebff 58%, #e1efff); box-shadow: var(--shadow); }
+    .closing-panel::after { content: "◇"; position: absolute; right: 4%; top: -54px; color: rgba(113,79,231,.10); font-size: 230px; line-height: 1; }
+    .closing-panel h2 { margin-left: auto; margin-right: auto; }
+    .closing-panel p { max-width: 720px; margin: 0 auto 27px; color: var(--muted); }
+
+    footer { padding: 40px 20px 54px; color: #817a92; text-align: center; font-size: 13px; }
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 920px) {
+      .hero { min-height: 610px; background-position: 63% top; }
+      .hero-inner { min-height: 610px; }
+      .hero-copy { width: 70%; }
+      .chibi { display: none; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .flow { grid-template-columns: 1fr 1fr; }
+      .flow-step:not(:last-child)::after { display: none; }
+      .theme-grid { grid-template-columns: 1fr; }
+      .theme-card img { min-height: 0; }
+      .facts { grid-template-columns: 1fr 1fr; }
+      .support-groups, .license-note { grid-template-columns: 1fr; }
+      .release-main { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(var(--max), calc(100% - 26px)); }
+      .topbar-inner { min-height: 54px; }
+      .brand span { display: none; }
+      .back span { display: none; }
+      .hero { min-height: 610px; background-image: linear-gradient(rgba(244,242,255,.88), rgba(244,242,255,.93)), url("image/theme-canvas.png"); background-position: 68% top; }
+      .hero-inner { min-height: 610px; align-items: flex-end; }
+      .hero-copy { width: 100%; padding: 70px 0 72px; }
+      h1 { font-size: 46px; }
+      section { padding: 60px 0; }
+      .quote { padding: 25px; }
+      .feature-grid, .modes, .boundary-grid, .facts, .flow { grid-template-columns: 1fr; }
+      .release-meta { grid-template-columns: 1fr; }
+      .release-meta div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .step { grid-template-columns: 58px 1fr; gap: 14px; }
+      .step-num { width: 54px; height: 44px; font-size: 12px; }
+      .step:not(:last-child)::before { left: 26px; }
+      .screen-frame { padding: 7px; border-radius: 17px; }
+      .screen-frame img { border-radius: 11px; }
+      .theme-copy { padding: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#top"><img src="image/brand-crystal.png" alt=""><span>Downloader · Development Story</span></a>
+      <a class="back" href="../">← <span>回到 Kai AI Workshop</span></a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <div class="eyebrow">Windows Portable · Personal Project</div>
+          <h1>我只想貼一個網址，<span>剩下的交給它。</span></h1>
+          <p class="hero-lead">Downloader 是一個把單頁影片、圖片解析、登入狀態與下載任務收進同一個介面的 Windows 工具。它從一句很直接的需求開始，最後長成一套有自己角色與主題的桌面作品。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#features">認識 Downloader</a>
+            <a class="button" href="#download">公開下載資訊</a>
+          </div>
+          <div class="status" aria-label="專案資訊">
+            <span>0.1.0-beta.7</span><span>.NET 8 / WPF</span><span>Windows 10 / 11 x64</span><span>免安裝</span><span>公開下載準備中</span>
+          </div>
+        </div>
+        <img class="chibi" src="image/chibi-header.png" alt="紫晶航線 Q 版角色">
+      </div>
+    </section>
+
+    <section id="story">
+      <div class="wrap reveal">
+        <div class="section-kicker">The starting point</div>
+        <h2>真正想省下來的，不只是下載時間</h2>
+        <p class="section-intro">我原本要的不是一套深入爬遍整個網站的系統。情境其實非常日常：正在看某一支影片，或打開某一個圖片頁面，把眼前這個網址貼進工具，確認內容與格式，然後下載。</p>
+        <blockquote class="quote">「我看到一個影片，當下的網址轉貼到軟體中。」<small>— 這句話後來成為整個產品邊界</small></blockquote>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="wrap reveal">
+        <div class="section-kicker">Software overview</div>
+        <h2>先說它是一套什麼軟體</h2>
+        <p class="section-intro">Downloader 是 Windows 10／11 x64 的免安裝桌面工具。使用者貼入正在瀏覽的單一網址，程式先辨識網站、分析媒體與列出可用格式，再由使用者決定內容、畫質及儲存位置。高頻操作保持簡單；網站差異、登入狀態、格式排序與多任務下載，交給程式在背後整理。</p>
+        <div class="feature-grid">
+          <article class="feature"><div class="feature-icon">↗</div><h3>單頁網址解析</h3><p>只處理正在瀏覽的這一頁，不自動展開播放清單、作者空間、下一頁或整站內容。</p></article>
+          <article class="feature"><div class="feature-icon">▶</div><h3>影片模式</h3><p>辨識 YouTube、Bilibili 與多個常見影音網站，也可交給 yt-dlp 處理支援的通用影片頁面。</p></article>
+          <article class="feature"><div class="feature-icon">▧</div><h3>圖片模式</h3><p>解析單頁圖片並提供全選、取消、反選與逐張勾選；游標停留時再載入較大預覽。</p></article>
+          <article class="feature"><div class="feature-icon">⌄</div><h3>下載任務</h3><p>分析與下載分開，可持續貼入下一個網址；佇列支援自動或手動啟動，以及多任務並行。</p></article>
+          <article class="feature"><div class="feature-icon">◎</div><h3>獨立登入環境</h3><p>需要會員權限時使用 Downloader 自己的 WebView2 Profile，不讀取日常瀏覽器的登入資料。</p></article>
+          <article class="feature"><div class="feature-icon">◇</div><h3>Portable</h3><p>.NET 8 self-contained，解析工具一併攜帶；主程式可放在 NAS、USB 或本機資料夾執行。</p></article>
+        </div>
+        <div class="support-panel">
+          <h3>目前能辨識哪些內容？</h3>
+          <p>已知網站顯示品牌名稱，其他成功解析的頁面則直接顯示實際 Domain；通用模式仍以網站與解析引擎當下支援狀態為準。</p>
+          <div class="support-groups">
+            <div class="support-group"><strong>已知影音網站</strong><span>YouTube、Bilibili、Pornhub、XVideos、xHamster、RedTube、YouPorn</span></div>
+            <div class="support-group"><strong>通用影片頁面</strong><span>交由 yt-dlp 的網站 extractor 或 generic extractor 分析目前頁面。</span></div>
+            <div class="support-group"><strong>通用圖片頁面</strong><span>分析 src、srcset、常見懶載入屬性、Open Graph 與直接原圖連結。</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage">
+      <div class="wrap reveal">
+        <div class="section-kicker">The current build</div>
+        <h2>從「可以下載」走到「知道自己正在做什麼」</h2>
+        <p class="section-intro">解析完成後，畫面會先讓人確認標題、封面、解析度、FPS、格式、影音組合與預估大小；下載目的地與任務狀態也都留在同一條工作流裡。</p>
+        <figure class="screen-frame">
+          <img src="image/interface-amethyst.png" alt="Downloader 0.1.0-beta.7 紫晶航線介面">
+          <figcaption>Downloader 0.1.0-beta.7「紫晶航線」：解析下載、下載任務、已完成與設定使用同一套 Shell。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap reveal">
+        <div class="section-kicker">Two focused modes</div>
+        <h2>影片與圖片，刻意不混在一起</h2>
+        <p class="section-intro">兩種內容看似都叫下載，使用者真正要判斷的資訊卻完全不同。與其塞進同一張萬用清單，不如從入口就清楚分流。</p>
+        <div class="modes">
+          <article class="mode" data-mark="▶"><h3>影片模式</h3><p>重點是畫質、FPS、編碼、是否含音訊，以及純視訊格式下載後是否需要由 FFmpeg 自動合併最佳音訊。</p></article>
+          <article class="mode" data-mark="▧"><h3>圖片模式</h3><p>重點是大量候選內容的辨認與選取，因此提供批次勾選、即時數量與按需載入的游標預覽。</p></article>
+        </div>
+        <div class="flow" aria-label="Downloader 操作流程">
+          <div class="flow-step"><div class="flow-num">01</div><strong>貼上網址</strong><span>單一 HTTP / HTTPS 頁面</span></div>
+          <div class="flow-step"><div class="flow-num">02</div><strong>辨識網站</strong><span>已知品牌或實際 Domain</span></div>
+          <div class="flow-step"><div class="flow-num">03</div><strong>分析內容</strong><span>影片格式或圖片候選</span></div>
+          <div class="flow-step"><div class="flow-num">04</div><strong>加入佇列</strong><span>下一個網址可繼續分析</span></div>
+          <div class="flow-step"><div class="flow-num">05</div><strong>完成開啟</strong><span>直接前往實際輸出目錄</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap reveal">
+        <div class="section-kicker">Build log</div>
+        <h2>需求每往前一步，工具就少一點「一次性」</h2>
+        <div class="timeline">
+          <article class="step"><div class="step-num">起點</div><div><h3>先把單一網址分析與下載跑通</h3><p>第一個原型先驗證 WPF、yt-dlp 與 FFmpeg 能否組成完整流程。YouTube 與 Bilibili 有專用辨識，其他網站則保留通用入口。</p></div></article>
+          <article class="step"><div class="step-num">現實</div><div><h3>成功下載，不代表體驗已經成立</h3><p>開發早期陸續碰到缺少 <code>yt-dlp</code>、登入時間格式、Null 欄位與排序不合直覺等問題。封面預覽、開啟目錄、FPS 與影音合併標示，都是在真實測試中補出來的。</p></div></article>
+          <article class="step"><div class="step-num">佇列</div><div><h3>當 A 還在下載，B 網址貼進來會怎樣？</h3><p>這個問題把程式從一次性工具推向任務管理。現在分析不會被下載卡住，等待任務可手動啟動，也可設定 1～10 個並行工作，自訂值上限為 99。</p></div></article>
+          <article class="step"><div class="step-num">帳號</div><div><h3>登入要能用，也要乾淨</h3><p>專案刻意不讀 Chrome 或 Edge 的既有 Profile。各 Domain 使用獨立登入環境，Cookie 由 Windows CurrentUser DPAPI 保護；軟體啟動時也不會逐站連線掃描。</p></div></article>
+          <article class="step"><div class="step-num">Beta</div><div><h3>圖片批次功能完成後，Alpha 也該畢業了</h3><p>當常用網站、登入、圖片多選與任務佇列都能工作，重點開始從「功能有沒有」轉向「每天打開時願不願意用」。版本在這裡進入 Beta。</p></div></article>
+          <article class="step"><div class="step-num">主題</div><div><h3>最後，它不再只是一張灰白色工具表格</h3><p>從紫髮角色 ICON、CrystalDiskInfo 式角色主題參考，到整套紫晶航線預覽稿，介面經歷過比例不對、圖片拼接斷層與功能位置落差；最後把背景與右側立繪整合成同一張全景，再建立可抽換的主題 Shell。</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage">
+      <div class="wrap reveal">
+        <div class="section-kicker">Theme system</div>
+        <h2>角色不是貼上去的裝飾，而是介面的一種完整狀態</h2>
+        <p class="section-intro">按鈕、標題列、Chip、表格、進度列、字體、背景與側欄都會一起切換。未來新增季節或節日主題，只需要替換素材、色票與短文案，不必複製下載功能。</p>
+        <div class="theme-grid">
+          <figure class="theme-card"><img src="image/interface-fluent.png" alt="Downloader Microsoft Fluent 標準淺色主題"></figure>
+          <div class="theme-copy"><h3>同一個工具，兩種氣氛</h3><p>「紫晶航線」保留角色、城市、水晶與半透明卡片；「標準淺色」收起裝飾圖，展開工作區，以 Microsoft Fluent Light 的中性色與 Windows 藍色呈現。</p><img src="image/brand-crystal.png" alt="Downloader 紫晶品牌標誌"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="privacy">
+      <div class="wrap reveal">
+        <div class="section-kicker">Privacy & boundaries</div>
+        <h2>能登入，不等於把所有界線都拿掉</h2>
+        <p class="section-intro">這個工具將提供公開下載，但限定個人與非商業使用。它可以使用本人帳號合法觀看的內容與畫質，但不以破解網站限制為目標。</p>
+        <div class="boundary-grid">
+          <article class="boundary good"><h3>登入資料留在自己的電腦</h3><p>帳密直接輸入官方網站。Downloader 不記錄密碼，不讀取日常瀏覽器 Profile；交給 yt-dlp 的 Cookie 暫存檔使用後即刪除。</p></article>
+          <article class="boundary warn"><h3>單頁、合法權限、不處理 DRM</h3><p>不整批抓播放清單、作者空間或全站內容，不繞過會員、地區、年齡與 DRM 限制；通用網站解析屬盡力而為。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap reveal">
+        <div class="section-kicker">Under the hood</div>
+        <h2>把成熟引擎接成一個適合自己的工作流</h2>
+        <p class="section-intro">Downloader 的價值不在重新發明每一個下載協定，而是替幾個能力不同的元件分工，然後把它們收進一致、可驗證的桌面流程。</p>
+        <div class="facts">
+          <div class="fact"><strong>.NET 8 / WPF</strong><span>Windows 介面、任務狀態與主題 Shell</span></div>
+          <div class="fact"><strong>yt-dlp</strong><span>影音網站 extractor 與格式資訊</span></div>
+          <div class="fact"><strong>FFmpeg</strong><span>獨立視訊與音訊的下載後合併</span></div>
+          <div class="fact"><strong>WebView2</strong><span>Downloader 專用的網站登入環境</span></div>
+          <div class="fact"><strong>Deno</strong><span>YouTube JavaScript challenge 執行環境</span></div>
+          <div class="fact"><strong>83 tests</strong><span>目前自動化測試皆通過</span></div>
+          <div class="fact"><strong>Portable ZIP</strong><span>self-contained win-x64，不另裝 .NET</span></div>
+          <div class="fact"><strong>beta.7</strong><span>功能穩定後，進入持續使用與 UI 微調</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="release" id="download">
+      <div class="wrap reveal">
+        <div class="section-kicker">Public beta</div>
+        <h2>公開下載已經決定，分享連結正在準備</h2>
+        <p class="section-intro">發布方式會和 3MF Explorer 一樣：網站保留版本、檔案資訊與 SHA-256，Portable ZIP 則放在外部雲端空間。連結更新前，按鈕先維持等待狀態。</p>
+        <div class="release-card">
+          <div class="release-main">
+            <div><h3>Downloader 0.1.0-beta.7</h3><p>Windows x64 · Self-contained Portable ZIP · 解壓縮後直接執行</p></div>
+            <button class="button primary" type="button" disabled aria-label="下載連結準備中">下載連結準備中</button>
+          </div>
+          <div class="release-meta">
+            <div><strong>版本</strong><span>0.1.0-beta.7</span></div>
+            <div><strong>檔案大小</strong><span>227,305,256 bytes（約 216.8 MiB）</span></div>
+            <div><strong>支援系統</strong><span>Windows 10／11 x64</span></div>
+          </div>
+          <div class="release-hash"><strong>SHA-256</strong><br>82C30A23E6CB1E48E99AEBA6A17E4578258BF584AF7786A43A57CE3D730C5E97</div>
+        </div>
+        <div class="license-note">
+          <article><h3>個人、非商業使用</h3><p>可以下載供個人用途使用；不得販售、收費轉售或整合為商業服務。</p></article>
+          <article><h3>原始碼不公開</h3><p>本次公開的是 Windows Portable 執行版本，不代表專案採用 Open Source 授權。</p></article>
+          <article><h3>使用者仍需遵守來源規範</h3><p>只下載自己有權存取的內容；網站條款、著作權與內容使用責任不會因工具而消失。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="wrap reveal">
+        <div class="closing-panel">
+          <div class="section-kicker">Where it arrived</div>
+          <h2>它仍然是一個工具，但已經很像自己的作品</h2>
+          <p>從「貼上網址能下載」到下載佇列、圖片預覽、獨立登入與完整主題，功能並不是一次規劃到底，而是在每次實際使用時把下一個不順手的地方問出來。Downloader 現在停在一個很舒服的位置：常用功能已經能工作，接下來可以慢慢把新主題與細節做得更像自己。</p>
+          <a class="button primary" href="../">回到 Kai AI Workshop</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Downloader 0.1.0-beta.7 · 個人與非商業使用 · 公開下載連結準備中</footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+  </script>
+</body>
+</html>

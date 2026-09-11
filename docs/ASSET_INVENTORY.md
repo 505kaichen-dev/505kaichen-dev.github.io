@@ -2,6 +2,8 @@
 
 盤點日期：2026-07-01
 
+Downloader 素材增補：2026-09-11（未重算全站容量）
+
 ## 容量
 
 | 區域 | 檔案數 | 容量 |
@@ -35,6 +37,14 @@
 - 3MF Explorer v2.0.0 Windows Portable 正式版 EXE 為 81,805,479 bytes（約 78.0 MiB）。
 - EXE 不納入網站 Git repository；公開下載改用 OneDrive 或 Google Drive 外部分享連結。
 - 網站只保存版本、大小、SHA-256 與分享網址。更新版本時應同步替換外部檔案與文章資訊。
+- Downloader 已確認可公開提供個人、非商業使用的 Portable 成品；ZIP 不納入網站 Git repository，取得外部雲端分享連結後再由文章下載按鈕導向。
+
+## Downloader 視覺素材
+
+- `downloader/image/cover.png`：1200×630 首頁封面。
+- `downloader/image/interface-amethyst.png`：0.1.0-beta.7 紫晶航線介面截圖。
+- `downloader/image/interface-fluent.png`：Microsoft Fluent 標準淺色介面截圖。
+- `downloader/image/theme-canvas.png`、`chibi-header.png`、`brand-crystal.png`：從 Downloader 專案沿用的原創主題素材。
 
 ## 音訊狀態
 
