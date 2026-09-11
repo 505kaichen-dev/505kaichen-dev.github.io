@@ -89,6 +89,10 @@
     .button[disabled] { cursor: wait; opacity: .62; transform: none; box-shadow: none; }
     .status { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
     .status span { padding: 6px 10px; border: 1px solid rgba(91,75,154,.13); border-radius: 999px; background: rgba(255,255,255,.66); color: #615779; font-size: 12px; font-weight: 700; }
+    .promise { width: fit-content; max-width: 100%; display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 12px 16px; border: 1px solid rgba(35,167,122,.28); border-radius: 14px; background: rgba(244,255,251,.88); color: #176b50; box-shadow: 0 10px 26px rgba(34,167,122,.10); }
+    .promise-mark { width: 32px; height: 32px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--green); font-weight: 900; }
+    .promise strong { display: block; font-size: 14px; }
+    .promise span { display: block; color: #4e7568; font-size: 12px; }
     .chibi { position: absolute; width: 190px; left: 540px; bottom: 70px; z-index: 1; filter: drop-shadow(0 20px 28px rgba(49,34,105,.2)); }
 
     section { padding: 82px 0; }
@@ -108,6 +112,17 @@
       line-height: 1.48;
     }
     .quote small { display: block; margin-top: 13px; color: var(--purple); font-size: 13px; font-weight: 800; }
+
+    .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+    .context-card { padding: 25px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.82); }
+    .context-card.problem { border-color: rgba(231,105,105,.22); background: rgba(255,248,248,.88); }
+    .context-label { color: var(--purple); font-size: 11px; font-weight: 900; letter-spacing: .13em; }
+    .context-card.problem .context-label { color: #bd5454; }
+    .context-card h3 { margin: 8px 0 7px; font-size: 21px; }
+    .context-card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .comic-frame { margin: 24px 0 0; padding: 10px; border: 1px solid var(--line); border-radius: 22px; background: white; box-shadow: var(--shadow); }
+    .comic-frame img { width: 100%; border-radius: 14px; }
+    .comic-frame figcaption { padding: 13px 8px 5px; color: var(--muted); font-size: 14px; }
 
     .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
     .feature { min-height: 190px; padding: 25px; border: 1px solid var(--line); border-radius: 19px; background: var(--surface); box-shadow: 0 12px 35px rgba(55,42,105,.06); }
@@ -209,7 +224,7 @@
       .theme-grid { grid-template-columns: 1fr; }
       .theme-card img { min-height: 0; }
       .facts { grid-template-columns: 1fr 1fr; }
-      .support-groups, .license-note { grid-template-columns: 1fr; }
+      .support-groups, .license-note, .context-grid { grid-template-columns: 1fr; }
       .release-main { grid-template-columns: 1fr; }
     }
     @media (max-width: 620px) {
@@ -257,6 +272,10 @@
           <div class="status" aria-label="專案資訊">
             <span>0.1.0-beta.7</span><span>.NET 8 / WPF</span><span>Windows 10 / 11 x64</span><span>免安裝</span><span>公開下載準備中</span>
           </div>
+          <div class="promise" aria-label="免費無廣告承諾">
+            <div class="promise-mark">✓</div>
+            <div><strong>免費、無廣告，真正的下載按鈕只有一個</strong><span>不用在彈窗、假按鈕與廣告頁面之間尋找下載入口。</span></div>
+          </div>
         </div>
         <img class="chibi" src="image/chibi-header.png" alt="紫晶航線 Q 版角色">
       </div>
@@ -266,7 +285,15 @@
       <div class="wrap reveal">
         <div class="section-kicker">The starting point</div>
         <h2>真正想省下來的，不只是下載時間</h2>
-        <p class="section-intro">我原本要的不是一套深入爬遍整個網站的系統。情境其實非常日常：正在看某一支影片，或打開某一個圖片頁面，把眼前這個網址貼進工具，確認內容與格式，然後下載。</p>
+        <p class="section-intro">我原本要的不是一套深入爬遍整個網站的系統。有時候只是和社群一起製作二創內容或搞笑迷因影片，需要取得眼前這支影片或這個圖片頁面的素材；把網址貼進工具，確認內容與格式，然後下載。</p>
+        <div class="context-grid">
+          <article class="context-card"><div class="context-label">THE REAL USE CASE</div><h3>為了一個當下想到的創意</h3><p>迷因與社群二創的節奏很快，真正需要的通常不是整站收藏，而是眼前這一支影片、某個畫面，或單頁裡幾張適合再創作的圖片。</p></article>
+          <article class="context-card problem"><div class="context-label">THE VERY HELPFUL INTERNET</div><h3>恭喜，按了三個 DOWNLOAD</h3><p>成功下載零個檔案，順便看完七個廣告、拜訪五個陌生分頁，最後再收到一句「解析失敗」。非常完整的網路探險體驗。</p></article>
+        </div>
+        <figure class="comic-frame">
+          <img src="image/web-downloader-frustration-comic.png" alt="使用充滿假下載按鈕與廣告的網頁工具，最後改用乾淨桌面 Downloader 的三格漫畫">
+          <figcaption>網頁 Downloader 闖關記：先猜哪顆是真的，再等到 99%，最後得到一個紅色叉叉。Downloader 想省掉的就是這整套儀式。</figcaption>
+        </figure>
         <blockquote class="quote">「我看到一個影片，當下的網址轉貼到軟體中。」<small>— 這句話後來成為整個產品邊界</small></blockquote>
       </div>
     </section>
@@ -387,7 +414,7 @@
     <section class="release" id="download">
       <div class="wrap reveal">
         <div class="section-kicker">Public beta</div>
-        <h2>公開下載已經決定，分享連結正在準備</h2>
+        <h2>免費、無廣告；分享連結正在準備</h2>
         <p class="section-intro">發布方式會和 3MF Explorer 一樣：網站保留版本、檔案資訊與 SHA-256，Portable ZIP 則放在外部雲端空間。連結更新前，按鈕先維持等待狀態。</p>
         <div class="release-card">
           <div class="release-main">
@@ -402,9 +429,9 @@
           <div class="release-hash"><strong>SHA-256</strong><br>82C30A23E6CB1E48E99AEBA6A17E4578258BF584AF7786A43A57CE3D730C5E97</div>
         </div>
         <div class="license-note">
-          <article><h3>個人、非商業使用</h3><p>可以下載供個人用途使用；不得販售、收費轉售或整合為商業服務。</p></article>
+          <article><h3>保證免費、沒有廣告</h3><p>軟體本身不收費，也不插入廣告；可以下載供個人、非商業用途使用。</p></article>
           <article><h3>原始碼不公開</h3><p>本次公開的是 Windows Portable 執行版本，不代表專案採用 Open Source 授權。</p></article>
-          <article><h3>使用者仍需遵守來源規範</h3><p>只下載自己有權存取的內容；網站條款、著作權與內容使用責任不會因工具而消失。</p></article>
+          <article><h3>二創仍要確認素材權利</h3><p>只下載自己有權存取及使用的內容；二創、迷因與社群發布仍需遵守素材授權、著作權及來源平台規範。</p></article>
         </div>
       </div>
     </section>

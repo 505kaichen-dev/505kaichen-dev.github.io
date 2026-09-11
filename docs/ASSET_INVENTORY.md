@@ -45,6 +45,7 @@ Downloader 素材增補：2026-09-11（未重算全站容量）
 - `downloader/image/interface-amethyst.png`：0.1.0-beta.7 紫晶航線介面截圖。
 - `downloader/image/interface-fluent.png`：Microsoft Fluent 標準淺色介面截圖。
 - `downloader/image/theme-canvas.png`、`chibi-header.png`、`brand-crystal.png`：從 Downloader 專案沿用的原創主題素材。
+- `downloader/image/web-downloader-frustration-comic.png`：以 ImageGen 製作的原創三格漫畫，用於開發動機段落。
 
 ## 音訊狀態
 

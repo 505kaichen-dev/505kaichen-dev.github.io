@@ -108,7 +108,7 @@
 | 014 | food-spinner | 吃什麼？附近餐廳轉盤 | works | Google Maps / Places API |
 | 015 | 3mf-explorer | 3MF Explorer — 用縮圖找回你的模型 | works | Windows Portable 測試版 |
 | 016 | fortigate-ipv6-hinet | FortiGate 60F + HiNet PPPoE IPv6 全紀錄 | diy | |
-| 017 | downloader | Downloader — 貼上一個網址，剩下的交給它 | works | 個人、非商業使用；下載連結準備中 |
+| 017 | downloader | Downloader — 貼上一個網址，剩下的交給它 | works | 免費無廣告；個人、非商業使用；下載連結準備中 |
 <!-- CARD_LIST_END -->
 
 ---
