@@ -21,7 +21,7 @@
 | `food-spinner/` | Build／網頁工具 | `index.html` | 014 | Google Maps / Places API |
 | `3mf-explorer/` | Build／Windows 軟體 | `index.html` | 015 | Windows Portable 測試版 |
 | `fortigate-ipv6-hinet/` | Explore／自造日誌／網路技術戰報 | `index.html` | 016 | `PROJECT.md` |
-| `downloader/` | Build／Windows 軟體／開發故事 | `index.html` | 017 | 個人、非商業使用；下載連結準備中 |
+| `downloader/` | Build／Windows 軟體／開發故事 | `index.html` | 017 | 個人、非商業使用；beta.10 介紹與 OneDrive 下載入口 |
 | `gallery/` | 創作圖集 | `index.html` | 無序號 | — |
 
 ## 完成、待決定是否公開

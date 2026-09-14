@@ -1,465 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Downloader：從貼上一個網址開始，做成支援影片、圖片、登入、下載佇列與可換主題的 Windows Portable 工具。">
-  <meta property="og:title" content="Downloader：我只想貼一個網址，剩下的交給它">
-  <meta property="og:description" content="一個個人用的單頁媒體下載工具，如何從功能原型一路長成有角色、有主題，也有清楚邊界的桌面作品。">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Downloader，免費、無廣告的 Windows 影片與圖片下載工具。先看畫質與解析度，再選取、加入佇列；免安裝，還有紫晶航線與標準淺色主題。">
+  <meta property="og:title" content="Downloader — 貼上網址，把喜歡的內容收好。">
+  <meta property="og:description" content="免費、無廣告、免安裝。認識 Downloader 的影片、圖片與任務管理，以及從下載按鈕解謎開始的開發故事。">
   <meta property="og:url" content="https://505kaichen-dev.github.io/downloader/">
   <meta property="og:image" content="https://505kaichen-dev.github.io/downloader/image/cover.png">
-  <title>Downloader：我只想貼一個網址，剩下的交給它</title>
-  <style>
-    :root {
-      --ink: #211a40;
-      --muted: #696080;
-      --paper: #f8f7ff;
-      --surface: rgba(255,255,255,.88);
-      --line: rgba(101,80,178,.18);
-      --purple: #714fe7;
-      --purple-dark: #3d2a83;
-      --blue: #3f96f4;
-      --sky: #dfeeff;
-      --green: #22a77a;
-      --max: 1160px;
-      --shadow: 0 24px 70px rgba(54,39,111,.13);
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 10% 4%, rgba(113,79,231,.12), transparent 27rem),
-        radial-gradient(circle at 92% 22%, rgba(63,150,244,.12), transparent 30rem),
-        var(--paper);
-      font-family: Inter, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
-      line-height: 1.75;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: inherit; }
-    img { display: block; max-width: 100%; }
-    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      border-bottom: 1px solid rgba(255,255,255,.15);
-      background: linear-gradient(90deg, rgba(52,35,119,.94), rgba(86,91,205,.92));
-      color: white;
-      backdrop-filter: blur(16px);
-    }
-    .topbar-inner { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; letter-spacing: -.01em; }
-    .brand img { width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(176,190,255,.75)); }
-    .back { color: rgba(255,255,255,.78); font-size: 14px; text-decoration: none; }
-    .back:hover { color: white; }
-
-    .hero {
-      position: relative;
-      min-height: 690px;
-      overflow: hidden;
-      isolation: isolate;
-      background-image: linear-gradient(90deg, rgba(241,239,255,.97) 0%, rgba(241,239,255,.88) 40%, rgba(241,239,255,.10) 73%), url("image/theme-canvas.png");
-      background-size: cover;
-      background-position: center top;
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto 0 0;
-      height: 150px;
-      z-index: -1;
-      background: linear-gradient(transparent, var(--paper));
-    }
-    .hero-inner { min-height: 690px; display: flex; align-items: center; position: relative; }
-    .hero-copy { width: min(650px, 56%); padding: 70px 0 100px; position: relative; z-index: 2; }
-    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--purple); font-size: 12px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
-    .eyebrow::before { content: ""; width: 38px; height: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); }
-    h1 { margin: 18px 0 20px; max-width: 650px; font-size: clamp(44px, 6.4vw, 78px); line-height: 1.08; letter-spacing: -.055em; }
-    h1 span { color: var(--purple); }
-    .hero-lead { max-width: 610px; margin: 0; color: var(--muted); font-size: clamp(18px, 2.1vw, 23px); }
-    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-    .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 20px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.75); color: var(--purple-dark); font-weight: 800; text-decoration: none; transition: transform .2s, box-shadow .2s; }
-    .button.primary { border: 0; color: white; background: linear-gradient(135deg, var(--purple), var(--blue)); box-shadow: 0 14px 35px rgba(90,82,220,.3); }
-    .button:hover { transform: translateY(-2px); }
-    .button[disabled] { cursor: wait; opacity: .62; transform: none; box-shadow: none; }
-    .status { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-    .status span { padding: 6px 10px; border: 1px solid rgba(91,75,154,.13); border-radius: 999px; background: rgba(255,255,255,.66); color: #615779; font-size: 12px; font-weight: 700; }
-    .promise { width: fit-content; max-width: 100%; display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 12px 16px; border: 1px solid rgba(35,167,122,.28); border-radius: 14px; background: rgba(244,255,251,.88); color: #176b50; box-shadow: 0 10px 26px rgba(34,167,122,.10); }
-    .promise-mark { width: 32px; height: 32px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--green); font-weight: 900; }
-    .promise strong { display: block; font-size: 14px; }
-    .promise span { display: block; color: #4e7568; font-size: 12px; }
-    .chibi { position: absolute; width: 190px; left: 540px; bottom: 70px; z-index: 1; filter: drop-shadow(0 20px 28px rgba(49,34,105,.2)); }
-
-    section { padding: 82px 0; }
-    .section-kicker { color: var(--purple); font-size: 12px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
-    h2 { margin: 8px 0 15px; max-width: 850px; font-size: clamp(32px, 4.5vw, 52px); line-height: 1.18; letter-spacing: -.035em; }
-    .section-intro { max-width: 760px; color: var(--muted); font-size: 18px; }
-
-    .quote {
-      margin: 34px 0 0;
-      padding: 34px 38px;
-      border: 1px solid rgba(113,79,231,.2);
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(113,79,231,.10), rgba(63,150,244,.08));
-      box-shadow: var(--shadow);
-      font-size: clamp(22px, 3vw, 33px);
-      font-weight: 760;
-      line-height: 1.48;
-    }
-    .quote small { display: block; margin-top: 13px; color: var(--purple); font-size: 13px; font-weight: 800; }
-
-    .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
-    .context-card { padding: 25px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.82); }
-    .context-card.problem { border-color: rgba(231,105,105,.22); background: rgba(255,248,248,.88); }
-    .context-label { color: var(--purple); font-size: 11px; font-weight: 900; letter-spacing: .13em; }
-    .context-card.problem .context-label { color: #bd5454; }
-    .context-card h3 { margin: 8px 0 7px; font-size: 21px; }
-    .context-card p { margin: 0; color: var(--muted); font-size: 14px; }
-    .comic-frame { margin: 24px 0 0; padding: 10px; border: 1px solid var(--line); border-radius: 22px; background: white; box-shadow: var(--shadow); }
-    .comic-frame img { width: 100%; border-radius: 14px; }
-    .comic-frame figcaption { padding: 13px 8px 5px; color: var(--muted); font-size: 14px; }
-
-    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
-    .feature { min-height: 190px; padding: 25px; border: 1px solid var(--line); border-radius: 19px; background: var(--surface); box-shadow: 0 12px 35px rgba(55,42,105,.06); }
-    .feature-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 13px; color: white; background: linear-gradient(135deg, var(--purple), var(--blue)); font-weight: 900; }
-    .feature h3 { margin: 15px 0 7px; font-size: 19px; }
-    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
-
-    .support-panel { margin-top: 18px; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(235,238,255,.82)); }
-    .support-panel h3 { margin: 0 0 6px; font-size: 22px; }
-    .support-panel > p { margin: 0; color: var(--muted); }
-    .support-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 20px; }
-    .support-group { padding: 17px; border-radius: 14px; background: rgba(255,255,255,.75); }
-    .support-group strong { display: block; margin-bottom: 4px; color: var(--purple-dark); }
-    .support-group span { color: var(--muted); font-size: 13px; }
-
-    .stage { background: linear-gradient(180deg, rgba(235,240,255,.7), rgba(248,247,255,0)); }
-    .screen-frame { margin: 34px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 24px; background: rgba(255,255,255,.82); box-shadow: var(--shadow); }
-    .screen-frame img { width: 100%; border-radius: 15px; }
-    .screen-frame figcaption { padding: 13px 7px 5px; color: var(--muted); font-size: 14px; }
-
-    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 34px; }
-    .mode { position: relative; overflow: hidden; padding: 30px; border-radius: 22px; border: 1px solid var(--line); background: white; }
-    .mode::after { content: attr(data-mark); position: absolute; right: 18px; bottom: -32px; color: rgba(113,79,231,.08); font-size: 110px; font-weight: 900; line-height: 1; }
-    .mode h3 { margin: 0 0 9px; font-size: 25px; }
-    .mode p { margin: 0; color: var(--muted); }
-
-    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 34px; }
-    .flow-step { position: relative; min-height: 130px; padding: 20px 16px; border-radius: 16px; background: white; border: 1px solid var(--line); }
-    .flow-step:not(:last-child)::after { content: "→"; position: absolute; right: -17px; top: 47px; z-index: 2; color: var(--purple); font-size: 22px; font-weight: 900; }
-    .flow-num { color: var(--purple); font-size: 11px; font-weight: 900; letter-spacing: .12em; }
-    .flow-step strong { display: block; margin-top: 8px; }
-    .flow-step span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
-
-    .timeline { margin-top: 36px; }
-    .step { position: relative; display: grid; grid-template-columns: 92px 1fr; gap: 24px; padding-bottom: 36px; }
-    .step:not(:last-child)::before { content: ""; position: absolute; left: 41px; top: 54px; bottom: 8px; width: 2px; background: linear-gradient(var(--purple), rgba(113,79,231,.1)); }
-    .step-num { width: 84px; height: 48px; display: grid; place-items: center; border-radius: 15px; color: white; background: linear-gradient(135deg, var(--purple-dark), var(--purple)); font-weight: 900; }
-    .step h3 { margin: 0 0 7px; font-size: 22px; }
-    .step p { max-width: 850px; margin: 0; color: var(--muted); }
-    code { padding: 2px 6px; border-radius: 6px; color: var(--purple-dark); background: #eeeaff; }
-
-    .theme-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 18px; margin-top: 34px; }
-    .theme-card { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: white; box-shadow: var(--shadow); }
-    .theme-card img { width: 100%; height: 100%; min-height: 330px; object-fit: cover; object-position: top left; }
-    .theme-copy { display: flex; flex-direction: column; justify-content: center; padding: 34px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(145deg, rgba(113,79,231,.13), rgba(255,255,255,.92)); }
-    .theme-copy h3 { margin: 0 0 10px; font-size: 27px; }
-    .theme-copy p { margin: 0; color: var(--muted); }
-    .theme-copy img { width: 118px; margin: 22px auto 0; filter: drop-shadow(0 16px 22px rgba(83,55,185,.24)); }
-
-    .privacy { background: #211a40; color: white; }
-    .privacy .section-kicker { color: #a9cfff; }
-    .privacy .section-intro { color: #bdb7d0; }
-    .boundary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 34px; }
-    .boundary { padding: 29px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: rgba(255,255,255,.055); }
-    .boundary.good { border-color: rgba(96,223,180,.35); }
-    .boundary.warn { border-color: rgba(180,170,255,.3); }
-    .boundary h3 { margin: 0 0 10px; }
-    .boundary p { margin: 0; color: #c7c1d8; }
-
-    .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
-    .fact { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: white; }
-    .fact strong { display: block; color: var(--purple); font-size: 21px; }
-    .fact span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
-
-    .release { background: linear-gradient(180deg, rgba(229,235,255,.55), rgba(248,247,255,0)); }
-    .release-card { margin-top: 34px; overflow: hidden; border: 1px solid rgba(113,79,231,.25); border-radius: 25px; background: white; box-shadow: var(--shadow); }
-    .release-main { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 28px; padding: 34px; background: linear-gradient(135deg, rgba(113,79,231,.12), rgba(63,150,244,.08)); }
-    .release-main h3 { margin: 0 0 7px; font-size: 28px; }
-    .release-main p { margin: 0; color: var(--muted); }
-    .release-meta { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .release-meta div { padding: 19px 24px; }
-    .release-meta div + div { border-left: 1px solid var(--line); }
-    .release-meta strong { display: block; font-size: 14px; }
-    .release-meta span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
-    .release-hash { padding: 19px 24px 22px; color: var(--muted); font: 12px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
-    .license-note { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
-    .license-note article { padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.82); }
-    .license-note h3 { margin: 0 0 6px; font-size: 17px; }
-    .license-note p { margin: 0; color: var(--muted); font-size: 13px; }
-
-    .closing { padding-top: 56px; text-align: center; }
-    .closing-panel { position: relative; overflow: hidden; padding: 58px 30px; border: 1px solid var(--line); border-radius: 27px; background: linear-gradient(135deg, #fff, #eeebff 58%, #e1efff); box-shadow: var(--shadow); }
-    .closing-panel::after { content: "◇"; position: absolute; right: 4%; top: -54px; color: rgba(113,79,231,.10); font-size: 230px; line-height: 1; }
-    .closing-panel h2 { margin-left: auto; margin-right: auto; }
-    .closing-panel p { max-width: 720px; margin: 0 auto 27px; color: var(--muted); }
-
-    footer { padding: 40px 20px 54px; color: #817a92; text-align: center; font-size: 13px; }
-    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    @media (max-width: 920px) {
-      .hero { min-height: 610px; background-position: 63% top; }
-      .hero-inner { min-height: 610px; }
-      .hero-copy { width: 70%; }
-      .chibi { display: none; }
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
-      .flow { grid-template-columns: 1fr 1fr; }
-      .flow-step:not(:last-child)::after { display: none; }
-      .theme-grid { grid-template-columns: 1fr; }
-      .theme-card img { min-height: 0; }
-      .facts { grid-template-columns: 1fr 1fr; }
-      .support-groups, .license-note, .context-grid { grid-template-columns: 1fr; }
-      .release-main { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 620px) {
-      .wrap { width: min(var(--max), calc(100% - 26px)); }
-      .topbar-inner { min-height: 54px; }
-      .brand span { display: none; }
-      .back span { display: none; }
-      .hero { min-height: 610px; background-image: linear-gradient(rgba(244,242,255,.88), rgba(244,242,255,.93)), url("image/theme-canvas.png"); background-position: 68% top; }
-      .hero-inner { min-height: 610px; align-items: flex-end; }
-      .hero-copy { width: 100%; padding: 70px 0 72px; }
-      h1 { font-size: 46px; }
-      section { padding: 60px 0; }
-      .quote { padding: 25px; }
-      .feature-grid, .modes, .boundary-grid, .facts, .flow { grid-template-columns: 1fr; }
-      .release-meta { grid-template-columns: 1fr; }
-      .release-meta div + div { border-left: 0; border-top: 1px solid var(--line); }
-      .step { grid-template-columns: 58px 1fr; gap: 14px; }
-      .step-num { width: 54px; height: 44px; font-size: 12px; }
-      .step:not(:last-child)::before { left: 26px; }
-      .screen-frame { padding: 7px; border-radius: 17px; }
-      .screen-frame img { border-radius: 11px; }
-      .theme-copy { padding: 25px; }
-    }
-  </style>
+  <meta name="theme-color" content="#f8f7fc">
+  <link rel="icon" href="image/brand-crystal.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Downloader — 貼上網址，把喜歡的內容收好。</title>
 </head>
 <body>
-  <header class="topbar">
-    <div class="wrap topbar-inner">
-      <a class="brand" href="#top"><img src="image/brand-crystal.png" alt=""><span>Downloader · Development Story</span></a>
-      <a class="back" href="../">← <span>回到 Kai AI Workshop</span></a>
-    </div>
-  </header>
-
-  <main id="top">
-    <section class="hero">
-      <div class="wrap hero-inner">
-        <div class="hero-copy">
-          <div class="eyebrow">Windows Portable · Personal Project</div>
-          <h1>我只想貼一個網址，<span>剩下的交給它。</span></h1>
-          <p class="hero-lead">Downloader 是一個把單頁影片、圖片解析、登入狀態與下載任務收進同一個介面的 Windows 工具。它從一句很直接的需求開始，最後長成一套有自己角色與主題的桌面作品。</p>
-          <div class="hero-actions">
-            <a class="button primary" href="#features">認識 Downloader</a>
-            <a class="button" href="#download">公開下載資訊</a>
-          </div>
-          <div class="status" aria-label="專案資訊">
-            <span>0.1.0-beta.7</span><span>.NET 8 / WPF</span><span>Windows 10 / 11 x64</span><span>免安裝</span><span>公開下載準備中</span>
-          </div>
-          <div class="promise" aria-label="免費無廣告承諾">
-            <div class="promise-mark">✓</div>
-            <div><strong>免費、無廣告，真正的下載按鈕只有一個</strong><span>不用在彈窗、假按鈕與廣告頁面之間尋找下載入口。</span></div>
-          </div>
-        </div>
-        <img class="chibi" src="image/chibi-header.png" alt="紫晶航線 Q 版角色">
+  <!-- [COVER] 1200x630 Downloader 實際介面與水晶品牌的產品封面；紫白配色 #7157e8 / #f8f7fc，原創紫髮少女為既有主題角色，使用 beta.10 示範資料介面。 -->
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <header class="site-header"><div class="container nav">
+    <a class="brand" href="#top" aria-label="Downloader 回到頂部"><img src="image/brand-crystal.png" width="34" height="40" alt=""><span>Downloader<span class="brand-note">BY KAI AI WORKSHOP</span></span></a>
+    <nav aria-label="頁面導覽"><a href="#features">功能</a><a href="#themes">主題</a><a href="#story">開發故事</a><a class="nav-download" href="#download">免費下載 <span aria-hidden="true">↗</span></a></nav>
+  </div></header>
+  <main id="main">
+    <section class="hero" id="top"><div class="hero-sky" aria-hidden="true"></div><div class="container hero-grid">
+      <div class="hero-copy"><p class="eyebrow"><span class="status-dot"></span>A LITTLE TOOL FOR YOUR NEXT IDEA</p>
+        <h1>貼上網址。<br><span>把喜歡的內容收好。</span></h1>
+        <p class="hero-description">影片挑畫質，圖片看尺寸。<br>從單一頁面到下載佇列，把素材準備好，<br class="desktop-break">繼續做你原本想做的事。</p>
+        <div class="hero-actions"><a class="button primary" href="#download">取得 Windows 版 <span aria-hidden="true">↓</span></a><a class="text-link" href="#features">先看看怎麼用 <span aria-hidden="true">↗</span></a></div>
+        <p class="platform">Windows 10 / 11 · x64 · 0.1.0-beta.10</p>
+        <div class="free-note"><span aria-hidden="true">✓</span><p><strong>保證免費，沒有廣告。</strong><br>下載入口不用猜，也不用先看一段廣告。</p></div>
       </div>
-    </section>
+      <figure class="hero-product"><div class="orbit orbit-one" aria-hidden="true"></div><div class="orbit orbit-two" aria-hidden="true"></div>
+        <div class="product-label"><span class="tiny-crystal" aria-hidden="true">◇</span> 紫晶航線 <span>AMETHYST VOYAGE</span></div>
+        <button class="screenshot-button" data-zoom="image/showcase-amethyst.png" data-caption="beta.10 實際介面，使用中性示範資料；畫質、容量與進度為示範值。" aria-label="放大 Downloader 影片與任務介面"><img class="hero-screen" src="image/showcase-amethyst.png" alt="Downloader beta.10 的影片格式與三筆迷你任務展示，使用示範資料" width="1460" height="960" fetchpriority="high"></button>
+        <div class="product-sticker"><span aria-hidden="true">↓</span><div>把下載交給它。<small>靈感繼續留給你。</small></div></div>
+        <figcaption>實際程式介面 · 示範資料 <span>點圖放大 ↗</span></figcaption>
+      </figure>
+    </div><div class="container essentials"><span><b>01</b> 單頁解析</span><span><b>02</b> 影片 / 圖片分流</span><span><b>03</b> 多任務下載</span><span><b>04</b> 解壓縮就能用</span></div></section>
 
-    <section id="story">
-      <div class="wrap reveal">
-        <div class="section-kicker">The starting point</div>
-        <h2>真正想省下來的，不只是下載時間</h2>
-        <p class="section-intro">我原本要的不是一套深入爬遍整個網站的系統。有時候只是和社群一起製作二創內容或搞笑迷因影片，需要取得眼前這支影片或這個圖片頁面的素材；把網址貼進工具，確認內容與格式，然後下載。</p>
-        <div class="context-grid">
-          <article class="context-card"><div class="context-label">THE REAL USE CASE</div><h3>為了一個當下想到的創意</h3><p>迷因與社群二創的節奏很快，真正需要的通常不是整站收藏，而是眼前這一支影片、某個畫面，或單頁裡幾張適合再創作的圖片。</p></article>
-          <article class="context-card problem"><div class="context-label">THE VERY HELPFUL INTERNET</div><h3>恭喜，按了三個 DOWNLOAD</h3><p>成功下載零個檔案，順便看完七個廣告、拜訪五個陌生分頁，最後再收到一句「解析失敗」。非常完整的網路探險體驗。</p></article>
-        </div>
-        <figure class="comic-frame">
-          <img src="image/web-downloader-frustration-comic.png" alt="使用充滿假下載按鈕與廣告的網頁工具，最後改用乾淨桌面 Downloader 的三格漫畫">
-          <figcaption>網頁 Downloader 闖關記：先猜哪顆是真的，再等到 99%，最後得到一個紅色叉叉。Downloader 想省掉的就是這整套儀式。</figcaption>
-        </figure>
-        <blockquote class="quote">「我看到一個影片，當下的網址轉貼到軟體中。」<small>— 這句話後來成為整個產品邊界</small></blockquote>
+    <section class="section features" id="features"><div class="container">
+      <div class="section-heading"><div><p class="eyebrow">LESS CLICKING. MORE CREATING.</p><h2>要選的，清楚給你。<br>能省的，交給工具。</h2></div><p class="section-aside">貼上正在看的那一頁，先分析、再決定。<br>不會自己追去下一頁，也不展開整個播放清單。</p></div>
+      <div class="feature-switch" role="tablist" aria-label="功能展示">
+        <button id="tab-video" role="tab" aria-selected="true" aria-controls="panel-video" data-feature="video"><span aria-hidden="true">▷</span><span>影片<small>確認畫質與格式</small></span></button>
+        <button id="tab-images" role="tab" aria-selected="false" aria-controls="panel-images" tabindex="-1" data-feature="images"><span aria-hidden="true">▧</span><span>圖片<small>看尺寸，再勾選</small></span></button>
+        <button id="tab-queue" role="tab" aria-selected="false" aria-controls="panel-queue" tabindex="-1" data-feature="queue"><span aria-hidden="true">↓</span><span>下載任務<small>排好，接著做別的</small></span></button>
       </div>
-    </section>
+      <div class="feature-panel" id="panel-video" role="tabpanel" aria-labelledby="tab-video">
+        <div class="feature-copy"><span class="number">01 / VIDEO</span><h3>先確認是這支影片，<br>再挑你要的畫質。</h3><p>封面、標題、解析度與 FPS 放在一起。選好格式加入佇列；純視訊格式下載時會自動補上音訊並合併。</p><ul class="check-list"><li>依解析度與 FPS 整理可用格式</li><li>顯示編碼、音訊與可取得的檔案大小</li><li>支援 YouTube、Bilibili 與通用解析</li></ul><p class="small-note">實際可用畫質取決於網站提供內容與帳號權限。</p></div>
+        <figure class="feature-visual"><button class="screenshot-button" data-zoom="image/showcase-amethyst.png" data-caption="影片模式實際介面；使用示範資料。" aria-label="放大影片模式"><img src="image/showcase-amethyst.png" width="1460" height="960" alt="影片模式顯示封面、4K 與其他格式選項" loading="lazy"></button><figcaption>先確認內容，再選格式。<span>實際介面 / 示範資料</span></figcaption></figure>
+      </div>
+      <div class="feature-panel" id="panel-images" role="tabpanel" aria-labelledby="tab-images" hidden>
+        <div class="feature-copy"><span class="number">02 / IMAGES</span><h3>圖片不只是一串網址。<br>尺寸，才是重點。</h3><p>解析度、比例、格式和大小直接列出。用 Shift 選一整段，或按住滑鼠拖曳勾選；不想看的欄位，就把它收起來。</p><ul class="check-list"><li>依總像素排序，優先看到大圖</li><li>Shift 多選、拖曳勾選與邊緣捲動</li><li>游標預覽與可保存的欄位偏好</li></ul><p class="small-note">尺寸無法辨識時顯示未知；動態載入內容可能無法完整列出。</p></div>
+        <figure class="feature-visual"><button class="screenshot-button" data-zoom="image/showcase-images.png" data-caption="圖片模式實際介面；示範勾選第 5～12 張，共 8 張圖片。" aria-label="放大圖片解析度與多選清單"><img src="image/showcase-images.png" width="1460" height="960" alt="圖片模式列出解析度、比例、格式與大小，勾選其中八張" loading="lazy"></button><figcaption>第 5 到第 12 張，一次選好。<span>實際介面 / 示範資料</span></figcaption></figure>
+      </div>
+      <div class="feature-panel" id="panel-queue" role="tabpanel" aria-labelledby="tab-queue" hidden>
+        <div class="feature-copy"><span class="number">03 / DOWNLOAD QUEUE</span><h3>A 還在下載，<br>B 網址也能先貼進來。</h3><p>分析和下載分開處理。任務可以自動執行，也能留在等待中手動開始；下載完成後，直接開啟輸出目錄。</p><ul class="check-list"><li>同時任務 Slider 1～10，自訂最高 99</li><li>首頁最多三筆摘要，優先保留進行中任務</li><li>取消、重試與下載紀錄</li></ul><p class="small-note">影片與圖片都能加入任務佇列。</p></div>
+        <figure class="feature-visual queue-visual"><button class="screenshot-button" data-zoom="image/showcase-amethyst.png" data-caption="首頁迷你任務列，兩筆下載中與一筆已完成；進度為示範資料。" aria-label="放大下載任務介面"><img src="image/showcase-amethyst.png" width="1460" height="960" alt="Downloader 首頁的迷你下載任務列" loading="lazy"></button><figcaption>下載有自己的進度，你也有。<span>實際介面 / 示範資料</span></figcaption></figure>
+      </div>
+      <div class="support-line"><span>已知網站辨識</span><strong>YouTube</strong><strong>Bilibili</strong><span>＋ 通用單頁解析</span><a href="#faq">支援範圍與常見問題 ↗</a></div>
+    </div></section>
 
-    <section id="features">
-      <div class="wrap reveal">
-        <div class="section-kicker">Software overview</div>
-        <h2>先說它是一套什麼軟體</h2>
-        <p class="section-intro">Downloader 是 Windows 10／11 x64 的免安裝桌面工具。使用者貼入正在瀏覽的單一網址，程式先辨識網站、分析媒體與列出可用格式，再由使用者決定內容、畫質及儲存位置。高頻操作保持簡單；網站差異、登入狀態、格式排序與多任務下載，交給程式在背後整理。</p>
-        <div class="feature-grid">
-          <article class="feature"><div class="feature-icon">↗</div><h3>單頁網址解析</h3><p>只處理正在瀏覽的這一頁，不自動展開播放清單、作者空間、下一頁或整站內容。</p></article>
-          <article class="feature"><div class="feature-icon">▶</div><h3>影片模式</h3><p>辨識 YouTube、Bilibili 與多個常見影音網站，也可交給 yt-dlp 處理支援的通用影片頁面。</p></article>
-          <article class="feature"><div class="feature-icon">▧</div><h3>圖片模式</h3><p>解析單頁圖片並提供全選、取消、反選與逐張勾選；游標停留時再載入較大預覽。</p></article>
-          <article class="feature"><div class="feature-icon">⌄</div><h3>下載任務</h3><p>分析與下載分開，可持續貼入下一個網址；佇列支援自動或手動啟動，以及多任務並行。</p></article>
-          <article class="feature"><div class="feature-icon">◎</div><h3>獨立登入環境</h3><p>需要會員權限時使用 Downloader 自己的 WebView2 Profile，不讀取日常瀏覽器的登入資料。</p></article>
-          <article class="feature"><div class="feature-icon">◇</div><h3>Portable</h3><p>.NET 8 self-contained，解析工具一併攜帶；主程式可放在 NAS、USB 或本機資料夾執行。</p></article>
-        </div>
-        <div class="support-panel">
-          <h3>目前能辨識哪些內容？</h3>
-          <p>已知網站顯示品牌名稱，其他成功解析的頁面則直接顯示實際 Domain；通用模式仍以網站與解析引擎當下支援狀態為準。</p>
-          <div class="support-groups">
-            <div class="support-group"><strong>已知影音網站</strong><span>YouTube、Bilibili、Pornhub、XVideos、xHamster、RedTube、YouPorn</span></div>
-            <div class="support-group"><strong>通用影片頁面</strong><span>交由 yt-dlp 的網站 extractor 或 generic extractor 分析目前頁面。</span></div>
-            <div class="support-group"><strong>通用圖片頁面</strong><span>分析 src、srcset、常見懶載入屬性、Open Graph 與直接原圖連結。</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <section class="theme-section" id="themes"><div class="container">
+      <div class="theme-heading"><div><p class="eyebrow">SAME TOOL. YOUR KIND OF MOOD.</p><h2>好用，也可以很好看。</h2><p>有角色的紫晶航線，或專注工作的標準淺色。<br>按鈕、標題列、表格與背景，整套一起換。</p></div><img src="image/chibi-header.png" alt="抱著發光水晶的紫髮 Q 版角色" width="200" height="200" loading="lazy"></div>
+      <div class="theme-controls" role="group" aria-label="選擇展示主題"><button data-theme="amethyst" aria-pressed="true"><span class="swatch purple"></span>紫晶航線</button><button data-theme="fluent" aria-pressed="false"><span class="swatch blue"></span>標準淺色</button></div>
+      <figure class="theme-preview"><button class="screenshot-button" id="theme-zoom" data-zoom="image/showcase-amethyst.png" data-caption="beta.10 紫晶航線主題，使用示範資料。" aria-label="放大目前主題介面"><img id="theme-image" src="image/showcase-amethyst.png" width="1460" height="960" alt="紫晶航線主題的 Downloader 實際介面，使用示範資料" loading="lazy"></button><figcaption><span id="theme-description" aria-live="polite">紫晶航線 · 紫髮角色、水晶城市與柔和紫色。</span><span>同一份示範資料，兩種介面氣氛。</span></figcaption></figure>
+      <p class="theme-footnote">目前內建兩套主題。季節與節日版本，是之後想慢慢加入的風景。</p>
+    </div></section>
 
-    <section class="stage">
-      <div class="wrap reveal">
-        <div class="section-kicker">The current build</div>
-        <h2>從「可以下載」走到「知道自己正在做什麼」</h2>
-        <p class="section-intro">解析完成後，畫面會先讓人確認標題、封面、解析度、FPS、格式、影音組合與預估大小；下載目的地與任務狀態也都留在同一條工作流裡。</p>
-        <figure class="screen-frame">
-          <img src="image/interface-amethyst.png" alt="Downloader 0.1.0-beta.7 紫晶航線介面">
-          <figcaption>Downloader 0.1.0-beta.7「紫晶航線」：解析下載、下載任務、已完成與設定使用同一套 Shell。</figcaption>
-        </figure>
-      </div>
-    </section>
+    <section class="section story" id="story"><div class="container">
+      <div class="story-heading"><p class="eyebrow">BUILT OUT OF A VERY SPECIFIC ANNOYANCE</p><h2>我只是要下載影片。<br><span>不是來解謎的。</span></h2><p>有時候，和社群一起做二創或搞笑迷因，需要的只是眼前這一頁的素材。<br class="desktop-break">偏偏網路上的某些工具，對「下載」兩個字有很豐富的想像。</p></div>
+      <figure class="comic"><button class="screenshot-button" data-zoom="image/web-downloader-frustration-comic.png" data-caption="下載按鈕解謎：假按鈕、解析失敗，到終於能整理素材。原創情境漫畫。" aria-label="放大閱讀三格漫畫"><img src="image/web-downloader-frustration-comic.png" alt="三格漫畫：假下載按鈕與廣告、解析失敗，最後使用 Downloader 整理素材" loading="lazy"></button><figcaption><span>恭喜，開了好幾個新分頁。檔案呢？</span><span>點圖放大閱讀 ↗</span></figcaption></figure>
+      <div class="story-notes"><article><span class="number">THE FIRST QUESTION</span><h3>先把眼前這一頁，處理好。</h3><p>最初的需求很直接：「我看到一個影片，當下的網址轉貼到軟體中。」因此只做單頁解析，不自動跟去作者空間、下一頁或整個播放清單。</p></article><article><span class="number">ONE MORE THING…</span><h3>用著用著，就不想一個個點了。</h3><p>A 還在下載，就想貼 B，於是有了佇列。圖片一多，就需要解析度、預覽和 Shift 多選。每一次「這裡有點不順」，都變成下一次修改。</p></article><article><span class="number">A LITTLE PERSONALITY</span><h3>最後，工具有了自己的樣子。</h3><p>從一張紫髮角色頭像，到水晶 ICON、Q 版、全景立繪，再到完整換色的主題系統。外觀也是一點點調出來的，包括那些曾經接不起來的背景。</p></article></div>
+      <div class="author-note"><img src="image/brand-crystal.png" width="32" height="42" alt=""><p>這個工具是從自己的需要長出來的。<br><strong>做出來之後，也想分享給有同樣困擾的人。</strong></p><span>Kai AI Workshop ↗</span></div>
+    </div></section>
 
-    <section>
-      <div class="wrap reveal">
-        <div class="section-kicker">Two focused modes</div>
-        <h2>影片與圖片，刻意不混在一起</h2>
-        <p class="section-intro">兩種內容看似都叫下載，使用者真正要判斷的資訊卻完全不同。與其塞進同一張萬用清單，不如從入口就清楚分流。</p>
-        <div class="modes">
-          <article class="mode" data-mark="▶"><h3>影片模式</h3><p>重點是畫質、FPS、編碼、是否含音訊，以及純視訊格式下載後是否需要由 FFmpeg 自動合併最佳音訊。</p></article>
-          <article class="mode" data-mark="▧"><h3>圖片模式</h3><p>重點是大量候選內容的辨認與選取，因此提供批次勾選、即時數量與按需載入的游標預覽。</p></article>
-        </div>
-        <div class="flow" aria-label="Downloader 操作流程">
-          <div class="flow-step"><div class="flow-num">01</div><strong>貼上網址</strong><span>單一 HTTP / HTTPS 頁面</span></div>
-          <div class="flow-step"><div class="flow-num">02</div><strong>辨識網站</strong><span>已知品牌或實際 Domain</span></div>
-          <div class="flow-step"><div class="flow-num">03</div><strong>分析內容</strong><span>影片格式或圖片候選</span></div>
-          <div class="flow-step"><div class="flow-num">04</div><strong>加入佇列</strong><span>下一個網址可繼續分析</span></div>
-          <div class="flow-step"><div class="flow-num">05</div><strong>完成開啟</strong><span>直接前往實際輸出目錄</span></div>
-        </div>
+    <section class="section download-section" id="download"><div class="container download-grid">
+      <div class="download-copy"><p class="eyebrow">LESS FUSS. JUST DOWNLOAD.</p><h2>免費。無廣告。<br><span>下載入口在這裡。</span></h2><p>Windows Portable 版本，解壓縮後執行 <code>Downloader.exe</code>。<br>解析工具與 .NET 執行環境已隨程式攜帶。</p><p class="download-license">供個人、非商業使用 · 原始碼不公開</p></div>
+      <div class="download-card"><div class="release-top"><img src="image/brand-crystal.png" width="42" height="50" alt=""><div><strong>Downloader</strong><span>0.1.0-beta.10</span></div><span class="beta-label">PUBLIC BETA</span></div>
+        <dl class="release-facts"><div><dt>系統</dt><dd>Windows 10 / 11 x64</dd></div><div><dt>格式</dt><dd>Portable ZIP · 免安裝</dd></div><div><dt>本機封裝容量</dt><dd>約 216.8 MiB</dd></div></dl>
+        <a class="button primary actual-download" href="https://1drv.ms/u/c/dda45afff18c6116/IQBChh5-MH_3RY4g9cosiZVrAQV7pDw5NU3vKBtoGbMCzi4?e=rLe2zB" target="_blank" rel="noopener noreferrer">前往 OneDrive 下載 <span aria-hidden="true">↗</span></a>
+        <p class="download-hint">會開啟作者提供的 OneDrive 分享頁，再從該頁下載。</p>
+        <details class="verify"><summary>檔案驗證資訊 <span aria-hidden="true">＋</span></summary><div><p>以下資訊對應本機產出的 beta.10 ZIP。下載後可核對檔名、大小與雜湊。</p><p><strong>檔名</strong><br>DownloaderPortable-0.1.0-beta.10-win-x64.zip</p><p><strong>大小</strong><br>227,320,318 bytes</p><p><strong>SHA-256</strong><br><code id="file-hash">A3D87C119D63978FE97E6A0EC3519E502A424D819F571210559F6DDF4C1BCD85</code></p><button class="copy-button" id="copy-hash" type="button">複製 SHA-256</button><span id="copy-status" role="status"></span></div></details>
       </div>
-    </section>
+    </div></section>
 
-    <section>
-      <div class="wrap reveal">
-        <div class="section-kicker">Build log</div>
-        <h2>需求每往前一步，工具就少一點「一次性」</h2>
-        <div class="timeline">
-          <article class="step"><div class="step-num">起點</div><div><h3>先把單一網址分析與下載跑通</h3><p>第一個原型先驗證 WPF、yt-dlp 與 FFmpeg 能否組成完整流程。YouTube 與 Bilibili 有專用辨識，其他網站則保留通用入口。</p></div></article>
-          <article class="step"><div class="step-num">現實</div><div><h3>成功下載，不代表體驗已經成立</h3><p>開發早期陸續碰到缺少 <code>yt-dlp</code>、登入時間格式、Null 欄位與排序不合直覺等問題。封面預覽、開啟目錄、FPS 與影音合併標示，都是在真實測試中補出來的。</p></div></article>
-          <article class="step"><div class="step-num">佇列</div><div><h3>當 A 還在下載，B 網址貼進來會怎樣？</h3><p>這個問題把程式從一次性工具推向任務管理。現在分析不會被下載卡住，等待任務可手動啟動，也可設定 1～10 個並行工作，自訂值上限為 99。</p></div></article>
-          <article class="step"><div class="step-num">帳號</div><div><h3>登入要能用，也要乾淨</h3><p>專案刻意不讀 Chrome 或 Edge 的既有 Profile。各 Domain 使用獨立登入環境，Cookie 由 Windows CurrentUser DPAPI 保護；軟體啟動時也不會逐站連線掃描。</p></div></article>
-          <article class="step"><div class="step-num">Beta</div><div><h3>圖片批次功能完成後，Alpha 也該畢業了</h3><p>當常用網站、登入、圖片多選與任務佇列都能工作，重點開始從「功能有沒有」轉向「每天打開時願不願意用」。版本在這裡進入 Beta。</p></div></article>
-          <article class="step"><div class="step-num">主題</div><div><h3>最後，它不再只是一張灰白色工具表格</h3><p>從紫髮角色 ICON、CrystalDiskInfo 式角色主題參考，到整套紫晶航線預覽稿，介面經歷過比例不對、圖片拼接斷層與功能位置落差；最後把背景與右側立繪整合成同一張全景，再建立可抽換的主題 Shell。</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="stage">
-      <div class="wrap reveal">
-        <div class="section-kicker">Theme system</div>
-        <h2>角色不是貼上去的裝飾，而是介面的一種完整狀態</h2>
-        <p class="section-intro">按鈕、標題列、Chip、表格、進度列、字體、背景與側欄都會一起切換。未來新增季節或節日主題，只需要替換素材、色票與短文案，不必複製下載功能。</p>
-        <div class="theme-grid">
-          <figure class="theme-card"><img src="image/interface-fluent.png" alt="Downloader Microsoft Fluent 標準淺色主題"></figure>
-          <div class="theme-copy"><h3>同一個工具，兩種氣氛</h3><p>「紫晶航線」保留角色、城市、水晶與半透明卡片；「標準淺色」收起裝飾圖，展開工作區，以 Microsoft Fluent Light 的中性色與 Windows 藍色呈現。</p><img src="image/brand-crystal.png" alt="Downloader 紫晶品牌標誌"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="privacy">
-      <div class="wrap reveal">
-        <div class="section-kicker">Privacy & boundaries</div>
-        <h2>能登入，不等於把所有界線都拿掉</h2>
-        <p class="section-intro">這個工具將提供公開下載，但限定個人與非商業使用。它可以使用本人帳號合法觀看的內容與畫質，但不以破解網站限制為目標。</p>
-        <div class="boundary-grid">
-          <article class="boundary good"><h3>登入資料留在自己的電腦</h3><p>帳密直接輸入官方網站。Downloader 不記錄密碼，不讀取日常瀏覽器 Profile；交給 yt-dlp 的 Cookie 暫存檔使用後即刪除。</p></article>
-          <article class="boundary warn"><h3>單頁、合法權限、不處理 DRM</h3><p>不整批抓播放清單、作者空間或全站內容，不繞過會員、地區、年齡與 DRM 限制；通用網站解析屬盡力而為。</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap reveal">
-        <div class="section-kicker">Under the hood</div>
-        <h2>把成熟引擎接成一個適合自己的工作流</h2>
-        <p class="section-intro">Downloader 的價值不在重新發明每一個下載協定，而是替幾個能力不同的元件分工，然後把它們收進一致、可驗證的桌面流程。</p>
-        <div class="facts">
-          <div class="fact"><strong>.NET 8 / WPF</strong><span>Windows 介面、任務狀態與主題 Shell</span></div>
-          <div class="fact"><strong>yt-dlp</strong><span>影音網站 extractor 與格式資訊</span></div>
-          <div class="fact"><strong>FFmpeg</strong><span>獨立視訊與音訊的下載後合併</span></div>
-          <div class="fact"><strong>WebView2</strong><span>Downloader 專用的網站登入環境</span></div>
-          <div class="fact"><strong>Deno</strong><span>YouTube JavaScript challenge 執行環境</span></div>
-          <div class="fact"><strong>83 tests</strong><span>目前自動化測試皆通過</span></div>
-          <div class="fact"><strong>Portable ZIP</strong><span>self-contained win-x64，不另裝 .NET</span></div>
-          <div class="fact"><strong>beta.7</strong><span>功能穩定後，進入持續使用與 UI 微調</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="release" id="download">
-      <div class="wrap reveal">
-        <div class="section-kicker">Public beta</div>
-        <h2>免費、無廣告；分享連結正在準備</h2>
-        <p class="section-intro">發布方式會和 3MF Explorer 一樣：網站保留版本、檔案資訊與 SHA-256，Portable ZIP 則放在外部雲端空間。連結更新前，按鈕先維持等待狀態。</p>
-        <div class="release-card">
-          <div class="release-main">
-            <div><h3>Downloader 0.1.0-beta.7</h3><p>Windows x64 · Self-contained Portable ZIP · 解壓縮後直接執行</p></div>
-            <button class="button primary" type="button" disabled aria-label="下載連結準備中">下載連結準備中</button>
-          </div>
-          <div class="release-meta">
-            <div><strong>版本</strong><span>0.1.0-beta.7</span></div>
-            <div><strong>檔案大小</strong><span>227,305,256 bytes（約 216.8 MiB）</span></div>
-            <div><strong>支援系統</strong><span>Windows 10／11 x64</span></div>
-          </div>
-          <div class="release-hash"><strong>SHA-256</strong><br>82C30A23E6CB1E48E99AEBA6A17E4578258BF584AF7786A43A57CE3D730C5E97</div>
-        </div>
-        <div class="license-note">
-          <article><h3>保證免費、沒有廣告</h3><p>軟體本身不收費，也不插入廣告；可以下載供個人、非商業用途使用。</p></article>
-          <article><h3>原始碼不公開</h3><p>本次公開的是 Windows Portable 執行版本，不代表專案採用 Open Source 授權。</p></article>
-          <article><h3>二創仍要確認素材權利</h3><p>只下載自己有權存取及使用的內容；二創、迷因與社群發布仍需遵守素材授權、著作權及來源平台規範。</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="closing">
-      <div class="wrap reveal">
-        <div class="closing-panel">
-          <div class="section-kicker">Where it arrived</div>
-          <h2>它仍然是一個工具，但已經很像自己的作品</h2>
-          <p>從「貼上網址能下載」到下載佇列、圖片預覽、獨立登入與完整主題，功能並不是一次規劃到底，而是在每次實際使用時把下一個不順手的地方問出來。Downloader 現在停在一個很舒服的位置：常用功能已經能工作，接下來可以慢慢把新主題與細節做得更像自己。</p>
-          <a class="button primary" href="../">回到 Kai AI Workshop</a>
-        </div>
-      </div>
-    </section>
+    <section class="section faq-section" id="faq"><div class="container faq-grid"><div><p class="eyebrow">A FEW THINGS TO KNOW</p><h2>用之前，<br>你可能想知道。</h2><p class="faq-intro">支援範圍、登入與可攜性，<br>一次說清楚。</p></div><div class="faq-list">
+      <details><summary>哪些網站能用？<span aria-hidden="true">＋</span></summary><p>已知品牌辨識包括 YouTube、Bilibili、Pornhub、XVideos、xHamster、RedTube 與 YouPorn。其他影片頁面交由 yt-dlp 嘗試解析；圖片模式分析目前頁面的圖片來源。網站改版、地區限制與反自動化機制都可能影響結果，不保證所有頁面皆可使用。</p></details>
+      <details><summary>會讀取我原本瀏覽器的登入資料嗎？<span aria-hidden="true">＋</span></summary><p>不會。Downloader 使用自己的 WebView2 登入環境，你在官方網站完成登入。登入紀錄留在目前電腦，以 Windows 使用者層級加密保存；不會在啟動時逐站連線掃描。</p></details>
+      <details><summary>能放在 NAS 或 USB 上嗎？<span aria-hidden="true">＋</span></summary><p>主程式、解析工具、設定與紀錄可以放在 NAS、USB 或本機資料夾。登入資料保存在各台電腦，換電腦需重新登入；登入視窗使用 Microsoft WebView2，電腦需有可用的 WebView2 Runtime。</p></details>
+      <details><summary>大會員或 Premium 能下載最高畫質嗎？<span aria-hidden="true">＋</span></summary><p>登入後可嘗試取得該帳號可存取的格式。最終畫質仍取決於網站、帳號權限與解析引擎支援；Downloader 不提供 DRM 解密或會員權限繞過。</p></details>
+      <details><summary>圖片解析度為什麼有些顯示未知？<span aria-hidden="true">＋</span></summary><p>程式會讀取有限的圖片檔頭辨識尺寸。網站拒絕請求、格式未涵蓋或內容動態載入時，可能無法取得尺寸；未知不代表一定不能下載。</p></details>
+      <details><summary>可以拿來做二創或迷因嗎？<span aria-hidden="true">＋</span></summary><p>這也是開發這個工具的使用情境。軟體供個人、非商業使用；取得檔案不代表取得素材授權，使用與分享前仍需確認素材權利及來源平台規範。</p></details>
+      <details><summary>最新版本更新了什麼？<span aria-hidden="true">＋</span></summary><div><p><strong>beta.10</strong>：Shift 範圍選取、滑鼠拖曳勾選與邊緣自動捲動。</p><p><strong>beta.9</strong>：修正迷你任務列的綁定錯誤與連續錯誤彈窗。</p><p><strong>beta.8</strong>：圖片解析度、比例、大小、自訂欄位與單張下載修正。</p><p>最近完成 90 項自動化測試與 UI Smoke Test；網站相容性仍需持續實測。</p></div></details>
+      <details><summary>這個工具用了哪些技術？<span aria-hidden="true">＋</span></summary><p>.NET 8 / WPF 負責 Windows 介面，yt-dlp 分析與下載影片，FFmpeg 合併影音，Deno 提供 YouTube JavaScript 執行環境，WebView2 用於獨立登入。主題、圖片選取與下載佇列整合在同一個桌面工具裡。</p></details>
+    </div></div></section>
   </main>
-
-  <footer>Downloader 0.1.0-beta.7 · 個人與非商業使用 · 公開下載連結準備中</footer>
-
-  <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
-  </script>
+  <footer class="site-footer"><div class="container"><a class="brand" href="#top"><img src="image/brand-crystal.png" width="26" height="32" alt=""><span>Downloader</span></a><p>讓素材就位，讓創意繼續。</p><a href="../">回到 Kai AI Workshop ↗</a></div><div class="container footer-small"><span>個人與非商業使用 · 頁面更新 2026.09.14</span><a href="#download">版本與下載資訊 ↑</a></div></footer>
+  <dialog id="image-dialog" aria-label="放大展示圖片"><div class="dialog-bar"><span id="dialog-caption"></span><button id="close-dialog" aria-label="關閉圖片">關閉 ×</button></div><img id="dialog-image" alt=""></dialog>
+  <script src="scripts/site.js" defer></script>
+  <!-- 圖像沿用既有原創角色與漫畫，新增展示圖由 beta.10 實際 WPF 介面搭配明確標示的示範資料產生。無待產圖占位。 -->
 </body>
 </html>
