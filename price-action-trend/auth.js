@@ -16,7 +16,11 @@
 
   async function loadPayload() {
     if (encryptedPayload) return encryptedPayload;
-    const response = await fetch("protected-data.json?v=20260929-7", { cache: "no-store" });
+    if (window.EMBEDDED_PROTECTED_DATA) {
+      encryptedPayload = window.EMBEDDED_PROTECTED_DATA;
+      return encryptedPayload;
+    }
+    const response = await fetch("protected-data.json?v=20260929163243", { cache: "no-store" });
     if (!response.ok) throw new Error("encrypted-data-unavailable");
     encryptedPayload = await response.json();
     return encryptedPayload;
@@ -57,7 +61,11 @@
     document.body.classList.add("is-unlocked");
 
     const script = document.createElement("script");
-    script.src = "app.js?v=20260929-7";
+    if (window.EMBEDDED_APP_SOURCE) {
+      script.textContent = window.EMBEDDED_APP_SOURCE;
+    } else {
+      script.src = "app.js?v=20260929163243";
+    }
     script.onerror = () => {
       protectedApp.hidden = true;
       authGate.hidden = false;

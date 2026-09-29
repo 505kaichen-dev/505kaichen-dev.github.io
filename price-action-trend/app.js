@@ -248,7 +248,7 @@
     const combined = formatPercent(detail.combined);
     const metrics = [
       detailMetrics(detail).join("、"),
-      average ? `採用平均 ${average}` : "",
+      average ? `採用漲幅 ${average}` : "",
       combined && detail.fx ? `含匯率 ${combined}` : "",
       `累積指數 ${formatIndex(indexValue)}`,
     ].filter(Boolean).join("｜");
@@ -309,7 +309,7 @@
     const inferred = before ? after / before - 1 : 0;
     const adopted = detail?.combined ?? inferred;
     const lines = [];
-    if (detail?.average) lines.push(`平均 ${formatPercent(detail.average)}`);
+    if (detail?.average) lines.push(`採用 ${formatPercent(detail.average)}`);
     if (detail?.fx) lines.push(`匯率 ${formatPercent(detail.fx)}`);
     return `<span class="rate-main">${formatPercent(adopted) || "0%"}</span>${lines.length ? `<small>${lines.join(" · ")}</small>` : ""}`;
   }

@@ -1,13 +1,11 @@
 # Price Action Trend
 
-This GitHub Pages copy decrypts its chart data in the browser after the visitor enters the access password. The password is not stored in the repository.
-
-To refresh the protected data locally, first generate `data.js` from the master workbook outside the public repository, then run:
+這個 repository 是網站程式碼的唯一維護來源。最新版 Excel 是資料的唯一來源；建置程序會一次產生內網版、GitHub 加密版與單檔離線版。
 
 ```powershell
-node tools/protect-data.mjs data.js protected-data.json
+.\tools\build-and-publish.ps1
 ```
 
-Enter the password when prompted, verify the site, and remove the plaintext `data.js` before committing. `data.js`, PDFs, spreadsheets, and local work logs are ignored by Git.
+執行時輸入密碼即可更新 `protected-data.json`，密碼不會寫入 repository。完整欄位規則、多年歷史資料加入方式與發布檢查請見 [MAINTENANCE.md](MAINTENANCE.md)。
 
-This is client-side encryption on a public static host. Use a private host with server-side authentication when access control must be enforceable or auditable.
+GitHub Pages 是公開靜態主機，加密資料會在正確輸入密碼後於瀏覽器端解密。需要可稽核的權限控管時，應改用具備伺服器端驗證的內網服務。
