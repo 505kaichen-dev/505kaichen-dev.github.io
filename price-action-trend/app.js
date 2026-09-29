@@ -46,6 +46,7 @@
   const metricGrid = document.getElementById("metricGrid");
   const announcementGrid = document.getElementById("announcementGrid");
   const detailTableBody = document.getElementById("detailTableBody");
+  const detailSummaryCount = document.getElementById("detailSummaryCount");
   const baselineSlider = document.getElementById("baselineSlider");
   const baselineTicks = document.getElementById("baselineTicks");
   const baselineValue = document.getElementById("baselineValue");
@@ -327,6 +328,9 @@
   }
 
   function renderDetailTable(items) {
+    detailSummaryCount.textContent = items.length
+      ? `${items.length} 個系列 · ${items.length * data.dates.length} 筆節點`
+      : "尚未選擇型號";
     if (!items.length) {
       detailTableBody.innerHTML = '<tr><td colspan="7" class="no-data">請先選擇至少一個型號。</td></tr>';
       return;

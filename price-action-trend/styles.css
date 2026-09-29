@@ -404,6 +404,32 @@ h1 { margin-bottom: 0; color: var(--navy); font-size: clamp(2rem, 4vw, 3.6rem); 
 .section-heading h2 { margin-bottom: 0; }
 .section-heading > p { max-width: 560px; margin: 0; color: var(--muted); font-size: .82rem; text-align: right; }
 
+.info-card.detail-disclosure { padding: 0; overflow: hidden; }
+.detail-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 19px 20px;
+  cursor: pointer;
+  list-style: none;
+  transition: background .18s ease;
+}
+.detail-summary::-webkit-details-marker { display: none; }
+.detail-summary:hover { background: #f8fafc; }
+.detail-summary:focus-visible { outline: 3px solid rgba(37, 99, 235, .22); outline-offset: -3px; }
+.detail-summary h2 { margin: 2px 0 0; color: var(--navy); font-size: 1.18rem; }
+.detail-summary-meta { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: .82rem; }
+.detail-summary-meta strong { display: inline-flex; align-items: center; gap: 8px; color: var(--blue); white-space: nowrap; }
+.detail-summary-meta i { width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .18s ease; }
+.detail-disclosure[open] .detail-summary { border-bottom: 1px solid var(--line); background: #fbfcfe; }
+.detail-disclosure[open] .detail-summary-meta i { transform: rotate(225deg) translate(-1px, -1px); }
+.detail-disclosure .when-open { display: none; }
+.detail-disclosure[open] .when-open { display: inline; }
+.detail-disclosure[open] .when-closed { display: none; }
+.detail-panel { padding: 15px 20px 20px; }
+.detail-help { margin: 0 0 12px; color: var(--muted); font-size: .82rem; }
+
 .announcement-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
 .announcement-item {
   display: grid;
@@ -494,5 +520,8 @@ footer {
   .metric-wide { grid-column: auto; }
   .announcement-grid { grid-template-columns: 1fr; }
   .info-card { padding: 15px 11px; }
+  .detail-summary { align-items: flex-start; flex-direction: column; gap: 10px; padding: 16px 14px; }
+  .detail-summary-meta { width: 100%; justify-content: space-between; gap: 12px; }
+  .detail-panel { padding: 13px 11px 14px; }
   footer { flex-direction: column; }
 }
