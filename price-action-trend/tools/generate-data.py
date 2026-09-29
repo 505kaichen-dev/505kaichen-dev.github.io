@@ -171,7 +171,7 @@ def build_payload(workbook_path: Path) -> dict:
             "sourceModifiedAt": modified_at.isoformat(timespec="seconds"),
             "generatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
             "methodVersion": "v2-conservative-floor",
-            "method": "同類別多筆先平均；有公告 Overall 時，採公告下限與適用零件類別平均兩者較高值；TWD 匯率獨立累乘；各節點按生效日累乘。",
+            "method": "同類別多筆先平均；有公告基準時，採公告下限與適用零件類別平均兩者較高值；TWD 匯率獨立累乘；各節點按生效日累乘。",
         },
         "dates": dates,
         "eventContent": event_content,

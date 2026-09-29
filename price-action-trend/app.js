@@ -23,6 +23,17 @@
     "TAPE Library Overall": "#7c3aed",
   };
 
+  function displaySeriesName(seriesName) {
+    const product = data.products.find(item => item.overall === seriesName);
+    return product ? `${product.label} 公告基準` : seriesName;
+  }
+
+  function displayTerminology(value) {
+    return String(value ?? "")
+      .replace(/公告\s*Overall/gi, "公告下限")
+      .replace(/\bOverall\b/gi, "公告基準");
+  }
+
   const selectorGrid = document.getElementById("selectorGrid");
   const svg = document.getElementById("stepChart");
   const chartWrap = document.getElementById("chartWrap");
@@ -140,7 +151,7 @@
     const selected = state[productId].series;
     const summary = card.querySelector(".picker-value");
     if (!selected.length) summary.textContent = "未選擇型號";
-    else if (selected.length === 1) summary.textContent = selected[0] === product.overall ? "Overall" : selected[0];
+    else if (selected.length === 1) summary.textContent = selected[0] === product.overall ? "公告基準" : selected[0];
     else summary.textContent = `已選 ${selected.length} 項`;
   }
 
@@ -155,8 +166,8 @@
         <label class="picker-option">
           <input type="checkbox" data-action="series" data-product="${product.id}" value="${escapeHtml(name)}" ${name === product.overall ? "checked" : ""}>
           <span class="option-check" aria-hidden="true"></span>
-          <span>${name === product.overall ? "Overall" : escapeHtml(name)}</span>
-          ${name === product.overall ? '<small>總體趨勢</small>' : ""}
+          <span>${name === product.overall ? "公告基準" : escapeHtml(name)}</span>
+          ${name === product.overall ? '<small>公告最低方向值</small>' : ""}
         </label>`).join("");
 
       card.innerHTML = `
@@ -170,7 +181,7 @@
             <span class="multi-hint">可多選</span>
           </div>
           <details class="model-picker">
-            <summary><span class="picker-value">Overall</span><span class="picker-chevron" aria-hidden="true">⌄</span></summary>
+            <summary><span class="picker-value">公告基準</span><span class="picker-chevron" aria-hidden="true">⌄</span></summary>
             <div class="picker-menu" role="group" aria-label="選擇 ${escapeHtml(product.label)} 型號">${choices}</div>
           </details>
         </div>`;
@@ -218,7 +229,7 @@
       const latest = item.values[item.values.length - 1];
       return `<span class="legend-item" style="--legend-color:${item.color}">
         <span class="legend-line"></span>
-        <span>${escapeHtml(item.seriesName)}</span>
+        <span>${escapeHtml(displaySeriesName(item.seriesName))}</span>
         <span class="legend-value">${formatIndex(latest)}</span>
       </span>`;
     }).join("");
@@ -227,7 +238,7 @@
   function detailMetrics(detail) {
     if (!detail) return [];
     return [
-      ["Overall", detail.overall],
+      ["公告下限", detail.overall],
       ["TWD", detail.fx],
       ["記憶體", detail.memory],
       ["處理器", detail.processor],
@@ -252,15 +263,16 @@
       combined && detail.fx ? `含匯率 ${combined}` : "",
       `累積指數 ${formatIndex(indexValue)}`,
     ].filter(Boolean).join("｜");
-    return `${detail.summary || data.eventContent[dateKey] || ""}${metrics ? `　${metrics}` : ""}`;
+    const summary = displayTerminology(detail.summary || data.eventContent[dateKey] || "");
+    return `${summary}${metrics ? `　${metrics}` : ""}`;
   }
 
   function showPoint(item, index, event) {
     const dateKey = data.dates[index];
     const value = item.values[index];
-    eventDate.textContent = `${formatDate(dateKey)} · ${item.seriesName}`;
+    eventDate.textContent = `${formatDate(dateKey)} · ${displaySeriesName(item.seriesName)}`;
     eventCopy.textContent = detailText(item.seriesName, dateKey, value);
-    tooltip.innerHTML = `<strong>${escapeHtml(item.seriesName)} · ${formatIndex(value)}</strong><span>${formatDate(dateKey)}</span>`;
+    tooltip.innerHTML = `<strong>${escapeHtml(displaySeriesName(item.seriesName))} · ${formatIndex(value)}</strong><span>${formatDate(dateKey)}</span>`;
     tooltip.hidden = false;
 
     const rect = chartWrap.getBoundingClientRect();
@@ -280,14 +292,14 @@
     const highest = latestItems.reduce((best, current) => current.latest > best.latest ? current : best);
     metricGrid.innerHTML = `
       <article class="metric-card"><span>目前顯示</span><strong>${items.length}</strong><small>條趨勢線</small></article>
-      <article class="metric-card"><span>最新最高指數</span><strong>${formatIndex(highest.latest)}</strong><small>${escapeHtml(highest.item.seriesName)}</small></article>
+      <article class="metric-card"><span>最新最高指數</span><strong>${formatIndex(highest.latest)}</strong><small>${escapeHtml(displaySeriesName(highest.item.seriesName))}</small></article>
       <article class="metric-card"><span>目前基準</span><strong>100.00</strong><small>${formatDate(data.dates[baselineIndex])}</small></article>
-      <article class="metric-card metric-wide"><span>計算原則</span><p>${escapeHtml(data.meta.method)}</p></article>`;
+      <article class="metric-card metric-wide"><span>計算原則</span><p>${escapeHtml(displayTerminology(data.meta.method))}</p></article>`;
   }
 
   function renderAnnouncements() {
     announcementGrid.innerHTML = data.dates.map((dateKey, index) => {
-      const content = (data.eventContent[dateKey] || "無調價說明").split("\n");
+      const content = displayTerminology(data.eventContent[dateKey] || "無調價說明").split("\n");
       const source = data.eventSources?.[dateKey];
       const sourceFiles = [source?.excel, source?.pdf].filter(Boolean);
       return `<article class="announcement-item">
@@ -326,16 +338,16 @@
         const detail = data.details[item.seriesName]?.[dateKey];
         const before = dateIndex === 0 ? item.values[0] : item.values[dateIndex - 1];
         const after = item.values[dateIndex];
-        const summary = detail?.summary || data.eventContent[dateKey] || "—";
+        const summary = displayTerminology(detail?.summary || data.eventContent[dateKey] || "—");
         const metrics = detailMetrics(detail);
         rows.push(`<tr class="${dateIndex < baselineIndex ? "is-prior" : ""}">
           <td><time datetime="${dateKey}">${formatDate(dateKey)}</time><span class="ref-number">[${dateIndex + 1}]</span></td>
-          <td><span class="series-name"><i style="--row-color:${item.color}"></i>${escapeHtml(item.seriesName)}</span></td>
-          <td class="mono">${escapeHtml(detail?.mtm || "—")}</td>
+          <td><span class="series-name"><i style="--row-color:${item.color}"></i>${escapeHtml(displaySeriesName(item.seriesName))}</span></td>
+          <td class="mono">${escapeHtml(displayTerminology(detail?.mtm || "—"))}</td>
           <td><strong class="summary-line">${escapeHtml(summary)}</strong>${metrics.length ? `<small class="metric-list">${escapeHtml(metrics.join("、"))}</small>` : ""}</td>
           <td>${rateCell(detail, before, after, dateIndex === baselineIndex)}</td>
           <td><strong class="index-value">${formatIndex(after)}</strong>${dateIndex ? `<small>前期 ${formatIndex(before)}</small>` : ""}</td>
-          <td><span class="status-pill">${escapeHtml(detail?.status || "節點說明")}</span>${detail?.excelSource ? `<small class="row-source">${escapeHtml(detail.excelSource)}</small>` : ""}${detail?.pdfSource ? `<small class="row-source">${escapeHtml(detail.pdfSource)}</small>` : ""}</td>
+          <td><span class="status-pill">${escapeHtml(displayTerminology(detail?.status || "節點說明"))}</span>${detail?.excelSource ? `<small class="row-source">${escapeHtml(detail.excelSource)}</small>` : ""}${detail?.pdfSource ? `<small class="row-source">${escapeHtml(detail.pdfSource)}</small>` : ""}</td>
         </tr>`);
       });
     });
@@ -396,7 +408,7 @@
       const y = 105 + row * 34;
       const latest = item.values.at(-1);
       exportSvg.appendChild(svgEl("line", { x1: x, y1: y, x2: x + 24, y2: y, stroke: item.color, "stroke-width": 4, "stroke-linecap": "round" }));
-      appendSvgText(exportSvg, `${item.seriesName}  ${formatIndex(latest)}`, { x: x + 34, y: y + 5, fill: "#27364f", "font-size": 13, "font-weight": 700 });
+      appendSvgText(exportSvg, `${displaySeriesName(item.seriesName)}  ${formatIndex(latest)}`, { x: x + 34, y: y + 5, fill: "#27364f", "font-size": 13, "font-weight": 700 });
     });
 
     const chartGroup = svgEl("g", { transform: `translate(0 ${headerHeight})` });
@@ -422,7 +434,7 @@
       canvas.height = Math.round(height * scale);
       canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      const names = items.map(item => item.seriesName.replace(/[^a-zA-Z0-9_-]+/g, "-")).join("_");
+      const names = items.map(item => displaySeriesName(item.seriesName).replace(/[^a-zA-Z0-9_-]+/g, "-")).join("_");
       const link = document.createElement("a");
       const baseDate = data.dates[baselineIndex].replaceAll("-", "");
       link.download = `IBM-Price-Trend_${names}_BASE-${baseDate}_${localDateStamp()}.png`;
@@ -518,7 +530,7 @@
       item.values.forEach((value, index) => {
         const point = svgEl("circle", {
           cx: x(index), cy: y(value), r: 5, fill: item.color, class: `series-point${index < baselineIndex ? " prior-point" : ""}`, tabindex: 0,
-          "aria-label": `${item.seriesName} ${formatDate(data.dates[index])} 指數 ${formatIndex(value)}`,
+          "aria-label": `${displaySeriesName(item.seriesName)} ${formatDate(data.dates[index])} 指數 ${formatIndex(value)}`,
         });
         point.addEventListener("pointerenter", event => showPoint(item, index, event));
         point.addEventListener("pointermove", event => showPoint(item, index, event));
