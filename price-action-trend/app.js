@@ -88,6 +88,10 @@
     return Number(value).toFixed(2);
   }
 
+  function formatNodeIndex(value, index) {
+    return `${formatIndex(value)} [${index + 1}]`;
+  }
+
   function formatPercent(value) {
     if (value === null || value === undefined || value === "") return null;
     const sign = value > 0 ? "+" : "";
@@ -267,7 +271,7 @@
     const value = item.values[index];
     eventDate.textContent = `${formatDate(dateKey)} · ${displaySeriesName(item.seriesName)}`;
     eventCopy.textContent = detailText(item.seriesName, dateKey, value);
-    tooltip.innerHTML = `<strong>${escapeHtml(displaySeriesName(item.seriesName))} · ${formatIndex(value)}</strong><span>${formatDate(dateKey)}</span>`;
+    tooltip.innerHTML = `<strong>${escapeHtml(displaySeriesName(item.seriesName))} · ${formatNodeIndex(value, index)}</strong><span>${formatDate(dateKey)}</span>`;
     tooltip.hidden = false;
 
     const rect = chartWrap.getBoundingClientRect();
@@ -514,7 +518,7 @@
       item.values.forEach((value, index) => {
         const point = svgEl("circle", {
           cx: x(index), cy: y(value), r: 5, fill: item.color, class: `series-point${index < baselineIndex ? " prior-point" : ""}`, tabindex: 0,
-          "aria-label": `${displaySeriesName(item.seriesName)} ${formatDate(data.dates[index])} 指數 ${formatIndex(value)}`,
+          "aria-label": `${displaySeriesName(item.seriesName)} ${formatDate(data.dates[index])} 節點 ${index + 1} 指數 ${formatIndex(value)}`,
         });
         point.addEventListener("pointerenter", event => showPoint(item, index, event));
         point.addEventListener("pointermove", event => showPoint(item, index, event));
@@ -530,7 +534,7 @@
           const key = `${index}-${Math.round(value / 4)}`;
           const slot = labelSlots.get(key) || 0;
           labelSlots.set(key, slot + 1);
-          appendSvgText(svg, formatIndex(value), {
+          appendSvgText(svg, formatNodeIndex(value, index), {
             x: x(index) + 8,
             y: y(value) - 10 - slot * 15,
             fill: item.color,
