@@ -18,22 +18,22 @@
     </header>
     <section class="selector-grid" id="selectorGrid" aria-label="圖表選擇"></section>
     <section class="baseline-control" aria-labelledby="baselineControlTitle">
-      <div class="baseline-control-copy"><p class="section-kicker">VIEW BASELINE</p><h2 id="baselineControlTitle">歷史起始基準</h2><p>拖曳至任一歷史節點，該日會重新設定為指數 100；較早資料保留並淡化。</p></div>
+      <div class="baseline-control-copy"><h2 id="baselineControlTitle">比較基準日</h2><p>選定日期的價格設為 100；圖表也會保留較早的走勢。</p></div>
       <div class="baseline-slider-panel">
-        <div class="baseline-slider-status"><strong id="baselineValue">自動最早</strong><span id="baselineRangeText">完整歷史範圍</span></div>
+        <div class="baseline-slider-status"><strong id="baselineValue">資料載入中</strong><span id="baselineRangeText"></span></div>
         <input id="baselineSlider" type="range" min="0" max="0" step="1" value="0" aria-label="選擇歷史起始基準節點">
         <div class="baseline-ticks" id="baselineTicks" aria-hidden="true"></div>
       </div>
     </section>
     <section class="chart-card" aria-labelledby="chartTitle">
-      <div class="chart-head"><div><h2 id="chartTitle">累積價格指數</h2><p>調價於生效日跳升，水平區段代表期間內指數維持不變。</p></div><div class="chart-actions"><button class="export-button" id="exportButton" type="button" title="將目前圖表下載為高解析度 PNG"><span aria-hidden="true">↓</span>匯出 PNG</button><div class="legend" id="legend" aria-label="圖例"></div></div></div>
+      <div class="chart-head"><div><h2 id="chartTitle">累積價格指數</h2><p>每個階梯代表調價生效；右端虛線只延伸最後數值，不代表預測。</p></div><div class="chart-actions"><button class="export-button" id="exportButton" type="button" title="將目前圖表下載為高解析度 PNG"><span aria-hidden="true">↓</span>匯出 PNG</button><div class="legend" id="legend" aria-label="圖例"></div></div></div>
       <div class="chart-wrap" id="chartWrap"><svg id="stepChart" role="img" aria-labelledby="chartTitle chartDesc"></svg><p id="chartDesc" class="sr-only">依選擇的產品類型與型號呈現累積價格指數階梯圖。</p><div class="tooltip" id="tooltip" hidden></div><div class="empty-state" id="emptyState" hidden>請至少顯示一個產品類型。</div></div>
     </section>
-    <section class="event-card" id="eventCard" aria-live="polite"><div class="event-date" id="eventDate">將游標移到圖表節點</div><div class="event-copy" id="eventCopy">可查看該型號在該時間點的漲幅內容、採用漲幅與累積指數。</div></section>
-    <section class="metric-grid" id="metricGrid" aria-label="目前圖表摘要"></section>
-    <section class="info-card" aria-labelledby="announcementTitle"><div class="section-heading"><div><p class="section-kicker">PRICE ACTION TIMELINE</p><h2 id="announcementTitle">公告節點總覽</h2></div><p>依生效日整理整體調價內容，對照圖表中的垂直跳升。</p></div><div class="announcement-grid" id="announcementGrid"></div></section>
-    <details class="info-card detail-disclosure" id="detailDisclosure"><summary class="detail-summary" aria-labelledby="detailTitle"><div><p class="section-kicker">SELECTED SERIES DETAIL</p><h2 id="detailTitle">調價節點明細</h2></div><div class="detail-summary-meta"><span id="detailSummaryCount">載入中</span><strong><span class="when-closed">展開明細</span><span class="when-open">收合明細</span><i aria-hidden="true"></i></strong></div></summary><div class="detail-panel"><p class="detail-help">顯示目前勾選型號的 MTM、調價內容、採用漲幅與累積指數。</p><div class="table-wrap"><table><thead><tr><th>生效日</th><th>產品／型號</th><th>MTM</th><th>調價內容</th><th>採用漲幅</th><th>累積指數</th><th>資料狀態</th></tr></thead><tbody id="detailTableBody"></tbody></table></div></div></details>
-    <footer><span id="sourceLabel"></span><span>趨勢估算，非配置報價</span></footer>
+    <section class="event-card" id="eventCard" aria-live="polite"><div class="event-date" id="eventDate">選取圖表節點</div><div class="event-copy" id="eventCopy">點選階梯上的圓點，查看該型號的當期變動。</div></section>
+    <details class="info-card reading-guide"><summary>如何解讀這張圖 <span>指數、公告基準與計算方式</span></summary><div class="guide-grid"><p><strong>指數 100</strong> 是選定基準日的價格；150 代表相較該日約高 50%，不是設備報價。</p><p><strong>公告基準</strong> 顯示原廠公告的方向值。選型號後，會對照適用零件類別；採公告下限與類別平均較高者，避免低估。</p><p><strong>匯率獨立計算</strong>。同日有產品調價與台幣調整時，以乘法合併，例如 +17% 與 −0.3% 為 +16.649%。</p><p><strong>適用範圍依 MTM</strong>。2025–2026 年初的公告未列入目前三款 FS 型號，因此其早期曲線維持不變；Tape 尚未指定型號，以公告基準表示。</p></div></details>
+    <section class="info-card" aria-labelledby="announcementTitle"><div class="section-heading"><div><h2 id="announcementTitle">調價時間軸</h2></div><p>先看各日變動；點開卡片可查公告範圍與來源。</p></div><div class="announcement-grid" id="announcementGrid"></div></section>
+    <details class="info-card detail-disclosure" id="detailDisclosure"><summary class="detail-summary" aria-labelledby="detailTitle"><div><h2 id="detailTitle">所選曲線明細</h2></div><div class="detail-summary-meta"><span id="detailSummaryCount">載入中</span><strong><span class="when-closed">展開明細</span><span class="when-open">收合明細</span><i aria-hidden="true"></i></strong></div></summary><div class="detail-panel"><p class="detail-help">「當期變動」已包含產品調價與匯率；滑桿只改比較基準，不改原始漲幅。</p><div class="table-wrap"><table><thead><tr><th>生效日</th><th>曲線／MTM</th><th>變動原因</th><th>當期變動</th><th>累積指數</th></tr></thead><tbody id="detailTableBody"></tbody></table></div></div></details>
+    <footer><span id="sourceLabel"></span><span>方向性估算，實際報價依配置與合約而定</span></footer>
   </main>
   <script src="data.js?v=__BUILD_VERSION__"></script>
   <script src="app.js?v=__BUILD_VERSION__"></script>

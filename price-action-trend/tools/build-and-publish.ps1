@@ -44,14 +44,14 @@ Copy-Item -LiteralPath $plainData -Destination (Join-Path $InternalRoot "data.js
 Copy-Item -LiteralPath (Join-Path $siteRoot "MAINTENANCE.md") -Destination (Join-Path $InternalRoot "MAINTENANCE.md") -Force
 
 $internalTemplate = Get-Content -LiteralPath (Join-Path $PSScriptRoot "templates\index-internal.html") -Raw
-$internalTemplate.Replace("__BUILD_VERSION__", $buildVersion) |
+($internalTemplate.Replace("__BUILD_VERSION__", $buildVersion)).TrimEnd() |
     Set-Content -LiteralPath (Join-Path $InternalRoot "index.html") -Encoding UTF8
 
 $publicIndexPath = Join-Path $siteRoot "index.html"
 $publicAuthPath = Join-Path $siteRoot "auth.js"
-(Get-Content -LiteralPath $publicIndexPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion" |
+((Get-Content -LiteralPath $publicIndexPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion").TrimEnd() |
     Set-Content -LiteralPath $publicIndexPath -Encoding UTF8
-(Get-Content -LiteralPath $publicAuthPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion" |
+((Get-Content -LiteralPath $publicAuthPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion").TrimEnd() |
     Set-Content -LiteralPath $publicAuthPath -Encoding UTF8
 
 $securePassword = Read-Host "請輸入 GitHub／離線版密碼" -AsSecureString

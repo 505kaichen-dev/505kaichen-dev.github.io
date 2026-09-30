@@ -43,7 +43,6 @@
   const emptyState = document.getElementById("emptyState");
   const eventDate = document.getElementById("eventDate");
   const eventCopy = document.getElementById("eventCopy");
-  const metricGrid = document.getElementById("metricGrid");
   const announcementGrid = document.getElementById("announcementGrid");
   const detailTableBody = document.getElementById("detailTableBody");
   const detailSummaryCount = document.getElementById("detailSummaryCount");
@@ -53,7 +52,7 @@
   const baselineRangeText = document.getElementById("baselineRangeText");
   const baselineHeaderDate = document.getElementById("baselineHeaderDate");
 
-  document.getElementById("sourceLabel").textContent = `資料來源：${data.meta.source}`;
+  document.getElementById("sourceLabel").textContent = `資料依據：${data.meta.source}`;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -138,8 +137,8 @@
     const dateLabel = formatDate(data.dates[baselineIndex]);
     const progress = data.dates.length > 1 ? baselineIndex / (data.dates.length - 1) * 100 : 0;
     baselineSlider.style.setProperty("--range-progress", `${progress}%`);
-    baselineValue.textContent = `${baselineIndex === 0 ? "自動最早 · " : "自訂基準 · "}${dateLabel} = 100`;
-    baselineRangeText.textContent = baselineIndex === 0 ? "完整歷史範圍" : `較早 ${baselineIndex} 個節點保留淡化`;
+    baselineValue.textContent = `${dateLabel} = 100`;
+    baselineRangeText.textContent = baselineIndex === 0 ? "完整歷史" : "較早資料淡化顯示";
     baselineHeaderDate.textContent = `${dateLabel} = 100`;
     [...baselineTicks.children].forEach((tick, index) => {
       tick.classList.toggle("is-past", index < baselineIndex);
@@ -168,7 +167,7 @@
           <input type="checkbox" data-action="series" data-product="${product.id}" value="${escapeHtml(name)}" ${name === product.overall ? "checked" : ""}>
           <span class="option-check" aria-hidden="true"></span>
           <span>${name === product.overall ? "公告基準" : escapeHtml(name)}</span>
-          ${name === product.overall ? '<small>公告最低方向值</small>' : ""}
+          ${name === product.overall ? '<small>原廠公告方向值</small>' : ""}
         </label>`).join("");
 
       card.innerHTML = `
@@ -255,17 +254,10 @@
   function detailText(seriesName, dateKey, indexValue) {
     const detail = data.details[seriesName]?.[dateKey];
     if (!detail) return data.eventContent[dateKey] || "此節點無調價明細。";
-
-    const average = formatPercent(detail.average);
-    const combined = formatPercent(detail.combined);
-    const metrics = [
-      detailMetrics(detail).join("、"),
-      average ? `採用漲幅 ${average}` : "",
-      combined && detail.fx ? `含匯率 ${combined}` : "",
-      `累積指數 ${formatIndex(indexValue)}`,
-    ].filter(Boolean).join("｜");
-    const summary = displayTerminology(detail.summary || data.eventContent[dateKey] || "");
-    return `${summary}${metrics ? `　${metrics}` : ""}`;
+    const causes = detailMetrics(detail);
+    const change = dateKey === data.dates[0] ? "歷史起點" : causes.length ? causes.join("、") : "本系列此日無調整";
+    const rate = dateKey === data.dates[0] ? "" : `｜當期 ${formatPercent(detail.combined) || "0%"}`;
+    return `${change}${rate}｜指數 ${formatIndex(indexValue)}`;
   }
 
   function showPoint(item, index, event) {
@@ -284,46 +276,31 @@
     tooltip.style.top = `${top}px`;
   }
 
-  function renderMetrics(items) {
-    if (!items.length) {
-      metricGrid.innerHTML = "";
-      return;
-    }
-    const latestItems = items.map(item => ({ item, latest: item.values.at(-1) }));
-    const highest = latestItems.reduce((best, current) => current.latest > best.latest ? current : best);
-    metricGrid.innerHTML = `
-      <article class="metric-card"><span>目前顯示</span><strong>${items.length}</strong><small>條趨勢線</small></article>
-      <article class="metric-card"><span>最新最高指數</span><strong>${formatIndex(highest.latest)}</strong><small>${escapeHtml(displaySeriesName(highest.item.seriesName))}</small></article>
-      <article class="metric-card"><span>目前基準</span><strong>100.00</strong><small>${formatDate(data.dates[baselineIndex])}</small></article>
-      <article class="metric-card metric-wide"><span>計算原則</span><p>${escapeHtml(displayTerminology(data.meta.method))}</p></article>`;
-  }
-
-  function renderAnnouncements() {
+  function renderAnnouncements(items) {
     announcementGrid.innerHTML = data.dates.map((dateKey, index) => {
       const content = displayTerminology(data.eventContent[dateKey] || "無調價說明").split("\n");
       const source = data.eventSources?.[dateKey];
-      const sourceFiles = [source?.excel, source?.pdf].filter(Boolean);
-      return `<article class="announcement-item">
-        <div class="announcement-index">[${index + 1}]</div>
-        <div>
-          <time datetime="${dateKey}">${formatDate(dateKey)}</time>
-          ${content.map(line => `<p>${escapeHtml(line)}</p>`).join("")}
-          ${sourceFiles.length ? `<div class="source-ref"><span>來源</span>${sourceFiles.map(file => `<small>${escapeHtml(file)}</small>`).join("")}</div>` : ""}
-        </div>
+      const sourceFiles = index === 0 ? [] : [source?.excel, source?.pdf].filter(Boolean).flatMap(value => value.split("；").map(part => part.trim()).filter(Boolean));
+      const unchanged = index > 0 && items.length > 0 && items.every(item => !data.details[item.seriesName]?.[dateKey]?.combined);
+      const badge = index === 0 ? "比較起點" : unchanged ? "所選曲線無變動" : "";
+      return `<article class="announcement-item${unchanged ? " is-quiet" : ""}">
+        <div class="announcement-heading"><span class="announcement-index">${String(index + 1).padStart(2, "0")}</span><time datetime="${dateKey}">${formatDate(dateKey)}</time>${badge ? `<span class="announcement-badge">${badge}</span>` : ""}</div>
+        ${content.slice(0, 2).map(line => `<p class="announcement-main">${escapeHtml(line)}</p>`).join("")}
+        ${content.length > 2 || sourceFiles.length ? `<details class="announcement-more"><summary>適用範圍與來源</summary>
+          ${content.slice(2).map(line => `<p>${escapeHtml(line)}</p>`).join("")}
+          ${sourceFiles.length ? `<div class="source-ref"><span>原始公告</span>${sourceFiles.map(file => `<small>${escapeHtml(file)}</small>`).join("")}</div>` : ""}
+        </details>` : ""}
       </article>`;
     }).join("");
   }
 
-  function rateCell(detail, before, after, isBaseline) {
-    if (isBaseline) {
-      const originalRate = detail?.combined ? `原節點 ${formatPercent(detail.combined)}` : "起始節點";
-      return `<span class="rate-main">基準 100</span><small>${originalRate}</small>`;
-    }
+  function rateCell(detail, before, after, isBaseline, isFirst) {
+    if (isFirst) return '<span class="rate-main">—</span>';
     const inferred = before ? after / before - 1 : 0;
     const adopted = detail?.combined ?? inferred;
     const lines = [];
-    if (detail?.average) lines.push(`採用 ${formatPercent(detail.average)}`);
-    if (detail?.fx) lines.push(`匯率 ${formatPercent(detail.fx)}`);
+    if (detail?.average && detail?.overall !== null && detail?.overall !== undefined && Math.abs(detail.average - detail.overall) > 0.00001) lines.push(`採用 ${formatPercent(detail.average)}`);
+    if (isBaseline) lines.push("此日設為 100");
     return `<span class="rate-main">${formatPercent(adopted) || "0%"}</span>${lines.length ? `<small>${lines.join(" · ")}</small>` : ""}`;
   }
 
@@ -332,7 +309,7 @@
       ? `${items.length} 個系列 · ${items.length * data.dates.length} 筆節點`
       : "尚未選擇型號";
     if (!items.length) {
-      detailTableBody.innerHTML = '<tr><td colspan="7" class="no-data">請先選擇至少一個型號。</td></tr>';
+      detailTableBody.innerHTML = '<tr><td colspan="5" class="no-data">請先選擇至少一個型號。</td></tr>';
       return;
     }
 
@@ -342,16 +319,17 @@
         const detail = data.details[item.seriesName]?.[dateKey];
         const before = dateIndex === 0 ? item.values[0] : item.values[dateIndex - 1];
         const after = item.values[dateIndex];
-        const summary = displayTerminology(detail?.summary || data.eventContent[dateKey] || "—");
         const metrics = detailMetrics(detail);
+        const reason = dateIndex === 0 ? "歷史起點" : metrics.length ? metrics.join("、") : "本系列此日無調整";
+        const explanation = displayTerminology(detail?.summary || "");
+        const files = [detail?.excelSource, detail?.pdfSource].filter(Boolean).flatMap(value => value.split("；").map(part => part.trim()).filter(Boolean));
+        const evidence = dateIndex > 0 && (explanation || files.length) ? `<details class="row-evidence"><summary>補充與來源</summary>${explanation ? `<p>${escapeHtml(explanation)}</p>` : ""}${files.map(file => `<small>${escapeHtml(file)}</small>`).join("")}</details>` : "";
         rows.push(`<tr class="${dateIndex < baselineIndex ? "is-prior" : ""}">
-          <td><time datetime="${dateKey}">${formatDate(dateKey)}</time><span class="ref-number">[${dateIndex + 1}]</span></td>
-          <td><span class="series-name"><i style="--row-color:${item.color}"></i>${escapeHtml(displaySeriesName(item.seriesName))}</span></td>
-          <td class="mono">${escapeHtml(displayTerminology(detail?.mtm || "—"))}</td>
-          <td><strong class="summary-line">${escapeHtml(summary)}</strong>${metrics.length ? `<small class="metric-list">${escapeHtml(metrics.join("、"))}</small>` : ""}</td>
-          <td>${rateCell(detail, before, after, dateIndex === baselineIndex)}</td>
-          <td><strong class="index-value">${formatIndex(after)}</strong>${dateIndex ? `<small>前期 ${formatIndex(before)}</small>` : ""}</td>
-          <td><span class="status-pill">${escapeHtml(displayTerminology(detail?.status || "節點說明"))}</span>${detail?.excelSource ? `<small class="row-source">${escapeHtml(detail.excelSource)}</small>` : ""}${detail?.pdfSource ? `<small class="row-source">${escapeHtml(detail.pdfSource)}</small>` : ""}</td>
+          <td><time datetime="${dateKey}">${formatDate(dateKey)}</time></td>
+          <td><span class="series-name"><i style="--row-color:${item.color}"></i>${escapeHtml(displaySeriesName(item.seriesName))}</span>${detail?.mtm && !displaySeriesName(item.seriesName).includes(displayTerminology(detail.mtm)) ? `<small>${escapeHtml(displayTerminology(detail.mtm))}</small>` : ""}</td>
+          <td><strong class="summary-line">${escapeHtml(reason)}</strong>${evidence}</td>
+          <td>${rateCell(detail, before, after, dateIndex === baselineIndex, dateIndex === 0)}</td>
+          <td><strong class="index-value">${formatIndex(after)}</strong></td>
         </tr>`);
       });
     });
@@ -501,7 +479,7 @@
     });
     svg.appendChild(svgEl("line", { x1: x(futureIndex), y1: margin.top, x2: x(futureIndex), y2: height - margin.bottom, class: "grid-line vertical-grid" }));
     appendSvgText(svg, addMonthsLabel(data.dates.at(-1), 2), { x: x(futureIndex), y: height - 24, "text-anchor": "middle", class: "date-label" });
-    appendSvgText(svg, "未來延伸", {
+    appendSvgText(svg, "數值延伸", {
       x: (x(lastActualIndex) + x(futureIndex)) / 2, y: margin.top + 19, "text-anchor": "middle", class: "future-zone-label",
     });
     svg.appendChild(svgEl("line", {
@@ -546,13 +524,12 @@
         });
         svg.appendChild(point);
 
-        const changed = index > 0 && index !== baselineIndex && Math.abs(value - item.values[index - 1]) > 0.001;
-        if (changed) {
+        if (index === lastActualIndex) {
           const key = `${index}-${Math.round(value / 4)}`;
           const slot = labelSlots.get(key) || 0;
           labelSlots.set(key, slot + 1);
-          appendSvgText(svg, `${formatIndex(value)} [${index + 1}]`, {
-            x: x(index) + 8, y: y(value) - 10 - slot * 15, fill: item.color, class: `node-label${index < baselineIndex ? " prior-label" : ""}`,
+          appendSvgText(svg, formatIndex(value), {
+            x: x(index) + 8, y: y(value) - 10 - slot * 15, fill: item.color, class: "node-label",
           });
         }
       });
@@ -563,13 +540,12 @@
     const items = selectedSeries();
     renderBaselineControl();
     renderChart(items);
-    renderMetrics(items);
+    renderAnnouncements(items);
     renderDetailTable(items);
   }
 
   createSelectors();
   createBaselineControl();
-  renderAnnouncements();
   exportButton.addEventListener("click", exportPng);
   render();
   window.addEventListener("resize", render);
