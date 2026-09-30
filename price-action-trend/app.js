@@ -9,6 +9,7 @@
     { visible: true, series: [product.overall] },
   ]));
   let baselineIndex = 0;
+  let showAllNodeLabels = false;
 
   const seriesColors = {
     "Storage 公告基準": "#c65d15",
@@ -39,6 +40,7 @@
   const chartWrap = document.getElementById("chartWrap");
   const legend = document.getElementById("legend");
   const exportButton = document.getElementById("exportButton");
+  const nodeLabelToggle = document.getElementById("nodeLabelToggle");
   const tooltip = document.getElementById("tooltip");
   const emptyState = document.getElementById("emptyState");
   const eventDate = document.getElementById("eventDate");
@@ -524,12 +526,15 @@
         });
         svg.appendChild(point);
 
-        if (index === lastActualIndex) {
+        if (showAllNodeLabels || index === lastActualIndex) {
           const key = `${index}-${Math.round(value / 4)}`;
           const slot = labelSlots.get(key) || 0;
           labelSlots.set(key, slot + 1);
           appendSvgText(svg, formatIndex(value), {
-            x: x(index) + 8, y: y(value) - 10 - slot * 15, fill: item.color, class: "node-label",
+            x: x(index) + 8,
+            y: y(value) - 10 - slot * 15,
+            fill: item.color,
+            class: `node-label${index < baselineIndex ? " prior-label" : ""}`,
           });
         }
       });
@@ -547,6 +552,10 @@
   createSelectors();
   createBaselineControl();
   exportButton.addEventListener("click", exportPng);
+  nodeLabelToggle.addEventListener("change", () => {
+    showAllNodeLabels = nodeLabelToggle.checked;
+    renderChart(selectedSeries());
+  });
   render();
   window.addEventListener("resize", render);
 })();

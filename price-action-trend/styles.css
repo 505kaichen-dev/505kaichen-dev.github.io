@@ -298,6 +298,44 @@ h1 { margin-bottom: 0; color: var(--navy); font-size: clamp(2rem, 4vw, 3.6rem); 
 .chart-head h2, .section-heading h2 { margin-bottom: 4px; color: var(--navy); font-size: 1.18rem; }
 .chart-head p { margin-bottom: 0; color: var(--muted); font-size: .86rem; }
 .chart-actions { display: grid; justify-items: end; gap: 8px; max-width: 65%; }
+.chart-action-row { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 9px; }
+
+.value-label-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 35px;
+  color: #44536b;
+  font-size: .78rem;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+}
+.value-label-toggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.value-label-toggle > span {
+  position: relative;
+  width: 34px;
+  height: 19px;
+  border: 1px solid #aab7c8;
+  border-radius: 999px;
+  background: #dfe5ec;
+  transition: background .15s ease, border-color .15s ease;
+}
+.value-label-toggle > span::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(31, 48, 78, .24);
+  transition: transform .15s ease;
+}
+.value-label-toggle input:checked + span { border-color: var(--accent); background: var(--accent); }
+.value-label-toggle input:checked + span::after { transform: translateX(15px); }
+.value-label-toggle input:focus-visible + span { outline: 2px solid var(--navy); outline-offset: 2px; }
 
 .export-button {
   display: inline-flex;
@@ -500,6 +538,7 @@ footer {
   .baseline-control { grid-template-columns: 1fr; gap: 14px; }
   .chart-head { flex-direction: column; }
   .chart-actions { width: 100%; max-width: none; justify-items: start; }
+  .chart-action-row { justify-content: flex-start; }
   .legend { justify-content: flex-start; }
   .event-card { grid-template-columns: 1fr; gap: 5px; }
   .guide-grid { grid-template-columns: 1fr; }

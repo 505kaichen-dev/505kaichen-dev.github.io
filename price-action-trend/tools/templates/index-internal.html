@@ -26,7 +26,7 @@
       </div>
     </section>
     <section class="chart-card" aria-labelledby="chartTitle">
-      <div class="chart-head"><div><h2 id="chartTitle">累積價格指數</h2><p>每個階梯代表調價生效；右端虛線只延伸最後數值，不代表預測。</p></div><div class="chart-actions"><button class="export-button" id="exportButton" type="button" title="將目前圖表下載為高解析度 PNG"><span aria-hidden="true">↓</span>匯出 PNG</button><div class="legend" id="legend" aria-label="圖例"></div></div></div>
+      <div class="chart-head"><div><h2 id="chartTitle">累積價格指數</h2><p>每個階梯代表調價生效；右端虛線只延伸最後數值，不代表預測。</p></div><div class="chart-actions"><div class="chart-action-row"><label class="value-label-toggle" for="nodeLabelToggle"><input id="nodeLabelToggle" type="checkbox"><span aria-hidden="true"></span>顯示各節點數值</label><button class="export-button" id="exportButton" type="button" title="將目前圖表下載為高解析度 PNG"><span aria-hidden="true">↓</span>匯出 PNG</button></div><div class="legend" id="legend" aria-label="圖例"></div></div></div>
       <div class="chart-wrap" id="chartWrap"><svg id="stepChart" role="img" aria-labelledby="chartTitle chartDesc"></svg><p id="chartDesc" class="sr-only">依選擇的產品類型與型號呈現累積價格指數階梯圖。</p><div class="tooltip" id="tooltip" hidden></div><div class="empty-state" id="emptyState" hidden>請至少顯示一個產品類型。</div></div>
     </section>
     <section class="event-card" id="eventCard" aria-live="polite"><div class="event-date" id="eventDate">選取圖表節點</div><div class="event-copy" id="eventCopy">點選階梯上的圓點，查看該型號的當期變動。</div></section>
