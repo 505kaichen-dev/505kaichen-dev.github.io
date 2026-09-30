@@ -11,16 +11,16 @@
   let baselineIndex = 0;
 
   const seriesColors = {
-    "Storage Overall": "#c65d15",
+    "Storage 公告基準": "#c65d15",
     FS5600: "#f59e0b",
     FS7600: "#ea7c14",
     FS9600: "#9a4a12",
-    "Power Server Overall": "#2563eb",
+    "Power Server 公告基準": "#2563eb",
     S1122: "#60a5fa",
     S1124: "#0ea5e9",
     E1150: "#1d4ed8",
     E1180: "#172e79",
-    "TAPE Library Overall": "#7c3aed",
+    "TAPE Library 公告基準": "#7c3aed",
   };
 
   function displaySeriesName(seriesName) {

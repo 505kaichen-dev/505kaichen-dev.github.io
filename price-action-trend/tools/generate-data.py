@@ -14,21 +14,21 @@ PRODUCTS = [
         "id": "storage",
         "label": "Storage",
         "color": "#ff8a3d",
-        "overall": "Storage Overall",
+        "overall": "Storage 公告基準",
         "models": ["FS5600", "FS7600", "FS9600"],
     },
     {
         "id": "power",
         "label": "Power Server",
         "color": "#4f8cff",
-        "overall": "Power Server Overall",
+        "overall": "Power Server 公告基準",
         "models": ["S1122", "S1124", "E1150", "E1180"],
     },
     {
         "id": "tape",
         "label": "TAPE Library",
         "color": "#b36bff",
-        "overall": "TAPE Library Overall",
+        "overall": "TAPE Library 公告基準",
         "models": [],
     },
 ]
@@ -65,7 +65,9 @@ def require_sheets(workbook, names):
 
 def build_payload(workbook_path: Path) -> dict:
     wb = openpyxl.load_workbook(workbook_path, data_only=True, read_only=True)
-    require_sheets(wb, ["圖表資料", "指數總覽", "調價明細", "Overall漲價明細"])
+    require_sheets(wb, ["圖表資料", "指數總覽", "調價明細"])
+    source_sheet_name = "公告基準明細" if "公告基準明細" in wb.sheetnames else "Overall漲價明細"
+    require_sheets(wb, [source_sheet_name])
 
     chart_ws = wb["圖表資料"]
     chart_rows = list(chart_ws.iter_rows(values_only=True))
@@ -101,7 +103,7 @@ def build_payload(workbook_path: Path) -> dict:
     if set(event_content) != set(dates):
         raise ValueError("指數總覽與圖表資料的時間節點不一致。")
 
-    overall_ws = wb["Overall漲價明細"]
+    overall_ws = wb[source_sheet_name]
     overall_headers = [cell.value for cell in next(overall_ws.iter_rows())]
     event_sources = {
         dates[0]: {
