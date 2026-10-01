@@ -12,6 +12,7 @@ $siteRoot = Split-Path -Parent $PSScriptRoot
 $buildRoot = Join-Path $siteRoot ".build"
 $plainData = Join-Path $buildRoot "data.js"
 $buildVersion = Get-Date -Format "yyyyMMddHHmmss"
+$releaseVersion = "ver" + (Get-Date -Format "yyyyMMdd")
 
 function Resolve-Tool([string]$Explicit, [string]$CommandName, [string]$BundledPath) {
     if ($Explicit) { return (Resolve-Path -LiteralPath $Explicit).Path }
@@ -49,7 +50,7 @@ $internalTemplate = Get-Content -LiteralPath (Join-Path $PSScriptRoot "templates
 
 $publicIndexPath = Join-Path $siteRoot "index.html"
 $publicAuthPath = Join-Path $siteRoot "auth.js"
-((Get-Content -LiteralPath $publicIndexPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion").TrimEnd() |
+((Get-Content -LiteralPath $publicIndexPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion" -replace 'ver[0-9]{8}', $releaseVersion).TrimEnd() |
     Set-Content -LiteralPath $publicIndexPath -Encoding UTF8
 ((Get-Content -LiteralPath $publicAuthPath -Raw) -replace 'v=[0-9-]+', "v=$buildVersion").TrimEnd() |
     Set-Content -LiteralPath $publicAuthPath -Encoding UTF8

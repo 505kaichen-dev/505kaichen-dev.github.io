@@ -87,6 +87,7 @@ body {
 .password-row button:disabled { opacity: .6; cursor: wait; }
 .auth-error { margin: 10px 0 0; color: #b42318; font-size: .78rem; }
 .auth-note { margin: 20px 0 0; padding-top: 15px; border-top: 1px solid var(--line); color: var(--dim); font-size: .7rem; line-height: 1.55; }
+.auth-version { margin: 7px 0 0; color: #8b99ad; font: 700 .67rem/1 var(--mono); letter-spacing: .04em; text-align: right; }
 
 button, input { font: inherit; }
 

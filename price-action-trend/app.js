@@ -301,13 +301,26 @@
   }
 
   function rateCell(detail, before, after, isBaseline, isFirst) {
-    if (isFirst) return '<span class="rate-main">—</span>';
     const inferred = before ? after / before - 1 : 0;
     const adopted = detail?.combined ?? inferred;
+    const selectedRate = detail?.average ?? 0;
+    const partRates = detail
+      ? [detail.memory, detail.processor, detail.ssd, detail.system, detail.cache, detail.tape, detail.other]
+        .filter(value => value !== null && value !== undefined)
+      : [];
+    const partAverage = partRates.length ? partRates.reduce((sum, value) => sum + Number(value), 0) / partRates.length : null;
+    let selectedBasis = "產品漲幅";
+    if (partAverage !== null && (detail?.overall === null || detail?.overall === undefined || partAverage > detail.overall + 0.00001)) {
+      selectedBasis = "零件平均";
+    } else if (detail?.overall !== null && detail?.overall !== undefined) {
+      selectedBasis = "公告基準";
+    }
     const lines = [];
-    if (detail?.average && detail?.overall !== null && detail?.overall !== undefined && Math.abs(detail.average - detail.overall) > 0.00001) lines.push(`採用 ${formatPercent(detail.average)}`);
+    lines.push(`採用${selectedBasis} ${formatPercent(selectedRate) || "0%"}`);
+    if (detail?.fx !== null && detail?.fx !== undefined) lines.push(`匯率 ${formatPercent(detail.fx) || "0%"}`);
     if (isBaseline) lines.push("此日設為 100");
-    return `<span class="rate-main">${formatPercent(adopted) || "0%"}</span>${lines.length ? `<small>${lines.join(" · ")}</small>` : ""}`;
+    const mainRate = isFirst ? "—" : formatPercent(adopted) || "0%";
+    return `<span class="rate-main">${mainRate}</span><small>${lines.join(" · ")}</small>`;
   }
 
   function renderDetailTable(items) {
