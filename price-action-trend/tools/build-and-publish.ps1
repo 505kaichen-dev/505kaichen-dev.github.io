@@ -43,6 +43,7 @@ Copy-Item -LiteralPath (Join-Path $siteRoot "app.js") -Destination (Join-Path $I
 Copy-Item -LiteralPath (Join-Path $siteRoot "styles.css") -Destination (Join-Path $InternalRoot "styles.css") -Force
 Copy-Item -LiteralPath $plainData -Destination (Join-Path $InternalRoot "data.js") -Force
 Copy-Item -LiteralPath (Join-Path $siteRoot "MAINTENANCE.md") -Destination (Join-Path $InternalRoot "MAINTENANCE.md") -Force
+Copy-Item -LiteralPath (Join-Path $siteRoot "RELEASE_NOTES.md") -Destination (Join-Path $InternalRoot "RELEASE_NOTES.md") -Force
 
 $internalTemplate = Get-Content -LiteralPath (Join-Path $PSScriptRoot "templates\index-internal.html") -Raw
 ($internalTemplate.Replace("__BUILD_VERSION__", $buildVersion)).TrimEnd() |

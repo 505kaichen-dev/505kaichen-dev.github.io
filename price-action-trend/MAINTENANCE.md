@@ -84,7 +84,8 @@
 4. 密碼錯誤時，GitHub 與離線版都不能顯示資料。
 5. 離線版在關閉網路後仍能開啟、切換型號、拖曳基準及匯出 PNG。
 6. repository 中沒有 `data.js`、Excel、PDF 或其他明文價格資料。
-7. 確認 `git diff` 後再 commit 與 push。
+7. 依登入畫面的 `verYYYYMMDD` 更新 `RELEASE_NOTES.md`，記錄資料、功能、介面與問題修正。
+8. 確認 `git diff` 後再 commit 與 push。
 
 ## 七、檔案角色
 
@@ -103,7 +104,16 @@
 | `tools/protect-data.mjs` | AES-256-GCM 加密與相容性自我檢查 |
 | `tools/build-offline.mjs` | 將所有內容包成單一離線 HTML |
 | `tools/build-and-publish.ps1` | 一次建置三個版本 |
+| `RELEASE_NOTES.md` | 依日期版本記錄功能、資料、介面與問題修正 |
 
 ## 八、安全界線
 
 GitHub Pages 上的密碼層是瀏覽器端加密，適合降低靜態檔案被直接讀取的風險，但不等同伺服器端帳號權限。不要將原始 Excel、PDF、明文 `data.js` 或密碼提交到公開 repository。高度敏感或需要存取稽核時，應改用公司內網登入或具備伺服器端驗證的主機。
+
+## 九、版本記錄方式
+
+1. 版本號以實際發布日期命名，例如 `ver20261001`。
+2. 同一天內的多次小幅更新合併在同一版本；跨日發布時新增一個版本段落。
+3. 使用者看得到的功能、資料、文字或介面變更，以及問題修正，都要記錄。
+4. 每個版本保留相關 Git 提交編號，方便日後查找實作差異。
+5. `RELEASE_NOTES.md` 採最新版本置頂，不記錄尚未發布或最後未採用的嘗試。
