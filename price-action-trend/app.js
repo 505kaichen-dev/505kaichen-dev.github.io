@@ -17,6 +17,7 @@
     FS7600: "#ea7c14",
     FS9600: "#9a4a12",
     "Power Server 公告基準": "#2563eb",
+    S1112: "#7dd3fc",
     S1122: "#60a5fa",
     S1124: "#0ea5e9",
     E1150: "#1d4ed8",
@@ -94,8 +95,10 @@
 
   function formatPercent(value) {
     if (value === null || value === undefined || value === "") return null;
-    const sign = value > 0 ? "+" : "";
-    return `${sign}${(Number(value) * 100).toFixed(2).replace(/\.00$/, "")}%`;
+    const numeric = Number(value);
+    const sign = numeric > 0 ? "+" : "";
+    const rounded = Math.round((numeric * 100 + 1e-9) * 100) / 100;
+    return `${sign}${rounded.toFixed(2).replace(/\.00$/, "")}%`;
   }
 
   function localDateStamp() {
@@ -112,14 +115,19 @@
       return state[product.id].series.map((seriesName, seriesIndex) => {
         const rawValues = data.series[seriesName];
         if (!Array.isArray(rawValues)) return null;
-        const baseValue = rawValues[baselineIndex];
+        const startIndex = rawValues.findIndex(value => value !== null && value !== undefined && Number.isFinite(Number(value)));
+        if (startIndex < 0) return null;
+        const normalizationIndex = Math.max(baselineIndex, startIndex);
+        const baseValue = Number(rawValues[normalizationIndex]);
         return {
           ...product,
           seriesName,
           seriesIndex,
           color: seriesColors[seriesName] || product.color,
           rawValues,
-          values: rawValues.map(value => value / baseValue * 100),
+          startIndex,
+          normalizationIndex,
+          values: rawValues.map(value => value === null || value === undefined ? null : Number(value) / baseValue * 100),
         };
       });
     }).filter(Boolean);
@@ -220,14 +228,20 @@
   }
 
   function stepPath(values, x, y) {
-    let path = `M ${x(0)} ${y(values[0])}`;
-    for (let i = 1; i < values.length; i++) path += ` H ${x(i)} V ${y(values[i])}`;
-    return path;
+    return stepPathRange(values, 0, values.length - 1, x, y);
   }
 
   function stepPathRange(values, start, end, x, y) {
-    let path = `M ${x(start)} ${y(values[start])}`;
-    for (let index = start + 1; index <= end; index++) path += ` H ${x(index)} V ${y(values[index])}`;
+    const available = [];
+    for (let index = Math.max(0, start); index <= Math.min(end, values.length - 1); index++) {
+      if (values[index] !== null && values[index] !== undefined && Number.isFinite(Number(values[index]))) available.push(index);
+    }
+    if (!available.length) return "";
+    let path = `M ${x(available[0])} ${y(values[available[0]])}`;
+    for (let offset = 1; offset < available.length; offset++) {
+      const index = available[offset];
+      path += ` H ${x(index)} V ${y(values[index])}`;
+    }
     return path;
   }
 
@@ -258,12 +272,13 @@
       .map(([label, value]) => `${label} ${formatPercent(value)}`);
   }
 
-  function detailText(seriesName, dateKey, indexValue) {
-    const detail = data.details[seriesName]?.[dateKey];
+  function detailText(item, dateKey, dateIndex, indexValue) {
+    const detail = data.details[item.seriesName]?.[dateKey];
     if (!detail) return data.eventContent[dateKey] || "此節點無調價明細。";
     const causes = detailMetrics(detail);
-    const change = dateKey === data.dates[0] ? "歷史起點" : causes.length ? causes.join("、") : "本系列此日無調整";
-    const rate = dateKey === data.dates[0] ? "" : `｜當期 ${formatPercent(detail.combined) || "0%"}`;
+    const isStart = dateIndex === item.startIndex;
+    const change = isStart ? (item.startIndex > 0 ? "型號 GA 起點" : "歷史起點") : causes.length ? causes.join("、") : "本系列此日無調整";
+    const rate = isStart ? "" : `｜當期 ${formatPercent(detail.combined) || "0%"}`;
     return `${change}${rate}｜指數 ${formatIndex(indexValue)}`;
   }
 
@@ -271,7 +286,7 @@
     const dateKey = data.dates[index];
     const value = item.values[index];
     eventDate.textContent = `${formatDate(dateKey)} · ${displaySeriesName(item.seriesName)}`;
-    eventCopy.textContent = detailText(item.seriesName, dateKey, value);
+    eventCopy.textContent = detailText(item, dateKey, index, value);
     tooltip.innerHTML = `<strong>${escapeHtml(displaySeriesName(item.seriesName))} · ${formatNodeIndex(value, index)}</strong><span>${formatDate(dateKey)}</span>`;
     tooltip.hidden = false;
 
@@ -288,9 +303,17 @@
       const content = displayTerminology(data.eventContent[dateKey] || "無調價說明").split("\n");
       const source = data.eventSources?.[dateKey];
       const sourceFiles = index === 0 ? [] : [source?.excel, source?.pdf].filter(Boolean).flatMap(value => value.split("；").map(part => part.trim()).filter(Boolean));
-      const unchanged = index > 0 && items.length > 0 && items.every(item => !data.details[item.seriesName]?.[dateKey]?.combined);
-      const badge = index === 0 ? "比較起點" : unchanged ? "所選曲線無變動" : "";
-      return `<article class="announcement-item${unchanged ? " is-quiet" : ""}">
+      const availableItems = items.filter(item => item.values[index] !== null && item.values[index] !== undefined);
+      const startingItems = availableItems.filter(item => item.startIndex === index && index > 0);
+      const unavailable = items.length > 0 && availableItems.length === 0;
+      const changed = availableItems.some(item => item.startIndex === index || (index > item.startIndex && Math.abs(item.values[index] - item.values[index - 1]) > 0.00001));
+      const unchanged = index > 0 && availableItems.length > 0 && !changed;
+      const badge = startingItems.length
+        ? `${startingItems.map(item => item.seriesName).join("、")} GA 起點`
+        : unavailable ? "所選曲線尚未 GA"
+        : index === 0 ? "比較起點"
+        : unchanged ? "所選曲線無變動" : "";
+      return `<article class="announcement-item${unchanged || unavailable ? " is-quiet" : ""}">
         <div class="announcement-heading"><span class="announcement-index">${String(index + 1).padStart(2, "0")}</span><time datetime="${dateKey}">${formatDate(dateKey)}</time>${badge ? `<span class="announcement-badge">${badge}</span>` : ""}</div>
         ${content.slice(0, 2).map(line => `<p class="announcement-main">${escapeHtml(line)}</p>`).join("")}
         ${content.length > 2 || sourceFiles.length ? `<details class="announcement-more"><summary>適用範圍與來源</summary>
@@ -325,8 +348,9 @@
   }
 
   function renderDetailTable(items) {
+    const rowCount = items.reduce((sum, item) => sum + item.values.filter(value => value !== null && value !== undefined).length, 0);
     detailSummaryCount.textContent = items.length
-      ? `${items.length} 個系列 · ${items.length * data.dates.length} 筆節點`
+      ? `${items.length} 個系列 · ${rowCount} 筆節點`
       : "尚未選擇型號";
     if (!items.length) {
       detailTableBody.innerHTML = '<tr><td colspan="5" class="no-data">請先選擇至少一個型號。</td></tr>';
@@ -336,11 +360,13 @@
     const rows = [];
     data.dates.forEach((dateKey, dateIndex) => {
       items.forEach(item => {
+        if (item.values[dateIndex] === null || item.values[dateIndex] === undefined) return;
         const detail = data.details[item.seriesName]?.[dateKey];
-        const before = dateIndex === 0 ? item.values[0] : item.values[dateIndex - 1];
+        const before = dateIndex === item.startIndex ? item.values[dateIndex] : item.values[dateIndex - 1];
         const after = item.values[dateIndex];
         const metrics = detailMetrics(detail);
-        const reason = dateIndex === 0 ? "歷史起點" : metrics.length ? metrics.join("、") : "本系列此日無調整";
+        const isFirst = dateIndex === item.startIndex;
+        const reason = isFirst ? (item.startIndex > 0 ? "型號 GA 起點" : "歷史起點") : metrics.length ? metrics.join("、") : "本系列此日無調整";
         const explanation = displayTerminology(detail?.summary || "");
         const files = [detail?.excelSource, detail?.pdfSource].filter(Boolean).flatMap(value => value.split("；").map(part => part.trim()).filter(Boolean));
         const evidence = dateIndex > 0 && (explanation || files.length) ? `<details class="row-evidence"><summary>補充與來源</summary>${explanation ? `<p>${escapeHtml(explanation)}</p>` : ""}${files.map(file => `<small>${escapeHtml(file)}</small>`).join("")}</details>` : "";
@@ -348,7 +374,7 @@
           <td><time datetime="${dateKey}">${formatDate(dateKey)}</time></td>
           <td><span class="series-name"><i style="--row-color:${item.color}"></i>${escapeHtml(displaySeriesName(item.seriesName))}</span>${detail?.mtm && !displaySeriesName(item.seriesName).includes(displayTerminology(detail.mtm)) ? `<small>${escapeHtml(displayTerminology(detail.mtm))}</small>` : ""}</td>
           <td><strong class="summary-line">${escapeHtml(reason)}</strong>${evidence}</td>
-          <td>${rateCell(detail, before, after, dateIndex === baselineIndex, dateIndex === 0)}</td>
+          <td>${rateCell(detail, before, after, dateIndex === item.normalizationIndex, isFirst)}</td>
           <td><strong class="index-value">${formatIndex(after)}</strong></td>
         </tr>`);
       });
@@ -467,7 +493,7 @@
     const margin = { top: 42, right: 28, bottom: 58, left: 64 };
     const plotWidth = width - margin.left - margin.right;
     const plotHeight = height - margin.top - margin.bottom;
-    const allValues = items.flatMap(item => item.values);
+    const allValues = items.flatMap(item => item.values).filter(value => value !== null && value !== undefined && Number.isFinite(Number(value)));
     const maxValue = Math.max(...allValues);
     const minValue = Math.min(...allValues);
     const lower = Math.max(0, Math.floor((minValue - 15) / 25) * 25);
@@ -517,11 +543,11 @@
       const fullPath = stepPath(item.values, x, y);
       if (baselineIndex > 0) {
         const pastPath = stepPathRange(item.values, 0, baselineIndex, x, y);
-        svg.appendChild(svgEl("path", { d: pastPath, class: "series-path past-series", stroke: item.color }));
+        if (pastPath) svg.appendChild(svgEl("path", { d: pastPath, class: "series-path past-series", stroke: item.color }));
       }
-      const activePath = stepPathRange(item.values, baselineIndex, lastActualIndex, x, y);
-      svg.appendChild(svgEl("path", { d: activePath, class: "series-path", stroke: item.color }));
-      svg.appendChild(svgEl("path", { d: fullPath, class: "series-hit" }));
+      const activePath = stepPathRange(item.values, Math.max(baselineIndex, item.startIndex), lastActualIndex, x, y);
+      if (activePath) svg.appendChild(svgEl("path", { d: activePath, class: "series-path", stroke: item.color }));
+      if (fullPath) svg.appendChild(svgEl("path", { d: fullPath, class: "series-hit" }));
       const lastValue = item.values.at(-1);
       svg.appendChild(svgEl("path", {
         d: `M ${x(lastActualIndex)} ${y(lastValue)} H ${x(futureIndex)}`, class: "forecast-path", stroke: item.color,
@@ -530,6 +556,7 @@
         cx: x(futureIndex), cy: y(lastValue), r: 4, class: "forecast-point", stroke: item.color, "aria-hidden": "true",
       }));
       item.values.forEach((value, index) => {
+        if (value === null || value === undefined) return;
         const point = svgEl("circle", {
           cx: x(index), cy: y(value), r: 5, fill: item.color, class: `series-point${index < baselineIndex ? " prior-point" : ""}`, tabindex: 0,
           "aria-label": `${displaySeriesName(item.seriesName)} ${formatDate(data.dates[index])} 節點 ${index + 1} 指數 ${formatIndex(value)}`,

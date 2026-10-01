@@ -7,6 +7,7 @@ import argparse
 import json
 
 import openpyxl
+from openpyxl.utils.datetime import from_excel
 
 
 PRODUCTS = [
@@ -22,7 +23,7 @@ PRODUCTS = [
         "label": "Power Server",
         "color": "#4f8cff",
         "overall": "Power Server 公告基準",
-        "models": ["S1122", "S1124", "E1150", "E1180"],
+        "models": ["S1112", "S1122", "S1124", "E1150", "E1180"],
     },
     {
         "id": "tape",
@@ -37,6 +38,8 @@ PRODUCTS = [
 def date_key(value) -> str:
     if isinstance(value, (datetime, date)):
         return value.strftime("%Y-%m-%d")
+    if isinstance(value, (int, float)):
+        return from_excel(value).strftime("%Y-%m-%d")
     text = str(value).strip().replace("/", "-")
     parts = text.split("-")
     if len(parts) != 3:
@@ -85,8 +88,11 @@ def build_payload(workbook_path: Path) -> dict:
         if not name:
             continue
         values = [clean(row[col]) if col < len(row) else None for row in populated_rows]
-        if any(value is None for value in values):
-            raise ValueError(f"圖表資料「{name}」含空白指數。請先讓 Excel 完成重算並儲存。")
+        first_value = next((index for index, value in enumerate(values) if value is not None), None)
+        if first_value is None:
+            raise ValueError(f"圖表資料「{name}」沒有可用指數。")
+        if any(value is None for value in values[first_value:]):
+            raise ValueError(f"圖表資料「{name}」在曲線開始後仍含空白指數。請先讓 Excel 完成重算並儲存。")
         series[name] = values
 
     expected_series = [item for product in PRODUCTS for item in [product["overall"], *product["models"]]]
@@ -96,7 +102,7 @@ def build_payload(workbook_path: Path) -> dict:
 
     summary_ws = wb["指數總覽"]
     event_content = {}
-    for col in range(2, summary_ws.max_column + 1):
+    for col in range(2, len(dates) + 2):
         raw_date = summary_ws.cell(1, col).value
         if raw_date is not None:
             event_content[date_key(raw_date)] = summary_ws.cell(2, col).value or ""
@@ -158,9 +164,16 @@ def build_payload(workbook_path: Path) -> dict:
         }
 
     for series_name in expected_series:
-        missing_dates = [key for key in dates if key not in details.get(series_name, {})]
+        values = series[series_name]
+        first_value = next(index for index, value in enumerate(values) if value is not None)
+        required_indexes = [first_value]
+        required_indexes.extend(
+            index for index in range(first_value + 1, len(values))
+            if abs(float(values[index]) - float(values[index - 1])) > 0.0000001
+        )
+        missing_dates = [dates[index] for index in required_indexes if dates[index] not in details.get(series_name, {})]
         if missing_dates:
-            raise ValueError(f"調價明細「{series_name}」缺少節點：{'、'.join(missing_dates)}")
+            raise ValueError(f"調價明細「{series_name}」缺少起始或變動節點：{'、'.join(missing_dates)}")
 
     modified_at = datetime.fromtimestamp(workbook_path.stat().st_mtime).astimezone()
     return {
@@ -172,8 +185,8 @@ def build_payload(workbook_path: Path) -> dict:
             "source": workbook_path.name,
             "sourceModifiedAt": modified_at.isoformat(timespec="seconds"),
             "generatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
-            "methodVersion": "v2-conservative-floor",
-            "method": "同類別多筆先平均；有公告基準時，採公告下限與適用零件類別平均兩者較高值；TWD 匯率獨立累乘；各節點按生效日累乘。",
+            "methodVersion": "v3-ga-aware-conservative-floor",
+            "method": "同類別多筆先平均；有公告基準時，採公告下限與適用零件類別平均兩者較高值；TWD 匯率獨立累乘；各節點按生效日累乘；新型號自 GA 日建立指數 100，不回填上市前走勢。",
         },
         "dates": dates,
         "eventContent": event_content,
