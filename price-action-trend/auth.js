@@ -20,7 +20,7 @@
       encryptedPayload = window.EMBEDDED_PROTECTED_DATA;
       return encryptedPayload;
     }
-    const response = await fetch("protected-data.json?v=20261001114630", { cache: "no-store" });
+    const response = await fetch("protected-data.json?v=20261001115446", { cache: "no-store" });
     if (!response.ok) throw new Error("encrypted-data-unavailable");
     encryptedPayload = await response.json();
     return encryptedPayload;
@@ -64,7 +64,7 @@
     if (window.EMBEDDED_APP_SOURCE) {
       script.textContent = window.EMBEDDED_APP_SOURCE;
     } else {
-      script.src = "app.js?v=20261001114630";
+      script.src = "app.js?v=20261001115446";
     }
     script.onerror = () => {
       protectedApp.hidden = true;

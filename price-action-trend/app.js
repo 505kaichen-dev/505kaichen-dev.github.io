@@ -130,7 +130,7 @@
     baselineSlider.value = String(baselineIndex);
     baselineTicks.style.setProperty("--tick-count", data.dates.length);
     baselineTicks.innerHTML = data.dates.map((dateKey, index) =>
-      `<span class="baseline-tick" data-index="${index}">${compactDateLabel(dateKey, index)}</span>`
+      `<span class="baseline-tick" data-index="${index}" style="--tick-position:${data.dates.length > 1 ? index / (data.dates.length - 1) * 100 : 0}%">${compactDateLabel(dateKey, index)}</span>`
     ).join("");
 
     baselineSlider.addEventListener("input", () => {
@@ -142,7 +142,8 @@
   function renderBaselineControl() {
     const dateLabel = formatDate(data.dates[baselineIndex]);
     const progress = data.dates.length > 1 ? baselineIndex / (data.dates.length - 1) * 100 : 0;
-    baselineSlider.style.setProperty("--range-progress", `${progress}%`);
+    const thumbOffset = 10 - progress / 5;
+    baselineSlider.style.setProperty("--range-progress", `calc(${progress}% + ${thumbOffset}px)`);
     baselineValue.textContent = `${dateLabel} = 100`;
     baselineRangeText.textContent = baselineIndex === 0 ? "完整歷史" : "較早資料淡化顯示";
     baselineHeaderDate.textContent = `${dateLabel} = 100`;
