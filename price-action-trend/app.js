@@ -10,6 +10,7 @@
   ]));
   let baselineIndex = 0;
   let showAllNodeLabels = false;
+  let showNodeChanges = false;
 
   const seriesColors = {
     "Storage 公告基準": "#c65d15",
@@ -42,6 +43,7 @@
   const legend = document.getElementById("legend");
   const exportButton = document.getElementById("exportButton");
   const nodeLabelToggle = document.getElementById("nodeLabelToggle");
+  const nodeChangeToggle = document.getElementById("nodeChangeToggle");
   const tooltip = document.getElementById("tooltip");
   const emptyState = document.getElementById("emptyState");
   const eventDate = document.getElementById("eventDate");
@@ -423,6 +425,7 @@
       .series-point { stroke: #ffffff; stroke-width: 3; }
       .prior-point, .prior-label { opacity: .28; }
       .node-label { font: 700 11px Consolas, monospace; paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+      .node-change-label { font-size: 10px; font-weight: 650; }
     `;
     exportSvg.appendChild(style);
 
@@ -557,9 +560,12 @@
       }));
       item.values.forEach((value, index) => {
         if (value === null || value === undefined) return;
+        const previousValue = index > item.startIndex ? item.values[index - 1] : null;
+        const nodeChange = previousValue === null || previousValue === undefined ? null : value / previousValue - 1;
+        const changeDescription = nodeChange === null ? "" : `；較上一節點 ${formatPercent(nodeChange)}`;
         const point = svgEl("circle", {
           cx: x(index), cy: y(value), r: 5, fill: item.color, class: `series-point${index < baselineIndex ? " prior-point" : ""}`, tabindex: 0,
-          "aria-label": `${displaySeriesName(item.seriesName)} ${formatDate(data.dates[index])} 節點 ${index + 1} 指數 ${formatIndex(value)}`,
+          "aria-label": `${displaySeriesName(item.seriesName)} ${formatDate(data.dates[index])} 節點 ${index + 1} 指數 ${formatIndex(value)}${changeDescription}`,
         });
         point.addEventListener("pointerenter", event => showPoint(item, index, event));
         point.addEventListener("pointermove", event => showPoint(item, index, event));
@@ -571,16 +577,31 @@
         });
         svg.appendChild(point);
 
-        if (showAllNodeLabels || index === lastActualIndex) {
+        const showValue = showAllNodeLabels || index === lastActualIndex;
+        const showChange = showNodeChanges && nodeChange !== null;
+        if (showValue || showChange) {
           const key = `${index}-${Math.round(value / 4)}`;
           const slot = labelSlots.get(key) || 0;
           labelSlots.set(key, slot + 1);
-          appendSvgText(svg, formatNodeIndex(value, index), {
-            x: x(index) + 8,
-            y: y(value) - 10 - slot * 15,
-            fill: item.color,
-            class: `node-label${index < baselineIndex ? " prior-label" : ""}`,
-          });
+          const labelX = x(index) + 8;
+          const labelY = y(value) - 10 - slot * 28;
+          const priorClass = index < baselineIndex ? " prior-label" : "";
+          if (showValue) {
+            appendSvgText(svg, formatNodeIndex(value, index), {
+              x: labelX,
+              y: labelY,
+              fill: item.color,
+              class: `node-label${priorClass}`,
+            });
+          }
+          if (showChange) {
+            appendSvgText(svg, `Δ ${formatPercent(nodeChange)}`, {
+              x: labelX,
+              y: labelY + (showValue ? 14 : 0),
+              fill: item.color,
+              class: `node-label node-change-label${priorClass}`,
+            });
+          }
         }
       });
     });
@@ -599,6 +620,10 @@
   exportButton.addEventListener("click", exportPng);
   nodeLabelToggle.addEventListener("change", () => {
     showAllNodeLabels = nodeLabelToggle.checked;
+    renderChart(selectedSeries());
+  });
+  nodeChangeToggle.addEventListener("change", () => {
+    showNodeChanges = nodeChangeToggle.checked;
     renderChart(selectedSeries());
   });
   render();

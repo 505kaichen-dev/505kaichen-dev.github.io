@@ -399,6 +399,7 @@ h1 { margin-bottom: 0; color: var(--navy); font-size: clamp(2rem, 4vw, 3.6rem); 
 .prior-label { opacity: .3; }
 .series-point:hover, .series-point:focus { r: 7; outline: none; }
 .node-label { font: 700 11px var(--mono); paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+.node-change-label { font-size: 10px; font-weight: 650; }
 
 .tooltip {
   position: absolute;
