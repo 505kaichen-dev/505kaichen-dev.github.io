@@ -126,3 +126,8 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 新增Brembo BM4／BM6風格卡鉗：單體曲面、凸筋、橋體與brembo文字示意，RGB選色；示意尺寸非產品工程尺寸。參考官方GT BM6 https://www.brembo.com/en/solutions/for-your-car/gt-bm6-kit 。
 
 - 重繪卡鉗為沿碟盤圓周的弧形鑄造鉗體，移除方盒式正面。浮動式155mm含滑銷與樸素無字樣；四活塞220～230mm、六活塞275～285mm風格預設；AP CP9660官方尺寸圖 https://apracing.com/cdn/drawings/1099-CP9660-1CD%20-%20Sheet1.pdf 作為跨度與圓周包覆的尺度參考，其餘類型仍為非工程示意預設。來令片位於鉗體後方，不再遮住外殼。
+
+### OZ-inspired wheel previews (2026-10-13)
+Brake before/after selectors include Ultraleggera (six paired spokes), Superturismo LM (slender multi-spoke), and Rally Racing (short spokes plus central disc). All use existing RGB finish, rotation, copy and hide-spokes controls. The Rally central disc is part of the hidden face; rim lips and hub remain visible. These are illustrative shapes, not manufacturer CAD.
+References: https://www.ozracing.com/alloy-wheels/oz-racing/sport/ultraleggera ; https://www.ozracing.com/alloy-wheels/oz-racing/sport/superturismo-lm ; https://www.ozracing.com/alloy-wheels/oz-racing/sport/rally-racing
+
