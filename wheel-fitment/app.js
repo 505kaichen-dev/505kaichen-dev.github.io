@@ -27,7 +27,7 @@ const cx=HUB_X-spec.et*s,cy=170,r=spec.overall*s/2,rr=spec.rim*s/2,tw=spec.secti
 // Four explicit widest points make the drawn envelope equal the modeled section width.
 const outline=`M${cx-rw},${cy-rr} C${cx-rw},${cy-rr-2} ${cx-tw},${cy-mid+3} ${cx-tw},${cy-mid} C${cx-tw},${cy-r+3} ${cx-tr},${cy-r} ${cx-tr},${cy-r} H${cx+tr} C${cx+tr},${cy-r} ${cx+tw},${cy-r+3} ${cx+tw},${cy-mid} C${cx+tw},${cy-mid+3} ${cx+rw},${cy-rr-2} ${cx+rw},${cy-rr} V${cy+rr} C${cx+rw},${cy+rr+2} ${cx+tw},${cy+mid-3} ${cx+tw},${cy+mid} C${cx+tw},${cy+r-3} ${cx+tr},${cy+r} ${cx+tr},${cy+r} H${cx-tr} C${cx-tr},${cy+r} ${cx-tw},${cy+r-3} ${cx-tw},${cy+mid} C${cx-tw},${cy+mid-3} ${cx-rw},${cy+rr+2} ${cx-rw},${cy+rr} Z`;
 // Hollow tire shell: tread and sidewalls only. Thickness is illustrative.
-const skin=Math.min(4*s,(r-rr)*.12),treadSkin=Math.min(10*s,(r-rr)*.3);
+const skin=Math.min(6*s,(r-rr)*.16),treadSkin=Math.min(18*s,(r-rr)*.4);
 const upperOutside=outline.slice(0,outline.indexOf(' V'));
 const rubber=upperOutside+` L${cx+rw},${cy-rr+skin} C${cx+rw-skin},${cy-rr+skin} ${cx+tw-skin},${cy-mid+3} ${cx+tw-skin},${cy-mid} C${cx+tw-skin},${cy-r+treadSkin} ${cx+tr},${cy-r+treadSkin} ${cx+tr},${cy-r+treadSkin} H${cx-tr} C${cx-tr},${cy-r+treadSkin} ${cx-tw+skin},${cy-r+treadSkin} ${cx-tw+skin},${cy-mid} C${cx-tw+skin},${cy-mid+3} ${cx-rw+skin},${cy-rr+skin} ${cx-rw},${cy-rr+skin} Z`;
 let shape=`<g class="tire-envelope" fill="${ghost?'none':'#10181d'}" stroke="${ghost?color:'#89999e'}" stroke-width="${ghost?1:.7}" ${ghost?'stroke-dasharray="5 5" stroke-opacity=".55"':''}><path class="tire-shell" d="${rubber}"/><path class="tire-shell" d="${rubber}" transform="translate(0 ${cy*2}) scale(1 -1)"/></g>`;
