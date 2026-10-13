@@ -110,3 +110,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 卡鉗改為經典造型示意：GT風格四／六活塞、Radi-CAL風格六活塞、MONO6風格六活塞；加入鑄造外殼、橋體、鏤空窗口、筋骨、檢視槽、固定件與金屬漸層。僅外觀參考，非品牌工程尺寸或授權商品圖，保留RGB與共同尺寸比例。參考：https://www.brembo.com/en/solutions/news/guide-choice-gt-kit 、https://apracing.com/performance-upgrades/performance-brake-calipers/world-radi-cal-1-calipers 、https://www.endless-sport.co.jp/products/brake_caliper/index_RacingMONO6.html
 
 - 修正卡鉗／碟盤相對位置，卡鉗85%徑向寬度覆蓋碟盤內側，搭配弧形來令片接觸區及包覆橋體；由原本45%覆蓋移除只掛外緣的視覺。造型與來令片接觸為示意，非特定品牌工程尺寸。
+
+- 兩工具輪圈中心改為共用固定示意尺寸：接合區146mm、中央蓋65mm、五孔114.3mm排列（純外觀預設，不代表車輛規格）；分開蓋、螺帽凹槽及金屬細節，避免隨輪圈吋數百分比放大中心。煞車碟盤中心帽亦改用固定示意尺寸。
