@@ -124,3 +124,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 隱藏功能修正為只隱藏輪幅，輪唇、中央蓋與螺栓仍顯示；標籤改為『隱藏輪幅』。
 
 - 新增Brembo BM4／BM6風格卡鉗：單體曲面、凸筋、橋體與brembo文字示意，RGB選色；示意尺寸非產品工程尺寸。參考官方GT BM6 https://www.brembo.com/en/solutions/for-your-car/gt-bm6-kit 。
+
+- 重繪卡鉗為沿碟盤圓周的弧形鑄造鉗體，移除方盒式正面。浮動式155mm含滑銷與樸素無字樣；四活塞220～230mm、六活塞275～285mm風格預設；AP CP9660官方尺寸圖 https://apracing.com/cdn/drawings/1099-CP9660-1CD%20-%20Sheet1.pdf 作為跨度與圓周包覆的尺度參考，其餘類型仍為非工程示意預設。來令片位於鉗體後方，不再遮住外殼。
