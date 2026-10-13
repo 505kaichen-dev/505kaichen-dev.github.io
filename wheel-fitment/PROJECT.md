@@ -122,3 +122,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 煞車兩組各新增隱藏輪圈開關；隱藏輪幅、輪唇和中心，保留輪胎／刻字、碟盤、卡鉗及比例數字，複製／重設包含開關狀態。
 
 - 隱藏功能修正為只隱藏輪幅，輪唇、中央蓋與螺栓仍顯示；標籤改為『隱藏輪幅』。
+
+- 新增Brembo BM4／BM6風格卡鉗：單體曲面、凸筋、橋體與brembo文字示意，RGB選色；示意尺寸非產品工程尺寸。參考官方GT BM6 https://www.brembo.com/en/solutions/for-your-car/gt-bm6-kit 。
