@@ -116,3 +116,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 煞車工具輪圈新增ADVAN GT風格五幅、TE37風格六幅、BBS LM風格網狀與RPF1風格雙六幅；加入輪幅折面、漸層、輪唇、LM外圈螺栓。中央蓋與五孔布局未修改。僅經典造型參考，非品牌商品圖。
 
 - Before／After輪圈選單均新增樸素量產『原廠普通款』：厚實五幅、小開孔與簡單凹面；Before預設使用普通款，與改裝輪圈對比。
+
+- 煞車Before／After各新增0～360度輪胎／輪圈角度滑桿，輪圈、中心與胎壁刻字旋轉，卡鉗固定；複製與重設包含角度。
