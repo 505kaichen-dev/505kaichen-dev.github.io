@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FortiGate 60F + HiNet PPPoE IPv6 全紀錄</title>
-<meta name="description" content="從 IPv4 老兵重新理解 IPv6：FortiGate 60F、FortiOS 7.2.13、中華電信 PPPoE、DHCPv6-PD、RA、SD-WAN IPv6 路由與完整除錯紀錄。">
+<meta name="description" content="FortiGate 60F 與 HiNet PPPoE IPv6 實作筆記：補齊 IAID、RA、SD-WAN 路由、安全邊界、MSS 與重撥驗收，區分原始紀錄與後續實測補正。">
 <meta property="og:title" content="FortiGate 60F + HiNet PPPoE IPv6 全紀錄">
-<meta property="og:description" content="從 IPv4 老兵重新理解 IPv6，完整記錄 FortiGate 60F 與 HiNet PPPoE 的 IPv6 設定與除錯。">
+<meta property="og:description" content="從基本連通到實際應用驗收：FortiGate、HiNet PPPoE 與 IPv6 的設定、除錯及後續補正。">
 <meta property="og:image" content="./image/cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,6 +474,7 @@
     th { border-bottom: 0; }
   }
 </style>
+<link rel="stylesheet" href="./notebook.css">
 </head>
 <body>
 <header class="topbar">
@@ -483,7 +484,8 @@
     <a href="#concepts">基礎概念</a>
     <a href="#practice">FortiGate 實作</a>
     <a href="#debug">除錯紀錄</a>
-    <a href="#final">最終設定</a>
+    <a href="#updates">實測補正</a>
+    <a href="#final">驗收清單</a>
   </nav>
 </header>
 
@@ -491,15 +493,17 @@
   <img src="./image/hero.png" alt="深夜網路設備除錯插畫">
   <div class="hero-content">
     <div class="eyebrow">FortiGate 60F / FortiOS 7.2.13 / HiNet PPPoE</div>
-    <h1>FortiGate 60F + HiNet PPPoE IPv6 全紀錄</h1>
+    <h1><span class="hero-device">FortiGate 60F × HiNet</span>IPv6 實作筆記</h1>
     <p class="subtitle">從 IPv4 老兵重新理解 IPv6</p>
-    <p class="hero-note">原本以為只是 GUI 點一點，結果一路查到 DHCPv6-PD、RA、SD-WAN Zone 與 IPv6 靜態路由。這是一份真的踩過坑、跑通之後整理出來的工程筆記。</p>
+    <p class="hero-note">取得位址不等於所有應用都正常。從 PPPoE、前綴委派與路由，一路補到 MSS、前綴更新與重連驗收；保留原始探索，也明確寫出後來發現的缺漏。</p>
     <div class="meta-row">
-      <span class="meta">日期：2026-07-07</span>
+      <span class="meta">初版 2026-07-07</span>
+      <span class="meta">補正 2026-10-13</span>
       <span class="meta">設備：FortiGate 60F</span>
       <span class="meta">場景：中華電信光世代 PPPoE</span>
       <span class="meta">重點：IPv6 / SD-WAN / DHCPv6-PD</span>
     </div>
+    <a class="hero-link" href="#updates">先看後續實測與補正 <span aria-hidden="true">↗</span></a>
   </div>
 </section>
 
@@ -511,7 +515,9 @@
       <a href="#topology"><span>03</span><strong>PPPoE + DHCPv6-PD 路徑</strong></a>
       <a href="#practice"><span>04</span><strong>FortiGate 60F 實作步驟</strong></a>
       <a href="#debug"><span>05</span><strong>真正卡住的三個地方</strong></a>
-      <a href="#final"><span>06</span><strong>最終設定總覽</strong></a>
+      <a href="#updates"><span>06</span><strong>MSS 與前綴更新補正</strong></a>
+      <a href="#final"><span>07</span><strong>分層驗收清單</strong></a>
+      <a href="#references"><span>08</span><strong>官方文件與版本邊界</strong></a>
     </div>
   </section>
 
@@ -529,7 +535,9 @@
         <p>如果你也是 IPv4 時代學網路、對 IPv6 一直有種「看得懂但不熟」的感覺，這份紀錄的價值不只是設定步驟，而是把整個判斷鏈補回來。</p>
       </div>
       <aside class="quote-panel">
-        <p>這不是一篇抄文件的設定教學，而是一份把腦子快燒起來之後，終於把鏈路串起來的現場紀錄。</p>
+        <span class="pill">閱讀前先確認</span>
+        <p>這是特定環境的實作紀錄，不是一份可以盲目貼上的通用設定。</p>
+        <small>2026 年 7 月以 WAN2 / IAID 6 為例；10 月配合主備角色改由 WAN1 / IAID 5 提供 IPv6。介面、IAID、gateway 與 policy ID 都必須核對自己的設備。</small>
       </aside>
     </div>
   </section>
@@ -557,12 +565,12 @@
       <article class="concept">
         <div class="num">3</div>
         <h3>/64 是基本單位</h3>
-        <p>前 64 bit 是網路 Prefix，後 64 bit 是裝置端 Interface ID。這跟 IPv4 常見 /24 直覺不同。</p>
+        <p>一般採 SLAAC 的 LAN 使用 /64：前 64 bit 是 Prefix，後 64 bit 是 Interface ID。但 /64 不是所有 IPv6 連線的唯一長度；WAN、回環及點對點鏈路可能不同。</p>
       </article>
       <article class="concept">
         <div class="num">4</div>
         <h3>fe80:: 是 Link-Local</h3>
-        <p>它不是異常，而是 IPv6 網路裡每個介面都會有的本地鏈路位址，RA 與鄰居探索都會用到。</p>
+        <p>Link-Local 範圍是 fe80::/10，只在本鏈路使用，不會被路由到 Internet。RA 與鄰居探索會用到；指定這類 gateway 時也必須有正確的出口介面。</p>
       </article>
       <article class="concept">
         <div class="num">5</div>
@@ -581,7 +589,7 @@
       <div class="diagram-body">
         <div class="addr">
           <div class="prefix">
-            <code>2001:b011:2009:fe05</code>
+            <code>2001:db8:1234:5678</code>
             <strong>前 64 bit：網路 Prefix</strong>
             <small>可以想成 IPv4 的網段概念，但通常用 /64 作為 LAN 基本單位。</small>
           </div>
@@ -601,7 +609,7 @@
         <p class="kicker">Topology</p>
         <h2>這次要跑通的不是一條線，而是一整串條件。</h2>
       </div>
-      <p class="lead">WAN 端 PPPoE 取得 IPv6 與委派 Prefix，LAN 端用 delegated prefix 發 RA，防火牆政策放行 IPv6，SD-WAN member 要有 gateway6，最後 static6 指向 SD-WAN Zone。</p>
+      <p class="lead">本例採 SD-WAN Zone 出口：WAN 取得委派 Prefix，LAN 發 RA，policy 放行，member 與 IPv6 default route 必須接起來。這是本例的路由設計，不代表每一種 FortiGate IPv6 架構都必須手動填 gateway6。</p>
     </div>
 
     <div class="diagram-card">
@@ -641,7 +649,7 @@
           <path d="M560 324 C735 324 790 226 930 226" stroke="#147f7c" stroke-width="5" fill="none" marker-end="url(#arrow)" filter="url(#glow)"/>
           <path d="M870 82 C960 82 970 136 1010 136" stroke="#d88a25" stroke-width="3" fill="none" stroke-dasharray="8 8"/>
           <text x="285" y="101" class="path-small">Prefix Delegation</text>
-          <text x="475" y="251" class="path-small">RA advertises Prefix</text>
+          <text x="475" y="251" class="path-small">LAN derives Prefix from PD</text>
           <text x="840" y="126" class="path-small">routing chain</text>
         </svg>
       </div>
@@ -654,31 +662,37 @@
         <p class="kicker">Implementation</p>
         <h2>FortiGate 60F + HiNet PPPoE 實作步驟。</h2>
       </div>
-      <p class="lead">以下以 `wan2` 作為 PPPoE 介面，`internal` 作為 LAN，且 `wan2` 已在 `virtual-wan-link` SD-WAN Zone 內。這裡保留可核對的 CLI 指令。</p>
+      <p class="lead">以下保留原始 WAN2 / IAID 6 案例，並補齊缺漏。前提是 IPv4 PPPoE 已建立、WAN2 已加入 virtual-wan-link，且你已備份設定並確認所有物件 ID。這不是完整設備組態，也不會替你建立 PPPoE 帳號或 SD-WAN 主備規則。</p>
     </div>
+    <aside class="callout warning"><strong>先核對，再執行</strong><p>尖括號是待替換欄位，不可原樣貼上。IAID 是 DHCPv6 Identity Association 的識別值，不是 HiNet 固定指定的「神奇數字」；先核對既有 WAN PD 設定與租約，再讓 LAN 的兩處 IAID 對應它。修改 upstream 前先設定對應 IAID；本次 FortiOS 曾在順序相反時拒絕 datasource。不要覆蓋既有 policy、route 或 member。</p></aside>
 
     <div class="steps">
       <article class="step">
         <div class="step-no">0</div>
         <div>
-          <h3>確認 IPv6 功能已開啟</h3>
-          <p>到 System → Feature Visibility，確認 IPv6 相關功能已啟用。否則 GUI 裡很多 IPv6 欄位不會出現。</p>
+          <h3>顯示 IPv6 的 GUI 設定欄位</h3>
+          <p>到 System → Feature Visibility 顯示 IPv6 功能。這是 GUI 可見性設定，不等於已取得 PD、建立路由或放行流量；仍需逐項設定與驗收。</p>
         </div>
       </article>
       <article class="step">
         <div class="step-no">1</div>
         <div>
           <h3>wan2 啟用 PPPoE IPv6 與 DHCPv6-PD</h3>
-          <p>WAN 端要向 HiNet 取得 Prefix Delegation。若第一次沒有協商成功，可先 disable 再 enable DHCPv6-PD 觸發重新協商。</p>
+          <p>本例明確列出 PD 的 IAID 6；若設備已有其他 IAID，不要直接新增第二組或改掉原值。先看租約、協商與現有設定。重新啟停 PD 可能影響 LAN IPv6，不能當作第一個無風險的檢查步驟。</p>
 <pre><code>config system interface
     edit "wan2"
         config ipv6
             set ip6-mode pppoe
-            set ip6-allowaccess ping https http
+            unset ip6-allowaccess
             set dhcp6-prefix-delegation enable
+            config dhcp6-iapd-list
+                edit 6
+                next
+            end
         end
     next
 end</code></pre>
+          <p class="step-note">IPv6 連線不需要 WAN 開放 HTTP / HTTPS 管理。此範例不開 WAN IPv6 管理服務；有遠端維運需求時，另行設計限制來源的管理存取。管理存取與 LAN 轉送 policy 是不同層。</p>
         </div>
       </article>
       <article class="step">
@@ -690,6 +704,7 @@ end</code></pre>
     edit "internal"
         config ipv6
             set ip6-mode delegated
+            set ip6-delegated-prefix-iaid 6
             set ip6-upstream-interface "wan2"
             set ip6-subnet ::1/64
             set ip6-send-adv enable
@@ -697,24 +712,28 @@ end</code></pre>
             set ip6-min-interval 10
             config ip6-delegated-prefix-list
                 edit 1
+                    set delegated-prefix-iaid 6
                     set upstream-interface "wan2"
                     set autonomous-flag enable
                     set onlink-flag enable
                     set subnet ::/64
+                    set rdnss-service specify
+                    set rdnss 2606:4700:4700::1111 2001:4860:4860::8888
                 next
             end
         end
     next
 end</code></pre>
+          <p class="step-note">上例以 RDNSS 發送兩個公共 IPv6 DNS，是一種選擇，不是必須使用的服務。沿用 IPv4 DNS 也能查詢 AAAA；若需要內網名稱或過濾，應改用適合的 DNS。10～30 秒 RA 間隔是原始測試值，不是所有家庭網路的最佳值。DNS 與 M/O flags 需配合終端支援，不應盲目開啟 DHCPv6。</p>
         </div>
       </article>
       <article class="step">
         <div class="step-no">3</div>
         <div>
           <h3>新增獨立 IPv6 防火牆政策</h3>
-          <p>FortiOS 的 IPv4 / IPv6 policy 是分開的。IPv4 policy 放行不代表 IPv6 也放行，而且 IPv6 不要開 NAT。</p>
+          <p>本例建立 IPv6 專用放行規則；IPv4 放行不代表 IPv6 已放行。FortiOS 7.2 的規則可在同一 config firewall policy 中管理。本例使用 ISP 原生可路由 PD，不需要 NAT；這不表示 IPv6 完全不存在 NAT 功能。</p>
 <pre><code>config firewall policy
-    edit &lt;policy-id&gt;
+    edit &lt;unused-policy-id&gt;
         set name "SD-WAN-IPv6"
         set srcintf "internal"
         set dstintf "virtual-wan-link"
@@ -723,24 +742,28 @@ end</code></pre>
         set dstaddr6 "all"
         set schedule "always"
         set service "ALL"
+        set nat disable
     next
 end</code></pre>
+          <p class="step-note">此為家庭 LAN 對外的寬鬆範例，不適用所有 VLAN 或企業環境。確認 LAN 可出站、回程由 session 處理，沒有不必要的 WAN → LAN 規則；IPv6 沒有 NAT 不等於沒有防火牆。MSS 另見後續實測章節，先確認需求再加。</p>
         </div>
       </article>
       <article class="step">
         <div class="step-no">4</div>
         <div>
           <h3>SD-WAN 成員補上 IPv6 gateway</h3>
-          <p>這是這次卡最久的一關。wan2 在 SD-WAN Zone 裡時，IPv6 也需要讓 SD-WAN member 知道 gateway6，通常會是 HiNet BRAS 的 link-local 位址。</p>
-<pre><code>diagnose sniffer packet ppp2 "icmp6 and ip6[40]==134" 4 1
+          <p>本例當時缺少 SD-WAN 出口的 IPv6 gateway。先確認 WAN2 實際對應哪個 PPP 介面，再抓上游 RA 來源；ppp2 / ppp3 是執行期名稱，可能改變，不可固定照抄。抓包後核對 RA、路由與 member，不要從其他人的文章複製 gateway。</p>
+<pre><code>diagnose netlink interface list
+diagnose sniffer packet &lt;actual-ppp-interface&gt; "icmp6" 4 10
 
 config system sdwan
     config members
         edit &lt;wan2-member-id&gt;
-            set gateway6 fe80::6aab:9ff:fe31:c01
+            set gateway6 &lt;observed-link-local-gateway&gt;
         next
     end
 end</code></pre>
+          <p class="step-note">選定 PPP 介面的 RA（type 134）來源才是要核對的對象；鄰居探索封包不是 RA。若沒有看到 RA，先確認介面與抓包時機，不要猜位址；未滿抓包數量時用 Ctrl+C 結束。手動 gateway 也應在重撥／上游變更後複查。</p>
         </div>
       </article>
       <article class="step">
@@ -749,7 +772,8 @@ end</code></pre>
           <h3>IPv6 靜態路由指向 SD-WAN Zone</h3>
           <p>既然流量要走 SD-WAN Zone，IPv6 default route 也要指到 `virtual-wan-link`，不要直接寫死到 `wan2`。</p>
 <pre><code>config router static6
-    edit 1
+    edit &lt;unused-route-id&gt;
+        set dst ::/0
         set sdwan-zone "virtual-wan-link"
     next
 end</code></pre>
@@ -763,7 +787,7 @@ end</code></pre>
 diagnose firewall proute6 list
 get router info6 kernel
 execute ping6 2606:4700:4700::1111</code></pre>
-          <p>LAN 端 Windows 再用 `ipconfig /all` 檢查是否取得 `2001:...` 位址，最後用 test-ipv6.com 驗證。</p>
+          <p>LAN 端檢查全球單播位址、RA 預設路由、DNS 及來源位址狀態，不只看是否以 2001 開頭。test-ipv6.com 與 ping 可做基本檢查，但不能取代實際 HTTPS、長連線及重撥驗收。proute6 是 policy route 清單；空白不代表 kernel 沒有 default route。</p>
         </div>
       </article>
     </div>
@@ -784,15 +808,15 @@ execute ping6 2606:4700:4700::1111</code></pre>
         <h3>WAN 端 DHCPv6-PD 第一次沒協商成功</h3>
         <ul>
           <li>症狀：wan2 有 link-local，但沒有拿到 delegated prefix。</li>
-          <li>查法：`diagnose debug application dhcp6c -1` 看 SOLICIT / ADVERTISE / REQUEST / REPLY。</li>
-          <li>解法：重新觸發 DHCPv6-PD 協商，必要時 disable/enable。</li>
+          <li>查法：在維護時段短暫開啟 dhcp6c debug，核對 SOLICIT / ADVERTISE / REQUEST / REPLY 與 IA_PD。</li>
+          <li>判斷：先查協商、IAID 與租約；重新啟停 PD 會影響連線。結束時務必 diagnose debug disable，再 diagnose debug reset；不要長期留著詳細 debug。</li>
         </ul>
       </article>
       <article class="debug-card">
         <span class="pill">坑二</span>
         <h3>LAN 端 RA 沒有帶 Prefix 資訊</h3>
         <ul>
-          <li>症狀：client 收不到可用的 `2001:...` IPv6 位址。</li>
+          <li>症狀：client 收不到有效的全球單播 IPv6 位址；本環境當時的前綴以 2001 開頭。</li>
           <li>查法：`diagnose sniffer packet internal "icmp6 and ip6[40]==134" 6 3`。</li>
           <li>解法：確認 delegated-prefix IAID 與 WAN 端實際 IAID 對上，並檢查 prefix list。</li>
         </ul>
@@ -801,9 +825,9 @@ execute ping6 2606:4700:4700::1111</code></pre>
         <span class="pill">坑三</span>
         <h3>SD-WAN Zone 底下 IPv6 沒有路由</h3>
         <ul>
-          <li>症狀：FortiGate 自己能 ping6，但 LAN client 不通。</li>
+          <li>症狀：FortiGate 自己能 ping6，但 LAN client 不通；這只是線索，不足以單獨證明 gateway6 缺失。</li>
           <li>查法：`diagnose firewall proute6 list`、`get router info6 kernel`、`show system sdwan`。</li>
-          <li>解法：補上 member `gateway6`，並讓 static6 指向 SD-WAN Zone。</li>
+          <li>本例解法：補上 member gateway6 與 Zone default route。其他環境還要追 client 來源前綴、實際出口、policy 與回程；FortiGate 自發流量和 LAN 轉送流量不一定走相同路徑。</li>
         </ul>
       </article>
     </div>
@@ -813,13 +837,43 @@ execute ping6 2606:4700:4700::1111</code></pre>
     </div>
   </section>
 
+  <section class="section wide" id="updates">
+    <div class="section-head">
+      <div><p class="kicker">Field Notes · 2026-10-13</p><h2>有 IPv6，不代表應用就正常。</h2></div>
+      <p class="lead">初版完成的是基本連通。後續實測補上封包尺寸、前綴生命週期與雙 WAN 的限制；不能倒推成 7 月當時一定沒有成功。</p>
+    </div>
+    <article class="case-study">
+      <div class="case-heading"><span class="pill">已確認的個案</span><h3>LINE 卡在登入，TCP 已通，TLS 卻停住。</h3></div>
+      <p>一般網頁與 Google IPv6 HTTPS 正常，但 LINE 無法載入登入 QR code。原先看到測試 connect-timeout，曾誤判為 TCP 未連線；抓包後確認 SYN / SYN-ACK / ACK 成功，問題出現在 TLS 資料傳送階段。</p>
+      <div class="evidence-grid">
+        <div><span>LAN 宣告</span><strong>1440</strong><small>IPv6 TCP MSS</small></div>
+        <div><span>PPPoE 出口</span><strong>1492</strong><small>實測 MTU；MSS 未縮小</small></div>
+        <div><span>修正後</span><strong>1432</strong><small>1492 − 40 − 20</small></div>
+      </div>
+      <p>修改前，LAN 與 PPP 出口的 SYN 都宣告 MSS 1440；伺服器回傳資料出現序號缺口、ACK 停滯。僅調整 IPv6 policy 的 sender / receiver MSS 為 1432 後，封包確認出口宣告已改變，同一 LINE IPv6 目標完成 TLS，使用者也確認登入恢復。沒有修改 PC、DNS 或重新撥號。</p>
+<pre><code>config firewall policy
+    edit &lt;existing-ipv6-policy-id&gt;
+        set tcp-mss-sender 1432
+        set tcp-mss-receiver 1432
+    next
+end</code></pre>
+      <aside class="callout warning"><strong>1432 是本例的結果，不是通用加速值</strong><p>MTU 是 IP 封包上限；MSS 是 TCP payload 上限。本例以 PPPoE MTU 1492，扣掉 IPv6 基本標頭 40 與 TCP 基本標頭 20，得出 1432。若路徑有其他封裝或更小 MTU，必須重新評估；端點也需處理 TCP options。不要把所有 policy 一律改成此值。回復本例原值是 sender / receiver 各 0，不代表其他設備的原值也都是 0。</p></aside>
+      <p><strong>原理：</strong>IPv6 路由器不替轉送封包做分片。過大的封包需要透過 ICMPv6 Packet Too Big 與 PMTUD 通知來源縮小；不要把 ICMPv6 當作只有 ping 而全部擋掉。MSS clamp 是 TCP 的尺寸防護，不是 PMTUD 的替代品，也不處理 UDP / QUIC。</p>
+      <p class="step-note">證據支持本次故障與封包尺寸／路徑 MTU 處理有關，但尚未確認哪一跳丟棄封包，或是否有哪一段阻擋 Packet Too Big。不能直接歸因為 ISP、FortiOS bug，或宣稱所有 IPv6 問題都已解決。</p>
+    </article>
+    <div class="notes-grid">
+      <article class="concept"><span class="pill">前綴生命週期</span><h3>重撥後，要看舊位址是否仍被選用。</h3><p>後續檢查曾發現 PC 留有多組舊 prefix，且仍是 Preferred。拿到新 prefix 並不保證裝置已停止使用舊來源。</p><p>檢查 RA 的 preferred / valid lifetime、PC 的來源位址與實際連線。Deprecated 不等於立刻刪除；舊連線與 valid lifetime 仍需考量。本次曾用臨時 RA 退役已失效的前綴，但不能把這種修復當成永久自動更新保證。</p><p class="step-note">不要隨意把所有 lifetime 設為 0，也不要照抄別人的舊 prefix。FortiOS 7.2.13 的 delegated prefix 欄位曾拒絕本次嘗試的自訂 lifetime；不提供未經驗證的通用修復指令。</p></article>
+      <article class="concept"><span class="pill">雙 WAN 邊界</span><h3>IPv4 有備援，不等於 IPv6 也有。</h3><p>本環境是一條 HiNet 實體線路的兩次 PPPoE：WAN1 固定 IPv4、WAN2 浮動 IPv4。可提供部分撥號／上游異常時的替代出口，但不是兩條獨立線路的實體備援。</p><p>10 月配合 WAN2 僅備用出站的角色，改由 WAN1 / IAID 5 提供 IPv6。LAN 使用 WAN1 的 PD，不應直接把同一來源前綴經 WAN2 送出並當作有效 IPv6 備援。</p><p class="step-note">若要做真正的 IPv6 雙出口，需另行設計前綴、來源選路、通告與切換；本篇沒有宣稱已完成。原始 WAN2 / IAID 6 並非因角色調整就變成錯誤。</p></article>
+    </div>
+  </section>
+
   <section class="section wide" id="final">
     <div class="section-head">
       <div>
-        <p class="kicker">Final State</p>
-        <h2>最終設定總覽。</h2>
+        <p class="kicker">Acceptance Checklist</p>
+        <h2>不是「有通」就收工。</h2>
       </div>
-      <p class="lead">這張表不是取代完整設定，而是讓你快速確認該看的鏈路都有對上。</p>
+      <p class="lead">由設定一致性到端點應用，逐層核對。表格是驗收要求，不代表所有裝置、重撥或未來異常都已測過。</p>
     </div>
     <div class="table-card">
       <table>
@@ -827,19 +881,36 @@ execute ping6 2606:4700:4700::1111</code></pre>
           <tr><th>設定項目</th><th>值 / 判斷</th></tr>
         </thead>
         <tbody>
-          <tr><td>WAN 介面</td><td>`wan2`，PPPoE 撥號介面。</td></tr>
+          <tr><td>WAN 與 PD</td><td>7 月範例 WAN2 / IAID 6；10 月角色調整改為 WAN1 / IAID 5。租約有效，LAN 的兩處 IAID 與 upstream 一致。</td></tr>
           <tr><td>IPv6 取得方式</td><td>PPPoE + DHCPv6 Prefix Delegation。</td></tr>
           <tr><td>LAN 介面</td><td>`internal`，使用 delegated prefix 並發送 RA。</td></tr>
-          <tr><td>Delegated Prefix IAID</td><td>依 WAN 端實際 DHCPv6-PD IAID 對應；本次案例為 `6`。</td></tr>
-          <tr><td>RA 發送間隔</td><td>本次調整為 10～30 秒，方便測試與快速收斂。</td></tr>
+          <tr><td>Delegated Prefix IAID</td><td>WAN PD、LAN delegated address 與 prefix 通告三處對應。6 是原始範例，並非固定要求。</td></tr>
+          <tr><td>RA 發送間隔</td><td>原始測試值 10～30 秒；不是通用最佳化建議，縮短間隔也不能取代舊前綴退役。</td></tr>
           <tr><td>LAN prefix flag</td><td>Autonomous flag / Onlink flag 需要正確啟用。</td></tr>
           <tr><td>防火牆政策</td><td>新增獨立 IPv6 policy，`srcaddr6 all` → `dstaddr6 all`，不開 NAT。</td></tr>
-          <tr><td>SD-WAN wan2 member</td><td>補上 IPv6 gateway6，通常是 HiNet BRAS link-local 位址。</td></tr>
+          <tr><td>SD-WAN 出口 member</td><td>本例核對 gateway6、實際 PPP 介面與上游 RA。更換出口時，LAN 前綴來源與 IPv6 路由需同步檢查。</td></tr>
           <tr><td>IPv6 default route</td><td>`static6` 指向 `virtual-wan-link` SD-WAN Zone。</td></tr>
-          <tr><td>驗證</td><td>`ping6`、`proute6`、kernel route、LAN client `ipconfig /all`、test-ipv6.com。</td></tr>
+          <tr><td>端點與 DNS</td><td>全球單播位址、RA default route 與 DNS 可用；IPv4 DNS 也能查 AAAA。不能只看 WAN 顯示位址。</td></tr>
+          <tr><td>實際應用</td><td>由 LAN 裝置分別測 IPv4 / IPv6 HTTPS、TLS、較大傳輸與平常使用的應用。HTTP 404 若已完成 TLS，仍可證明該次 HTTPS 傳輸成功，不代表服務登入成功。</td></tr>
+          <tr><td>封包尺寸</td><td>核對實際 PPP MTU 與 SYN 的 MSS；有症狀時抓包確認。檢查 ICMPv6 Packet Too Big；本次 TCP 修正不涵蓋 UDP / QUIC。</td></tr>
+          <tr><td>重撥與重連</td><td>維護時段觀察租約、gateway、default route、RA 新舊 prefix 與終端 Preferred / Deprecated 狀態；有新位址不代表舊來源已退役。</td></tr>
+          <tr><td>安全邊界</td><td>WAN 不開不必要管理服務；未授權外網不能主動進入 LAN。核對 IPv6 policy 與 local-in，不能把 IPv4 規則當成 IPv6 的保護證明。</td></tr>
+          <tr><td>主備切換</td><td>分別驗收 IPv4 與 IPv6；本環境 IPv6 單出口，不把 WAN2 的 IPv4 備援宣稱為 IPv6 備援。</td></tr>
         </tbody>
       </table>
     </div>
+    <article class="case-study" style="margin-top:24px">
+      <span class="pill">Windows · 唯讀檢查</span>
+      <h3 style="margin-top:14px">從真正使用網路的 LAN 裝置測，不只測 FortiGate。</h3>
+<pre><code>Get-NetIPAddress -AddressFamily IPv6 |
+    Select-Object InterfaceAlias, IPAddress, PrefixLength, AddressState
+Get-NetRoute -AddressFamily IPv6 -DestinationPrefix "::/0"
+Get-DnsClientServerAddress
+Resolve-DnsName www.google.com -Type AAAA
+curl.exe -4 -I --connect-timeout 10 --max-time 30 https://www.google.com/
+curl.exe -6 -I --connect-timeout 10 --max-time 30 https://www.google.com/</code></pre>
+      <p class="step-note">上述指令不更改網路設定。AAAA 查詢成功不等於 IPv6 路徑成功；單一網站 HEAD 成功也不能涵蓋所有封包尺寸或應用。再測平常使用的登入、影片、較大下載，以及 IPv4 / IPv6 差異。有 VPN、proxy 或多張網卡時，須核對實際來源與出口。</p>
+    </article>
   </section>
 
   <section class="closing">
@@ -848,13 +919,24 @@ execute ping6 2606:4700:4700::1111</code></pre>
         <p class="kicker">Afterthought</p>
         <h2>IPv6 沒有想像中難，難的是不能只靠 IPv4 的習慣硬套。</h2>
         <p>真正要補起來的是整條鏈：PPPoE、DHCPv6-PD、IAID、RA、SLAAC、防火牆政策、SD-WAN member、IPv6 default route。只要其中一段沒有對上，表面症狀可能會讓你誤判問題在完全不同的地方。</p>
-        <p>IPv4 跟 IPv6 應該還會共存很長一段時間。與其把 IPv6 當成一套陌生系統，不如把它理解成「網路位址與路由邏輯變得更直接，但中間協調環節更多」。</p>
+        <p>對這個雙協定家庭環境，最有用的做法是分開驗收 IPv4 與 IPv6，再追同一個應用的實際路徑。不要用單次 ping、測試網站分數或「能開網頁」代替整條鏈路的檢查。</p>
       </div>
       <aside class="note">
         <strong>版本註記</strong>
-        <p>本文記錄的是 2026-07-07 的實作經驗，設備為 FortiGate 60F / FortiOS 7.2.13，中華電信 PPPoE 環境。不同 FortiOS 版本、ISP 或 SD-WAN 架構可能需要調整。</p>
+        <p>初版：2026-07-07。補正：2026-10-13。設備為 FortiGate 60F / FortiOS 7.2.13，中華電信 PPPoE 環境。本文保留原始 WAN2 範例，另列後續 WAN1 角色調整與 LINE 實測；並非完整組態備份或所有情境的成功保證。版本號是實測環境，不是韌體推薦；維護時仍須另查原廠安全公告與支援狀態。</p>
       </aside>
     </div>
+  </section>
+  <section class="section" id="references">
+    <div class="section-head"><div><p class="kicker">References &amp; Revision</p><h2>文件、證據與適用範圍。</h2></div><p class="lead">官方文件用來核對功能；個案結論來自本次前後封包與應用測試。CLI 仍須以實際 FortiOS 的 help 與設定為準。</p></div>
+    <ul class="reference-list">
+      <li><a href="https://docs.fortinet.com/document/fortigate/7.2.13/cli-reference/317104469/config-system-interface">FortiOS 7.2.13 · system interface CLI</a><span>IAID、delegated prefix 與 RDNSS 欄位。</span></li>
+      <li><a href="https://community.fortinet.com/fortigate-3/troubleshooting-tip-dhcpv6-prefix-delegation-105150">Fortinet · DHCPv6 Prefix Delegation</a><span>WAN PD 與 LAN IAID 對應的設定範例；不同版本不可整段照搬。</span></li>
+      <li><a href="https://community.fortinet.com/fortigate-3/technical-tip-setting-tcp-mss-value-96548">Fortinet · Setting TCP MSS value</a><span>MSS 調整與封包尺寸問題；本文 1432 來自實際 IPv6 / PPPoE MTU。</span></li>
+      <li><a href="https://www.rfc-editor.org/rfc/rfc8201.html">RFC 8201 · IPv6 Path MTU Discovery</a><span>Packet Too Big 與路徑 MTU。</span></li>
+      <li><a href="https://www.rfc-editor.org/rfc/rfc8415.html">RFC 8415 · DHCPv6</a><span>IAID、租約與前綴委派的協定基礎。</span></li>
+    </ul>
+    <aside class="callout"><strong>2026-10-13 修訂摘要</strong><p>補齊 IAID；移除 WAN HTTP / HTTPS 管理範例；替換固定 PPP 介面與 gateway；釐清 IPv6 policy / NAT；新增 RDNSS、MSS 實測、前綴更新、雙 WAN 限制與分層驗收。原始版本另行保存，未把後續發現包裝成初版已驗證。</p></aside>
   </section>
 </main>
 
@@ -864,8 +946,23 @@ execute ping6 2606:4700:4700::1111</code></pre>
 <script>
   window.addEventListener("load", () => {
     if (!location.hash) return;
-    const target = document.querySelector(location.hash);
+    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (target) target.scrollIntoView();
+  });
+  // HTML 不會解析 Markdown；將既有內文的成對反引號轉為語意化 code。
+  document.querySelectorAll('p, li, td, h3').forEach(el => {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.filter(node => node.parentElement.tagName !== 'CODE' && /`[^`]+`/.test(node.textContent)).forEach(node => {
+      const fragment = document.createDocumentFragment();
+      node.textContent.split(/(`[^`]+`)/g).forEach(part => {
+        if (part.startsWith('`') && part.endsWith('`')) {
+          const code = document.createElement('code'); code.textContent = part.slice(1, -1); fragment.append(code);
+        } else fragment.append(document.createTextNode(part));
+      });
+      node.replaceWith(fragment);
+    });
   });
 </script>
 </body>
