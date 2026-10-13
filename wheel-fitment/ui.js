@@ -5,6 +5,13 @@ try{const saved=JSON.parse(localStorage.getItem('fitment-ui-v1')||'null');if(sav
 const cnConverter=OpenCC.Converter({from:'t',to:'cn'});
 const textSources=new WeakMap(),attributeSources=new WeakMap();
 const english={
+'原廠基準間隙（使用者量測值）':'Original reference gap (user measurement)',
+'；依原廠資料建立葉子板位置，以輪轂接觸面為零點：':'; Fender reference from original setup, relative to hub origin: ',
+'。原廠資料變更時自動更新，目標資料不改變基準。':'. Original input updates this reference automatically; target input leaves it unchanged.',
+'原廠避震器基準：ET ':'Original strut reference: ET ',
+'兩組圖共用相同葉子板位置；原廠規格或量測值變更時自動更新，目標規格不改變基準。':'Both views share the same fender reference. Original setup or measurement edits update it automatically; target edits leave it unchanged.',
+'量測目前原廠規格下，胎壁最外側與葉子板外緣的水平距離。':'Measure the horizontal gap between the original outer sidewall and fender edge.',
+'原廠規格或量測值變更時自動更新避震器基準；修改目標規格只更新剩餘間隙。':'Original setup or measurement edits automatically update the strut reference. Target edits only update remaining clearance.',
 '顯示輪圈位置尺寸':'Show wheel position dimensions',
 '橡膠厚度亦為示意。':'Rubber thickness is also illustrative.',
 '輪轂原點 0 mm · 左車內 / 右車外':'Hub origin 0 mm · Left inboard / Right outboard',
