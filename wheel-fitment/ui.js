@@ -5,6 +5,14 @@ try{const saved=JSON.parse(localStorage.getItem('fitment-ui-v1')||'null');if(sav
 const cnConverter=OpenCC.Converter({from:'t',to:'cn'});
 const textSources=new WeakMap(),attributeSources=new WeakMap();
 const english={
+'輪轂原點 0 mm · 左車內 / 右車外':'Hub origin 0 mm · Left inboard / Right outboard',
+'以目前原廠規格重新建立葉子板基準':'Reset fender reference to current original setup',
+'目前左側規格與葉子板的位置':'Current original setup vs. fender',
+'；葉子板位置已鎖定，以輪轂接觸面為零點：':'; Fixed fender coordinate relative to hub origin: ',
+'。重新量測後可重建此基準。':'. Reset this reference after a new measurement.',
+'筒身外側相對輪轂：':'Strut outer surface relative to hub: ',
+'啟用後鎖定，輪胎規格變更不會移動葉子板。':'Locked when enabled; tire setup edits do not move the fender.',
+'量測目前原廠規格下，胎壁最外側與葉子板外緣的水平距離。兩組圖共用相同葉子板位置；':'Measure the original outer sidewall-to-fender gap. Both views share the same fender position; ',
 '以目前原廠規格重新建立基準':'Reset reference to current original setup',
 '建立基準時的間隙（使用者量測值）':'Reference gap (user measurement)',
 '目前左側規格到避震筒（估算值）':'Current original setup clearance (estimated)',
