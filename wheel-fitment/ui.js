@@ -5,6 +5,7 @@ try{const saved=JSON.parse(localStorage.getItem('fitment-ui-v1')||'null');if(sav
 const cnConverter=OpenCC.Converter({from:'t',to:'cn'});
 const textSources=new WeakMap(),attributeSources=new WeakMap();
 const english={
+'橡膠厚度亦為示意。':'Rubber thickness is also illustrative.',
 '輪轂原點 0 mm · 左車內 / 右車外':'Hub origin 0 mm · Left inboard / Right outboard',
 '以目前原廠規格重新建立葉子板基準':'Reset fender reference to current original setup',
 '目前左側規格與葉子板的位置':'Current original setup vs. fender',
