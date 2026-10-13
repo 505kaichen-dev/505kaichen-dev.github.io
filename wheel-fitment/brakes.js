@@ -14,7 +14,12 @@ for(let i=0;i<6;i++)out+=`<circle cx="${cx}" cy="${cy}" r="${disc*(.5+i*.085)}" 
 if(['drilled','both'].includes(v.disc))for(let ring=0;ring<2;ring++)for(let i=0;i<18;i++){const a=(i/18+ring*.025)*Math.PI*2,rad=disc*(.7+ring*.16);out+=`<circle cx="${cx+Math.cos(a)*rad}" cy="${cy+Math.sin(a)*rad}" r="${Math.max(.6,3*s)}" fill="#27333b"/>`;}
 if(['slotted','both'].includes(v.disc))for(let i=0;i<12;i++){const a=i*Math.PI/6;out+=`<path d="M${cx+Math.cos(a)*disc*.58},${cy+Math.sin(a)*disc*.58} Q${cx+Math.cos(a+.07)*disc*.8},${cy+Math.sin(a+.07)*disc*.8} ${cx+Math.cos(a+.13)*disc*.94},${cy+Math.sin(a+.13)*disc*.94}" fill="none" stroke="#39464f" stroke-width="${Math.max(.7,3*s)}"/>`;}
 out+=`<circle cx="${cx}" cy="${cy}" r="${disc*.37}" fill="${shade(v.discColor,-35)}" stroke="#677b88"/><circle cx="${cx}" cy="${cy}" r="${disc*.2}" fill="#202c34"/>`;
-const ch=cal.h*s,cw=cal.w*s,x=cx+disc-cw*.45,cg='caliper-paint-'+group,pig=v.caliperColor,radical=v.caliper==='radical',mono=v.caliper==='mono',floating=v.caliper==='floating',pots=v.caliper==='four'||floating?2:3;
+const ch=cal.h*s,cw=cal.w*s,x=cx+disc-cw*.85,cg='caliper-paint-'+group,pig=v.caliperColor,radical=v.caliper==='radical',mono=v.caliper==='mono',floating=v.caliper==='floating',pots=v.caliper==='four'||floating?2:3;
+// Pad contact follows the swept friction annulus rather than merely touching the edge.
+const padAngle=Math.asin(Math.min(.85,ch*.4/disc)),padOuter=disc*.98,padInner=Math.max(disc*.38,disc-cw*.74);
+const point=(radius,angle)=>[cx+radius*Math.cos(angle),cy+radius*Math.sin(angle)];
+const po1=point(padOuter,-padAngle),po2=point(padOuter,padAngle),pi1=point(padInner,padAngle),pi2=point(padInner,-padAngle);
+out+=`<path class="brake-pad-contact" d="M${po1} A${padOuter},${padOuter} 0 0 1 ${po2} L${pi1} A${padInner},${padInner} 0 0 0 ${pi2}Z" fill="#273039" stroke="#71808a" stroke-width="1"/><path d="M${cx+disc-cw*.82},${cy-ch*.36}L${cx+disc-cw*.12},${cy-ch*.41}V${cy+ch*.41}L${cx+disc-cw*.82},${cy+ch*.36}Z" fill="#35414b" stroke="#83919b" stroke-width="1"/>`;
 const classic='M31,0 C15,0 7,14 6,31 L2,68 Q-2,120 2,172 L6,209 C7,226 15,240 31,240 H63 Q91,236 96,217 L100,180 V60 L96,23 Q91,4 63,0 Z';
 const skeletal='M35,0 L71,7 L95,33 L100,69 L88,100 L97,139 L100,175 L89,213 L65,237 L30,240 L7,214 L0,174 L9,135 L2,93 L4,56 L17,19 Z';
 const block='M23,0 H70 L91,17 L99,52 V189 L91,223 L70,240 H23 L6,222 V18 Z';
