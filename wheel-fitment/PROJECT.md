@@ -92,3 +92,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 參考Continental胎體結構說明 https://www.continental-tires.com/ca/en/tire-knowledge/tire-components/：胎面／帶束層與側壁／內襯厚度不可視為同一材料厚度。中空剖面內側加厚：側壁示意6mm、胎冠總層厚示意18mm（薄胎壁時受幾何上限限制），不是廠商通用實測值。外輪廓、尺寸及間隙不變。
 
 - 移除避震器彈簧、上座與上方延伸畫布；四格固定520×350 viewBox，開關避震器不改變輪胎顯示比例。保留粗筒身、短活塞桿與下固定座，間隙計算不變。
+
+- ET整體位移與胎唇座內外位置差合併為『顯示輪圈位置尺寸』，預設關閉；一鍵控制兩類標示與輪圈尺寸線，主要胎壁、葉子板與避震間隙獨立保留。
