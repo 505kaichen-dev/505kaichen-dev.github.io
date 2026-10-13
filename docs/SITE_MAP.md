@@ -34,6 +34,7 @@ index.html（Kai AI Workshop 首頁）
 ├─ 3mf-explorer/index.html（Portable EXE 使用外部雲端分享）
 ├─ fortigate-ipv6-hinet/index.html
 ├─ downloader/index.html（個人使用 Windows Portable 軟體介紹與開發故事）
+├─ wheel-fitment/index.html（Fitment Lab 輪胎輪圈改裝計算器）
 └─ gallery/index.html
 ```
 

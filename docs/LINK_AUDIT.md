@@ -39,3 +39,9 @@
 - 更換封面圖片。
 - 修改根首頁卡片。
 - GitHub Pages 發布前。
+
+## 2026-10-13 Fitment Lab 首頁更新驗證
+- 檢查根首頁及 wheel-fitment/index.html 共 46 個本機 href/src：失效 0。
+- app.js 語法檢查通過。
+- 首頁卡片序號018、Build分類、最新發布自動選中 Fitment Lab；1200×630 PNG封面載入。
+- 本次為首頁與新專案範圍驗證，不代表重新掃描全站歷史頁面。
