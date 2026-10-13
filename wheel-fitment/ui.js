@@ -5,12 +5,18 @@ try{const saved=JSON.parse(localStorage.getItem('fitment-ui-v1')||'null');if(sav
 const cnConverter=OpenCC.Converter({from:'t',to:'cn'});
 const textSources=new WeakMap(),attributeSources=new WeakMap();
 const english={
+'以目前原廠規格重新建立基準':'Reset reference to current original setup',
+'建立基準時的間隙（使用者量測值）':'Reference gap (user measurement)',
+'目前左側規格到避震筒（估算值）':'Current original setup clearance (estimated)',
+'固定避震器基準：ET ':'Fixed strut reference: ET ',
+'，斷面寬 ':', section width ',
+'啟用時鎖定量測基準；修改原廠 ET 或尺寸不會移動避震器。重新量測後，請按重新建立基準。':'The measurement reference locks when enabled. Editing the original ET or size does not move the strut. Reset the reference after taking a new measurement.',
 '此欄比較胎壁與筒身，輪緣及彈簧座需另量測。':'This compares sidewall and strut body only. Wheel flanges and spring perches require separate measurements.',
 '避震器內側間隙參考':'Strut clearance reference',
 '輸入目前原廠輪胎內側最寬處到避震筒身外側的實測水平距離。兩組圖共用同一個避震器位置。':'Enter the measured horizontal gap from the original tire’s widest inner sidewall to the nearest strut body surface. Both views share the same strut position.',
 '目前胎壁到避震筒間隙':'Current sidewall-to-strut gap',
 '避震筒身 RGB':'Strut body RGB','避震筒身顏色':'Strut body color',
-'依使用者實測距離推算的靜態水平間隙，假設筒身位置固定。避震器造型與尺寸為示意，未計彈簧座、轉向、外傾、懸吊壓縮或負載變形；有間隙不代表保證不干涉。修改原廠規格後請核對實測值。':'Static horizontal clearance estimated from your measurement, assuming a fixed strut position. Strut shape and size are illustrative. Spring perches, steering, camber, suspension travel and load deflection are excluded. Positive clearance is not a fitment guarantee. Recheck measurements after changing the original setup.',
+'依使用者實測距離推算的靜態水平間隙，假設筒身位置固定。避震器造型與尺寸為示意，未計彈簧座、轉向、外傾、懸吊壓縮或負載變形；有間隙不代表保證不干涉。':'Static horizontal clearance estimated from your measurement, assuming a fixed strut position. Strut shape and size are illustrative. Spring perches, steering, camber, suspension travel and load deflection are excluded. Positive clearance is not a fitment guarantee. Recheck measurements after changing the original setup.',
 '原廠胎壁到避震筒（使用者量測值）':'Original sidewall-to-strut gap (measured)',
 '改裝後胎壁到避震筒（估算值）':'New sidewall-to-strut gap (estimated)',
 '此模型下胎壁與筒身齊平':'Sidewall touches strut in this model',
