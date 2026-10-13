@@ -62,3 +62,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 修正單側盤面中央接觸塊的厚度方向：背面 x280 接觸輪轂，輪圈材料延伸至車外 x286；車內 x264～280 為灰色輪轂，黃色接觸線縮短至實際接觸塊高度。
 
 - 胎壁刻字字級改為隨繪圖胎壁厚度按比例縮放（52%），移除固定13px上限；字距與基線同步調整，長字串另受弧長限制，避免碰到內外緣。
+
+- 首頁封面改為 ImageGen 生成的黑橘／藍白成年二次元賽車女孩換胎場景，輸出1200×630 PNG。舊圖備份：W:/_archive/versions/wheel-fitment-cover-before-anime-20261013.png。
