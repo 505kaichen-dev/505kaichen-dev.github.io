@@ -1,10 +1,24 @@
 'use strict';
-const uiDefaults={theme:'dark',language:'zh-Hant',stock:{rim:'#aebbc5',letter:'#ffffff',painted:false},target:{rim:'#b89058',letter:'#ffffff',painted:false}};
+const uiDefaults={theme:'dark',language:'zh-Hant',strutColor:'#e6bb42',stock:{rim:'#aebbc5',letter:'#ffffff',painted:false},target:{rim:'#b89058',letter:'#ffffff',painted:false}};
 let uiSettings=structuredClone(uiDefaults);
-try{const saved=JSON.parse(localStorage.getItem('fitment-ui-v1')||'null');if(saved){if(['dark','blue','orange'].includes(saved.theme))uiSettings.theme=saved.theme;if(['zh-Hant','zh-Hans','en'].includes(saved.language))uiSettings.language=saved.language;for(const g of ['stock','target'])for(const key of ['rim','letter','painted']){const value=saved[g]?.[key];if(key==='painted'?typeof value==='boolean':/^#[0-9a-f]{6}$/i.test(value||''))uiSettings[g][key]=value;}}}catch{}
+try{const saved=JSON.parse(localStorage.getItem('fitment-ui-v1')||'null');if(saved){if(/^#[0-9a-f]{6}$/i.test(saved.strutColor||''))uiSettings.strutColor=saved.strutColor;if(['dark','blue','orange'].includes(saved.theme))uiSettings.theme=saved.theme;if(['zh-Hant','zh-Hans','en'].includes(saved.language))uiSettings.language=saved.language;for(const g of ['stock','target'])for(const key of ['rim','letter','painted']){const value=saved[g]?.[key];if(key==='painted'?typeof value==='boolean':/^#[0-9a-f]{6}$/i.test(value||''))uiSettings[g][key]=value;}}}catch{}
 const cnConverter=OpenCC.Converter({from:'t',to:'cn'});
 const textSources=new WeakMap(),attributeSources=new WeakMap();
 const english={
+'此欄比較胎壁與筒身，輪緣及彈簧座需另量測。':'This compares sidewall and strut body only. Wheel flanges and spring perches require separate measurements.',
+'避震器內側間隙參考':'Strut clearance reference',
+'輸入目前原廠輪胎內側最寬處到避震筒身外側的實測水平距離。兩組圖共用同一個避震器位置。':'Enter the measured horizontal gap from the original tire’s widest inner sidewall to the nearest strut body surface. Both views share the same strut position.',
+'目前胎壁到避震筒間隙':'Current sidewall-to-strut gap',
+'避震筒身 RGB':'Strut body RGB','避震筒身顏色':'Strut body color',
+'依使用者實測距離推算的靜態水平間隙，假設筒身位置固定。避震器造型與尺寸為示意，未計彈簧座、轉向、外傾、懸吊壓縮或負載變形；有間隙不代表保證不干涉。修改原廠規格後請核對實測值。':'Static horizontal clearance estimated from your measurement, assuming a fixed strut position. Strut shape and size are illustrative. Spring perches, steering, camber, suspension travel and load deflection are excluded. Positive clearance is not a fitment guarantee. Recheck measurements after changing the original setup.',
+'原廠胎壁到避震筒（使用者量測值）':'Original sidewall-to-strut gap (measured)',
+'改裝後胎壁到避震筒（估算值）':'New sidewall-to-strut gap (estimated)',
+'此模型下胎壁與筒身齊平':'Sidewall touches strut in this model',
+'預估剩餘間隙 ':'Estimated remaining clearance: ',
+'此模型下重疊 ':'Overlap in this model: ',
+'；依同一水平參考位置估算，不代表實際干涉判定。':'; Estimated at the same horizontal reference, not a determination of actual interference.',
+'間隙請填 0～200 mm。避震器標示暫停顯示。':'Enter a gap of 0–200 mm. Strut annotations are paused.',
+'避震筒':'Strut','間隙 ':'Gap ',
 '胎體及盤面造型為示意；實際胎寬與胎肩依品牌、型號、量測輪圈及胎壓而異。J 值尺寸以胎唇座為準，不含實體輪緣厚度。':'Tire and wheel-face shapes are illustrative. Actual section width and shoulders vary by brand, model, measuring rim and pressure. Rim-width dimensions use bead seats and exclude physical flange thickness.',
 '安裝面 → 實體內輪緣（估算）':'Mounting plane → physical inner flange (estimated)',
 '安裝面 → 實體外輪緣（估算）':'Mounting plane → physical outer flange (estimated)',
@@ -63,7 +77,8 @@ function translateUI(){document.documentElement.lang=uiSettings.language;const w
 function wheelLook(group){return uiSettings[group]||uiSettings.stock;}
 function shade(hex,offset){return '#'+hex.slice(1).match(/../g).map(v=>Math.max(0,Math.min(255,parseInt(v,16)+offset)).toString(16).padStart(2,'0')).join('');}
 function saveUI(){try{localStorage.setItem('fitment-ui-v1',JSON.stringify(uiSettings));}catch{}}
-function applyAppearance(){document.documentElement.dataset.theme=uiSettings.theme;document.getElementById('theme-select').value=uiSettings.theme;document.getElementById('language-select').value=uiSettings.language;for(const group of ['stock','target']){document.getElementById(group+'-rim-color').value=uiSettings[group].rim;document.getElementById(group+'-letter-color').value=uiSettings[group].letter;document.getElementById(group+'-letter-painted').checked=uiSettings[group].painted;document.getElementById(group+'-letter-color').disabled=!uiSettings[group].painted;}document.querySelector('meta[name="theme-color"]').content=uiSettings.theme==='blue'?'#f0f5fb':uiSettings.theme==='orange'?'#151515':'#101719';}
+function applyAppearance(){document.getElementById('strut-color').value=uiSettings.strutColor;document.documentElement.dataset.theme=uiSettings.theme;document.getElementById('theme-select').value=uiSettings.theme;document.getElementById('language-select').value=uiSettings.language;for(const group of ['stock','target']){document.getElementById(group+'-rim-color').value=uiSettings[group].rim;document.getElementById(group+'-letter-color').value=uiSettings[group].letter;document.getElementById(group+'-letter-painted').checked=uiSettings[group].painted;document.getElementById(group+'-letter-color').disabled=!uiSettings[group].painted;}document.querySelector('meta[name="theme-color"]').content=uiSettings.theme==='blue'?'#f0f5fb':uiSettings.theme==='orange'?'#151515':'#101719';}
 applyAppearance();
+document.getElementById('strut-color').addEventListener('input',e=>{uiSettings.strutColor=e.target.value;saveUI();update();});
 for(const group of ['stock','target']){for(const [suffix,key] of [['rim-color','rim'],['letter-color','letter']])document.getElementById(group+'-'+suffix).addEventListener('input',e=>{uiSettings[group][key]=e.target.value;saveUI();update();});document.getElementById(group+'-letter-painted').addEventListener('change',e=>{uiSettings[group].painted=e.target.checked;applyAppearance();saveUI();update();});}
 document.getElementById('theme-select').addEventListener('change',e=>{uiSettings.theme=e.target.value;applyAppearance();saveUI();update();});document.getElementById('language-select').addEventListener('change',e=>{uiSettings.language=e.target.value;saveUI();update();});
