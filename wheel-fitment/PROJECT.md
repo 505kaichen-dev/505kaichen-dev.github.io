@@ -108,3 +108,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 驗證：12吋＋420mm碟盤實際SVG半徑比為1.3779527559，與420/(12×25.4)一致，六活塞造型仍195mm；複製差值歸零、重設回+61mm，英文無殘留中文，390px無水平溢出，主控台無錯誤；既有1,273項回歸通過。
 
 - 卡鉗改為經典造型示意：GT風格四／六活塞、Radi-CAL風格六活塞、MONO6風格六活塞；加入鑄造外殼、橋體、鏤空窗口、筋骨、檢視槽、固定件與金屬漸層。僅外觀參考，非品牌工程尺寸或授權商品圖，保留RGB與共同尺寸比例。參考：https://www.brembo.com/en/solutions/news/guide-choice-gt-kit 、https://apracing.com/performance-upgrades/performance-brake-calipers/world-radi-cal-1-calipers 、https://www.endless-sport.co.jp/products/brake_caliper/index_RacingMONO6.html
+
+- 修正卡鉗／碟盤相對位置，卡鉗85%徑向寬度覆蓋碟盤內側，搭配弧形來令片接觸區及包覆橋體；由原本45%覆蓋移除只掛外緣的視覺。造型與來令片接觸為示意，非特定品牌工程尺寸。
