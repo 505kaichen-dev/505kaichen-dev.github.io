@@ -35,19 +35,42 @@ out+='</g>';
 const arc='brake-letter-'+group,ar=(tire+rim)/2,font=Math.min((tire-rim)*.5,15);out+=`<defs><path id="${arc}" d="M${cx-ar},${cy}A${ar},${ar} 0 0 1 ${cx+ar},${cy}"/></defs><text transform="rotate(${Number(v.angle)||0} ${cx} ${cy})" style="fill:#b5c0c6;font-size:${font}px;font-weight:700;letter-spacing:1px"><textPath href="#${arc}" startOffset="50%" text-anchor="middle">${v.width}/${v.aspect} R${v.diameter}</textPath></text><text x="260" y="451" text-anchor="middle">${v.diameter}″ · Ø ${v.rotor} mm</text></svg>`;return out;}
 
 function drawCurvedCaliper(v,group,s,cx,cy,disc,cal){
-const floating=v.caliper==='floating',radical=v.caliper==='radical',mono=v.caliper==='mono',bm=v.caliper==='bm4'||v.caliper==='bm6',count=floating?2:(v.caliper==='four'||v.caliper==='bm4'?2:3);
-const outer=disc+(floating?17:23)*s,inner=Math.max(20*s,outer-cal.w*s),halfHeight=cal.h*s/2,angle=Math.asin(Math.min(.93,halfHeight/outer)),stretch=halfHeight/(outer*Math.sin(angle)),color=v.caliperColor,id='curved-caliper-'+group;
-const p=(r,a)=>[cx+Math.cos(a)*r,cy+Math.sin(a)*r*stretch],o1=p(outer,-angle),o2=p(outer,angle),i1=p(inner,angle),i2=p(inner,-angle);
-const shell=`M${o1} A${outer},${outer*stretch} 0 0 1 ${o2} Q${p((outer+inner)/2,angle+.045)} ${i1} A${inner},${inner*stretch} 0 0 0 ${i2} Q${p((outer+inner)/2,-angle-.045)} ${o1}Z`;
-let svg=`<defs><linearGradient id="${id}" x1="0" x2="1" y1="0" y2=".7"><stop offset="0" stop-color="${shade(color,-65)}"/><stop offset=".35" stop-color="${shade(color,25)}"/><stop offset=".72" stop-color="${color}"/><stop offset="1" stop-color="${shade(color,-45)}"/></linearGradient><path id="${id}-letter" d="M${p((inner+outer)/2,-angle*.6)} A${(inner+outer)/2},${(inner+outer)*stretch/2} 0 0 1 ${p((inner+outer)/2,angle*.6)}"/></defs><g class="brake-caliper" data-height-mm="${cal.h}" data-width-mm="${cal.w}">`;
-const padOut=disc-2*s,padIn=Math.max(20*s,disc-55*s);svg+=`<path class="brake-pad-contact" d="M${p(padOut,-angle*.7)} A${padOut},${padOut*stretch} 0 0 1 ${p(padOut,angle*.7)} L${p(padIn,angle*.7)} A${padIn},${padIn*stretch} 0 0 0 ${p(padIn,-angle*.7)}Z" fill="#242e35" stroke="#596975" stroke-width=".8"/>`;
-svg+=`<path class="caliper-cast-shell" d="${shell}" fill="url(#${id})" stroke="${shade(color,-65)}" stroke-width="${2*s}"/>`;
-// Distinct cast segments follow the disc circumference, rather than a rectangular box.
-for(let i=0;i<count;i++){const aa=-angle*.68+(i+.5)*angle*1.36/count,da=angle*.42/count,ro=outer-3*s,ri=inner+7*s,points=[p(ro,aa-da),p(ro,aa+da),p(ri,aa+da),p(ri,aa-da)];svg+=`<path d="M${points[0]} A${ro},${ro*stretch} 0 0 1 ${points[1]} L${points[2]} A${ri},${ri*stretch} 0 0 0 ${points[3]}Z" fill="${shade(color,floating?-20:-5)}" stroke="${shade(color,30)}" stroke-width="1"/>`;if(radical){const c=p((ro+ri)/2,aa);svg+=`<ellipse cx="${c[0]}" cy="${c[1]}" rx="${cal.w*s*.2}" ry="${cal.h*s*.06}" transform="rotate(${aa*180/Math.PI} ${c[0]} ${c[1]})" fill="#26333d" stroke="${shade(color,45)}"/>`;}const r1=p(inner+9*s,aa),r2=p(outer-5*s,aa);svg+=`<path d="M${r1}L${r2}" stroke="${shade(color,50)}" stroke-width="${floating?2*s:4*s}" stroke-linecap="round"/>`;}
-for(const aa of [-angle*.85,angle*.85]){const c=p((inner+outer)/2,aa);svg+=`<circle cx="${c[0]}" cy="${c[1]}" r="${5*s}" fill="#6d7a85" stroke="#bdc7ce" stroke-width=".6"/>`;if(floating){const pa=p(inner+10*s,aa),pb=p(outer+5*s,aa);svg+=`<path d="M${pa}L${pb}" stroke="#29343c" stroke-width="${10*s}"/><path d="M${pa}L${pb}" stroke="#9ba8b2" stroke-width="${5*s}"/>`;}}
-svg+=`<path d="M${p(outer-2*s,-angle*.85)} A${outer-2*s},${(outer-2*s)*stretch} 0 0 1 ${p(outer-2*s,angle*.85)}" fill="none" stroke="${shade(color,55)}" stroke-width="${2*s}" opacity=".8"/>`;
-if(!floating)svg+=`<text style="fill:#f2f4f5;font-size:${Math.min(12,19*s)}px;font-family:Arial;font-weight:700;font-style:italic;letter-spacing:.6px"><textPath href="#${id}-letter" startOffset="50%" text-anchor="middle">${bm?'brembo':radical?'RADI-CAL':mono?'MONO6':count===2?'GT FOUR':'GT SIX'}</textPath></text>`;
-return svg+'</g>';
+const kind=v.caliper,float=kind==='floating',bm=kind==='bm4'||kind==='bm6',rad=kind==='radical',mono=kind==='mono',four=kind==='four'||kind==='bm4',color=v.caliperColor,id='cast-'+group;
+// Each family owns its silhouette. Coordinates describe the visible outer casting,
+// not piston circles (pistons are inside the caliper).
+const shapes={
+floating:'M22,-100 Q6,-99 5,-80 L12,-60 Q-3,-40 0,-15 L0,30 Q1,51 16,63 L8,83 Q8,100 28,100 L57,92 L64,66 Q88,53 94,29 L100,0 Q100,-28 86,-47 L68,-65 L59,-89Z',
+four:'M25,-100 Q9,-99 4,-78 L0,-51 Q-2,-36 8,-29 L9,29 Q-2,40 1,54 L6,81 Q11,100 30,100 L58,93 Q75,82 83,60 L97,27 Q103,0 96,-27 L82,-61 Q74,-85 57,-94Z',
+six:'M25,-100 Q8,-98 4,-82 L0,-65 Q-2,-52 8,-46 L8,-16 Q0,-8 5,8 L8,43 Q-2,53 1,66 L5,82 Q9,99 29,100 L57,91 Q74,80 84,55 L96,26 Q103,0 96,-27 L83,-56 Q72,-84 57,-93Z',
+bm4:'M32,-100 L13,-89 L4,-68 L12,-50 L2,-24 L9,0 L2,26 L12,51 L5,70 L17,91 L36,100 L61,86 L76,63 L88,40 L100,8 L95,-24 L81,-57 L65,-83Z',
+bm6:'M28,-100 L12,-91 L3,-73 L12,-58 L5,-39 L14,-20 L7,0 L14,21 L4,40 L12,58 L5,74 L17,92 L34,100 L56,87 L70,69 L82,47 L94,24 L100,0 L93,-28 L81,-51 L67,-75 L51,-93Z',
+radical:'M28,-100 Q7,-101 3,-83 L15,-69 L4,-55 Q-1,-40 13,-30 L5,-14 L17,0 L5,16 L14,31 Q0,44 7,59 L18,72 L9,85 Q16,103 38,98 L57,83 L67,64 L84,51 L89,31 L100,17 L91,0 L100,-17 L89,-34 L84,-53 L66,-65 L57,-87Z',
+mono:'M28,-100 Q12,-100 7,-84 L2,-64 L10,-45 L4,-21 L9,0 L4,23 L11,44 L3,65 L9,85 Q15,101 32,100 L58,91 Q70,83 77,65 L88,45 Q100,22 100,0 Q99,-22 87,-46 L76,-68 Q68,-86 53,-95Z'};
+const path=(d,fill,stroke,width=1)=>'<path d="'+d+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+width+'" stroke-linejoin="round"/>';
+let out='<defs><linearGradient id="'+id+'" x1="0" x2="1" y1="0" y2=".3"><stop stop-color="'+shade(color,-65)+'"/><stop offset=".42" stop-color="'+shade(color,32)+'"/><stop offset=".7" stop-color="'+color+'"/><stop offset="1" stop-color="'+shade(color,-48)+'"/></linearGradient></defs><g class="brake-caliper" data-height-mm="'+cal.h+'" data-width-mm="'+cal.w+'" transform="translate('+(cx+disc+(float?17:23)*s-cal.w*s)+' '+cy+') scale('+(cal.w*s/100)+' '+(cal.h*s/200)+')">';
+out+=path('M8,-70 Q-8,0 8,70 L40,73 Q58,0 40,-73Z','#252d33','#52606b',2);
+out+=path(shapes[kind],'url(#'+id+')',shade(color,-65),2);
+if(float){
+out+=path('M18,-56 Q3,-30 12,30 L22,52 L58,46 Q77,23 79,0 Q77,-24 60,-45Z',shade(color,-12),shade(color,30),2);
+out+=path('M29,-32 L19,-13 L24,18 L39,31 L59,27 L67,7 L58,-20Z',shade(color,-28),shade(color,12),2);
+for(const y of [-77,77]){out+='<rect x="8" y="'+(y-7)+'" width="51" height="14" rx="5" fill="#222b32"/><rect x="16" y="'+(y-3)+'" width="34" height="6" rx="2" fill="#9aa4ad"/>';}
+out+=path('M27,-22 L33,18 M38,-26 L45,22 M49,-23 L57,17','none',shade(color,35),2);
+}else if(rad){
+for(const y of [-65,0,65]){out+=path('M16,'+(y-13)+' Q38,'+(y-24)+' 57,'+(y-10)+' L76,'+(y+1)+' Q68,'+(y+14)+' 54,'+(y+13)+' L26,'+(y+6)+'Z',shade(color,-48),shade(color,45),2);out+=path('M19,'+(y-17)+' L61,'+(y+17)+' L77,'+(y+7)+'','none',shade(color,58),5);}
+out+=path('M65,-76 Q82,-41 88,-17 M88,19 Q78,54 61,77','none',shade(color,40),4);
+}else if(bm){
+for(const y of (four?[-49,49]:[-66,0,66]))out+=path('M15,'+(y-15)+' L36,'+(y-22)+' L71,'+(y-9)+' L85,'+(y+7)+' L69,'+(y+15)+' L36,'+(y+7)+'Z',shade(color,10),shade(color,48),1.3);
+out+=path('M34,-82 L52,-59 L42,-31 L59,-3 L43,30 L54,58 L38,82','none',shade(color,-35),4);
+}else if(mono){
+out+=path('M27,-85 Q48,-84 67,-57 Q84,-25 85,0 Q84,31 67,58 Q49,84 29,86 L22,67 Q46,48 49,0 Q45,-48 21,-67Z',shade(color,-15),shade(color,38),2);
+for(const y of [-62,-32,32,62])out+=path('M12,'+y+' L35,'+(y-5)+' L71,'+(y+7),'none',shade(color,52),3);
+}else{
+for(const y of (four?[-52,52]:[-65,0,65]))out+=path('M13,'+(y-20)+' Q33,'+(y-28)+' 51,'+(y-17)+' Q71,'+(y-4)+' 77,'+(y+12)+' L64,'+(y+18)+' Q40,'+(y+2)+' 18,'+(y+7)+'Z',shade(color,5),shade(color,38),1.5);
+out+=path('M70,-70 Q91,0 70,70','none',shade(color,50),3);
+}
+if(!float){for(const y of [-86,86])out+='<circle cx="29" cy="'+y+'" r="4" fill="#7f8b93" stroke="#d1d9de"/>';out+='<path d="M21,-91v-11h8v11" fill="#49545d" stroke="#a1adb4"/>';
+const label=bm?'brembo':rad?'AP RACING':mono?'ENDLESS':four?'GT FOUR':'GT SIX';out+='<text transform="translate('+(rad?43:50)+' 0) rotate(90)" text-anchor="middle" style="fill:#f3f4f5;font:bold italic '+(bm?16:11)+'px Arial;letter-spacing:.8px" stroke="'+shade(color,-50)+'" stroke-width=".3">'+label+'</text>';}
+return out+'</g>';
 }
 
 function renderBrakes(){if(!$('brakes-panel').innerHTML)return;const a=readBrake('before'),b=readBrake('after');const largest=Math.max(a.overall,b.overall,a.rotor+110,b.rotor+110),s=Math.min(.48,350/largest);for(const [g,v] of [['before',a],['after',b]]){$(`brake-${g}-angle-value`).textContent=(Number(v.angle)||0)+'°';$(`brake-${g}-drawing`).innerHTML=brakeSVG(v,g,s);$(`brake-${g}-summary`).innerHTML=`<span>${v.width}/${v.aspect} R${v.diameter}</span><span>碟盤外徑 <b>${v.rotor} mm</b></span>`;}$('brake-summary').innerHTML=`<span>碟盤直徑差 <b>${signed(b.rotor-a.rotor)} mm</b></span><span>碟盤占輪圈直徑 <b>${fmt(a.rotor/(a.diameter*25.4)*100)}% → ${fmt(b.rotor/(b.diameter*25.4)*100)}%</b></span>`;translateUI();}
