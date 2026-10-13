@@ -88,3 +88,5 @@ ET 定義：https://www.tirerack.com/upgrade-garage/what-is-wheel-offset
 - 完整重檢與比例修正見 AUDIT.md；可執行 node tests/geometry-audit.cjs 重跑1,273項模型與基準斷言。
 
 - 輪胎剖面改為中空胎體，分別繪製上下胎面、胎肩與胎壁殼層；移除實心填色及遮蓋矩形。橡膠厚度為示意，胎宽、胎壁高度及间隙計算不變；1,273項檢查通過。
+
+- 參考Continental胎體結構說明 https://www.continental-tires.com/ca/en/tire-knowledge/tire-components/：胎面／帶束層與側壁／內襯厚度不可視為同一材料厚度。中空剖面內側加厚：側壁示意6mm、胎冠總層厚示意18mm（薄胎壁時受幾何上限限制），不是廠商通用實測值。外輪廓、尺寸及間隙不變。
