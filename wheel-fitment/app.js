@@ -26,13 +26,18 @@ function frontShape(spec,s,color,ghost=false){
 const cx=HUB_X-spec.et*s,cy=170,r=spec.overall*s/2,rr=spec.rim*s/2,tw=spec.sectionWidth*s/2,rw=spec.rimWidth*s/2,tr=(spec.treadWidth??spec.sectionWidth*.83)*s/2,mid=(r+rr)/2;
 // Four explicit widest points make the drawn envelope equal the modeled section width.
 const outline=`M${cx-rw},${cy-rr} C${cx-rw},${cy-rr-2} ${cx-tw},${cy-mid+3} ${cx-tw},${cy-mid} C${cx-tw},${cy-r+3} ${cx-tr},${cy-r} ${cx-tr},${cy-r} H${cx+tr} C${cx+tr},${cy-r} ${cx+tw},${cy-r+3} ${cx+tw},${cy-mid} C${cx+tw},${cy-mid+3} ${cx+rw},${cy-rr-2} ${cx+rw},${cy-rr} V${cy+rr} C${cx+rw},${cy+rr+2} ${cx+tw},${cy+mid-3} ${cx+tw},${cy+mid} C${cx+tw},${cy+r-3} ${cx+tr},${cy+r} ${cx+tr},${cy+r} H${cx-tr} C${cx-tr},${cy+r} ${cx-tw},${cy+r-3} ${cx-tw},${cy+mid} C${cx-tw},${cy+mid-3} ${cx-rw},${cy+rr+2} ${cx-rw},${cy+rr} Z`;
-let shape=`<path class="tire-envelope" d="${outline}" fill="#10181d" stroke="${ghost?color:'#89999e'}" stroke-width="${ghost?1:2}" ${ghost?'fill-opacity="0" stroke-dasharray="5 5" stroke-opacity=".55"':''}/>`;
+// Hollow tire shell: tread and sidewalls only. Thickness is illustrative.
+const skin=Math.min(4*s,(r-rr)*.12),treadSkin=Math.min(10*s,(r-rr)*.3);
+const upperOutside=outline.slice(0,outline.indexOf(' V'));
+const rubber=upperOutside+` L${cx+rw},${cy-rr+skin} C${cx+rw-skin},${cy-rr+skin} ${cx+tw-skin},${cy-mid+3} ${cx+tw-skin},${cy-mid} C${cx+tw-skin},${cy-r+treadSkin} ${cx+tr},${cy-r+treadSkin} ${cx+tr},${cy-r+treadSkin} H${cx-tr} C${cx-tr},${cy-r+treadSkin} ${cx-tw+skin},${cy-r+treadSkin} ${cx-tw+skin},${cy-mid} C${cx-tw+skin},${cy-mid+3} ${cx-rw+skin},${cy-rr+skin} ${cx-rw},${cy-rr+skin} Z`;
+let shape=`<g class="tire-envelope" fill="${ghost?'none':'#10181d'}" stroke="${ghost?color:'#89999e'}" stroke-width="${ghost?1:.7}" ${ghost?'stroke-dasharray="5 5" stroke-opacity=".55"':''}><path class="tire-shell" d="${rubber}"/><path class="tire-shell" d="${rubber}" transform="translate(0 ${cy*2}) scale(1 -1)"/></g>`;
+
 const look=wheelLook(spec.uiGroup),rim=look.rim,left=cx-rw,right=cx+rw,top=cy-rr,bottom=cy+rr,flange=spec.rimTotal?(spec.rimTotal-spec.rimWidth)*s/2:7.5*s,wall=Math.min(18*s,rw*.2),step=Math.min(30*s,rr*.15);
 // Barrel spans the bead seats; only the outboard side has a wheel face.
 const upperBarrel=`M${left-flange},${top-3} H${left+wall} V${top+3} H${cx-rw*.3} V${top+step} H${cx+rw*.3} V${top+3} H${right-wall} V${top-3} H${right+flange} V${top+7} H${right-wall} V${top+wall+3} H${cx+rw*.3+wall} V${top+step+wall} H${cx-rw*.3-wall} V${top+wall+3} H${left} V${top+7} H${left-flange} Z`;
 const lowerBarrel=`M${left-flange},${bottom+3} H${left+wall} V${bottom-3} H${cx-rw*.3} V${bottom-step} H${cx+rw*.3} V${bottom-3} H${right-wall} V${bottom+3} H${right+flange} V${bottom-7} H${right-wall} V${bottom-wall-3} H${cx+rw*.3+wall} V${bottom-step-wall} H${cx-rw*.3-wall} V${bottom-wall-3} H${left} V${bottom-7} H${left-flange} Z`;
 const face=`M${right-wall*2},${top+5} Q${right-wall*2},${cy-35} ${HUB_X},${cy-45*s} V${cy+18} Q${right-wall*2},${cy+35} ${right-wall*2},${bottom-5} H${right-wall} Q${right-wall},${cy+35} ${HUB_X+15*s},${cy+35*s} V${cy-14} Q${right-wall},${cy-35} ${right-wall},${top+5} Z`;
-if(!ghost)shape+=`<rect x="${left}" y="${top+wall+3}" width="${2*rw}" height="${2*rr-2*wall-6}" fill="var(--viz-b)"/>`;
+
 shape+=`<g class="rim-profile" fill="${ghost?'none':rim}" stroke="${ghost?color:shade(rim,65)}" stroke-width="1.2" ${ghost?'stroke-dasharray="5 5" stroke-opacity=".45"':''}><path d="${upperBarrel}"/><path d="${lowerBarrel}"/><path d="${face}"/></g>`;
 if(ghost)return shape;
 shape+=`<text x="65" y="296" class="section-caption">單側盤面剖面示意</text>`;
