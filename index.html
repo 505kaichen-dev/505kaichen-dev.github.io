@@ -926,11 +926,38 @@
   .kids-project-name { font-size:1.15rem; font-weight:800; margin-bottom:6px; }
   .kids-project-text { font-size:.84rem; color:#776F67; line-height:1.55; }
 
+  .ai-lab-portal {
+    position:relative; overflow:hidden; padding:76px 48px;
+    color:#EDF9F7; background:
+      radial-gradient(circle at 18% 20%,rgba(64,226,205,.14),transparent 30%),
+      radial-gradient(circle at 82% 78%,rgba(120,94,255,.15),transparent 34%),
+      #07101B;
+    border-top:1px solid rgba(89,224,205,.18); border-bottom:1px solid rgba(89,224,205,.18);
+  }
+  .ai-lab-portal::before {
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:.36;
+    background-image:linear-gradient(rgba(101,245,221,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(101,245,221,.055) 1px,transparent 1px);
+    background-size:38px 38px;
+  }
+  .ai-lab-inner { max-width:1280px; margin:0 auto; position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr); align-items:center; gap:54px; }
+  .ai-lab-kicker { color:#65F5DD; font-size:.72rem; font-weight:800; letter-spacing:.14em; margin-bottom:12px; }
+  .ai-lab-title { margin:0; font-family:'Space Grotesk',sans-serif; font-size:clamp(2.2rem,5vw,4.6rem); line-height:.98; letter-spacing:-.055em; }
+  .ai-lab-desc { max-width:700px; margin:20px 0 0; color:#A8BBC2; font-size:1rem; line-height:1.8; }
+  .ai-lab-enter { display:inline-flex; align-items:center; gap:9px; margin-top:28px; padding:12px 19px; border-radius:100px; color:#06131A; background:#65F5DD; text-decoration:none; font-size:.86rem; font-weight:800; }
+  .ai-lab-panel { padding:24px; border:1px solid rgba(101,245,221,.22); border-radius:22px; background:rgba(9,20,34,.84); box-shadow:0 24px 70px rgba(0,0,0,.32); }
+  .ai-lab-panel-top { display:flex; justify-content:space-between; gap:16px; color:#65F5DD; font:700 .7rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.09em; }
+  .ai-lab-panel strong { display:block; margin-top:25px; font-size:2rem; }
+  .ai-lab-panel p { margin:8px 0 0; color:#91A7B0; font-size:.82rem; line-height:1.65; }
+  .ai-lab-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+  .ai-lab-tags span { padding:7px 9px; border:1px solid rgba(145,167,176,.2); border-radius:999px; color:#BBCBD0; font-size:.68rem; }
+
   @media (max-width: 900px) {
     .hero-inner { padding:44px 24px 40px; grid-template-columns:1fr; gap:28px; }
     .workshop-note { max-width:520px; transform:none; }
     .kids-lab { padding:56px 24px; }
     .kids-grid { grid-template-columns:1fr; }
+    .ai-lab-portal { padding:60px 24px; }
+    .ai-lab-inner { grid-template-columns:1fr; gap:30px; }
   }
   @media (max-width: 600px) {
     .nav-inner { height:58px; }
@@ -944,6 +971,7 @@
     .kids-project-card { grid-template-columns:120px 1fr; }
     .kids-project-body { padding:16px; }
     .kids-project-card img { min-height:130px; }
+    .ai-lab-portal { padding:48px 20px; }
   }
 </style>
 </head>
@@ -955,6 +983,7 @@
     <a href="#" class="nav-logo">Kai <strong>AI Workshop</strong></a>
     <ul class="nav-links">
       <li><a href="#works">探索</a></li>
+      <li><a href="#ai-lab">AI Lab</a></li>
       <li><a href="#kids">Kids Lab</a></li>
       <li><a href="#about">關於</a></li>
       <li><a href="mailto:505.kai.chen@gmail.com">聯絡</a></li>
@@ -1431,6 +1460,26 @@
           <p class="kids-project-text">從數數、形狀到加減法，用適合觸控的關卡慢慢長大。</p>
         </div>
       </a>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- AI LAB -->
+<section class="ai-lab-portal" id="ai-lab">
+  <div class="ai-lab-inner">
+    <div class="reveal">
+      <div class="ai-lab-kicker">KAI AI WORKSHOP · PRIVATE AI SHOWCASE</div>
+      <h2 class="ai-lab-title">把整個 AI 工作台，<br>留在另一個空間。</h2>
+      <p class="ai-lab-desc">網站、Windows 工具、知識系統與技術實驗，都保留在獨立的 Kai AI Lab。內容採分享密碼與瀏覽器端加密封包，提供工作成果展示，不列入主站作品排序。</p>
+      <a class="ai-lab-enter" href="./ai-lab/">進入 Kai AI Lab →</a>
+    </div>
+    <div class="ai-lab-panel reveal" aria-hidden="true">
+      <div class="ai-lab-panel-top"><span>AI LAB / PRIVATE</span><span>● ENCRYPTED</span></div>
+      <strong>Command Center</strong>
+      <p>由 X:\ Internal Command Center 封裝，依專案載入加密內容。</p>
+      <div class="ai-lab-tags"><span>WEB</span><span>WINDOWS</span><span>KNOWLEDGE</span><span>LAB</span></div>
     </div>
   </div>
 </section>

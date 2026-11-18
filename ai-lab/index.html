@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#07111f">
+  <title>Kai AI Lab｜Private Showcase</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <div class="brand-row">
+        <a href="../" class="brand">Kai AI Workshop</a>
+        <span class="private-badge">PRIVATE SHOWCASE</span>
+      </div>
+      <div class="signal" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="eyebrow">AI WORKSPACE ARCHIVE</p>
+      <h1 id="loginTitle">Kai AI Lab</h1>
+      <p class="lead">收錄我透過 AI 協作完成的網站、Windows 工具、知識系統與技術實驗。輸入分享密碼後進入完整工作空間。</p>
+      <form id="unlockForm">
+        <label for="password">分享密碼</label>
+        <div class="password-row">
+          <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+          <button type="submit">進入 AI Lab</button>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+      <div class="boundary">
+        <strong>展示範圍</strong>
+        <span>個人 AI 實作成果，不代表公司正式系統。靜態網站採瀏覽器端加密，不等同伺服器端權限控管。</span>
+      </div>
+    </section>
+  </main>
+  <script src="./vendor/forge.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
+

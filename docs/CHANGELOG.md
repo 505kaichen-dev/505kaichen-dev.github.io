@@ -1,5 +1,13 @@
 # 全站整理紀錄
 
+## 2026-11-19
+
+- 新增獨立 `Kai AI Lab` 入口，位置與 Kids Lab 同屬首頁之外的完整子空間，不加入 Explore／Build／Gallery 作品卡片及 `data-order`。
+- 以 `X:\index.html` Internal Command Center 為母體，補入 Windows 工具與其他 AI 開發成果，建立 portal 與 16 個專案封包。
+- `W:\ai-lab` 僅保存登入殼、Service Worker 與 AES-256-GCM 密文；建置流程排除 `.env`、Git、crawler runtime、node_modules、安裝檔、壓縮檔、Excel 與私鑰格式。
+- Headless Edge 實測通過正確密碼解鎖、錯誤密碼拒絕、Kai Awake 與 Web Planner 專案切換、圖片載入、390px 無水平溢出及本機網路錯誤 0。
+- 修正 NAS HTTP／受限預覽環境沒有 `crypto.subtle` 時無法登入的問題；加入本地 node-forge AES-GCM 解密與非 Service Worker iframe renderer，HTTPS 快速路徑維持不變。
+
 ## 2026-09-11
 
 - 新增 `downloader/index.html` 長頁〈Downloader：我只想貼一個網址，剩下的交給它〉，整理單頁影片／圖片解析、下載佇列、獨立登入與可換主題介面。

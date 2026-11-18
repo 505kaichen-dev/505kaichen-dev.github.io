@@ -31,6 +31,7 @@
 - 檔案：`/index.html`
 - 品牌：Kai AI Workshop
 - 色彩：暖白底、紫藍主色、橘色強調與薄荷綠 Kids Lab
+- 獨立空間：暖色 Kids Lab、深色 Kai AI Lab
 - 字型：Space Grotesk（標題）/ Inter（內文）
 - 最大寬度：1280px
 - 響應式斷點：900px / 600px
@@ -46,6 +47,10 @@
 | Gallery | gallery | AI 生成圖像創作集 |
 
 兒童內容不使用 `work-card`，統一放在首頁 Kids Lab 區塊及 `/kids/` 導覽頁，避免進入一般作品排序與篩選。
+
+AI 開發成果的完整工作台不使用 `work-card`，統一由首頁單一 Kai AI Lab 入口進入 `/ai-lab/`。AI Lab 是獨立加密子站，不取得 `data-order`，也不參與最新發布與分類篩選。
+
+AI Lab 明文來源與建置工具位於 `C:\Users\505ka\OneDrive\Documents\Codex軟體開發\AI-Lab-Publisher`。`W:\ai-lab` 只保留登入殼、Service Worker 與 AES-256-GCM 密文 bundle；禁止手動複製 X 槽原始碼、`.env`、runtime 或大型安裝檔進入公開目錄。
 
 ---
 
@@ -146,6 +151,8 @@
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
+| 2026-11-19 | 建立 Kai AI Lab | 以 X 槽 Internal Command Center 為母體，建立獨立 `/ai-lab/` 加密展示空間；首頁只新增單一入口，不加入 work-card、data-order 或最新發布排序。輸出含 portal＋16 個專案 bundle，採 PBKDF2-SHA256／AES-256-GCM；Headless Edge 驗證正確／錯誤密碼、專案切換、Web Planner 圖片、390px 版面與網路載入通過。 |
+| 2026-10-13 | FortiGate IPv6 筆記校訂 | 補齊 IAID、移除 WAN 管理開放範例、新增 MSS / PMTUD、前綴更新與主備驗收；改為技術手冊版面。保留首頁第 016 張卡片、封面及排序，不推送 GitHub Pages |
 | 2026-10-13 | Fitment Lab 封面更新 | 首頁第018張卡片改用黑橘／藍白成年二次元賽車女孩換胎主視覺，1200×630 PNG；舊封面保留於_archive/versions |
 | 2026-10-13 | Fitment Lab UI 改版 | 加入三主題、繁中／簡中／英文、RGB輪圈與胎壁刻字；修正單側盤面與輪轂接觸面示意，更新首頁封面與介紹 |
 | 2026-10-13 | 發布 Fitment Lab | 新增 Build／網頁工具第 018 張卡片、1200×630 PNG 封面，同步專案總表與網站地圖；保留首頁既有排序、最新發布與管理邏輯 |

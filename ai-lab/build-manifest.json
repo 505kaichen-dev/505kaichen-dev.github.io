@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "builtAt": "2026-11-18T16:19:24.872Z",
+  "projects": [
+    {
+      "id": "portal",
+      "files": 2,
+      "encryptedBytes": 37681
+    },
+    {
+      "id": "knowledge-crawler-v2-web",
+      "files": 11,
+      "encryptedBytes": 2660497
+    },
+    {
+      "id": "kmpage",
+      "files": 1,
+      "encryptedBytes": 45151
+    },
+    {
+      "id": "ibm-kb-report",
+      "files": 1,
+      "encryptedBytes": 19147
+    },
+    {
+      "id": "tts-studio",
+      "files": 4,
+      "encryptedBytes": 136036
+    },
+    {
+      "id": "storage-master",
+      "files": 17,
+      "encryptedBytes": 665079
+    },
+    {
+      "id": "network-inventory",
+      "files": 1,
+      "encryptedBytes": 40761
+    },
+    {
+      "id": "web-planner",
+      "files": 8,
+      "encryptedBytes": 12321070
+    },
+    {
+      "id": "web-planner-public",
+      "files": 9,
+      "encryptedBytes": 12323528
+    },
+    {
+      "id": "sprite-player",
+      "files": 5,
+      "encryptedBytes": 3823717
+    },
+    {
+      "id": "price-action-trend",
+      "files": 7,
+      "encryptedBytes": 206491
+    },
+    {
+      "id": "myk-tech",
+      "files": 66,
+      "encryptedBytes": 24998941
+    },
+    {
+      "id": "ibm-panel",
+      "files": 2,
+      "encryptedBytes": 132044
+    },
+    {
+      "id": "downloader",
+      "files": 1,
+      "encryptedBytes": 3789
+    },
+    {
+      "id": "kai-awake",
+      "files": 1,
+      "encryptedBytes": 3521
+    },
+    {
+      "id": "crawler-status-viewer",
+      "files": 1,
+      "encryptedBytes": 3226
+    },
+    {
+      "id": "ai-software-factory",
+      "files": 1,
+      "encryptedBytes": 3081
+    }
+  ]
+}
