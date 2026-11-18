@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="IBM Power、Storage 與 TAPE Library 調價趨勢互動階梯圖">
+<<<<<<< HEAD
   <title>IBM 調價趨勢</title>
   <link rel="stylesheet" href="styles.css?v=20260929-6">
 </head>
@@ -12,11 +13,45 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">PRICE ACTION INDEX · 2026</p>
+=======
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>IBM 調價趨勢</title>
+  <link rel="stylesheet" href="styles.css?v=20261006113818">
+</head>
+<body>
+  <section class="auth-shell" id="authGate" aria-labelledby="authTitle">
+    <div class="auth-card">
+      <div class="auth-mark" aria-hidden="true">PT</div>
+      <p class="eyebrow">PROTECTED INTERNAL TOOL</p>
+      <h1 id="authTitle">IBM 調價趨勢</h1>
+      <p class="auth-copy">此頁面包含內部價格趨勢資料，請輸入存取密碼。</p>
+      <form id="unlockForm" class="auth-form">
+        <label for="accessPassword">存取密碼</label>
+        <div class="password-row">
+          <input id="accessPassword" name="password" type="password" inputmode="numeric" autocomplete="current-password" required autofocus>
+          <button type="submit" id="unlockButton">解鎖</button>
+        </div>
+        <p class="auth-error" id="authError" role="alert" hidden></p>
+      </form>
+      <p class="auth-note">資料只會在此瀏覽器記憶體中解密，重新整理後需再次輸入密碼。</p>
+      <p class="auth-version">ver20261006</p>
+    </div>
+  </section>
+
+  <main class="app-shell" id="protectedApp" hidden>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">PRICE ACTION INDEX</p>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
         <h1>IBM 調價趨勢</h1>
       </div>
       <div class="baseline-note">
         <span>目前基準</span>
+<<<<<<< HEAD
         <strong id="baselineHeaderDate">2026/1/1 = 100</strong>
+=======
+        <strong id="baselineHeaderDate">資料載入中</strong>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
       </div>
     </header>
 
@@ -24,9 +59,14 @@
 
     <section class="baseline-control" aria-labelledby="baselineControlTitle">
       <div class="baseline-control-copy">
+<<<<<<< HEAD
         <p class="section-kicker">VIEW BASELINE</p>
         <h2 id="baselineControlTitle">歷史起始基準</h2>
         <p>拖曳至任一歷史節點，該日會重新設定為指數 100；較早資料保留並淡化。</p>
+=======
+        <h2 id="baselineControlTitle">比較基準日</h2>
+        <p>選定日期的價格設為 100；圖表也會保留較早的走勢。</p>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
       </div>
       <div class="baseline-slider-panel">
         <div class="baseline-slider-status">
@@ -42,6 +82,7 @@
       <div class="chart-head">
         <div>
           <h2 id="chartTitle">累積價格指數</h2>
+<<<<<<< HEAD
           <p>調價於生效日跳升，水平區段代表期間內指數維持不變。</p>
         </div>
         <div class="chart-actions">
@@ -49,6 +90,27 @@
             <span aria-hidden="true">↓</span>
             匯出 PNG
           </button>
+=======
+          <p>每個階梯代表調價生效；右端虛線只延伸最後數值，不代表預測。</p>
+        </div>
+        <div class="chart-actions">
+          <div class="chart-action-row">
+            <label class="value-label-toggle" for="nodeLabelToggle">
+              <input id="nodeLabelToggle" type="checkbox">
+              <span aria-hidden="true"></span>
+              顯示各節點數值
+            </label>
+            <label class="value-label-toggle" for="nodeChangeToggle">
+              <input id="nodeChangeToggle" type="checkbox">
+              <span aria-hidden="true"></span>
+              顯示與上一節點差距
+            </label>
+            <button class="export-button" id="exportButton" type="button" title="將目前圖表下載為高解析度 PNG">
+              <span aria-hidden="true">↓</span>
+              匯出 PNG
+            </button>
+          </div>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
           <div class="legend" id="legend" aria-label="圖例"></div>
         </div>
       </div>
@@ -62,23 +124,46 @@
     </section>
 
     <section class="event-card" id="eventCard" aria-live="polite">
+<<<<<<< HEAD
       <div class="event-date" id="eventDate">將游標移到圖表節點</div>
       <div class="event-copy" id="eventCopy">可查看該型號在該時間點的漲幅內容、平均漲幅與累積指數。</div>
     </section>
 
     <section class="metric-grid" id="metricGrid" aria-label="目前圖表摘要"></section>
+=======
+      <div class="event-date" id="eventDate">選取圖表節點</div>
+      <div class="event-copy" id="eventCopy">點選階梯上的圓點，查看該型號的當期變動。</div>
+    </section>
+
+    <details class="info-card reading-guide">
+      <summary>如何解讀這張圖 <span>指數、公告基準與計算方式</span></summary>
+      <div class="guide-grid">
+        <p><strong>指數 100</strong> 是選定基準日的價格；150 代表相較該日約高 50%，不是設備報價。</p>
+        <p><strong>公告基準</strong> 顯示原廠公告的方向值。選型號後，會對照適用零件類別；採公告下限與類別平均較高者，避免低估。</p>
+        <p><strong>匯率獨立計算</strong>。同日有產品調價與台幣調整時，以乘法合併，例如 +17% 與 −0.3% 為 +16.649%。</p>
+        <p><strong>適用範圍依 MTM 與 GA 日</strong>。新型號自正式上市日建立指數 100，不回填上市前走勢；2025–2026 年初公告未列入目前三款 FS 型號，因此其早期曲線維持不變。</p>
+      </div>
+    </details>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
 
     <section class="info-card" aria-labelledby="announcementTitle">
       <div class="section-heading">
         <div>
+<<<<<<< HEAD
           <p class="section-kicker">PRICE ACTION TIMELINE</p>
           <h2 id="announcementTitle">公告節點總覽</h2>
         </div>
         <p>依生效日整理整體調價內容，對照圖表中的垂直跳升。</p>
+=======
+          <h2 id="announcementTitle">調價時間軸</h2>
+        </div>
+        <p>先看各日變動；點開卡片可查公告範圍與來源。</p>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
       </div>
       <div class="announcement-grid" id="announcementGrid"></div>
     </section>
 
+<<<<<<< HEAD
     <section class="info-card" aria-labelledby="detailTitle">
       <div class="section-heading">
         <div>
@@ -112,5 +197,42 @@
   </main>
   <script src="data.js?v=20260929-6"></script>
   <script src="app.js?v=20260929-6"></script>
+=======
+    <details class="info-card detail-disclosure" id="detailDisclosure">
+      <summary class="detail-summary" aria-labelledby="detailTitle">
+        <div>
+          <h2 id="detailTitle">所選曲線明細</h2>
+        </div>
+        <div class="detail-summary-meta">
+          <span id="detailSummaryCount">載入中</span>
+          <strong><span class="when-closed">展開明細</span><span class="when-open">收合明細</span><i aria-hidden="true"></i></strong>
+        </div>
+      </summary>
+      <div class="detail-panel">
+        <p class="detail-help">「當期變動」已包含產品調價與匯率；滑桿只改比較基準，不改原始漲幅。</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>生效日</th>
+                <th>曲線／MTM</th>
+                <th>變動原因</th>
+                <th>當期變動</th>
+                <th>累積指數</th>
+              </tr>
+            </thead>
+            <tbody id="detailTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <footer>
+      <span id="sourceLabel"></span>
+      <span>方向性估算，實際報價依配置與合約而定</span>
+    </footer>
+  </main>
+  <script src="auth.js?v=20261006113818"></script>
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
 </body>
 </html>

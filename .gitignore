@@ -46,3 +46,12 @@ id_rsa*
 *token*
 *secret*
 *credential*
+
+# Price Action Trend private/plaintext material
+price-action-trend/data.js
+price-action-trend/*.pdf
+price-action-trend/*.xlsx
+price-action-trend/WORKLOG.md
+price-action-trend/tools/export_excel.py
+price-action-trend/.build/
+price-action-trend/offline/

@@ -151,7 +151,10 @@ AI Lab 明文來源與建置工具位於 `C:\Users\505ka\OneDrive\Documents\Code
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
+<<<<<<< HEAD
 | 2026-11-19 | 建立 Kai AI Lab | 以 X 槽 Internal Command Center 為母體，建立獨立 `/ai-lab/` 加密展示空間；首頁只新增單一入口，不加入 work-card、data-order 或最新發布排序。輸出含 portal＋16 個專案 bundle，採 PBKDF2-SHA256／AES-256-GCM；Headless Edge 驗證正確／錯誤密碼、專案切換、Web Planner 圖片、390px 版面與網路載入通過。 |
+=======
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
 | 2026-10-13 | FortiGate IPv6 筆記校訂 | 補齊 IAID、移除 WAN 管理開放範例、新增 MSS / PMTUD、前綴更新與主備驗收；改為技術手冊版面。保留首頁第 016 張卡片、封面及排序，不推送 GitHub Pages |
 | 2026-10-13 | Fitment Lab 封面更新 | 首頁第018張卡片改用黑橘／藍白成年二次元賽車女孩換胎主視覺，1200×630 PNG；舊封面保留於_archive/versions |
 | 2026-10-13 | Fitment Lab UI 改版 | 加入三主題、繁中／簡中／英文、RGB輪圈與胎壁刻字；修正單側盤面與輪轂接觸面示意，更新首頁封面與介紹 |

@@ -45,6 +45,7 @@
 - app.js 語法檢查通過。
 - 首頁卡片序號018、Build分類、最新發布自動選中 Fitment Lab；1200×630 PNG封面載入。
 - 本次為首頁與新專案範圍驗證，不代表重新掃描全站歷史頁面。
+<<<<<<< HEAD
 
 ## 2026-11-19 Kai AI Lab 驗證
 
@@ -53,3 +54,5 @@
 - Headless Edge 157 實際由根首頁進入 `/ai-lab/`；錯誤密碼拒絕、正確密碼解鎖、專案切換、Web Planner 6 張圖片載入及本機 HTTP 錯誤 0。
 - 390×844 行動版登入頁 `scrollWidth=390`，無水平溢出；主站 AI Lab 入口與 1440px portal 已目視檢查。
 - 額外模擬 NAS HTTP／受限 iframe（`isSecureContext=false`、無 `crypto.subtle`）：node-forge 解密、portal、Kai Awake、Web Planner 6 張圖片與 Storage Wiki 多頁導航皆通過；再回歸安全來源快速路徑亦通過。
+=======
+>>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
