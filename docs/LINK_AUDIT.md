@@ -45,14 +45,11 @@
 - app.js 語法檢查通過。
 - 首頁卡片序號018、Build分類、最新發布自動選中 Fitment Lab；1200×630 PNG封面載入。
 - 本次為首頁與新專案範圍驗證，不代表重新掃描全站歷史頁面。
-<<<<<<< HEAD
-
 ## 2026-11-19 Kai AI Lab 驗證
 
-- AI Lab portal＋16 個專案 bundle 解密結構檢查通過；HTML／CSS 相對資產缺檔 0。
-- 確認密文檔案不包含 HTML 明文標記，`.env`、Git、runtime、node_modules、安裝檔、壓縮檔、Excel 與私鑰格式均未進入 bundle。
-- Headless Edge 157 實際由根首頁進入 `/ai-lab/`；錯誤密碼拒絕、正確密碼解鎖、專案切換、Web Planner 6 張圖片載入及本機 HTTP 錯誤 0。
-- 390×844 行動版登入頁 `scrollWidth=390`，無水平溢出；主站 AI Lab 入口與 1440px portal 已目視檢查。
-- 額外模擬 NAS HTTP／受限 iframe（`isSecureContext=false`、無 `crypto.subtle`）：node-forge 解密、portal、Kai Awake、Web Planner 6 張圖片與 Storage Wiki 多頁導航皆通過；再回歸安全來源快速路徑亦通過。
-=======
->>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
+- 加密首頁解密後的位元內容與 `X:\index.html` 完全一致；10 個子站 payload 均通過 AES-256-GCM 解密與 entry 檢查。
+- 共驗證 32 個原始 HTML 都有對應實體 wrapper；密文不含 HTML 明文標記，輸出檔未發現明文分享密碼，且沒有 `.env`、Git、node_modules、安裝檔、壓縮檔、Excel 或私鑰格式。
+- Headless Edge 實測錯誤密碼拒絕、正確密碼解鎖，點擊後網址為 `/ai-lab/Storagemaster/index.html`，再進 `part1-hardware.html` 不會二次要求密碼。
+- Web Planner 6 張圖片全部成功載入，本機 HTTP 錯誤 0；所有輸出單檔均小於 100 MB。
+- 額外模擬一般 HTTP／受限環境無 `crypto.subtle`：node-forge 解密、X 首頁與 Storage Wiki 子頁沿用同一工作階段皆通過。
+- 逐一巡覽 X 首頁的 10 個子站入口均成功解密並呈現正確頁面 title；Sprite Player 的 JavaScript 動態 `sprite_sheet.png` 引用已轉為密文 payload 內資產，最終全程站內 HTTP 錯誤 0。

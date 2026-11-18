@@ -3,7 +3,16 @@
 ```text
 index.html（Kai AI Workshop 首頁）
 ├─ ai-lab/index.html（Kai AI Lab 分享密碼入口）
-│  └─ 加密 portal＋16 個分專案 bundle（解鎖後由 Service Worker 提供虛擬頁面）
+│  ├─ 3mf-explorer/index.html
+│  ├─ KMPage/index.html
+│  ├─ knowledge-crawler-v2-web/index.html
+│  ├─ network-inventory/index.html
+│  ├─ projectforfun/ibm-kb-report.html
+│  ├─ Storagemaster/index.html（含原有多頁路徑）
+│  ├─ tts-studio/index.html（含原有多頁路徑）
+│  ├─ web-planner-public/index.html
+│  ├─ web-planner/index.html
+│  └─ webgame/sprite_player.html
 ├─ kids/index.html（Kids Lab 入口）
 │  ├─ → bopomofo/index.html
 │  └─ → kids-math/index.html
@@ -52,7 +61,7 @@ episode-01/index.html（主篇：一位工程師，與 AI 協作的日常）
 ## 全站共用關係
 
 - 根首頁直接引用各專案的封面圖片。
-- `ai-lab/` 是獨立加密展示空間，只由根首頁提供單一入口，不參與作品卡片排序；明文內容不直接存在 W 公開目錄。
+- `ai-lab/` 是獨立加密展示空間，只由根首頁提供單一入口，不參與作品卡片排序；上述路徑是解密 wrapper，原始內容封裝在各資料夾密文 payload，不以明文存在 W 公開目錄。
 - `kids/` 只負責兒童專案導覽，既有專案網址不搬動。
 - `gallery/` 的展示圖片來自其他專案，不維護重複圖片副本。
 - `bopomofo/` 與 `kids-math/` 各自維護音訊及互動邏輯，不共用執行期檔案。

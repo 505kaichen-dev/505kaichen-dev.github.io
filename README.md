@@ -5,7 +5,7 @@
 ## 主要入口
 
 - 網站首頁：`index.html`
-- AI 實作展示子站：`ai-lab/index.html`（分享密碼＋分專案加密 bundle）
+- AI 實作展示子站：`ai-lab/index.html`（一次分享密碼＋分資料夾加密 payload）
 - 維護手冊：`website-maintenance.md`
 - 圖片移交規範：`image-handoff-spec.md`
 - 專案總表：`docs/PROJECTS.md`
@@ -18,7 +18,7 @@
 ## 資料夾分類
 
 - 正式專案：各自位於根目錄的獨立資料夾，入口通常是 `index.html`。
-- `ai-lab/`：由 X 槽 Internal Command Center 建置的獨立加密展示空間；不屬於首頁作品卡片排序。
+- `ai-lab/`：將 X 槽 Internal Command Center 原有路徑多包一層的獨立加密展示空間；不屬於首頁作品卡片排序。
 - `docs/`：全站管理與維護文件。
 - `handoffs/`：交給圖片或語音工具的本機移交資料；由 `.gitignore` 排除。
 - `_archive/`：已確認不屬於正式部署內容、但暫不刪除的本機封存；由 `.gitignore` 排除。

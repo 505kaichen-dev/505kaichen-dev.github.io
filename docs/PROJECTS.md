@@ -37,7 +37,7 @@
 
 | 資料夾 | 類型 | 正式入口 | 首頁呈現 | 補充 |
 |---|---|---|---|---|
-| `ai-lab/` | 個人 AI 實作與工作應用展示 | `index.html` | 獨立入口，不使用作品卡片序號 | 由 X 槽 Internal Command Center 封裝；分享密碼、分專案 AES-256-GCM bundle、`noindex` |
+| `ai-lab/` | 個人 AI 實作與工作應用展示 | `index.html` | 獨立入口，不使用作品卡片序號 | `X:\` 原路徑多包一層；一次分享密碼、分資料夾 AES-256-GCM payload、`noindex` |
 
 `ai-lab/` 類似 Kids Lab，是另一個完整空間，不併入 Explore／Build／Gallery 卡片排序。明文來源與建置紀錄由 `AI-Lab-Publisher` 專案維護，W 只保存可部署密文。
 

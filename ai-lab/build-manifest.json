@@ -1,91 +1,95 @@
 {
-  "schemaVersion": 1,
-  "builtAt": "2026-11-18T16:19:24.872Z",
+  "schemaVersion": 2,
+  "builtAt": "2026-11-18T23:48:19.768Z",
+  "sourcePortal": "X:\\index.html",
   "projects": [
     {
       "id": "portal",
+      "outputPath": "payload.json",
+      "entry": "index.html",
       "files": 2,
-      "encryptedBytes": 37681
+      "htmlWrappers": 1,
+      "encryptedBytes": 2588926
     },
     {
-      "id": "knowledge-crawler-v2-web",
-      "files": 11,
-      "encryptedBytes": 2660497
+      "id": "3mf-explorer",
+      "outputPath": "3mf-explorer/payload.json",
+      "entry": "index.html",
+      "files": 57,
+      "htmlWrappers": 2,
+      "encryptedBytes": 6087616
     },
     {
       "id": "kmpage",
+      "outputPath": "KMPage/payload.json",
+      "entry": "index.html",
       "files": 1,
-      "encryptedBytes": 45151
+      "htmlWrappers": 1,
+      "encryptedBytes": 45061
     },
     {
-      "id": "ibm-kb-report",
-      "files": 1,
-      "encryptedBytes": 19147
-    },
-    {
-      "id": "tts-studio",
-      "files": 4,
-      "encryptedBytes": 136036
-    },
-    {
-      "id": "storage-master",
-      "files": 17,
-      "encryptedBytes": 665079
+      "id": "knowledge-crawler-v2-web",
+      "outputPath": "knowledge-crawler-v2-web/payload.json",
+      "entry": "index.html",
+      "files": 11,
+      "htmlWrappers": 7,
+      "encryptedBytes": 2659677
     },
     {
       "id": "network-inventory",
+      "outputPath": "network-inventory/payload.json",
+      "entry": "index.html",
       "files": 1,
-      "encryptedBytes": 40761
+      "htmlWrappers": 1,
+      "encryptedBytes": 40650
     },
     {
-      "id": "web-planner",
-      "files": 8,
-      "encryptedBytes": 12321070
+      "id": "ibm-kb-report",
+      "outputPath": "projectforfun/payload.json",
+      "entry": "ibm-kb-report.html",
+      "files": 1,
+      "htmlWrappers": 1,
+      "encryptedBytes": 19043
+    },
+    {
+      "id": "storage-master",
+      "outputPath": "Storagemaster/payload.json",
+      "entry": "index.html",
+      "files": 17,
+      "htmlWrappers": 13,
+      "encryptedBytes": 663827
+    },
+    {
+      "id": "tts-studio",
+      "outputPath": "tts-studio/payload.json",
+      "entry": "index.html",
+      "files": 4,
+      "htmlWrappers": 4,
+      "encryptedBytes": 135681
     },
     {
       "id": "web-planner-public",
+      "outputPath": "web-planner-public/payload.json",
+      "entry": "index.html",
       "files": 9,
-      "encryptedBytes": 12323528
+      "htmlWrappers": 1,
+      "encryptedBytes": 12323262
+    },
+    {
+      "id": "web-planner",
+      "outputPath": "web-planner/payload.json",
+      "entry": "index.html",
+      "files": 8,
+      "htmlWrappers": 1,
+      "encryptedBytes": 12320890
     },
     {
       "id": "sprite-player",
+      "outputPath": "webgame/payload.json",
+      "entry": "sprite_player.html",
       "files": 5,
-      "encryptedBytes": 3823717
-    },
-    {
-      "id": "price-action-trend",
-      "files": 7,
-      "encryptedBytes": 206491
-    },
-    {
-      "id": "myk-tech",
-      "files": 66,
-      "encryptedBytes": 24998941
-    },
-    {
-      "id": "ibm-panel",
-      "files": 2,
-      "encryptedBytes": 132044
-    },
-    {
-      "id": "downloader",
-      "files": 1,
-      "encryptedBytes": 3789
-    },
-    {
-      "id": "kai-awake",
-      "files": 1,
-      "encryptedBytes": 3521
-    },
-    {
-      "id": "crawler-status-viewer",
-      "files": 1,
-      "encryptedBytes": 3226
-    },
-    {
-      "id": "ai-software-factory",
-      "files": 1,
-      "encryptedBytes": 3081
+      "htmlWrappers": 1,
+      "encryptedBytes": 3823561
     }
   ]
 }

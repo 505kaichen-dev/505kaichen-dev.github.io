@@ -50,7 +50,7 @@
 
 AI 開發成果的完整工作台不使用 `work-card`，統一由首頁單一 Kai AI Lab 入口進入 `/ai-lab/`。AI Lab 是獨立加密子站，不取得 `data-order`，也不參與最新發布與分類篩選。
 
-AI Lab 明文來源與建置工具位於 `C:\Users\505ka\OneDrive\Documents\Codex軟體開發\AI-Lab-Publisher`。`W:\ai-lab` 只保留登入殼、Service Worker 與 AES-256-GCM 密文 bundle；禁止手動複製 X 槽原始碼、`.env`、runtime 或大型安裝檔進入公開目錄。
+AI Lab 明文來源是 `X:\index.html` 與其 10 個既有入口，建置工具位於 `C:\Users\505ka\OneDrive\Documents\Codex軟體開發\AI-Lab-Publisher`。`W:\ai-lab` 保留 X 的相對目錄，多包一層小型 HTML wrapper 與各子資料夾的 AES-256-GCM 密文 payload；密碼只在首頁輸入一次並存於目前瀏覽器工作階段。禁止手動複製 X 槽原始碼、`.env`、runtime 或大型安裝檔進入公開目錄。
 
 ---
 
@@ -151,10 +151,7 @@ AI Lab 明文來源與建置工具位於 `C:\Users\505ka\OneDrive\Documents\Code
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
-<<<<<<< HEAD
-| 2026-11-19 | 建立 Kai AI Lab | 以 X 槽 Internal Command Center 為母體，建立獨立 `/ai-lab/` 加密展示空間；首頁只新增單一入口，不加入 work-card、data-order 或最新發布排序。輸出含 portal＋16 個專案 bundle，採 PBKDF2-SHA256／AES-256-GCM；Headless Edge 驗證正確／錯誤密碼、專案切換、Web Planner 圖片、390px 版面與網路載入通過。 |
-=======
->>>>>>> 3acd4c27295cffe1233b37e3f60f1d5d8b7b3dfe
+| 2026-11-19 | 建立 Kai AI Lab | 將 `X:\index.html` 與其 10 個既有入口按原相對路徑多包在 `/ai-lab/` 下；首頁只新增單一入口。每個原始 HTML 位置輸出解密 wrapper，內容按子資料夾封裝為 PBKDF2-SHA256／AES-256-GCM 密文。Headless Edge 驗證錯誤／正確密碼、只驗證一次、Storage Wiki 多頁、Web Planner 6 張圖片及 NAS HTTP 相容模式通過。 |
 | 2026-10-13 | FortiGate IPv6 筆記校訂 | 補齊 IAID、移除 WAN 管理開放範例、新增 MSS / PMTUD、前綴更新與主備驗收；改為技術手冊版面。保留首頁第 016 張卡片、封面及排序，不推送 GitHub Pages |
 | 2026-10-13 | Fitment Lab 封面更新 | 首頁第018張卡片改用黑橘／藍白成年二次元賽車女孩換胎主視覺，1200×630 PNG；舊封面保留於_archive/versions |
 | 2026-10-13 | Fitment Lab UI 改版 | 加入三主題、繁中／簡中／英文、RGB輪圈與胎壁刻字；修正單側盤面與輪轂接觸面示意，更新首頁封面與介紹 |

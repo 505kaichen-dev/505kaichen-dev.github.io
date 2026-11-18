@@ -3,10 +3,11 @@
 ## 2026-11-19
 
 - 新增獨立 `Kai AI Lab` 入口，位置與 Kids Lab 同屬首頁之外的完整子空間，不加入 Explore／Build／Gallery 作品卡片及 `data-order`。
-- 以 `X:\index.html` Internal Command Center 為母體，補入 Windows 工具與其他 AI 開發成果，建立 portal 與 16 個專案封包。
-- `W:\ai-lab` 僅保存登入殼、Service Worker 與 AES-256-GCM 密文；建置流程排除 `.env`、Git、crawler runtime、node_modules、安裝檔、壓縮檔、Excel 與私鑰格式。
-- Headless Edge 實測通過正確密碼解鎖、錯誤密碼拒絕、Kai Awake 與 Web Planner 專案切換、圖片載入、390px 無水平溢出及本機網路錯誤 0。
-- 修正 NAS HTTP／受限預覽環境沒有 `crypto.subtle` 時無法登入的問題；加入本地 node-forge AES-GCM 解密與非 Service Worker iframe renderer，HTTPS 快速路徑維持不變。
+- 將 `X:\index.html` 與首頁實際連結的 10 個子站按原相對路徑多包一層至 `W:\ai-lab`；未加入 MYK Tech、Kai Awake、Downloader 或其他 X 首頁以外的擴充內容。
+- 每個原始 HTML 位置只保存小型解密 wrapper，原始 HTML、程式與資產按子資料夾封裝為 AES-256-GCM 密文 payload；建置流程排除 `.env`、Git、runtime、node_modules、安裝檔、壓縮檔、Excel 與私鑰格式。
+- 分享密碼只在 AI Lab 首頁輸入一次並保存於 `sessionStorage`；子頁直接沿用。舊的 16 專案擴充版已可逆封存於 `_archive/ai-lab-builds/2026-11-19-expanded-wrong/`。
+- Headless Edge 實測通過錯誤／正確密碼、原 X 首頁、Storage Wiki 實體多頁路徑、Web Planner 6 張圖片與本機網路錯誤 0。
+- NAS HTTP／受限預覽環境沒有 `crypto.subtle` 時改用本地 node-forge AES-GCM 解密；同樣維持一次登入與實體子資料夾路徑。
 
 ## 2026-09-11
 
