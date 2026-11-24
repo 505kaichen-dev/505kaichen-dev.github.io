@@ -67,7 +67,7 @@ export function mountReverbPractice(root) {
   paint();
 }
 
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 const slider = (key, label, min, max, step) => `<label for="delay-${key}"><span>${label}<output id="delay-${key}-value" for="delay-${key}"></output></span><input id="delay-${key}" type="range" min="${min}" max="${max}" step="${step}" value="${initial[key]}"></label>`;
 
 export function effectsLesson({ previous, next, course, quiz, note, completion, listeningExercise }) {

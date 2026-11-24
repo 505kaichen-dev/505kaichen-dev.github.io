@@ -64,7 +64,7 @@ const cases = {
     retry: "恢復原 Mix，只旁路另一個空間效果重測。若乾聲也黏在一起，再檢查失真、消音或房間反射。",
   },
 };
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 
 const frequencyBands = [
   { label: "低頻", range: "70–160 Hz", center: "110 Hz", listen: "第 2 拍低弦的重量，以及停弦後的低頻是否仍拖著。" },

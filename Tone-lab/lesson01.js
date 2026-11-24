@@ -27,7 +27,7 @@ export function signalLesson({ previous, next, course, quiz, note, completion })
         <p class="lede">同一段 Riff，從拾音器出發，可以進耳機，也可以錄進電腦。知道它經過哪些地方，音色或電平一變，你就知道先查哪裡。</p>
         <p class="muted">讀完應能選擇合適的輸入、分辨前端過載與後端音量，並畫出自己使用的監聽路徑。</p>
       </header>
-      <div class="lesson-sticker-row"><p><a href="#outputs">你現在用耳機、音箱、PA，還是 USB 錄音？看看你的訊號怎麼走。</a></p><img src="${new URL("./art/tone-buddy-listen-v001.png", import.meta.url).href}" width="384" height="384" loading="lazy" decoding="async" alt=""></div><section id="guitar" class="section"><h2>從琴弦到電訊號</h2>
+      <div class="lesson-sticker-row"><p><a href="#outputs">你現在用耳機、音箱、PA，還是 USB 錄音？看看你的訊號怎麼走。</a></p><img src="${new URL("./assets/tone-buddy-listen-v001.png", import.meta.url).href}" width="384" height="384" loading="lazy" decoding="async" alt=""></div><section id="guitar" class="section"><h2>從琴弦到電訊號</h2>
         <p>磁性拾音器（Pickup）感應金屬琴弦的振動。用同一把 Les Paul 從琴頸切到琴橋，拾音位置變了，收到的頻譜和電平也可能變。再轉動琴上的 Volume 或 Tone，送進效果器前的訊號就已經不同。</p>
         <p>被動拾音器通常接高阻抗樂器輸入（Hi-Z／INST）。即使插頭相同，Line 和 Instrument 也可能有不同的輸入阻抗和適用電平；較低的輸入阻抗可能改變被動拾音器的高頻反應。效果器的類比輸出接到下一台機器時，則按輸出規格與接收端的輸入模式配對。<a href="https://support.focusrite.com/hc/en-gb/articles/115004171025-What-are-the-differences-between-mic-line-and-instrument-level">Focusrite 的電平說明</a></p>
       </section>
@@ -41,7 +41,7 @@ export function signalLesson({ previous, next, course, quiz, note, completion })
       <section id="outputs" class="section">
         <h2>換一個出口，跟著訊號走</h2>
         <p>沿用第 00 章的短 Riff。先選你現在用的出口，再和另一條路徑比對。全頻平坦響應喇叭（FRFR）和全頻的現場擴聲（PA）都可用來播放已塑形的聲音。用 USB 錄音時，數位音訊工作站（DAW）會從你選的輸入聲道收音。</p>
-        <figure class="amp-illustration"><img src="${new URL("./art/signal-listening-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手戴著耳機聆聽，白色 Les Paul Custom 立在一旁。"><figcaption class="single-caption">切換監聽前，先記下剛才用哪一個出口聽。</figcaption></figure>
+        <figure class="amp-illustration"><img src="${new URL("./assets/signal-listening-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手戴著耳機聆聽，白色 Les Paul Custom 立在一旁。"><figcaption class="single-caption">切換監聽前，先記下剛才用哪一個出口聽。</figcaption></figure>
         <fieldset><legend>你想把聲音送到哪裡？</legend>
           ${paths.map(([label], index) => `<label class="option"><input type="radio" name="monitor-path" value="${index}" ${index === 0 ? "checked" : ""}> ${label}</label>`).join("")}
         </fieldset>

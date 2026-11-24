@@ -29,7 +29,7 @@ const sections = [
 ];
 const fields = sections.flatMap(([, items]) => items);
 const backupFormat = "guitar-tone-lab:preset-record";
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 
 export function parsePresetBackup(text) {
   const backup = JSON.parse(text.replace(/^\uFEFF/, ""));

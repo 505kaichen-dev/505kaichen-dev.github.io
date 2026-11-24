@@ -67,7 +67,7 @@ export function mountRockPractice(root) {
   paint();
 }
 
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 
 export function rockLesson({ previous, next, course, quiz, note, completion }) {
   const builder = new URL("./labs/signal-chain/index.html", import.meta.url).href;

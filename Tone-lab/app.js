@@ -83,7 +83,7 @@ const header = `<a class="skip" href="#main">跳到主要內容</a>
     }).join("") : navLink(lab, "訊號鏈實驗", "lab")}</nav>
     <details class="chapter-menu"><summary>全部章節</summary><nav aria-label="主導覽">${navLink(home.href, "課程首頁", "home")}${chapterIds.map(id => navLink(lessonUrls[id], "第 " + id + " 章", lessonId === id ? "lesson" : "")).join("")}${navLink(lab, "訊號鏈實驗", "lab")}</nav></details>
   </div></header>`;
-const footer = `<footer class="wrap footer"><span>Guitar Tone Lab</span>${page !== "home" ? `<a href="${home.href}">回音色首頁</a>` : ""}${/\/Tone-lab\/site\/$/i.test(home.pathname) ? `<a href="${new URL("../../",home).href}">回 Kai AI Workshop 首頁</a>` : ""}<a href="${home.href}#course">課程地圖</a></footer>`;
+const footer = `<footer class="wrap footer"><span>Guitar Tone Lab</span>${page !== "home" ? `<a href="${home.href}">回音色首頁</a>` : ""}${/\/Tone-lab\/$/i.test(home.pathname) ? `<a href="${new URL("../",home).href}">回 Kai AI Workshop 首頁</a>` : ""}<a href="${home.href}#course">課程地圖</a></footer>`;
 const note = `<section class="note section" id="notes"><h2>音色筆記</h2>
   <label for="note-field">寫下目標、固定條件、唯一改動與聽到的差異</label>
   <textarea id="note-field" maxlength="10000" rows="6" placeholder="例：琴橋雙線圈拾音器、耳機監聽。只切換 Overdrive 的 Bypass，強彈時比較起音與和弦分離度。"></textarea>
@@ -119,7 +119,7 @@ function homeContent() {
       <div class="desk-title"><h1>來玩音色吧<span>。</span></h1>
         <p>同一個和弦，你喜歡哪種聲音？<br>聽完 A/B，拿起琴，用自己的綜合效果器調一次。</p>
         ${readingShortcut()}</div>
-      <figure class="desk-buddy"><img src="${url("art/tone-buddy-ready-v002.webp")}" width="720" height="900" alt="紫髮吉他手抱著白色 Les Paul Custom，托起白色 MG-50Li。"></figure>
+      <figure class="desk-buddy"><img src="${url("assets/tone-buddy-ready-v002.webp")}" width="720" height="900" alt="紫髮吉他手抱著白色 Les Paul Custom，托起白色 MG-50Li。"></figure>
       ${listeningExercise("cab", true)}
     </section>
     <section class="section tone-start" aria-labelledby="tone-start-title">
@@ -130,8 +130,8 @@ function homeContent() {
       <li><a href="${lessonUrls["06"]}#lead-echo">想讓 Solo 有回聲，下一句開頭還是清楚 ↗</a></li></ul>
     </section>
     <section id="practice" class="desk-routes" aria-label="接著玩什麼">
-      <a href="${labs}"><img src="${url("art/tone-buddy-listen-close-v001.png")}" alt=""><span><strong>再聽一組</strong><small>去練習室，比一比回聲的尾巴。</small></span><b>↗</b></a>
-      <a href="${lab}"><img src="${url("art/tone-buddy-swap-v001.png")}" alt=""><span><strong>換個效果順序</strong><small>把 Overdrive 移到 AMP 的另一邊。</small></span><b>↗</b></a>
+      <a href="${labs}"><img src="${url("assets/tone-buddy-listen-close-v001.png")}" alt=""><span><strong>再聽一組</strong><small>去練習室，比一比回聲的尾巴。</small></span><b>↗</b></a>
+      <a href="${lab}"><img src="${url("assets/tone-buddy-swap-v001.png")}" alt=""><span><strong>換個效果順序</strong><small>把 Overdrive 移到 AMP 的另一邊。</small></span><b>↗</b></a>
     </section>
     <section class="section" id="course">
       <div class="section-head"><div><p class="eyebrow">COURSE MAP</p><h2>課程地圖</h2></div><p class="tag">${Object.values(completed).filter(Boolean).length} / 12 已完成</p></div>
@@ -155,7 +155,7 @@ function lessonContent() {
         <div class="editorial listening-example" data-art-slot="lesson00-tone-notes">
           <div><h3>拿起琴，彈這四拍</h3><p>先挑一個接近你要的節奏音色，另存到可用的位置。這次的目標是輕彈有輪廓、重彈帶破音，停手時留得出空拍。</p>
             <p class="example-note">選一個能穩定重複的速度。用琴橋拾音器（Pickup），第 1 拍輕彈、第 2 拍重彈低音弦悶音（Palm Mute），第 3 拍刷一個短和弦，第 4 拍停弦。聽各拍的起音、和弦的外側兩弦，以及空拍還剩下什麼聲音。</p></div>
-          <figure class="editorial-art"><img src="${url("art/listening-notebook-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，停下來記錄剛聽見的變化。"></figure>
+          <figure class="editorial-art"><img src="${url("assets/listening-notebook-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，停下來記錄剛聽見的變化。"></figure>
         </div>
         <p>你可以從明暗、低頻輪廓、強弱差、延音與空間尾音五個角度描述目標。同一個「厚」可能指較多低中頻、飽滿的延音，或錄音中左右各錄一軌的疊加感。指定哪個演奏動作會暴露差異，就能收斂該測什麼。</p>
       </section>
@@ -174,7 +174,7 @@ function lessonContent() {
         <div class="callout editorial" data-art-slot="lesson00-footswitch">
           <div><h3>在 MG-50Li 上試</h3><p>在 NUX Audio Editor 先確認你正在編輯的 Preset，挑一條已有 Drive 類效果的訊號鏈。記下目前的 AMP 和 IR，做一次該效果啟用／旁路比較。</p>
             <p>若 Footswitch 已設成切換該效果，可以用腳切換後立刻重彈同一段。選單名稱和可調項目以你的裝置版本為準。<a href="https://nuxaudio.com/product/mg50li/">NUX MG-50Li 官方支援</a></p></div>
-          <figure class="editorial-art"><img src="${url("art/footswitch-pause-v002.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="淺藍牛仔褲與黑色皮靴站在白色效果器旁，木地板上有一片白色 Pick。"></figure>
+          <figure class="editorial-art"><img src="${url("assets/footswitch-pause-v002.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="淺藍牛仔褲與黑色皮靴站在白色效果器旁，木地板上有一片白色 Pick。"></figure>
         </div>
         <p>把喜歡的版本存在效果器上，取一個排練時認得的名字，例如「副歌節奏」。切到別的音色再切回來，重彈四拍。若第 3 拍的和弦仍太糊，接著<a href="${lessonUrls["03"]}#rhythm-gain">用 AMP Gain 整理和弦</a>。</p>
         <a class="primary" href="${lab}?exercise=intro">操作 Signal Chain Builder</a>
@@ -201,7 +201,7 @@ function labsContent() {
     [lessonUrls["10"] + "#preset-record", "Preset 設計紀錄"],
   ];
   return `<main class="wrap lab-page" id="main" tabindex="-1">
-    <header class="page-head listening-host"><img src="${url("art/tone-buddy-listen-v001.png")}" width="92" height="92" alt=""><div><h1>練習室</h1><p class="lede">戴上耳機，挑一組 A/B 聽聽。也可以在下方載入自己的兩段錄音。</p></div></header>
+    <header class="page-head listening-host"><img src="${url("assets/tone-buddy-listen-v001.png")}" width="92" height="92" alt=""><div><h1>練習室</h1><p class="lede">戴上耳機，挑一組 A/B 聽聽。也可以在下方載入自己的兩段錄音。</p></div></header>
     <div class="listen-pair">${listeningExercise("delay")}${listeningExercise("cab")}</div>
     <section class="section"><h2>挑一個練習</h2>
       <ul class="lab-directory">${entries.map(([href,label]) => `<li><a class="secondary" href="${href}">${label}</a></li>`).join("")}</ul>
@@ -243,7 +243,7 @@ function labContent() {
       </div>
       <p role="status" id="lab-status" class="feedback"></p>
     </section>
-    <section class="section chain-reaction" aria-labelledby="observations-title"><img hidden src="${url("art/tone-buddy-swap-v001.png")}" width="88" height="88" alt=""><h2 id="observations-title">這個順序可能帶來什麼？</h2><ul id="observations"></ul></section>
+    <section class="section chain-reaction" aria-labelledby="observations-title"><img hidden src="${url("assets/tone-buddy-swap-v001.png")}" width="88" height="88" alt=""><h2 id="observations-title">這個順序可能帶來什麼？</h2><ul id="observations"></ul></section>
     ${note}${status}<a href="${source}">${backLabel}</a>
   </main>`;
 }

@@ -14,7 +14,7 @@ const gateExamples = [
 
 const startThreshold = -48;
 const formatDb = number => String(number).replace("-", "−") + " dB";
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 
 export function mountMetalPractice(root) {
   const slider = root.querySelector("#metal-threshold");

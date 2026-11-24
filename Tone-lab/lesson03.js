@@ -59,7 +59,7 @@ export function mountAmpPractice(root) {
   paint();
 }
 
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 const options = (names, active) => names.map((name, index) =>
   `<option value="${index}" ${index === active ? "selected" : ""}>${name}</option>`
 ).join("");

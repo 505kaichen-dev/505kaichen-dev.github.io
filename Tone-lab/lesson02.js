@@ -91,7 +91,7 @@ export function rigLesson({ previous, next, course, quiz, note, completion }) {
       <section id="rig" class="section">
         <div class="lesson-sticker-row"><div><h2>同一個 Solo，可以怎麼切？</h2>
           <p>Preset 是整套可叫回的音色設定。Scene 或 Snapshot 常用來叫回同一個 Preset 內的部分狀態，單顆 Block 則適合只臨時開關一個效果。不同設備的 Scene 可以改哪些參數、遇到手動改動會怎麼保存，都要依功能說明確認。</p></div>
-          <img src="${new URL("./art/tone-buddy-aha-v001.png", import.meta.url).href}" width="384" height="384" loading="lazy" decoding="async" alt="">
+          <img src="${new URL("./assets/tone-buddy-aha-v001.png", import.meta.url).href}" width="384" height="384" loading="lazy" decoding="async" alt="">
         </div>
         <div id="rig-practice" class="console">
           <div class="section-head"><h3>切換練習</h3><span class="tag">概念示意 · 無音訊</span></div>
@@ -108,8 +108,8 @@ export function rigLesson({ previous, next, course, quiz, note, completion }) {
       <section id="controls" class="section"><h2>從腳踏或外部控制來叫回設定</h2>
         <p>把第 00 章的 Riff 接到一個獨奏長音。先確認腳踏已指派成切 Scene，再跟著兩格各做一次動作。</p>
         <div class="scene-strip">
-          <figure><img src="${new URL("./art/footswitch-pause-v002.jpg", import.meta.url).href}" width="1440" height="720" loading="lazy" alt="黑色皮靴停在白色效果器旁。"><figcaption><strong>空拍，踩下去。</strong>讓節奏段最後一個音自然收尾，聽切換時尾音有沒有被截斷。</figcaption></figure>
-          <figure><img src="${new URL("./art/scene-next-beat-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，在練團室準備接進獨奏。"><figcaption><strong>下一拍，進 Solo。</strong>彈一個長音，聽第一下撥弦有沒有清楚冒出來。</figcaption></figure>
+          <figure><img src="${new URL("./assets/footswitch-pause-v002.jpg", import.meta.url).href}" width="1440" height="720" loading="lazy" alt="黑色皮靴停在白色效果器旁。"><figcaption><strong>空拍，踩下去。</strong>讓節奏段最後一個音自然收尾，聽切換時尾音有沒有被截斷。</figcaption></figure>
+          <figure><img src="${new URL("./assets/scene-next-beat-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，在練團室準備接進獨奏。"><figcaption><strong>下一拍，進 Solo。</strong>彈一個長音，聽第一下撥弦有沒有清楚冒出來。</figcaption></figure>
         </div>
         <p>腳踏開關（Footswitch）可被指派成切單顆效果、切整組 Scene 或換 Preset。表情踏板（Expression Pedal）用腳跟到腳尖之間的行程連續改變參數，例如掃動哇音（Wah）的頻率。外部 MIDI 控制則看裝置支援，Program Change 常用來換 Preset，Control Change 可用於指定功能或參數。接線後要確認 MIDI Channel 和功能映射。</p>
         <p>全域設定適合影響多個音色的需求，例如硬體輸出或針對共享監聽的 EQ。如果只有一個 Lead Preset 太亮，先從那套音色下手比較容易回復。</p>

@@ -56,7 +56,7 @@ export function mountCabPractice(root) {
   paint();
 }
 
-const asset = name => new URL("./art/" + name, import.meta.url).href;
+const asset = name => new URL("./assets/" + name, import.meta.url).href;
 
 export function cabLesson({ previous, next, course, quiz, note, completion, listeningExercise }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
