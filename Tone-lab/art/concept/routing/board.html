@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tone Lab · 路由桌面草圖</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:#302e31;background:#eee9e1;font:16px/1.5 "Segoe UI","Microsoft JhengHei",sans-serif}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:3px solid #754b90;outline-offset:4px}
+main{width:min(1240px,calc(100% - 80px));margin:28px auto}header,footer,.bar,.readout,.controls,.knob-unit,.identity,.route-switch{display:flex;align-items:center}header,.bar{justify-content:space-between}header{margin:0 4px 18px}.identity{gap:14px}.logo{background:#483c52;border-radius:12px;color:#fff8e9;font:bold italic 23px Georgia;padding:6px 12px;transform:rotate(-4deg)}h1{margin:0;font-size:24px;letter-spacing:-.04em}.identity small{margin-left:9px;color:#756b6a;font-weight:500;font-size:14px}.draft{font:12px Consolas,monospace;letter-spacing:.1em;color:#61575c}
+.case{padding:20px;background:linear-gradient(155deg,#fffefa,#f7f3ed 70%,#ece7df);border:1px solid #d1c8bf;border-radius:25px;box-shadow:0 5px 0 #c6bdb3,0 16px 35px #55453b17;position:relative}
+.bar{gap:1rem;padding:2px 6px 18px}.bar h2{font-size:21px;margin:0}.bar small{color:#736a69;font:12px Consolas,monospace;letter-spacing:.1em}.route-switch{background:#eae4df;padding:4px;border-radius:11px;gap:4px}.route-switch button{background:transparent;border:0;border-radius:8px;font-weight:650;padding:7px 17px;font-size:14px}.route-switch button[aria-pressed=true]{background:#fffefa;color:#633d77;box-shadow:0 1px 5px #60504b28}
+.canvas-wrap{overflow:auto;border:1px solid #d5ccc4;border-radius:15px;background:#faf7f2;box-shadow:inset 0 2px 6px #61504b09}
+.canvas{position:relative;min-width:840px;height:312px;background-image:radial-gradient(#c8bdb57d .8px,transparent .9px);background-size:12px 12px;--rail:#777074;--wet:#8a61a0}
+.caption{position:absolute;left:2.9%;top:17px;font-size:13px;font-weight:650;color:#706465;background:#faf7f2;padding:1px 7px;border-radius:4px}
+.rail{position:absolute;background:var(--rail);height:3px;top:116px;left:5%;width:89%}
+.branch{display:none;position:absolute;left:58%;width:29%;height:109px;top:116px;border:3px solid var(--wet);border-top:0;border-radius:0 0 15px 15px}
+.parallel .branch,.parallel .junction,.parallel .path-label,.parallel .merge-tag{display:block}
+.junction{position:absolute;display:none;top:112px;left:58%;width:11px;height:11px;background:#fff8fa;border:3px solid var(--wet);border-radius:50%;transform:translateX(-35%)}.junction.end{left:87%;transform:translateX(-70%)}
+.path-label,.merge-tag{display:none;position:absolute;background:#faf7f2;color:#715480;font:600 12px/1.4 "Segoe UI","Microsoft JhengHei",sans-serif}.path-label{top:89px;left:68%}.merge-tag{left:86.7%;top:132px;transform:translateX(-50%)}
+.terminal{position:absolute;top:99px;border-radius:17px;background:#f0ebe4;border:1px solid #bcb1a6;font:700 12px/32px Consolas,monospace;letter-spacing:.05em;padding:0 11px;transform:translateX(-50%)}.input{left:5%}.output{left:94%}
+.unit{position:absolute;left:var(--x);top:117px;transform:translate(-50%,-50%);width:99px;height:84px;border:1px solid #544a4850;border-radius:10px;background:var(--shell);box-shadow:inset 0 2px 0 #ffffff96,0 3px 0 #8d8076,0 5px 6px #43352e20;display:grid;place-content:center;justify-items:center;gap:5px}.unit .label{font:bold 13px/1 Consolas,monospace;letter-spacing:.08em}.od{--x:19%;--shell:#b6c7a0}.amp{--x:34%;--shell:#edcba2}.cab{--x:49%;--shell:#d9bfab}.delay{--x:72.5%;--shell:#c9b1d8;outline:2px solid #866293;outline-offset:4px}.parallel .delay{top:224px}
+.knob-row{display:flex;gap:7px}.pin{width:12px;height:12px;background:linear-gradient(90deg,#55535a 44%,#faf2e8 45% 56%,#55535a 57%);border:1px solid #403b3a;border-radius:50%;transform:rotate(-25deg)}.stomp{width:11px;height:11px;border:2px solid #f7f4ec;background:#a29c93;box-shadow:0 0 0 1px #777168;border-radius:100%}
+.ampface,.cabface{border:3px solid #5e4c43;border-radius:4px;width:67px;height:33px;background:repeating-linear-gradient(90deg,#765f53 0 2px,#514540 2px 4px)}.ampface{border-top:7px solid #393235;box-shadow:inset 0 0 0 2px #a8896b}.cabface{height:40px;background-color:#68584d;background-image:radial-gradient(circle at 28% 50%,#5b504a 0 6px,#8d7c6c 7px,#473e39 9px,transparent 10px),radial-gradient(circle at 72% 50%,#5b504a 0 6px,#8d7c6c 7px,#473e39 9px,transparent 10px)}
+.display{font:10px Consolas,monospace;letter-spacing:.06em;background:#4a3b54;color:#ffedff;padding:1px 7px;border-radius:3px}
+.hint{position:absolute;left:4%;bottom:13px;font-size:14px;color:#5e5259;display:flex;gap:10px;align-items:center}.hint img{width:53px;height:53px;object-fit:contain}.serial .hint img{display:none}.serial .hint{bottom:28px}.parallel .hint{max-width:49%}
+.controls{gap:20px;margin-top:17px;padding:16px 21px;background:#f0ebe6;border:1px solid #d8cfc8;border-radius:15px}.readout{gap:12px;flex:1}.light{height:10px;width:10px;background:#9560a9;box-shadow:0 0 0 3px #dfd1e2;border-radius:50%}.readout strong{font-size:22px}.readout small{display:block;color:#71646b}.knob-unit{gap:10px;min-width:128px}.knob{position:relative;display:block;width:39px;height:39px;background:linear-gradient(135deg,#fffdf8,#dbd3c9);border:2px solid #b3a99e;border-radius:50%;box-shadow:0 2px 2px #76615133}.knob:before{content:"";position:absolute;left:15px;top:2px;height:11px;width:3px;background:#765280;transform-origin:2px 15px;transform:rotate(var(--angle))}.knob-unit small{display:block;color:#665d61;font:12px Consolas,monospace}.knob-unit b{font:600 17px Consolas,monospace}footer{justify-content:space-between;color:#786f6b;font-size:13px;margin:15px 5px}
+@media(max-width:800px){main{width:calc(100% - 20px);margin:15px auto}.case{padding:10px}.controls,.bar{flex-wrap:wrap}.readout{min-width:100%}.identity small{display:none}.knob-unit{min-width:95px}.controls{gap:14px}.draft{font-size:10px}}
+
+.screen-only { display: none; }
+.skins { background: #e2dbd4; }
+body[data-skin="lcd"] .instrument {
+  background: #282828; border: 6px solid #333336; border-radius: 15px; overflow: hidden;
+  box-shadow: 0 0 0 1px #b8b1a9, 0 2px 0 2px #fffaf4;
+}
+body[data-skin="lcd"] .patch-strip {
+  display: flex; gap: 18px; align-items: center; padding: 8px 19px;
+  color: #e3e3de; background: #111415; border-bottom: 1px solid #474648;
+  font: 650 20px/1.2 "Segoe UI", sans-serif;
+}
+.patch-strip b { color: #86e1dd; font: bold 31px/1 Consolas, monospace; }
+.patch-strip small { margin-left: auto; border-left: 1px solid #525658; padding-left: 17px; color: #91d8d2; font: 600 12px Consolas, monospace; letter-spacing: .09em; }
+body[data-skin="lcd"] .canvas-wrap { border: 0; border-radius: 0; background: #1c2022; }
+body[data-skin="lcd"] .canvas {
+  background: linear-gradient(108deg,#262a2d,#191d20 77%);
+  --rail: #a9b8b6; --wet: #72c7c0;
+}
+body[data-skin="lcd"] .caption { background: none; color: #c3c8c7; }
+body[data-skin="lcd"] .unit {
+  width: 73px; height: 65px; background: var(--tile); border: 1px solid #ffffff4d;
+  border-radius: 5px; box-shadow: inset 0 -3px #0002; color: #211e24;
+}
+body[data-skin="lcd"] .od { --tile:#eac26b; }
+body[data-skin="lcd"] .amp { --tile:#e99a76; }
+body[data-skin="lcd"] .cab { --tile:#90c8bd; }
+body[data-skin="lcd"] .delay { --tile:#a8b6ee; outline:2px solid #d9e5fc; outline-offset:4px; }
+body[data-skin="lcd"] .unit > :not(.digital-tile) { display:none; }
+body[data-skin="lcd"] .digital-tile { display:grid; justify-items:center; gap:1px; }
+.digital-tile svg { width:35px; height:28px; }
+.digital-tile b { font: 700 13px/1 Consolas,monospace; letter-spacing:.1em; }
+body[data-skin="lcd"] .terminal { color:#d2e3df; background:#343b3c; border-color:#707d7c; border-radius:4px; }
+body[data-skin="lcd"] .junction { background:#202729; }
+body[data-skin="lcd"] .path-label, body[data-skin="lcd"] .merge-tag { background:#1e2325; color:#9bddcf; }
+body[data-skin="lcd"] .merge-tag { margin-left: 22px; }
+body[data-skin="lcd"] .hint { color:#d8d9d4; }
+body[data-skin="lcd"] .controls { background:#303437; border:0; border-top:1px solid #595c5e; border-radius:0; margin:0; padding:14px 22px; color:#f1efeb; }
+body[data-skin="lcd"] .readout strong { font-size:20px; }
+body[data-skin="lcd"] .readout small, body[data-skin="lcd"] .knob-unit small { color:#c7cecf; }
+body[data-skin="lcd"] .light { background:#a8b6ee; box-shadow:none; border-radius:2px; }
+body[data-skin="lcd"] .knob-unit { border-left:1px solid #565b5e; padding-left:18px; min-width:135px; }
+body[data-skin="lcd"] .knob { width:29px; height:29px; background:#444b50; border:2px solid #9ba7ac; box-shadow:none; }
+body[data-skin="lcd"] .knob:before { left:11px; top:1px; height:9px; transform-origin:2px 12px; background:#cad6fa; }
+@media(max-width:800px) {
+  header { flex-wrap:wrap; gap:8px; }
+  body[data-skin="lcd"] .knob-unit { min-width:0; padding-left:7px; gap:5px; }
+  body[data-skin="lcd"] .controls { padding:12px; }
+}
+</style>
+<main><header><div class="identity"><span class="logo">tl.</span><h1>Tone Lab <small>訊號鏈工作桌</small></h1></div><nav class="route-switch skins" aria-label="工作桌外觀"><button data-skin="board">單塊桌面</button><button data-skin="lcd">電子介面</button></nav></header>
+<section class="case"><div class="bar"><div><small>SIGNAL CHAIN</small><h2>同一段 Riff，兩種 Delay 接法</h2></div><nav class="route-switch" aria-label="比較路由"><button data-mode="serial" aria-pressed="true">串聯 Serial</button><button data-mode="parallel" aria-pressed="false">並聯 Parallel</button></nav></div>
+<div class="instrument"><div class="patch-strip screen-only"><b>01A</b><span>Riff &amp; Echo</span><small id="patch-route"></small></div>
+<div class="canvas-wrap"><div class="canvas serial" id="canvas"><span class="caption" id="caption"></span><div class="rail"></div><div class="branch"></div><div class="junction"></div><div class="junction end"></div><span class="path-label">主線 · 乾音直通 →</span><span class="merge-tag">合流</span>
+<span class="terminal input">IN</span><div class="unit od" role="img" aria-label="Overdrive"><span class="digital-tile screen-only" aria-hidden="true"><svg viewBox="0 0 38 30" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 19h5l5-11h6l-2 12h6l6-12h9"/></svg><b>EFX</b></span><span class="knob-row"><i class="pin"></i><i class="pin"></i><i class="pin"></i></span><span class="label">OD</span><span class="stomp"></span></div><div class="unit amp" role="img" aria-label="AMP 擴大機"><span class="digital-tile screen-only" aria-hidden="true"><svg viewBox="0 0 38 30" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="32" height="20" rx="2"/><path d="M4 13h29M8 9h3m4 0h3m8 0h4M8 18h22m-22 3h22"/></svg><b>AMP</b></span><span class="ampface"></span><span class="label">AMP</span></div><div class="unit cab" role="img" aria-label="CAB / IR 箱體"><span class="digital-tile screen-only" aria-hidden="true"><svg viewBox="0 0 38 30" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="30" height="22" rx="2"/><circle cx="13" cy="15" r="5"/><circle cx="25" cy="15" r="5"/></svg><b>IR</b></span><span class="cabface"></span><span class="label">CAB / IR</span></div><div class="unit delay" role="img" aria-label="Digital Delay"><span class="digital-tile screen-only" aria-hidden="true"><svg viewBox="0 0 38 30" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h3V6h4v15h6V10h4v11h6v-7h4v7h5"/></svg><b>DLY</b></span><span class="display">375 ms</span><span class="label">DELAY</span><span class="stomp"></span></div><span class="terminal output">OUT</span><div class="hint"><img src="../../../site/art/tone-buddy-listen-close-v001.png" alt=""><span id="cue"></span></div></div></div>
+<div class="controls"><div class="readout"><i class="light"></i><div><strong>Digital Delay</strong><small id="place"></small></div></div><div class="knob-unit"><i class="knob" style="--angle:-23deg"></i><div><small>TIME</small><b>375 ms</b></div></div><div class="knob-unit"><i class="knob" style="--angle:-41deg"></i><div><small>FEEDBACK</small><b>35%</b></div></div><div class="knob-unit"><i class="knob" id="mixknob"></i><div><small>MIX</small><b id="mix"></b></div></div></div></div></section>
+<footer><span>MG-50Li 路由概念練習</span><span>版面預覽 · 無音訊</span></footer><div role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden" id="status"></div></main>
+<script>
+const modes={
+ serial:{caption:"串聯路徑",cue:"整段訊號通過 Delay，由 Mix 決定聽到多少回聲。",place:"主線 · CAB / IR 之後",mix:"25%",angle:"-60deg"},
+ parallel:{caption:"並聯路徑",cue:"原音走上面。下面只送回聲，再混回主線。",place:"效果支線 · 全濕回送",mix:"100%",angle:"138deg"}
+};
+function currentView(){
+ const params = new URLSearchParams(location.hash.slice(1));
+ const legacyMode = location.hash === "#parallel" || location.hash === "#serial";
+ return {
+  route: legacyMode ? location.hash.slice(1) : params.get("route") === "parallel" ? "parallel" : "serial",
+  skin: legacyMode || params.get("skin") === "board" ? "board" : "lcd"
+ };
+}
+function changeView(changes){
+ const view = {...currentView(), ...changes};
+ location.hash = new URLSearchParams(view).toString();
+}
+function draw(){
+ const {route:mode,skin}=currentView(), data=modes[mode];
+ document.body.dataset.skin=skin;
+ document.getElementById("patch-route").textContent=mode.toUpperCase();
+ document.querySelectorAll("button[data-skin]").forEach(b=>{
+  b.setAttribute("aria-pressed",String(b.dataset.skin===skin));
+ });
+ document.getElementById("canvas").className="canvas "+mode;
+ for(const id of ["caption","cue","place","mix"])document.getElementById(id).textContent=data[id];
+ document.getElementById("mixknob").style.setProperty("--angle",data.angle);
+ document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+ document.getElementById("status").textContent=data.caption+"。"+data.cue;
+}
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>changeView({route:b.dataset.mode})));
+document.querySelectorAll("button[data-skin]").forEach(b=>b.addEventListener("click",()=>changeView({skin:b.dataset.skin})));
+window.addEventListener("hashchange",draw);draw();
+</script></html>

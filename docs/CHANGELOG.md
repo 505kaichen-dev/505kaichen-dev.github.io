@@ -1,5 +1,9 @@
 # 全站整理紀錄
 
+## 2026-11-24
+
+- 新增首頁 Build 作品 Guitar Tone Lab（019）、練團插畫封面與教材入口。
+
 ## 2026-11-19
 
 - 新增獨立 `Kai AI Lab` 入口，位置與 Kids Lab 同屬首頁之外的完整子空間，不加入 Explore／Build／Gallery 作品卡片及 `data-order`。
