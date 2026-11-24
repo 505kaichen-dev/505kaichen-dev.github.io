@@ -69,7 +69,7 @@ export function ampLesson({ previous, next, course, quiz, note, completion }) {
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#amp-stages">AMP 前後級</a><a href="#dynamics">彈奏力道</a><a href="#controls">Gain 與旋鈕</a><a href="#amp-practice">固定 CAB 比較</a><a href="#experiment">實機練習</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 03</p><h1>AMP 擴大機建模</h1>
+      <header class="page-head"><p class="eyebrow">第 04 章</p><h1>AMP 擴大機建模</h1>
         <p class="lede">同一把 Les Paul，可以輕彈乾淨、重彈帶一點毛邊，也可以一碰弦就進入厚實破音。這章先固定 CAB／IR，聽懂 AMP 怎麼回應你的手。</p>
       </header>
       <section id="amp-stages" class="section"><h2>擴大機的前級與後級</h2>
@@ -96,7 +96,7 @@ export function ampLesson({ previous, next, course, quiz, note, completion }) {
           <dt>Bass／Mid／Treble</dt><dd>塑造頻譜。EQ 若在失真前，還可能改變哪段頻率先推進失真。不同模型的同一刻度無法直接對照。</dd>
           <dt>Presence／Resonance</dt><dd>某些機型藉後級回授改變高頻存在感或低頻力度，實作和可調範圍依設備而異。</dd>
         </dl>
-        <p>想用具體頻率比對刺耳、混濁或低弦鬆散，可以到<a href="../11/index.html#frequency-explorer">第 11 章的頻帶探索</a>。</p>
+        <p>想用具體頻率比對刺耳、混濁或低弦鬆散，可以到<a href="../11/index.html#frequency-explorer">第 12 章的頻帶探索</a>。</p>
         <div class="callout"><h3>Sag 與 Bias 先小幅試</h3><p>Sag 對應供電在重負載時下沉的一類反應，可能帶來較軟的起音和回彈。Bias 對應管子的工作偏壓，可能改變失真及動態。兩者都是依模型開放的進階控制，先固定 Gain 和 Master，再各試一項。<a href="https://line6.com/data/6/0a00051afda2673ccc1cc8e68/application/pdf/Helix%203.80%20Owner%27s%20Manual%20-%20English%20.pdf">Line 6 Helix 原廠參數示例</a></p></div>
       </section>
       <section id="amp-practice" class="section"><h2>固定 CAB／IR，只比較 AMP</h2>
@@ -123,12 +123,12 @@ export function ampLesson({ previous, next, course, quiz, note, completion }) {
       <section id="experiment" class="section"><h2 id="rhythm-gain">破音有力，和弦也要分得開</h2>
         <p>在效果器上另存一份目前的節奏音色，先固定箱體和拾音器。刷一個熟悉的和弦，留意中間兩條弦。若一重刷就糊，只退一點 AMP Gain，用後端 Level 補回相近的聽感音量，再刷一次。兩條弦聽得出來、重刷也還有你要的粗邊，就先停在這裡。</p>
         <p>把這一版存為節奏音色。想知道它從多輕的力道開始破音，再做下面的對照。</p>
-        <p>沿用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>。這輪只聽前兩拍的輕、重悶音，找出哪一拍先出現破音。</p>
+        <p>沿用<a href="../00/index.html#goal">第 01 章的四拍 Riff</a>。這輪只聽前兩拍的輕、重悶音，找出哪一拍先出現破音。</p>
         <ol><li>選一個 AMP 和固定的 IR，把會影響結果的其他效果旁路。保持同一個 Pickup、琴上音量與監聽。</li><li>用同一個速度重複四拍。稍微提高 Gain，再把後端聽感音量拉近，重聽前兩拍。</li><li>另存一份供比較，換另一個 AMP，保留相同 IR。若切模型影響了其他設定，先檢查 Block 清單和輸出。</li><li>用確定在失真級之後的音量控制做匹配。再 A/B 起音、和弦分離和延音。</li></ol>
         <p>筆記可以這樣寫：同 Pickup／IR、調過後端音量；A 重彈才起毛邊，B 輕彈就已破音。下一輪只比較其中一個控制。</p>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：綜合效果器的內部世界</a><a href="${next}">下一章：CAB、Speaker、Mic、IR</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 03　綜合效果器的內部世界</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 05　CAB、Speaker、Mic、IR</a></nav>
     </article>
   </main>`;
 }

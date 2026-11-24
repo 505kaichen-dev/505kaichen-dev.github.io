@@ -23,7 +23,7 @@ export function signalLesson({ previous, next, course, quiz, note, completion })
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#guitar">從琴弦到電訊號</a><a href="#conversion">類比與數位</a><a href="#levels">電平與削波</a><a href="#outputs">四種輸出路徑</a><a href="#experiment">實作練習</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 01</p><h1>電吉他訊號的旅程</h1>
+      <header class="page-head"><p class="eyebrow">第 02 章</p><h1>電吉他訊號的旅程</h1>
         <p class="lede">同一段 Riff，從拾音器出發，可以進耳機，也可以錄進電腦。知道它經過哪些地方，音色或電平一變，你就知道先查哪裡。</p>
         <p class="muted">讀完應能選擇合適的輸入、分辨前端過載與後端音量，並畫出自己使用的監聽路徑。</p>
       </header>
@@ -40,7 +40,7 @@ export function signalLesson({ previous, next, course, quiz, note, completion })
       </section>
       <section id="outputs" class="section">
         <h2>換一個出口，跟著訊號走</h2>
-        <p>沿用第 00 章的短 Riff。先選你現在用的出口，再和另一條路徑比對。全頻平坦響應喇叭（FRFR）和全頻的現場擴聲（PA）都可用來播放已塑形的聲音。用 USB 錄音時，數位音訊工作站（DAW）會從你選的輸入聲道收音。</p>
+        <p>沿用第 01 章的短 Riff。先選你現在用的出口，再和另一條路徑比對。全頻平坦響應喇叭（FRFR）和全頻的現場擴聲（PA）都可用來播放已塑形的聲音。用 USB 錄音時，數位音訊工作站（DAW）會從你選的輸入聲道收音。</p>
         <figure class="amp-illustration"><img src="${new URL("./assets/signal-listening-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手戴著耳機聆聽，白色 Les Paul Custom 立在一旁。"><figcaption class="single-caption">切換監聽前，先記下剛才用哪一個出口聽。</figcaption></figure>
         <fieldset><legend>你想把聲音送到哪裡？</legend>
           ${paths.map(([label], index) => `<label class="option"><input type="radio" name="monitor-path" value="${index}" ${index === 0 ? "checked" : ""}> ${label}</label>`).join("")}
@@ -52,7 +52,7 @@ export function signalLesson({ previous, next, course, quiz, note, completion })
         <ol><li>選一個乾淨 Preset，記下 Pickup、琴上音量、Preset 及耳機或喇叭。</li><li>同一段 Riff 先輕彈，再用平常最重的力度彈一次。觀察可用的輸入或錄音電平表，留意有沒有過載提示。</li><li>若強彈出現異常，把監聽音量調低再比一次。若異常仍在，沿路查輸入、Preset 與輸出，逐段定位。</li><li>在筆記畫出自己的訊號路徑，標出聽到的位置、觀察到的現象和下一次只打算改的一項設定。</li></ol>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：從想聽到的聲音出發</a><a href="${next}">下一章：綜合效果器的內部世界</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 01　從想聽到的聲音出發</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 03　綜合效果器的內部世界</a></nav>
     </article>
   </main>`;
 }

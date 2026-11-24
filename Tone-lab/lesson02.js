@@ -75,11 +75,11 @@ export function rigLesson({ previous, next, course, quiz, note, completion }) {
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#blocks">讀懂 Block</a><a href="#routing">看懂路由</a><a href="#rig">Preset 與 Scene 實驗</a><a href="#controls">腳下的控制</a><a href="#experiment">實機練習</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 02</p><h1>綜合效果器的內部世界</h1>
+      <header class="page-head"><p class="eyebrow">第 03 章</p><h1>綜合效果器的內部世界</h1>
         <p class="lede">節奏彈得正起勁，下一拍就要進 Solo。你可以開一顆 Boost、叫回一組 Scene，或切到另一個 Preset。先弄清每種動作會改變哪一段，台上才知道要踩哪顆。</p>
         <p class="muted">讀完應能讀懂一條數位訊號鏈，分辨切換層級，並查出一顆 Footswitch 實際控制什麼。</p>
       </header>
-      <section id="blocks" class="section"><h2>Block 是訊號鏈上的一站</h2>
+      <section id="blocks" class="section"><h2>關掉 Delay，剛才的破音還在嗎？</h2><p>想像你正用 Crunch 加一點回聲。只旁路 Delay，原先的 AMP 仍然在工作；叫回另一個 Preset，連 AMP 和箱體都可能一起換掉。若想保留同一套音色、一腳改幾顆效果，可以先看這台設備的 Scene 能記住哪些狀態。</p>
         <p>數位訊號處理（DSP）依訊號鏈的順序與路由處理 A/D 送來的樣本。處理區塊（Block）是鏈上的一站，像 Overdrive、擴大機（AMP）或延遲效果（Delay）。模型決定這一站用哪種方式處理，參數則決定這個模型怎麼工作。</p>
         <p>旁路（Bypass）通常讓訊號略過該 Block 的處理。它仍可留在原位置，也保留原參數，方便下次再打開。部分效果的尾音能不能繼續響，要看旁路或切換方式與機器設定。</p>
       </section>
@@ -106,7 +106,7 @@ export function rigLesson({ previous, next, course, quiz, note, completion }) {
         <p>先在 Rock Rig 切到 Lead，確認 Overdrive 與 Delay 同時啟用。再手動把 Delay 旁路，按「重新叫回 Scene」觀察它回來。最後換到 Clean Rig，注意 AMP、IR 和其他 Block 也跟著改變。</p>
       </section>
       <section id="controls" class="section"><h2>從腳踏或外部控制來叫回設定</h2>
-        <p>把第 00 章的 Riff 接到一個獨奏長音。先確認腳踏已指派成切 Scene，再跟著兩格各做一次動作。</p>
+        <p>把第 01 章的 Riff 接到一個獨奏長音。先確認腳踏已指派成切 Scene，再跟著兩格各做一次動作。</p>
         <div class="scene-strip">
           <figure><img src="${new URL("./assets/footswitch-pause-v002.jpg", import.meta.url).href}" width="1440" height="720" loading="lazy" alt="黑色皮靴停在白色效果器旁。"><figcaption><strong>空拍，踩下去。</strong>讓節奏段最後一個音自然收尾，聽切換時尾音有沒有被截斷。</figcaption></figure>
           <figure><img src="${new URL("./assets/scene-next-beat-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，在練團室準備接進獨奏。"><figcaption><strong>下一拍，進 Solo。</strong>彈一個長音，聽第一下撥弦有沒有清楚冒出來。</figcaption></figure>
@@ -119,7 +119,7 @@ export function rigLesson({ previous, next, course, quiz, note, completion }) {
         <ol><li>在自己設備叫出一套熟悉的音色，找出 AMP、CAB／IR 和 Delay 的順序。</li><li>只切一次 Delay 旁路，確認 AMP 和音量設定是否保留。若已指派 Scene，再切一次 Scene，看有哪幾顆 Block 一起變。</li><li>彈一個長音，在音符還沒完全消失時切換，聽尾音是保留還是中斷。寫下使用的操作模式和觀察到的結果。</li></ol>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：電吉他訊號的旅程</a><a href="${next}">下一章：AMP 擴大機建模</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 02　電吉他訊號的旅程</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 04　AMP 擴大機建模</a></nav>
     </article>
   </main>`;
 }

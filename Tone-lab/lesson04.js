@@ -63,14 +63,14 @@ export function cabLesson({ previous, next, course, quiz, note, completion, list
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#cabinets">箱體與喇叭</a><a href="#microphone">麥克風位置</a><a href="#ir">IR 怎麼工作</a><a href="#cab-practice">固定 AMP 比較</a><a href="#experiment">實機練習</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 04</p><h1>CAB、Speaker、Mic、IR</h1>
+      <header class="page-head"><p class="eyebrow">第 05 章</p><h1>CAB、Speaker、Mic、IR</h1>
         <p class="lede">先別動 AMP。把麥克風往喇叭外圈移一點，原本太刺的 Riff 就可能好聽很多。這章要拆開你聽到的箱體、喇叭與收音。</p>
       </header>
       <section id="cabinets" class="section"><h2>CAB 是箱體，Speaker 是單體</h2>
         <p>在實體設備上，擴大機（AMP）的後級驅動喇叭單體（Speaker），單體裝在箱體（CAB）裡。兩者會一起影響頻率響應與聲音傳播方向。同一顆 AMP 換一個箱體組合，失真音色的亮度、低頻與中頻輪廓都可能改變。在效果器介面上，CAB 也可能指包含收音在內的模擬區塊。</p>
         <p>1×12、2×12、4×12 表示 12 吋單體有幾顆。箱體開背或封閉、容積、選用的單體、排列和收音位置都會改變結果。看到尺寸時，可以先問「收了哪一顆、從哪裡收」，再用耳朵比較。</p>
       </section>
-      <section id="microphone" class="section"><h2>平移、轉向和拉遠，分開比較</h2>
+      <section id="microphone" class="section"><h2>把麥克風從中央移往外圈，刷弦會怎麼變？</h2>
         <p><strong>位置</strong>是麥克風落在中央、防塵帽邊界或紙盆外圈的哪裡。<strong>角度</strong>是收音軸怎麼轉，<strong>距離</strong>是麥克風離網罩或單體多遠。換麥克風型式，也會改變頻率、指向性與對起音的反應。</p>
         <p>以常見動圈麥克風近收為例，可先比較中央的起音輪廓與移向外圈後的柔和度。這是聆聽方向，實際上會因單體、麥克風和間距而變。部分指向性麥克風貼得很近時會有近講效應，拉遠則可能收進更多房間反射。<a href="https://www.shure.com/en-US/docs/guide/sm57">Shure SM57 原廠收音示例</a></p>
       </section>
@@ -110,13 +110,13 @@ export function cabLesson({ previous, next, course, quiz, note, completion, list
         ${listeningExercise("cab")}
       </section>
       <section id="experiment" class="section"><h2>到 MG-50Li 聽一次中央與外圈</h2>
-        <p>沿用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>。把注意力放在第 3 拍，聽同一個和弦的撥弦聲是否更柔和，以及外側兩弦是否仍有輪廓。</p>
+        <p>沿用<a href="../00/index.html#goal">第 01 章的四拍 Riff</a>。把注意力放在第 3 拍，聽同一個和弦的撥弦聲是否更柔和，以及外側兩弦是否仍有輪廓。</p>
         <p>NUX 將 Cyber IR 的可調項列為 Microphone、Position 和 Distance。請依你目前選的 IR 或模式與機上選項操作。<a href="https://nuxaudio.com/product/mg50li/">NUX 官方 Cyber IR 說明</a></p>
         <ol><li>固定 AMP、琴、Pickup、監聽和同一段 Riff。在同一個 CAB 下固定 Mic 和 Distance，只改 Position。</li><li>用後端 Level 把兩邊聽感音量拉近，再聽起音、和弦分離度和刺耳感。</li><li>下一輪若要比較箱體，先把位置等收音條件對到盡量相同。比較不得不一起改變的 IR 條件，也記在筆記裡。</li></ol>
         <p>把兩個收音位置、匹配音量的方式，以及第 3 拍的差異寫進筆記。耳機、FRFR 和全頻 PA 通常由保留 CAB／IR 起步。走實體吉他音箱 Return、由吉他喇叭發聲時，常從旁路 CAB／IR 起步，再比較是否要疊色。</p>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：AMP 擴大機建模</a><a href="${next}">下一章：Gain Staging 增益結構</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 04　AMP 擴大機建模</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 06　Gain Staging 增益結構</a></nav>
     </article>
   </main>`;
 }

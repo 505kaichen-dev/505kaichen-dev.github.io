@@ -161,7 +161,7 @@ export function diagnosisLesson({ previous, course, quiz, note, completion }) {
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#method">建立診斷基準</a><a href="#monitoring">耳機、音箱與 PA</a><a href="#diagnosis">互動診斷</a><a href="#frequency-explorer">頻帶探索</a><a href="#experiment">MG-50Li 實作</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 11</p><h1>中階實戰與音色診斷</h1>
+      <header class="page-head"><p class="eyebrow">第 12 章</p><h1>中階實戰與音色診斷</h1>
         <p class="lede">同一個 Preset，在耳機裡清楚，排練時卻聽不見。這章用一段熟悉的演奏找出症狀出現的條件，再沿訊號鏈逐段驗證。</p>
       </header>
       <section class="section" id="method"><h2>先找出症狀在哪一拍、哪一路發生</h2>
@@ -190,7 +190,7 @@ export function diagnosisLesson({ previous, course, quiz, note, completion }) {
         </div>
       </section>
       <section class="section" id="frequency-explorer"><h2>頻帶探索</h2>
-        <p>用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>做 A/B。選一個症狀，從建議頻帶開始。移動滑桿可以看其他頻帶要聽什麼。每輪只改一段 EQ，有需要時用後端 Level 匹配聽感音量。</p>
+        <p>用<a href="../00/index.html#goal">第 01 章的四拍 Riff</a>做 A/B。選一個症狀，從建議頻帶開始。移動滑桿可以看其他頻帶要聽什麼。每輪只改一段 EQ，有需要時用後端 Level 匹配聽感音量。</p>
         <div class="console">
           <p class="muted">頻帶為試聽起點。此工具無音訊，也不顯示實測頻譜或 EQ 曲線。</p>
           <label for="frequency-symptom">目前症狀</label>
@@ -207,12 +207,12 @@ export function diagnosisLesson({ previous, course, quiz, note, completion }) {
         </div>
         <p>頻帶界線只是方便排查的分區，同一句「刺耳」也可能來自削波或收音。Presence 是某些擴大機用來改變高中頻和高頻的控制，作用區域與電路或模型有關。<a href="https://manuals.line6.com/en/helix-stadium/live/amp-blocks">Line 6 原廠 Presence 說明</a></p>
       </section>
-      <section class="section" id="experiment"><h2>帶一個排練問題來做期末實作</h2>
+      <section class="section" id="experiment"><h2>帶一個排練遇到的音色問題回來</h2>
         <p>在 MG-50Li 複製一份待診斷的 Preset。在會出問題的監聽上重彈八小節，記下輸出、CAB／IR、音量及症狀出現的那一拍。接 PA 時先與混音台端一起確認電平與訊號路徑。<a href="https://nuxaudio.com/product/mg50li/">NUX MG-50Li 官方支援</a></p>
-        <p>做完一輪 A/B，把原設定、單一改動、聽到的差異與第二輪驗證寫進音色筆記。若第二輪無法重現，先保留原版。也可以用<a href="${previous}#preset-record">第 10 章的音色設計紀錄表</a>帶走這份結果。</p>
+        <p>做完一輪 A/B，把原設定、單一改動、聽到的差異與第二輪驗證寫進音色筆記。若第二輪無法重現，先保留原版。也可以用<a href="${previous}#preset-record">第 11 章的音色設計紀錄表</a>帶走這份結果。</p>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：從零建立完整 Preset</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 11　從零建立完整 Preset</a><a class="pager-index" href="${course}">回完整目錄</a></nav>
     </article>
   </main>`;
 }

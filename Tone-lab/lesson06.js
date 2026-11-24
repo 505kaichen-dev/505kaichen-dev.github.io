@@ -73,9 +73,9 @@ const slider = (key, label, min, max, step) => `<label for="delay-${key}"><span>
 export function effectsLesson({ previous, next, course, quiz, note, completion, listeningExercise }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#dynamics">動態與破音</a><a href="#modulation">四種調變</a><a href="#delay">Delay 時間軸</a><a href="#reverb">Reverb 擺位</a><a href="#experiment">實機練習</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#dynamics">動態與破音</a><a href="#modulation">四種調變</a><a href="#delay">Delay 時間軸</a><a href="#reverb">Reverb 擺位</a><a href="#experiment">實機練習</a><a href="#self-check">自己測一下</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 06</p><h1>動態、調變與空間效果</h1>
+      <header class="page-head"><p class="eyebrow">第 07 章</p><h1>動態、調變與空間效果</h1>
         <p class="lede">一個音可以被壓平、搖晃、重複，也可以在房間裡多留一下。先分清它改變的是起音、音色的移動，還是你停手以後的尾巴。</p>
       </header>
       <section id="dynamics" class="section"><h2>先決定要保留多少彈奏力道</h2>
@@ -90,13 +90,16 @@ export function effectsLesson({ previous, next, course, quiz, note, completion, 
           <dt>Tremolo</dt><dd>主要是週期性的音量起伏。先聽節奏，再用 Rate 和 Depth 調速度與起伏大小。</dd>
         </dl>
       </section>
-      <section id="delay" class="section"><h2>Delay：回聲隔多久、會剩多少</h2>
-        <p><strong>Time</strong> 決定回聲間隔，<strong>Feedback</strong> 決定回送比例，<strong>Mix</strong> 設定原音（Dry）與效果音（Wet）的混合。想把四分音符對到節拍時，120 BPM 的一拍是 500 ms，八分音符則是 250 ms。<a href="https://articles.boss.info/the-delay-pedal-glossary/">BOSS Delay 術語</a></p>
+      <section id="delay" class="section"><h2>停手以後，為什麼有些回聲只剩一下？</h2>
+        <p>聽同一個短和弦兩次。留意第一下回聲，再數數後面還跟了幾下。</p>
         <div class="echo-audition"><figure class="amp-illustration">
           <img src="${asset("delay-echoes-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手彈著白色 Les Paul，旁邊用逐漸淡去的音符畫出回聲。">
         </figure>
           ${listeningExercise("delay")}
         </div>
+        <h3>每繞回去一次，就再響一次</h3><p>Delay 把剛才彈的聲音留一小段時間再播出來。把其中一部分送回延遲線，下一輪就會多一聲。這兩段示範的間隔和第一聲回音相同，回送得多的那一版，後面幾聲留得比較久。</p>
+        <p><strong>Time</strong> 決定回聲間隔，<strong>Feedback</strong> 決定回送比例，<strong>Mix</strong> 設定原音（Dry）與效果音（Wet）的混合。想把四分音符對到節拍時，120 BPM 的一拍是 500 ms，八分音符則是 250 ms。<a href="https://articles.boss.info/the-delay-pedal-glossary/">BOSS Delay 術語</a></p>
+        <p><a href="#lead-echo">拿自己的效果器試：把回聲留在兩句 Solo 之間 ↗</a></p>
         <div class="console" id="delay-lab">
           <div class="section-head"><h3>撥一下之後的兩秒</h3><span class="tag">回聲示意 · 無音訊</span></div>
           <div class="gain-sliders">${slider("time","Time",100,800,50)}${slider("feedback","Feedback",0,80,5)}${slider("mix","Mix",0,100,5)}</div>
@@ -117,12 +120,13 @@ export function effectsLesson({ previous, next, course, quiz, note, completion, 
         <p>串聯通常讓 Block 自己混 Dry／Wet。並聯如果已有獨立乾音路徑，效果分支可從全 Wet 或 Kill Dry 起步，再用分支 Level 調整比例。若兩支線都送出乾音，合流後要留意音量與相位。</p>
       </section>
       <section id="experiment" class="section"><h2 id="lead-echo">回聲留在空拍，下一句還能清楚進來</h2>
-        <p>把節奏 Preset 另存成 Lead，在 AMP／CAB 後開一顆 Delay。先固定 Time 和 Mix，彈一句 Solo，空一拍再接下一句。若聽到好幾聲回音疊到下一句，逐步退 Feedback；若只有第一聲回音就搶過撥弦，先還原 Feedback，改退 Mix。彈回原速度，聽清下一句的第一個音，再儲存。</p>
-        <p>沿用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>。第 3 拍刷短和弦，第 4 拍停弦，下一輪按原速度接回第 1 拍。</p>
-        <ol><li>固定同一個 AMP、CAB／IR、監聽與演奏。Delay 先以低 Mix 測 Time 和 Feedback，每次只改一個。</li><li>換成 Reverb。若你的效果器允許，先把 RVB 放在 AMP 前和後各試一次。維持同樣的 Decay、Mix 與聽感音量。</li><li>聽空拍還剩多少尾音，下一輪第 1 拍的起音是否仍清楚。記下效果位置、唯一改動，以及尾音有沒有蓋過下一輪的起音。</li></ol>
+        <p>把節奏 Preset 另存一份作為 Lead。在 AMP／CAB 後開一顆串聯 Delay，先用低 Mix，彈一句 Solo、空一拍，再接第二句。哪一聲最礙事？</p>
+        <details><summary>第一下回音就和撥弦搶位置</summary><p>固定 Time 和 Feedback，慢慢退 Mix。每次重彈同兩句，找到空拍仍有回聲、第二句的撥弦也清楚的位置。</p></details>
+        <details><summary>第一下剛好，後面好幾聲卻一直疊上來</summary><p>保持 Mix 和 Time，退一點 Feedback 再彈。聽最後一聲能否在第二句開始前淡下去。若第一下仍太響，再另外比較 Mix。</p></details>
+        <p>切一次旁路確認 Delay 留下了你喜歡的空間感，再存回效果器。<a href="../10/index.html#preset-record">記下這個 Lead 的設定</a>，或<a href="#delay">回頭聽兩種回聲怎麼退去</a>。</p>
       </section>
-      ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：Gain Staging 增益結構</a><a href="${next}">下一章：訊號鏈設計實驗室</a><a href="${course}">返回課程地圖</a></nav>
+      <div id="self-check">${quiz}</div>${note}${completion}
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 06　Gain Staging 增益結構</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 08　訊號鏈設計實驗室</a></nav>
     </article>
   </main>`;
 }

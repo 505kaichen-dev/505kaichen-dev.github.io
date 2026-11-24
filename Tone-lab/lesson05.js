@@ -80,7 +80,7 @@ export function gainLesson({ previous, next, course, quiz, note, completion }) {
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#gain-stages">聲音在哪一段變大</a><a href="#boost">Boost 放前還是後</a><a href="#gate">Noise Gate</a><a href="#gain-practice">電平練習</a><a href="#experiment">實機 A/B</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 05</p><h1>Gain Staging 增益結構</h1>
+      <header class="page-head"><p class="eyebrow">第 06 章</p><h1>Gain Staging 增益結構</h1>
         <p class="lede">「太大聲」和「太多破音」要分開處理。順著 Input、Drive、AMP、Block Level 到 Output 找一遍，你會知道哪顆旋鈕該動。</p>
       </header>
       <section id="gain-stages" class="section"><h2>先找到聲音在哪一段變大</h2>
@@ -123,12 +123,12 @@ export function gainLesson({ previous, next, course, quiz, note, completion }) {
         <p class="muted">電平條共用 −36 至 0 dBFS 的顯示刻度。AMP 兩欄用等效電平表示內部處理，超過 0 時讀文字數值。只有輸入與輸出邊界的超限會在這個示意裡標成削波。</p>
       </section>
       <section id="experiment" class="section"><h2>用自己的效果器做一輪 Boost A/B</h2>
-        <p>沿用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>。先用第 2 拍的重手悶音檢查電平，再用第 3 拍聽破音量與和弦分離度。</p>
+        <p>沿用<a href="../00/index.html#goal">第 01 章的四拍 Riff</a>。先用第 2 拍的重手悶音檢查電平，再用第 3 拍聽破音量與和弦分離度。</p>
         <ol><li>選一個接近破音的 AMP，固定 Pickup、CAB／IR、監聽與 Riff。確認輸入和輸出都有餘裕。</li><li>用低增益或純音量的 Boost，先放 AMP 前再放 AMP 後。保持同樣的 Boost 量，記下哪個設定改變了破音、哪個主要改變音量。若裝置不支援移動，改用兩個可比較的鏈路。</li><li>再把後端音量匹配，重彈強弱和弦。若聽到尖銳破音，沿 Input、Block、Output 與接收端逐段檢查。</li></ol>
         <p>記下 Boost 的位置、哪一級的電平變了，以及拉回同音量後，第 3 拍還有沒有差別。</p>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：CAB、Speaker、Mic、IR</a><a href="${next}">下一章：動態、調變與空間效果</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 05　CAB、Speaker、Mic、IR</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 07　動態、調變與空間效果</a></nav>
     </article>
   </main>`;
 }

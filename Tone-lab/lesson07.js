@@ -36,7 +36,7 @@ export function routingLesson({ previous, next, course, quiz, note, completion }
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#minimal">最少的 Block</a><a href="#order">交換 EQ 和 Drive</a><a href="#parallel">串聯與 Wet/Dry</a><a href="#four-cable">四線法與出口</a><a href="#experiment">實機 A/B</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 07</p><h1>訊號鏈設計實驗室</h1>
+      <header class="page-head"><p class="eyebrow">第 08 章</p><h1>訊號鏈設計實驗室</h1>
         <p class="lede">同樣兩個 Block，交換順序就可能換一種手感。這章從一個聽得出的問題出發，排出能驗證的訊號鏈。</p>
       </header>
       <section id="minimal" class="section"><h2>從最少的 Block 開始</h2>
@@ -57,7 +57,7 @@ export function routingLesson({ previous, next, course, quiz, note, completion }
         </div>
         <p>比較 Delay 或 Reverb 時也一樣。放在重破音之前，尾音會和乾音一起被推入失真；擺到 AMP 後，可以先定好破音，再聽空間效果怎麼疊上去。真實結果還要看 Mix、後級處理與監聽。</p>
       </section>
-      <section id="parallel" class="section"><h2>串聯、並聯和分開送的 Wet/Dry</h2>
+      <section id="parallel" class="section"><h2>原音走上路、回聲走下路，最後在哪裡碰面？</h2>
         <p>串聯是前一顆的結果進下一顆。並聯可以在 AMP／CAB 後把訊號分成兩條，一路留乾音，一路只加 Delay，再在同一個輸出合流。若分支已保留乾音，效果支線可用全 Wet（如果支援）。</p>
         <div class="routing-branches"><p><strong>乾音支線</strong>保留已經成形的吉他音色。</p><p><strong>效果支線</strong>送出 Delay 重複聲，再用分支電平混入。</p></div>
         <p>Wet/Dry 也常指把乾音和效果聲分送到不同輸出或喇叭。機內能分支，仍要確認能否各自指派輸出，以及合流或單聲道相容性。MG-50Li 官方列有串聯、並聯與分流路由。<a href="https://nuxaudio.com/product/mg50li/">NUX 官方路由資料</a></p>
@@ -81,7 +81,7 @@ export function routingLesson({ previous, next, course, quiz, note, completion }
         <ol><li>寫下你要的起音、尾音、監聽和演奏片段。</li><li>先排最短路徑，再分別試 EQ 在 Drive 前後。固定設定和 Riff，用後端音量匹配。</li><li>逐顆旁路確認作用。最後留下聽得出有幫助的 Block，記下一組保留與一組捨棄的原因。</li></ol>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：動態、調變與空間效果</a><a href="${next}">下一章：經典搖滾音色實驗室</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 07　動態、調變與空間效果</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 09　經典搖滾音色實驗室</a></nav>
     </article>
   </main>`;
 }

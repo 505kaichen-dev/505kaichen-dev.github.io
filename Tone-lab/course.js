@@ -15,6 +15,22 @@ export const chapters = [
 
 export const groups = [["先做出能用的節奏底音", 0, 5], ["決定哪裡推破音、哪裡留回聲", 5, 8], ["做成自己的 Preset，帶到排練驗證", 8, 12]];
 
+// A question and a hands-on task can lead into different parts of the same article.
+export const topicPaths = {
+  "00": [["method","同樣說「厚」，可能是哪一段聲音變了？"],["goal","用四拍 Riff 做一個節奏音色"]],
+  "01": [["conversion","琴弦的聲音在哪裡變成數位訊號？"],["outputs","找到耳機、音箱或 PA 該走的出口"]],
+  "02": [["blocks","切一顆效果和換整套音色差在哪？"],["rig","從節奏切進 Solo，一腳叫回設定"]],
+  "03": [["dynamics","為什麼輕彈乾淨，重刷就有毛邊？"],["rhythm-gain","保留破音的力道，也聽得清和弦"]],
+  "04": [["microphone","同一個箱體，麥克風挪一點為什麼會變亮？"],["experiment","固定 AMP，比較中央與外圈的刷弦聲"]],
+  "05": [["boost","Boost 開下去，為什麼有時只多了破音？"],["experiment","把 Boost 放在 AMP 前後各彈一次"]],
+  "06": [["delay","停手以後，為什麼有些回聲只剩一下？"],["lead-echo","讓 Solo 有回聲，下一句仍清楚"]],
+  "07": [["parallel","效果並聯時，原音和尾巴各走哪條路？"],["order","交換 EQ 和 Drive，試著收緊低頻"]],
+  "08": [["lead","推弦的長音，怎麼在伴奏裡站得住？"],["rock-practice","挑一個搖滾音色，帶進 Builder"]],
+  "09": [["double-tracking","兩次演奏為什麼比複製一軌更有寬度？"],["metal-gate","讓 Gate 收住空拍，也保住輕音"]],
+  "10": [["scenes","一首歌的 Clean、Crunch、Lead 該怎麼切？"],["mg-example","做一對排練時能踩回來的 Crunch 和 Lead"]],
+  "11": [["monitoring","同一個 Preset，為什麼換到 PA 就不一樣？"],["diagnosis","挑一個排練遇到的問題，找下一步"]],
+};
+
 export const glossary = [
   ["訊號鏈", "Signal Chain", "訊號碰到各個處理階段的順序。", "上游的輸出成為下游的輸入，因此交換非線性處理與其他處理的順序可能改變結果。", "要定位亮度、失真或音量變化時，沿著鏈逐段檢查。"],
   ["拾音器", "Pickup", "把琴弦振動轉為電訊號。", "感應位置與拾音器特性會影響輸出頻譜與電平，同時改變後級被推動的程度。", "做比較時固定 Pickup，除非這正是你要測的變因。"],

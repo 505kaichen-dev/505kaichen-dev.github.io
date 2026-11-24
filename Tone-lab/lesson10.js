@@ -175,7 +175,7 @@ export function presetLesson({ previous, next, course, quiz, note, completion })
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#design">從基準音色開始</a><a href="#scenes">規劃切換</a><a href="#verify">測試與留版</a><a href="#mg-example">MG-50Li 切換範例</a><a href="#preset-record">音色設計紀錄</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 10</p><h1>從零建立完整 Preset</h1>
+      <header class="page-head"><p class="eyebrow">第 11 章</p><h1>從零建立完整 Preset</h1>
         <p class="lede">做一份排練時能直接踩、回家也能重做的 Preset。從真正要彈的段落開始，留下訊號鏈、切換方式和一次 A/B 結果。</p>
       </header>
       <section class="section" id="design"><h2>先做一個能比較的基準音色</h2>
@@ -217,7 +217,7 @@ export function presetLesson({ previous, next, course, quiz, note, completion })
         ${workbook()}
       </section>
       ${quiz}<details id="notes"><summary>全站共用音色筆記</summary>${note.replace('id="notes"', "")}</details>${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：現代金屬音色實驗室</a><a href="${next}">下一章：中階實戰與音色診斷</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 10　現代金屬音色實驗室</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 12　中階實戰與音色診斷</a></nav>
     </article>
   </main>`;
 }

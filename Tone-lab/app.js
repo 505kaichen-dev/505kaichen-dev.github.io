@@ -1,4 +1,4 @@
-import { chapters, groups, glossary, quiz } from "./course.js";
+import { chapters, topicPaths, glossary, quiz } from "./course.js";
 import { blocks, initialChain, validChain, chainObservations, orderExerciseChain } from "./chain.js";
 import { signalLesson, signalQuiz, renderSignalPath } from "./lesson01.js";
 import { rigLesson, rigQuiz, mountRigPractice } from "./lesson02.js";
@@ -16,6 +16,8 @@ const home = new URL("./", import.meta.url);
 const url = path => new URL(path, home).href;
 const lesson = url("lessons/00/index.html");
 const chapterQuizzes = { "00": quiz, "01": signalQuiz, "02": rigQuiz, "03": ampQuiz, "04": cabQuiz, "05": gainQuiz, "06": effectsQuiz, "07": routingQuiz, "08": rockQuiz, "09": metalQuiz, "10": presetQuiz, "11": diagnosisQuiz };
+// URLs and saved progress keep the original zero-based IDs.
+const chapterNumber = id => String(Number(id) + 1).padStart(2, "0");
 const chapterIds = chapters.map(([id]) => id).filter(id => Object.hasOwn(chapterQuizzes, id));
 const lessonUrls = Object.fromEntries(chapterIds.map(id => [id, url("lessons/" + id + "/index.html")]));
 const lab = url("labs/signal-chain/index.html");
@@ -58,7 +60,6 @@ function load() {
 }
 const state = load();
 const progress = chapterProgress(state, lessonId);
-const completed = Object.fromEntries(chapterIds.map(id => [id, chapterProgress(state, id).completed]));
 function save(field, message) {
   const status = document.querySelector("#save-status");
   try {
@@ -77,13 +78,10 @@ function navLink(href, label, key) {
 const header = `<a class="skip" href="#main">跳到主要內容</a>
   <header class="top"><div class="wrap bar">
     <a class="brand" href="${home.href}"><svg class="pick-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#554267" d="M24 3C15 3 5 7 5 15c0 10 11 24 17 29q2 2 4 0c6-5 17-19 17-29 0-8-10-12-19-12Z"/><path fill="none" stroke="#fff4df" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M11 22h6l3-8 4 17 4-13 2 4h7"/></svg><span class="brand-type">Guitar <em>Tone</em> Lab</span></a>
-    <nav class="quick-nav" aria-label="快速導覽">${page !== "home" ? `<a class="home-btn" href="${home.href}">← 回音色首頁</a>` : ""}<a href="${labs}">練習室</a><a href="${home.href}#course">課程地圖</a>${page === "lesson" ? [["上一章", -1], ["下一章", 1]].map(([label, offset]) => {
-      const href = lessonUrls[chapterIds[chapterIds.indexOf(lessonId) + offset]];
-      return href ? `<a href="${href}">${label}</a>` : "";
-    }).join("") : navLink(lab, "訊號鏈實驗", "lab")}</nav>
-    <details class="chapter-menu"><summary>全部章節</summary><nav aria-label="主導覽">${navLink(home.href, "課程首頁", "home")}${chapterIds.map(id => navLink(lessonUrls[id], "第 " + id + " 章", lessonId === id ? "lesson" : "")).join("")}${navLink(lab, "訊號鏈實驗", "lab")}</nav></details>
+    <nav class="quick-nav" aria-label="快速導覽">${page !== "home" ? `<a class="home-btn" href="${home.href}">← 回音色首頁</a>` : ""}<a href="${labs}">練習室</a><a href="${home.href}#course">音色指南</a>${navLink(lab, "玩訊號鏈", "lab")}</nav>
+    ${page === "home" ? "" : `<details class="chapter-menu"><summary>章節索引</summary><nav aria-label="主導覽">${navLink(home.href, "音色首頁", "home")}${chapterIds.map(id => navLink(lessonUrls[id], chapterNumber(id) + " " + chapters.find(row=>row[0]===id)[1], lessonId === id ? "lesson" : "")).join("")}${navLink(lab, "玩訊號鏈", "lab")}</nav></details>`}
   </div></header>`;
-const footer = `<footer class="wrap footer"><span>Guitar Tone Lab</span>${page !== "home" ? `<a href="${home.href}">回音色首頁</a>` : ""}${/\/Tone-lab\/$/i.test(home.pathname) ? `<a href="${new URL("../",home).href}">回 Kai AI Workshop 首頁</a>` : ""}<a href="${home.href}#course">課程地圖</a></footer>`;
+const footer = `<footer class="wrap footer"><span>Guitar Tone Lab</span>${page !== "home" ? `<a href="${home.href}">回音色首頁</a>` : ""}${/\/Tone-lab\/$/i.test(home.pathname) ? `<a href="${new URL("../",home).href}">回 Kai AI Workshop 首頁</a>` : ""}<a href="${home.href}#course">音色指南</a></footer>`;
 const note = `<section class="note section" id="notes"><h2>音色筆記</h2>
   <label for="note-field">寫下目標、固定條件、唯一改動與聽到的差異</label>
   <textarea id="note-field" maxlength="10000" rows="6" placeholder="例：琴橋雙線圈拾音器、耳機監聽。只切換 Overdrive 的 Bypass，強彈時比較起音與和弦分離度。"></textarea>
@@ -94,13 +92,13 @@ const status = '<p class="feedback" id="save-status" role="status"></p>';
 const answerLayouts = ["BACBC", "CCABA", "BABCA", "CBAAC", "ACBAC", "BCACB", "CACBB", "BBCCA", "ABCCB", "CBBAC", "CABAB", "BCCAA"];
 function quizSection(questions, answers) {
   const layout = answerLayouts[Number(lessonId)];
-  return `<section id="quiz" class="section"><h2>理解測驗</h2><p class="muted">每題選完就能查看解析。</p>
+  return `<section id="quiz" class="section"><details class="optional-check"><summary>想確認聽懂了嗎？用五個問題試試</summary><p class="muted">每題選完就能查看解析。</p>
     ${questions.map(([question, options, correct], i) => {
       const order = options.map((_, j) => j).filter(j => j !== correct);
       order.splice("ABC".indexOf(layout[i]), 0, correct);
       return `<fieldset><legend>${i + 1}. ${question}</legend>${order.map(j => `<label class="option"><input type="radio" name="q${i}" value="${j}" ${answers[i] === j ? "checked" : ""}> ${options[j]}</label>`).join("")}<p id="answer-${i}" aria-live="polite" class="answer"></p></fieldset>`;
     }).join("")}
-    <button type="button" class="secondary" id="reset-quiz">重做測驗</button>
+    <button type="button" class="secondary" id="reset-quiz">重做測驗</button></details>
   </section>`;
 }
 const completion = `<div class="actions"><button type="button" class="secondary" id="complete" aria-pressed="${progress.completed}">${progress.completed ? "取消完成標記" : "標記為已完成"}</button></div>${status}`;
@@ -109,35 +107,27 @@ function readingShortcut() {
   let id;
   try { id = localStorage.getItem("guitar-tone-lab:last-lesson"); } catch { /* Storage is optional. */ }
   return chapterIds.includes(id)
-    ? `<a href="${lessonUrls[id]}">回到上次的第 ${id} 章 ↗</a>`
-    : `<a href="${lesson}#goal">拿自己的琴彈一段 ↗</a>`;
+    ? `<a href="${lessonUrls[id]}">繼續讀：${chapters.find(row => row[0] === id)[1]} ↗</a>`
+    : "";
 }
 
 function homeContent() {
   return `<main class="wrap" id="main" tabindex="-1">
-    <section class="desk-intro">
+    <section class="desk-intro tone-door">
       <div class="desk-title"><h1>來玩音色吧<span>。</span></h1>
-        <p>同一個和弦，你喜歡哪種聲音？<br>聽完 A/B，拿起琴，用自己的綜合效果器調一次。</p>
-        ${readingShortcut()}</div>
+        <p>想知道破音怎麼推、回聲怎麼留，或手上的綜合效果器該從哪顆旋鈕開始調？</p></div>
       <figure class="desk-buddy"><img src="${url("assets/tone-buddy-ready-v002.webp")}" width="720" height="900" alt="紫髮吉他手抱著白色 Les Paul Custom，托起白色 MG-50Li。"></figure>
-      ${listeningExercise("cab", true)}
     </section>
-    <section class="section tone-start" aria-labelledby="tone-start-title">
-      <h2 id="tone-start-title">今天想調出什麼聲音？</h2>
-      <p>第一次做音色，可以<a href="${lesson}#goal">從四拍 Riff 做一個節奏 Preset</a>。手上已經有一個想修改的音色，就從你聽見的那一拍開始。</p>
-      <ul><li><a href="${lessonUrls["03"]}#rhythm-gain">破音要有力，刷和弦時也想聽清楚每條弦 ↗</a></li>
-      <li><a href="${lessonUrls["09"]}#metal-gate">想讓停手那拍安靜，又保得住輕彈的音 ↗</a></li>
-      <li><a href="${lessonUrls["06"]}#lead-echo">想讓 Solo 有回聲，下一句開頭還是清楚 ↗</a></li></ul>
+    <section class="section" id="course" aria-labelledby="catalog-title">
+      <div class="section-head"><h2 id="catalog-title">音色指南 · 完整目錄</h2>${readingShortcut()}</div>
+      <ol class="chapter-directory">${chapters.map(([id,title])=>`<li><a href="${lessonUrls[id]}"><span class="chapter-num">${chapterNumber(id)}</span><span><strong>${title}</strong><small>${id === "00" ? "拿起琴，彈四拍，做出第一個自己的節奏音色。" : topicPaths[id][0][1]}</small></span></a></li>`).join("")}</ol>
     </section>
+    <section class="stuck-strip"><h2>調音色卡住了？</h2><a href="${lessonUrls["03"]}#rhythm-gain">破音一開，和弦就糊了</a><a href="${lessonUrls["09"]}#metal-gate">Gate 把輕音吃掉了</a><a href="${lessonUrls["06"]}#lead-echo">回聲蓋過下一句</a></section>
     <section id="practice" class="desk-routes" aria-label="接著玩什麼">
-      <a href="${labs}"><img src="${url("assets/tone-buddy-listen-close-v001.png")}" alt=""><span><strong>再聽一組</strong><small>去練習室，比一比回聲的尾巴。</small></span><b>↗</b></a>
+      <a href="${labs}"><img src="${url("assets/tone-buddy-listen-close-v001.png")}" alt=""><span><strong>去聽 A/B</strong><small>去練習室，比一比回聲的尾巴。</small></span><b>↗</b></a>
       <a href="${lab}"><img src="${url("assets/tone-buddy-swap-v001.png")}" alt=""><span><strong>換個效果順序</strong><small>把 Overdrive 移到 AMP 的另一邊。</small></span><b>↗</b></a>
     </section>
-    <section class="section" id="course">
-      <div class="section-head"><div><p class="eyebrow">COURSE MAP</p><h2>課程地圖</h2></div><p class="tag">${Object.values(completed).filter(Boolean).length} / 12 已完成</p></div>
-      <p class="muted">用自己的綜合效果器跟著彈。先做出節奏底音，再加上曲子需要的效果，最後把能在排練叫回來用的 Preset 存好。實機範例使用 NUX MG-50Li。</p>
-      ${groups.map(([name, start, end]) => `<section class="course-group"><h3>${name}</h3><ul class="course-list">${chapters.slice(start, end).map(([id, title, desc]) => `<li><span class="number">${id}</span><div>${lessonUrls[id] ? `<a href="${lessonUrls[id]}">${title}</a>` : `<strong>${title}</strong>`}<p>${desc}</p></div>${completed[id] ? '<span class="tag live">已完成</span>' : ""}</li>`).join("")}</ul></section>`).join("")}
-    </section>
+
   </main>`;
 }
 
@@ -146,7 +136,7 @@ function lessonContent() {
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#goal">建立音色目標</a><a href="#method">反推訊號鏈</a><a href="#experiment">控制變因實驗</a><a href="#terms">術語</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 00</p><h1>從想聽到的聲音出發</h1>
+      <header class="page-head"><p class="eyebrow">第 01 章</p><h1>從想聽到的聲音出發</h1>
         <p class="lede">你已經能聽出喜歡哪種音色。這一章要把那個聽感轉成可以設計、測試、重做的設定。</p>
         <p class="muted">先備知識：能彈一小段可重複的短樂句（Riff）或和弦。可用自己的效果器、音箱或錄音軟體驗證。</p>
       </header>
@@ -178,12 +168,13 @@ function lessonContent() {
         </div>
         <p>把喜歡的版本存在效果器上，取一個排練時認得的名字，例如「副歌節奏」。切到別的音色再切回來，重彈四拍。若第 3 拍的和弦仍太糊，接著<a href="${lessonUrls["03"]}#rhythm-gain">用 AMP Gain 整理和弦</a>。</p>
         <a class="primary" href="${lab}?exercise=intro">操作 Signal Chain Builder</a>
+        <p>節奏音色已經喜歡了？<a href="${lessonUrls["06"]}#lead-echo">用這份 Preset 做一個有回聲的 Solo 版本 ↗</a></p>
       </section>
       <section id="terms" class="section"><h2>術語</h2>
         ${glossary.map(([zh, en, plain, principle, when]) => `<details><summary>${zh} <span class="muted">· ${en}</span></summary><p>${plain}</p><p><strong>原理</strong>　${principle}</p><p><strong>使用時機</strong>　${when}</p></details>`).join("")}
       </section>
       ${quizSection(lessonQuiz, progress.answers)}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${lessonUrls["01"]}">下一章：電吉他訊號的旅程</a><a href="${home.href}#course">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a class="pager-index" href="${home.href}#course">回完整目錄</a><a href="${lessonUrls["01"]}">下一章 · 02　電吉他訊號的旅程</a></nav>
     </article>
   </main>`;
 }
@@ -220,12 +211,12 @@ function labsContent() {
 function labContent() {
   const exerciseChapter = rockChain ? "08" : exerciseName === "intro" ? "00" : "07";
   const context = exerciseChain
-    ? `<p class="amp-observation">${rockChain ? recipes[exerciseName.slice(5)].name + "。" + recipes[exerciseName.slice(5)].cue : exerciseName === "intro" ? "只切換 Overdrive，預測第 2 拍的起音會怎麼變。" : ""} 已載入第 ${exerciseChapter} 章的順序範例。按「儲存訊號鏈」才會將它寫入存檔。 <a href="${lab}">開啟已儲存的訊號鏈</a></p>`
+    ? `<p class="amp-observation">${rockChain ? recipes[exerciseName.slice(5)].name + "。" + recipes[exerciseName.slice(5)].cue : exerciseName === "intro" ? "只切換 Overdrive，預測第 2 拍的起音會怎麼變。" : ""} 已載入第 ${chapterNumber(exerciseChapter)} 章的順序範例。按「儲存訊號鏈」才會將它寫入存檔。 <a href="${lab}">開啟已儲存的訊號鏈</a></p>`
     : "";
   const source = exerciseChain
     ? lessonUrls[exerciseChapter] + "?exercise=" + encodeURIComponent(exerciseName) + (rockChain ? "#rock-practice" : exerciseName === "intro" ? "#experiment" : "#order")
     : lesson + "#experiment";
-  const backLabel = exerciseChain ? "返回第 " + exerciseChapter + " 章練習" : "返回第 00 章實驗步驟";
+  const backLabel = exerciseChain ? "返回第 " + chapterNumber(exerciseChapter) + " 章練習" : "返回第 01 章實驗步驟";
   return `<main class="wrap lab-page" id="main" tabindex="-1">
     <header class="page-head"><p class="eyebrow">訊號鏈實驗室</p><h1>Signal Chain Builder</h1>
       <p class="lede">播放同一段 Riff，試著交換 EQ 與破音的位置，再把 Delay 移到支線聽一次。</p>${context}
@@ -265,13 +256,40 @@ function currentLesson() {
 const renderPage = { lesson: currentLesson, lab: labContent, labs: labsContent, home: homeContent }[page] ?? homeContent;
 app.innerHTML = header + renderPage() + footer;
 
+if(page==="home"){
+  const resolveOldGuide=()=>{
+    if(!["#understand","#play-tone"].includes(location.hash)) return;
+    history.replaceState(null,"","#course");
+    document.getElementById("course").scrollIntoView();
+  };
+  resolveOldGuide();
+  window.addEventListener("hashchange",resolveOldGuide);
+}
+if(page==="lesson"){
+  const paths=topicPaths[lessonId];
+  paths.forEach(([anchor],i)=>{
+    const section=document.getElementById(anchor)?.closest("section");
+    if(!section || lessonId==="06") return;
+    const [nextAnchor,label]=paths[1-i];
+    const link=document.createElement("a");
+    link.className="topic-bridge";
+    link.href="#"+nextAnchor;
+    link.textContent=(i===0?"拿琴試試 · ":"想懂原理 · ")+label+" ↗";
+    section.append(link);
+  });
+}
+
 const contents = document.querySelector(".contents");
 if (contents) {
   const menu = document.createElement("details");
   const summary = document.createElement("summary");
   summary.textContent = "本章目錄";
   menu.append(summary, contents.querySelector("nav"));
-  contents.replaceChildren(menu);
+  const locationLine=document.createElement("p");
+  locationLine.className="chapter-location";
+  const title=chapters.find(([id])=>id===lessonId)[1];
+  locationLine.innerHTML=`<a href="${home.href}#course">音色指南</a><span>第 ${chapterNumber(lessonId)} 章 · ${title}</span>`;
+  contents.replaceChildren(locationLine,menu);
 }
 const mobileLayout = matchMedia("(max-width: 760px)");
 const menus = document.querySelectorAll(".contents details");
@@ -323,7 +341,7 @@ if (page === "lesson") {
     progress.completed = !progress.completed;
     complete.setAttribute("aria-pressed", String(progress.completed));
     complete.textContent = progress.completed ? "取消完成標記" : "標記為已完成";
-    saveProgress("completed", progress.completed ? "已標記第 " + lessonId + " 章完成" : "已取消完成標記");
+    saveProgress("completed", progress.completed ? "已標記第 " + chapterNumber(lessonId) + " 章完成" : "已取消完成標記");
   });
   const route = document.querySelector("#monitor-route");
   if (route) for (const radio of document.querySelectorAll('[name="monitor-path"]')) {

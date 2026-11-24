@@ -42,7 +42,7 @@ export function metalLesson({ previous, next, course, quiz, note, completion }) 
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#riff">悶音與起音</a><a href="#boost">前置 Boost 與低頻</a><a href="#metal-gate">Noise Gate 練習</a><a href="#double-tracking">雙軌與混音</a><a href="#experiment">MG-50Li 實作</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 09</p><h1>現代金屬音色實驗室</h1>
+      <header class="page-head"><p class="eyebrow">第 10 章</p><h1>現代金屬音色實驗室</h1>
         <p class="lede">兩下低弦悶音，刷過和弦，再留一拍空白。從這一小段聽出起音有沒有咬勁、低頻收得住嗎，以及停手時還剩下什麼聲音。</p>
       </header>
       <section class="section" id="riff"><h2>拿起 Pick，跟著同一個拍子彈</h2>
@@ -79,7 +79,7 @@ export function metalLesson({ previous, next, course, quiz, note, completion }) 
         <ol><li>複製一份節奏 Preset 作比較。固定琴橋拾音器、AMP、CAB／IR 與監聽，用包含輕重悶音、和弦和停拍的同一段 Riff 當素材。</li><li>先只退 AMP Gain，補齊聽感音量，聽複雜和弦是否更清楚。恢復基準，再試前置低 Drive 的 OD 開關，聽低弦起音和重量。</li><li>留下較合適的設定，從低閾值慢慢提高 Gate。輪流彈輕音、重音和停拍，確認空拍穩定而且弱音仍在。</li></ol>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：經典搖滾音色實驗室</a><a href="${next}">下一章：從零建立完整 Preset</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 09　經典搖滾音色實驗室</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 11　從零建立完整 Preset</a></nav>
     </article>
   </main>`;
 }

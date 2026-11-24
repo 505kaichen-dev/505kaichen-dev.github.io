@@ -75,7 +75,7 @@ export function rockLesson({ previous, next, course, quiz, note, completion }) {
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
       <a href="#goals">從聲音特徵開始</a><a href="#lead">Slash 類型 Lead</a><a href="#rock-practice">五個音色起點</a><a href="#experiment">MG-50Li 實作</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
-      <header class="page-head"><p class="eyebrow">LESSON 08</p><h1>經典搖滾音色實驗室</h1>
+      <header class="page-head"><p class="eyebrow">第 09 章</p><h1>經典搖滾音色實驗室</h1>
         <p class="lede">同一把 Les Paul，輕彈可以有空氣感，重刷可以長出粗邊，推弦又能在伴奏上浮起來。這章練習從聽得出來的差異，選擇合適的 AMP、CAB 與效果位置。</p>
       </header>
       <section id="goals" class="section"><h2>先挑你想保留的那一拍</h2>
@@ -104,7 +104,7 @@ export function rockLesson({ previous, next, course, quiz, note, completion }) {
         <ol><li>用乾淨的起點存一份比較用 Preset。固定琴、Pickup、CAB／IR 與監聽，用同一段強弱演奏建立基準。</li><li>同模型小幅增加 Gain，聽重彈是否先進破音。再換較早起破音的 AMP，保持 CAB 和響度作第二次對照。</li><li>做 Lead 時用同一個推弦和停頓，分別驗證中頻與 Delay。成功標準是伴奏中聽得清推弦輪廓，停手後仍留有下一句的位置。</li></ol>
       </section>
       ${quiz}${note}${completion}
-      <nav class="actions" aria-label="章節導覽"><a href="${previous}">上一章：訊號鏈設計實驗室</a><a href="${next}">下一章：現代金屬音色實驗室</a><a href="${course}">返回課程地圖</a></nav>
+      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 08　訊號鏈設計實驗室</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 10　現代金屬音色實驗室</a></nav>
     </article>
   </main>`;
 }
