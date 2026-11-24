@@ -115,7 +115,7 @@ AI Lab 明文來源是 `X:\index.html` 與其 10 個既有入口，建置工具�
 | 016 | fortigate-ipv6-hinet | FortiGate 60F + HiNet PPPoE IPv6 全紀錄 | diy | |
 | 017 | downloader | Downloader — 貼上一個網址，剩下的交給它 | works | 免費無廣告；個人、非商業使用；下載連結準備中 |
 | 018 | wheel-fitment | Fitment Lab — 輪胎輪圈改裝計算器 | build | 四格動態圖、GPS 校正、進階胎寬與葉子板位置 |
-| 019 | Tone-lab | Guitar Tone Lab — 電吉他音色工程學 | build | 合成 Riff、訊號鏈與 12 章練習 |
+| 019 | Tone-lab | Guitar Tone Lab — 用綜合效果器玩音色 | build | 合成 Riff、訊號鏈與 12 章練習 |
 <!-- CARD_LIST_END -->
 
 ---
@@ -152,6 +152,7 @@ AI Lab 明文來源是 `X:\index.html` 與其 10 個既有入口，建置工具�
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
+| 2026-11-24 | 首頁連至 MYK Tech | 桌面與手機導覽列的「聯絡 Kai」連到 `https://myktech.com.tw/contact/`，「關於」區塊末尾連到官網首頁。 |
 | 2026-11-24 | 新增 Guitar Tone Lab | Build 卡片 019、練團插畫封面及入口。 |
 | 2026-11-19 | 建立 Kai AI Lab | 將 `X:\index.html` 與其 10 個既有入口按原相對路徑多包在 `/ai-lab/` 下；首頁只新增單一入口。每個原始 HTML 位置輸出解密 wrapper，內容按子資料夾封裝為 PBKDF2-SHA256／AES-256-GCM 密文。Headless Edge 驗證錯誤／正確密碼、只驗證一次、Storage Wiki 多頁、Web Planner 6 張圖片及 NAS HTTP 相容模式通過。 |
 | 2026-10-13 | FortiGate IPv6 筆記校訂 | 補齊 IAID、移除 WAN 管理開放範例、新增 MSS / PMTUD、前綴更新與主備驗收；改為技術手冊版面。保留首頁第 016 張卡片、封面及排序，不推送 GitHub Pages |

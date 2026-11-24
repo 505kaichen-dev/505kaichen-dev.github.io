@@ -59,6 +59,7 @@ export function metalLesson({ previous, next, course, quiz, note, completion }) 
       </section>
       <section class="section" id="metal-gate">
         <h2>Gate 關得乾淨，也要讓輕音進來</h2><p>先把閾值拉到最低，再慢慢提高。找出能壓住底噪、又能讓輕手悶音通過的最低值。再往上推，看看哪一下會先消失。</p>
+        <p>拿自己的效果器試，記得每調一次就交替彈「輕悶音、停弦」，最後再留一個長音。若空拍已安靜，長音卻突然斷掉，就回退 Threshold 再聽。把能保住這三個動作的設定存回練習用的 Preset。</p>
         <div class="console" id="metal-lab">
           <div class="section-head"><h3>閾值比較</h3><span class="tag">固定示意電平 · 無音訊</span></div>
           <div class="gain-sliders"><label for="metal-threshold"><span>Gate 閾值 <output id="metal-threshold-value" for="metal-threshold"></output></span>

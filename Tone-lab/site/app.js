@@ -76,14 +76,14 @@ function navLink(href, label, key) {
 }
 const header = `<a class="skip" href="#main">跳到主要內容</a>
   <header class="top"><div class="wrap bar">
-    <a class="brand" href="${home.href}"><span class="mark" aria-hidden="true">≋</span> Guitar Tone Lab</a>
-    <nav class="quick-nav" aria-label="快速導覽"><a href="${labs}">練習室</a><a href="${home.href}#course">課程地圖</a>${page === "lesson" ? [["上一章", -1], ["下一章", 1]].map(([label, offset]) => {
+    <a class="brand" href="${home.href}"><svg class="pick-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#554267" d="M24 3C15 3 5 7 5 15c0 10 11 24 17 29q2 2 4 0c6-5 17-19 17-29 0-8-10-12-19-12Z"/><path fill="none" stroke="#fff4df" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M11 22h6l3-8 4 17 4-13 2 4h7"/></svg><span class="brand-type">Guitar <em>Tone</em> Lab</span></a>
+    <nav class="quick-nav" aria-label="快速導覽">${page !== "home" ? `<a class="home-btn" href="${home.href}">← 回音色首頁</a>` : ""}<a href="${labs}">練習室</a><a href="${home.href}#course">課程地圖</a>${page === "lesson" ? [["上一章", -1], ["下一章", 1]].map(([label, offset]) => {
       const href = lessonUrls[chapterIds[chapterIds.indexOf(lessonId) + offset]];
       return href ? `<a href="${href}">${label}</a>` : "";
     }).join("") : navLink(lab, "訊號鏈實驗", "lab")}</nav>
     <details class="chapter-menu"><summary>全部章節</summary><nav aria-label="主導覽">${navLink(home.href, "課程首頁", "home")}${chapterIds.map(id => navLink(lessonUrls[id], "第 " + id + " 章", lessonId === id ? "lesson" : "")).join("")}${navLink(lab, "訊號鏈實驗", "lab")}</nav></details>
   </div></header>`;
-const footer = `<footer class="wrap footer"><span>Guitar Tone Lab</span><a href="${home.href}#course">課程地圖</a></footer>`;
+const footer = `<footer class="wrap footer"><span>Guitar Tone Lab</span>${page !== "home" ? `<a href="${home.href}">回音色首頁</a>` : ""}${/\/Tone-lab\/site\/$/i.test(home.pathname) ? `<a href="${new URL("../../",home).href}">回 Kai AI Workshop 首頁</a>` : ""}<a href="${home.href}#course">課程地圖</a></footer>`;
 const note = `<section class="note section" id="notes"><h2>音色筆記</h2>
   <label for="note-field">寫下目標、固定條件、唯一改動與聽到的差異</label>
   <textarea id="note-field" maxlength="10000" rows="6" placeholder="例：琴橋雙線圈拾音器、耳機監聽。只切換 Overdrive 的 Bypass，強彈時比較起音與和弦分離度。"></textarea>
@@ -117,10 +117,17 @@ function homeContent() {
   return `<main class="wrap" id="main" tabindex="-1">
     <section class="desk-intro">
       <div class="desk-title"><h1>來玩音色吧<span>。</span></h1>
-        <p>同一個和弦，兩種聲音。<br>戴上耳機，挑你喜歡的那一邊。</p>
+        <p>同一個和弦，你喜歡哪種聲音？<br>聽完 A/B，拿起琴，用自己的綜合效果器調一次。</p>
         ${readingShortcut()}</div>
       <figure class="desk-buddy"><img src="${url("art/tone-buddy-ready-v002.webp")}" width="720" height="900" alt="紫髮吉他手抱著白色 Les Paul Custom，托起白色 MG-50Li。"></figure>
       ${listeningExercise("cab", true)}
+    </section>
+    <section class="section tone-start" aria-labelledby="tone-start-title">
+      <h2 id="tone-start-title">今天想調出什麼聲音？</h2>
+      <p>第一次做音色，可以<a href="${lesson}#goal">從四拍 Riff 做一個節奏 Preset</a>。手上已經有一個想修改的音色，就從你聽見的那一拍開始。</p>
+      <ul><li><a href="${lessonUrls["03"]}#rhythm-gain">破音要有力，刷和弦時也想聽清楚每條弦 ↗</a></li>
+      <li><a href="${lessonUrls["09"]}#metal-gate">想讓停手那拍安靜，又保得住輕彈的音 ↗</a></li>
+      <li><a href="${lessonUrls["06"]}#lead-echo">想讓 Solo 有回聲，下一句開頭還是清楚 ↗</a></li></ul>
     </section>
     <section id="practice" class="desk-routes" aria-label="接著玩什麼">
       <a href="${labs}"><img src="${url("art/tone-buddy-listen-close-v001.png")}" alt=""><span><strong>再聽一組</strong><small>去練習室，比一比回聲的尾巴。</small></span><b>↗</b></a>
@@ -128,7 +135,7 @@ function homeContent() {
     </section>
     <section class="section" id="course">
       <div class="section-head"><div><p class="eyebrow">COURSE MAP</p><h2>課程地圖</h2></div><p class="tag">${Object.values(completed).filter(Boolean).length} / 12 已完成</p></div>
-      <p class="muted">以電吉他演奏經驗為起點。你可以跟著自己的設備操作，部分練習會以 NUX MG-50Li 示範。</p>
+      <p class="muted">用自己的綜合效果器跟著彈。先做出節奏底音，再加上曲子需要的效果，最後把能在排練叫回來用的 Preset 存好。實機範例使用 NUX MG-50Li。</p>
       ${groups.map(([name, start, end]) => `<section class="course-group"><h3>${name}</h3><ul class="course-list">${chapters.slice(start, end).map(([id, title, desc]) => `<li><span class="number">${id}</span><div>${lessonUrls[id] ? `<a href="${lessonUrls[id]}">${title}</a>` : `<strong>${title}</strong>`}<p>${desc}</p></div>${completed[id] ? '<span class="tag live">已完成</span>' : ""}</li>`).join("")}</ul></section>`).join("")}
     </section>
   </main>`;
@@ -146,7 +153,7 @@ function lessonContent() {
       <section id="goal" class="section"><h2>第 4 拍停手時，你還想留下什麼聲音？</h2>
         
         <div class="editorial listening-example" data-art-slot="lesson00-tone-notes">
-          <div><h3>拿起琴，彈這四拍</h3><p>「硬搖滾、厚、有力」可以當起點。再寫下彈哪一段、在哪個瞬間聽到什麼。</p>
+          <div><h3>拿起琴，彈這四拍</h3><p>先挑一個接近你要的節奏音色，另存到可用的位置。這次的目標是輕彈有輪廓、重彈帶破音，停手時留得出空拍。</p>
             <p class="example-note">選一個能穩定重複的速度。用琴橋拾音器（Pickup），第 1 拍輕彈、第 2 拍重彈低音弦悶音（Palm Mute），第 3 拍刷一個短和弦，第 4 拍停弦。聽各拍的起音、和弦的外側兩弦，以及空拍還剩下什麼聲音。</p></div>
           <figure class="editorial-art"><img src="${url("art/listening-notebook-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，停下來記錄剛聽見的變化。"></figure>
         </div>
@@ -169,7 +176,7 @@ function lessonContent() {
             <p>若 Footswitch 已設成切換該效果，可以用腳切換後立刻重彈同一段。選單名稱和可調項目以你的裝置版本為準。<a href="https://nuxaudio.com/product/mg50li/">NUX MG-50Li 官方支援</a></p></div>
           <figure class="editorial-art"><img src="${url("art/footswitch-pause-v002.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="淺藍牛仔褲與黑色皮靴站在白色效果器旁，木地板上有一片白色 Pick。"></figure>
         </div>
-        <p>完成標準：寫下一個可觀察的音色目標、一項改動、固定條件，以及一次 A/B 比較結果。</p>
+        <p>把喜歡的版本存在效果器上，取一個排練時認得的名字，例如「副歌節奏」。切到別的音色再切回來，重彈四拍。若第 3 拍的和弦仍太糊，接著<a href="${lessonUrls["03"]}#rhythm-gain">用 AMP Gain 整理和弦</a>。</p>
         <a class="primary" href="${lab}?exercise=intro">操作 Signal Chain Builder</a>
       </section>
       <section id="terms" class="section"><h2>術語</h2>

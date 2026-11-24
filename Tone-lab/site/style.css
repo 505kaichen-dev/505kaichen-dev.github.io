@@ -385,3 +385,10 @@ textarea { display: block; resize: vertical; width: 100%; padding: .75rem; margi
 .workdesk[data-skin=pedal] .module button {height:5.3rem;width:5.5rem;gap:.17rem;border-radius:.65rem;box-shadow:inset 0 2px #fff7,0 4px #978b7c}
 .workdesk[data-skin=pedal] .module button::after {content:"";width:9px;height:9px;border-radius:50%;border:2px solid #e6e0d8;background:#999088;box-shadow:0 0 0 1px #776e65}
 .inspector button {border:1px solid #bdb4aa;border-radius:.45rem;background:#faf6f1;color:#463d40}.inspector button:disabled{opacity:.55}
+
+.tone-start {max-width:56rem}.tone-start ul{padding:0;list-style:none}.tone-start li{border-top:1px solid var(--line)}.tone-start li a{display:block;padding:.65rem 0;font-weight:650}
+
+.pick-mark {width:2.65rem;height:2.65rem;flex:none;filter:drop-shadow(0 2px 1px #44344d24)}
+.brand-type {font:700 clamp(1.15rem,2vw,1.55rem)/1.1 Georgia,serif;letter-spacing:-.04em}
+.brand-type em {color:#765781}
+.bar nav .home-btn {border:1px solid #cfbdce;border-radius:2rem;background:#f4eaf1;color:#563d60;padding:0 .85rem;font-size:.92rem;font-weight:650}

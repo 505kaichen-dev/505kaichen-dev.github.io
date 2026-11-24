@@ -116,7 +116,8 @@ export function effectsLesson({ previous, next, course, quiz, note, completion, 
         <p>在實體音箱裡，效果迴路通常在前級和後級之間，仍會經過後級與實體喇叭。錄音後製的 Reverb 則可以在收完音之後才加。綜合效果器能移到哪裡，要看它的數位路由和 Block 限制。<a href="https://nuxaudio.com/product/mg50li/">NUX 官方路由與模組規格</a></p>
         <p>串聯通常讓 Block 自己混 Dry／Wet。並聯如果已有獨立乾音路徑，效果分支可從全 Wet 或 Kill Dry 起步，再用分支 Level 調整比例。若兩支線都送出乾音，合流後要留意音量與相位。</p>
       </section>
-      <section id="experiment" class="section"><h2>用一個短和弦測尾音</h2>
+      <section id="experiment" class="section"><h2 id="lead-echo">回聲留在空拍，下一句還能清楚進來</h2>
+        <p>把節奏 Preset 另存成 Lead，在 AMP／CAB 後開一顆 Delay。先固定 Time 和 Mix，彈一句 Solo，空一拍再接下一句。若聽到好幾聲回音疊到下一句，逐步退 Feedback；若只有第一聲回音就搶過撥弦，先還原 Feedback，改退 Mix。彈回原速度，聽清下一句的第一個音，再儲存。</p>
         <p>沿用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>。第 3 拍刷短和弦，第 4 拍停弦，下一輪按原速度接回第 1 拍。</p>
         <ol><li>固定同一個 AMP、CAB／IR、監聽與演奏。Delay 先以低 Mix 測 Time 和 Feedback，每次只改一個。</li><li>換成 Reverb。若你的效果器允許，先把 RVB 放在 AMP 前和後各試一次。維持同樣的 Decay、Mix 與聽感音量。</li><li>聽空拍還剩多少尾音，下一輪第 1 拍的起音是否仍清楚。記下效果位置、唯一改動，以及尾音有沒有蓋過下一輪的起音。</li></ol>
       </section>

@@ -564,6 +564,9 @@
     line-height: 1.75;
   }
 
+  .about-website { margin-top: 16px; }
+  .about-website a { color: var(--blue-mid); text-underline-offset: 0.2em; }
+
   .about-qa {
     display: flex;
     flex-direction: column;
@@ -794,7 +797,7 @@
 
   @media (max-width: 600px) {
     .work-grid { grid-template-columns: 1fr; }
-    .nav-links { display: none; }
+    .nav-links > li:not(.nav-contact) { display: none; }
     .hero-title { font-size: 2.2rem; }
     .hero-desc { font-size: 0.95rem; }
     .section { padding: 48px 20px; }
@@ -986,7 +989,7 @@
       <li><a href="#ai-lab">AI Lab</a></li>
       <li><a href="#kids">Kids Lab</a></li>
       <li><a href="#about">關於</a></li>
-      <li><a href="mailto:505.kai.chen@gmail.com">聯絡</a></li>
+      <li class="nav-contact"><a href="https://myktech.com.tw/contact/">聯絡 Kai <span aria-hidden="true">↗</span></a></li>
     </ul>
   </div>
 </nav>
@@ -1062,7 +1065,7 @@
           <span class="card-tag">互動音色實驗室</span>
         </div>
         <div class="card-body">
-          <div class="card-title">Guitar Tone Lab — 電吉他音色工程學</div>
+          <div class="card-title">Guitar Tone Lab — 用綜合效果器玩音色</div>
           <div class="card-desc">戴上耳機，比較同一段 Riff 的兩種音色。拖動效果器、切換串聯與並聯，跟著 12 章練習調出自己的吉他聲音。</div>
         </div>
         <div class="card-footer"><div class="card-arrow"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6h8M6 2l4 4-4 4"/></svg></div></div>
@@ -1526,6 +1529,7 @@
         <div class="qa-q">第四題我想不到了，</div>
         <div class="qa-a">我是個沒創意的 IT 機器人。</div>
       </div>
+      <p class="about-desc about-website">更多作品與服務，請見 <a href="https://myktech.com.tw/">MYK Tech 彌悠祇科技官網 <span aria-hidden="true">↗</span></a></p>
     </div>
   </div>
 </section>

@@ -213,7 +213,7 @@ export function presetLesson({ previous, next, course, quiz, note, completion })
         </div>
       </section>
       <section class="section" id="preset-record">
-        <h2>填寫音色設計紀錄</h2><p>可以分段填。草稿留在目前的瀏覽器，Markdown 可帶走目前填寫的內容。MG-50Li 的 Preset 請在裝置或編輯器儲存。</p>
+        <h2>叫回剛做好的 Preset，再留一筆紀錄</h2><p>先在效果器上儲存，切到另一個 Preset，再用排練時打算用的腳踏操作切回來。跟著伴奏彈一次節奏進 Solo，確認第一個音的音量和停手後的尾巴。把保留版本的名稱、儲存位置與改動原因記在下面。</p><p>可以分段填。草稿留在目前的瀏覽器，Markdown 可帶走目前填寫的內容。MG-50Li 的 Preset 請在裝置或編輯器儲存。</p>
         ${workbook()}
       </section>
       ${quiz}<details id="notes"><summary>全站共用音色筆記</summary>${note.replace('id="notes"', "")}</details>${completion}

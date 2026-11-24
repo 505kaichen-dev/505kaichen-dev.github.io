@@ -1,4 +1,4 @@
-# Guitar Tone Lab｜電吉他音色工程學
+# Guitar Tone Lab｜用綜合效果器玩音色
 
 目前包含首頁、第 00–11 章的 12 章教材與測驗、音色筆記，以及輸出路徑、Preset／Scene、AMP、箱體收音、增益結構、Delay／Reverb、訊號鏈順序、經典搖滾音色、Noise Gate 與症狀診斷的互動練習。第 10 章的音色設計紀錄可儲存瀏覽器草稿與下載 Markdown。
 

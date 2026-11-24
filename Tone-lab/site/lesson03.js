@@ -120,7 +120,9 @@ export function ampLesson({ previous, next, course, quiz, note, completion }) {
         </div>
         <p class="muted">這個互動用類型幫你建立聆聽假設。因實機模型、輸入和演奏而不同的破音門檻及聽感，留給下方實作驗證。</p>
       </section>
-      <section id="experiment" class="section"><h2>到 MG-50Li 上做一次 A/B</h2>
+      <section id="experiment" class="section"><h2 id="rhythm-gain">破音有力，和弦也要分得開</h2>
+        <p>在效果器上另存一份目前的節奏音色，先固定箱體和拾音器。刷一個熟悉的和弦，留意中間兩條弦。若一重刷就糊，只退一點 AMP Gain，用後端 Level 補回相近的聽感音量，再刷一次。兩條弦聽得出來、重刷也還有你要的粗邊，就先停在這裡。</p>
+        <p>把這一版存為節奏音色。想知道它從多輕的力道開始破音，再做下面的對照。</p>
         <p>沿用<a href="../00/index.html#goal">第 00 章的四拍 Riff</a>。這輪只聽前兩拍的輕、重悶音，找出哪一拍先出現破音。</p>
         <ol><li>選一個 AMP 和固定的 IR，把會影響結果的其他效果旁路。保持同一個 Pickup、琴上音量與監聽。</li><li>用同一個速度重複四拍。稍微提高 Gain，再把後端聽感音量拉近，重聽前兩拍。</li><li>另存一份供比較，換另一個 AMP，保留相同 IR。若切模型影響了其他設定，先檢查 Block 清單和輸出。</li><li>用確定在失真級之後的音量控制做匹配。再 A/B 起音、和弦分離和延音。</li></ol>
         <p>筆記可以這樣寫：同 Pickup／IR、調過後端音量；A 重彈才起毛邊，B 輕彈就已破音。下一輪只比較其中一個控制。</p>
