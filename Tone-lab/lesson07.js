@@ -54,7 +54,10 @@ export function routingLesson({ quiz, note, pager }) {
           <div class="section-head"><h3>兩種順序，固定其他條件</h3><span class="tag">串聯示意 · 無音訊</span></div>
           <div class="diagram monitor-route" aria-label="目前訊號順序"><ol id="order-chain"></ol></div>
           <p id="order-observation" role="status" class="amp-observation"></p>
-          <div class="actions"><button type="button" id="order-swap" class="secondary swap-control">交換 EQ 和 Drive</button><a class="primary" id="order-builder-link" href="${builder}">用這個順序開啟 Builder</a></div>
+          <div class="lesson-sticker-row">
+            <div class="actions"><button type="button" id="order-swap" class="secondary swap-control">交換 EQ 和 Drive</button><a class="primary" id="order-builder-link" href="${builder}">用這個順序開啟 Builder</a></div>
+            <img src="${asset("pedal-push-still.webp")}" data-animated-src="${asset("pedal-push-loop.gif")}" width="240" height="240" loading="lazy" alt="">
+          </div>
         </div>
         <p>比較 Delay 或 Reverb 時也一樣。放在重破音之前，尾音會和乾音一起被推入失真；擺到 AMP 後，可以先定好破音，再聽空間效果怎麼疊上去。真實結果還要看 Mix、後級處理與監聽。</p>
       </section>

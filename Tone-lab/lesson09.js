@@ -58,7 +58,7 @@ export function metalLesson({ quiz, note, pager }) {
       </section>
       <section class="section" id="metal-gate">
         <h2>停了一拍，怎麼還有聲音？</h2>
-        <div class="lesson-sticker-row"><p>雙手把弦停住，留一拍空白。還有一點「嘶——」嗎？在 MG-50Li 的 NG 選 NOISE GATE，放在 AMP 後、空間效果前，讓它在停手時收掉高增益音箱的底噪。</p><img src="${asset("tone-buddy-metal-stop-v001.png")}" width="357" height="381" loading="lazy" alt="紫髮吉他手比了個噓，等著聽空拍。"></div>
+        <div class="lesson-sticker-row"><p>雙手把弦停住，留一拍空白。還有一點「嘶——」嗎？在 MG-50Li 的 NG 選 NOISE GATE，放在 AMP 後、空間效果前，讓它在停手時收掉高增益音箱的底噪。</p><img src="${asset("tone-buddy-metal-stop-v001.png")}" data-animated-src="${asset("gate-peek-loop.gif")}" width="384" height="384" loading="lazy" alt="紫髮吉他手比了個噓，等著聽空拍。"></div>
         <p>接著輕輕撥一下。如果連這個音都消失了，Gate 的門檻就設得太高。下方可以拖動門檻，看輕音在哪裡被擋住。實機用 SENS 調整靈敏度，DECAY 控制收聲速度。</p>
         <div class="console" id="metal-lab">
           <div class="section-head"><h3>閾值比較</h3><span class="tag">固定示意電平 · 無音訊</span></div>

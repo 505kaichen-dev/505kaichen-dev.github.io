@@ -73,7 +73,7 @@ export function mountGainPractice(root) {
 
 const asset = name => new URL("./assets/" + name, import.meta.url).href;
 const slider = (key, description, min, max) => `<label for="gain-${key}"><span>${description} <output id="gain-${key}-value" for="gain-${key}"></output></span><input id="gain-${key}" type="range" min="${min}" max="${max}" value="${defaults[key]}"></label>`;
-const meter = (name, index) => `<li class="gain-meter"><strong>${name}${index === 0 ? '<img class="clip-face" src="' + asset("tone-buddy-too-hot-v001.png") + '" alt="" width="44" height="44">' : ""}</strong><meter aria-hidden="true" min="-36" max="0"></meter><span class="gain-meter-value"></span></li>`;
+const meter = (name, index) => `<li class="gain-meter"><strong>${name}${index === 0 ? `<img class="clip-face" src="${asset("tone-buddy-too-hot-v001.png")}" data-animated-src="${asset("clip-glance-loop.gif")}" alt="" width="44" height="44">` : ""}</strong><meter aria-hidden="true" min="-36" max="0"></meter><span class="gain-meter-value"></span></li>`;
 
 export function gainLesson({ quiz, note, pager }) {
   return `<main class="wrap reading" id="main" tabindex="-1">

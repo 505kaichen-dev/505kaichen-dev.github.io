@@ -98,7 +98,10 @@ export function rockLesson({ quiz, note, pager }) {
           <label>音色目標 <select id="rock-recipe">${Object.entries(recipes).map(([id, recipe]) => `<option value="${id}">${recipe.name}</option>`).join("")}</select></label>
           <div class="amp-observation" id="rock-panel" aria-live="polite"></div>
           <p class="muted">開啟 Builder 會帶入這組 Block 順序。按「播放 Riff」可以比較效果開關與換序；要試上面選的 AMP 和 IR 型號，請在自己的效果器上設定。</p>
-          <a id="rock-builder" class="primary" href="${builder}">用這個起點開啟 Builder</a>
+          <div class="lesson-sticker-row">
+            <div><a id="rock-builder" class="primary" href="${builder}">用這個起點開啟 Builder</a></div>
+            <img id="rock-sticker" src="${asset("rock-sticker-still.webp")}" data-animated-src="${asset("rock-sticker-loop.gif")}" width="240" height="240" loading="lazy" alt="">
+          </div>
         </div>
       </section>
       <section class="section" id="experiment"><h2>推弦、停住、揉弦：一句旋律的三個瞬間</h2>

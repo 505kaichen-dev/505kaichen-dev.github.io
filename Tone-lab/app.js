@@ -4,11 +4,11 @@ import { signalLesson, signalQuiz, renderSignalPath } from "./lesson01.js?v=duo-
 import { rigLesson, rigQuiz, mountRigPractice } from "./lesson02.js?v=gear-world-1";
 import { ampLesson, ampQuiz, mountAmpPractice } from "./lesson03.js?v=gear-world-1";
 import { cabLesson, cabQuiz, mountCabPractice } from "./lesson04.js?v=gear-world-1";
-import { gainLesson, gainQuiz, mountGainPractice } from "./lesson05.js?v=song-scenes-1";
-import { effectsLesson, effectsQuiz, mountDelayPractice, mountReverbPractice } from "./lesson06.js?v=song-scenes-1";
-import { routingLesson, routingQuiz, mountOrderPractice } from "./lesson07.js?v=duo-editorial-1";
-import { rockLesson, rockQuiz, recipes, rockExerciseChain, mountRockPractice } from "./lesson08.js?v=reading-manga-2";
-import { metalLesson, metalQuiz, mountMetalPractice } from "./lesson09.js?v=reading-manga-2";
+import { gainLesson, gainQuiz, mountGainPractice } from "./lesson05.js?v=animated-stickers-2";
+import { effectsLesson, effectsQuiz, mountDelayPractice, mountReverbPractice } from "./lesson06.js?v=animated-stickers-1";
+import { routingLesson, routingQuiz, mountOrderPractice } from "./lesson07.js?v=animated-stickers-2";
+import { rockLesson, rockQuiz, recipes, rockExerciseChain, mountRockPractice } from "./lesson08.js?v=animated-stickers-1";
+import { metalLesson, metalQuiz, mountMetalPractice } from "./lesson09.js?v=animated-stickers-1";
 import { presetLesson, presetQuiz, mountPresetPractice } from "./lesson10.js?v=bandmates-1";
 import { diagnosisLesson, diagnosisQuiz, mountDiagnosisPractice, mountFrequencyExplorer } from "./lesson11.js?v=bass-cover-1";
 
@@ -214,7 +214,10 @@ function labsContent() {
   ];
   return `<main class="wrap lab-page" id="main" tabindex="-1">
     <header class="page-head listening-host"><img src="${url("assets/tone-buddy-listen-v001.png")}" width="92" height="92" alt=""><div><h1>練習室</h1><p class="lede">載入兩段自己的錄音比較音色，或試聽 Delay 的回聲。</p></div></header>
-    <section class="section" id="audio-ab"><h2>用自己的錄音做 A/B</h2>
+    <section class="section" id="audio-ab">
+      <div class="lesson-sticker-row"><h2>用自己的錄音做 A/B</h2>
+        <img src="${url("assets/ab-listen-still.webp")}" data-animated-src="${url("assets/ab-listen-loop.gif")}" width="240" height="240" loading="lazy" alt="">
+      </div>
       <p>選擇你有權使用的兩段本機錄音。用同一段 Riff、相同起點，先把聽感音量拉近，再比較唯一改動。音檔由瀏覽器本機播放。</p>
       <div class="console audio-ab-grid">${["A","B"].map(letter => `<div>
         <label>${letter} 版錄音 <input class="preset-json-file" type="file" accept="audio/*"></label>
@@ -395,6 +398,21 @@ if (page === "lesson") {
   if (diagnosisLab) mountDiagnosisPractice(diagnosisLab);
   const frequencyExplorer = document.querySelector("#frequency-explorer");
   if (frequencyExplorer) mountFrequencyExplorer(frequencyExplorer);
+
+
+}
+
+const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const stickers = document.querySelectorAll("img[data-animated-src]");
+if (stickers.length && !motion.matches && "IntersectionObserver" in window) {
+  const observer = new IntersectionObserver(entries => {
+    for (const { target, intersectionRatio } of entries) {
+      if (intersectionRatio < 0.5) continue;
+      observer.unobserve(target);
+      if (!motion.matches) target.src = target.dataset.animatedSrc;
+    }
+  }, { threshold: 0.5 });
+  stickers.forEach(sticker => observer.observe(sticker));
 }
 
 if (page === "lab") {
