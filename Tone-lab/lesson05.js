@@ -75,13 +75,13 @@ const asset = name => new URL("./assets/" + name, import.meta.url).href;
 const slider = (key, description, min, max) => `<label for="gain-${key}"><span>${description} <output id="gain-${key}-value" for="gain-${key}"></output></span><input id="gain-${key}" type="range" min="${min}" max="${max}" value="${defaults[key]}"></label>`;
 const meter = (name, index) => `<li class="gain-meter"><strong>${name}${index === 0 ? '<img class="clip-face" src="' + asset("tone-buddy-too-hot-v001.png") + '" alt="" width="44" height="44">' : ""}</strong><meter aria-hidden="true" min="-36" max="0"></meter><span class="gain-meter-value"></span></li>`;
 
-export function gainLesson({ previous, next, course, quiz, note, completion }) {
+export function gainLesson({ quiz, note, pager }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#gain-stages">聲音在哪一段變大</a><a href="#boost">Boost 放前還是後</a><a href="#gate">Noise Gate</a><a href="#gain-practice">電平練習</a><a href="#experiment">實機 A/B</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#gain-stages">聲音在哪一段變大</a><a href="#boost">Boost 放前還是後</a><a href="#gate">Noise Gate</a><a href="#gain-practice">電平練習</a><a href="#experiment">藍調的問答句，怎麼保留輕重兩種表情？</a><a href="#quiz">自己試五題</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
       <header class="page-head"><p class="eyebrow">第 06 章</p><h1>Gain Staging 增益結構</h1>
-        <p class="lede">「太大聲」和「太多破音」要分開處理。順著 Input、Drive、AMP、Block Level 到 Output 找一遍，你會知道哪顆旋鈕該動。</p>
+        <p class="lede">副歌結束，一腳踩進 Solo。琴聲又厚了一層，鼓一進來，旋律卻還是埋在後面。這一腳把音箱推得更破了；想讓獨奏往前站一點，得看看音量加在哪裡。</p>
       </header>
       <section id="gain-stages" class="section"><h2>先找到聲音在哪一段變大</h2>
         <p><strong>A/D 前增益</strong>會改變輸入離轉換器滿刻度還有多少空間。實機若有 Input Trim，先確認它位於 A/D 前還是後。轉換後的數位 Trim 可以改變送入效果鏈的電平，先前的削波仍會留下。<strong>Drive 和 AMP</strong>可以塑造失真與動態。<strong>Block Level</strong>調整送給下一級的電平，最後再檢查 <strong>Output</strong> 和接收端。</p>
@@ -92,10 +92,11 @@ export function gainLesson({ previous, next, course, quiz, note, completion }) {
         <p>0 dBFS 是數位滿刻度的基準。固定滿刻度的 A/D 或輸出邊界超出上限，會造成削波（Clipping）。內部浮點級可以另有餘裕，實機也可能先在類比級過載。用平常最重的一下看電平，留點空間給下一下。<a href="https://support.focusrite.com/hc/en-gb/articles/208958089-How-high-should-I-set-the-gain-control-on-my-interface">Focusrite 的增益與餘裕說明</a></p>
       </section>
       <section id="boost" class="section"><h2>想多一點破音，還是多一點音量？</h2>
-        <p>同一顆純音量 Boost，放在 <strong>AMP 前</strong>會讓它收到更大的訊號，可能提早飽和。放在 <strong>AMP 後</strong>且後面仍有餘裕時，多半提高後段的電平。若 Boost 自己也改 EQ 或產生破音，就還要把那一段算進去。</p>
+        <p>同樣多給一點 Level，進破音前級和離開前級，會有兩種結果。以前置 Ibanez TS9 為例：Drive 偏低時，單塊本身過載較少；提高 Level，微破的前級收到更強的訊號，尖峰被壓住，弦音衰減時仍帶著破音。MG 的 EFX 可用 T SCREAMER 接 BRIT 800 來對照。若把音量提升放在失真級之後，且後面仍有餘裕，整句會一起變大，原有的輕重差也比較留得住。<a href="https://www.ibanez.com/na/products/detail/ts9_99.html">Ibanez TS9</a> · <a href="https://manuals.plus/m/b50cc57d06057abc6b1b09a86bbea07ef23052224a5bf022da2f6cdde757f6e7.pdf">MG-50Li V1.0.8 效果參數表</a></p>
         <p>重失真會讓不同弦的訊號一起進入非線性處理，可能壓平起音、讓和弦不易分辨。先小幅下修 Gain，再用後端 Level 把 A/B 的聽感音量拉近。練習用同一段 Riff 和同一套監聽，留意每條弦的輪廓是否更清楚。</p>
+        
       </section>
-      <section id="gate" class="section"><h2>Noise Gate 留得住尾音嗎？</h2>
+      <section id="gate" class="section"><h2>Noise Gate 留得住尾音嗎？</h2><p>例如把 NG 的 NOISE GATE 接在破音之後、Delay 之前，停弦時可收住上游底噪，已經送進 Delay 的回聲仍能淡出。</p>
         <p>Gate 在訊號低於設定條件時抑制聲音。<strong>Threshold</strong> 會影響多大的訊號能通過；太高時，輕觸或延音也可能被吃掉。<strong>Release</strong> 影響收回的速度，太短易切斷尾巴，太長則可能把空拍的底噪留住。</p>
         <p>先用空弦停奏和長音測試，只調到能抑制不必要的空檔聲。演奏中仍明顯的嗡聲或底噪，要回頭檢查拾音器、接線、電源和增益配置。</p>
       </section>
@@ -122,13 +123,11 @@ export function gainLesson({ previous, next, course, quiz, note, completion }) {
         </div>
         <p class="muted">電平條共用 −36 至 0 dBFS 的顯示刻度。AMP 兩欄用等效電平表示內部處理，超過 0 時讀文字數值。只有輸入與輸出邊界的超限會在這個示意裡標成削波。</p>
       </section>
-      <section id="experiment" class="section"><h2>用自己的效果器做一輪 Boost A/B</h2>
-        <p>沿用<a href="../00/index.html#goal">第 01 章的四拍 Riff</a>。先用第 2 拍的重手悶音檢查電平，再用第 3 拍聽破音量與和弦分離度。</p>
-        <ol><li>選一個接近破音的 AMP，固定 Pickup、CAB／IR、監聽與 Riff。確認輸入和輸出都有餘裕。</li><li>用低增益或純音量的 Boost，先放 AMP 前再放 AMP 後。保持同樣的 Boost 量，記下哪個設定改變了破音、哪個主要改變音量。若裝置不支援移動，改用兩個可比較的鏈路。</li><li>再把後端音量匹配，重彈強弱和弦。若聽到尖銳破音，沿 Input、Block、Output 與接收端逐段檢查。</li></ol>
-        <p>記下 Boost 的位置、哪一級的電平變了，以及拉回同音量後，第 3 拍還有沒有差別。</p>
+      <section class="section" id="experiment"><h2>藍調的問答句，怎麼保留輕重兩種表情？</h2>
+        <p>鋼琴丟過來一句短句，她輕輕回了兩個音，最後一音才用力，琴聲帶出一點沙啞。</p><figure class="song-scene" id="blues-after-hours"><img src="${asset("blues-after-hours.webp")}" width="1440" height="576" loading="lazy" decoding="async" alt="暖燈下，吉他手抱著白琴向鋼琴手挑眉一笑，台下也在等她怎麼回這一句。"></figure>
+        <p>想讓兩句的力道都聽得出來，低增益、對觸弦敏感的 OD 就合適。BOSS BD-2 是這類用法的例子；在 MG 上可選 BLUES DRV，接在乾淨 AMP 前，讓重撥那一下剛好起毛邊。<a href="https://www.boss.info/us/products/bd-2/">BOSS BD-2 的觸弦反應</a></p>
       </section>
-      ${quiz}${note}${completion}
-      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 05　CAB、Speaker、Mic、IR</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 07　動態、調變與空間效果</a></nav>
+      ${quiz}${note}${pager}
     </article>
   </main>`;
 }

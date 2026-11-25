@@ -70,32 +70,32 @@ export function mountReverbPractice(root) {
 const asset = name => new URL("./assets/" + name, import.meta.url).href;
 const slider = (key, label, min, max, step) => `<label for="delay-${key}"><span>${label}<output id="delay-${key}-value" for="delay-${key}"></output></span><input id="delay-${key}" type="range" min="${min}" max="${max}" step="${step}" value="${initial[key]}"></label>`;
 
-export function effectsLesson({ previous, next, course, quiz, note, completion, listeningExercise }) {
+export function effectsLesson({ quiz, note, pager, listeningExercise }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#dynamics">動態與破音</a><a href="#modulation">四種調變</a><a href="#delay">Delay 時間軸</a><a href="#reverb">Reverb 擺位</a><a href="#experiment">實機練習</a><a href="#self-check">自己測一下</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#dynamics">動態與破音</a><a href="#modulation">四種調變</a><a href="#delay">Delay 時間軸</a><a href="#reverb">Reverb 擺位</a><a href="#experiment">回聲留在空拍，下一句還能清楚進來</a><a href="#self-check">自己試五題</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
       <header class="page-head"><p class="eyebrow">第 07 章</p><h1>動態、調變與空間效果</h1>
         <p class="lede">一個音可以被壓平、搖晃、重複，也可以在房間裡多留一下。先分清它改變的是起音、音色的移動，還是你停手以後的尾巴。</p>
       </header>
       <section id="dynamics" class="section"><h2>先決定要保留多少彈奏力道</h2>
-        <p>壓縮器（Compressor）在超過 <strong>Threshold</strong> 的區域減少電平變化。理想穩態下，<strong>Ratio</strong> 4:1 表示高過閾值 4 dB 的輸入變化，輸出約只增加 1 dB。<strong>Attack</strong> 決定壓縮跟上的速度，<strong>Release</strong> 決定增益回復的速度。若輕彈和重彈太接近，先對照旁路，再檢查壓縮量與補償音量。<a href="https://articles.boss.info/five-creative-ways-to-use-a-compressor-pedal-for-guitar/">BOSS 壓縮器實例</a></p>
-        <p>Overdrive 常追求較輕或較有彈奏反應的破音，Distortion 常用在較明顯的削波與厚度，Fuzz 常追求更強烈或特殊的顆粒。名稱會重疊，實際比較起音、和弦分離和把琴上 Volume 轉小後的變化更有用。</p>
+        <p>壓縮器（Compressor）在超過 <strong>Threshold</strong> 的區域減少電平變化。理想穩態下，<strong>Ratio</strong> 4:1 表示高過閾值 4 dB 的輸入變化，輸出約只增加 1 dB。<strong>Attack</strong> 決定壓縮跟上的速度，<strong>Release</strong> 決定增益回復的速度。Funk 吉他手把壓縮單塊放在乾淨音箱前，響亮的刷弦尖峰被收住，夾在中間的小聲悶刷就相對明顯。MG 可以把 CMP 的 STUDIO COMP 串在 JAZZ CLEAN 前，保留短和弦和悶刷交替的律動。<a href="https://articles.boss.info/five-creative-ways-to-use-a-compressor-pedal-for-guitar/">BOSS 壓縮器實例</a></p>
+        <p>一段藍調裡，前一句輕輕掠過琴弦還很清亮，回答那句一咬重就沙啞起來。低增益 OD 保留這個強弱落差。換成想讓每個音一出手就厚實的硬搖滾 Riff，Distortion 較密的削波就有了用途；長音若要帶粗顆粒一路拖下去，則可以聽 Fuzz。MG 的 EFX 可分別選 BLUES DRV、DIST ONE 或 MUFF FUZZ，接在同一顆乾淨 AMP 前，就能把差異集中在破音本身。</p>
       </section>
       <section id="modulation" class="section"><h2>都是在搖，搖的東西不同</h2>
         <dl class="amp-controls-list">
-          <dt>Chorus</dt><dd>把短延遲調變的聲音和原音混在一起，常聽到雙重感與微幅音高搖晃。</dd>
-          <dt>Flanger</dt><dd>更短的變動延遲與原音混合，常有掃過去的梳狀濾波感。部分模型有 Feedback。</dd>
-          <dt>Phaser</dt><dd>調變相位網路，與原音混合後形成移動的頻率凹陷。</dd>
-          <dt>Tremolo</dt><dd>主要是週期性的音量起伏。先聽節奏，再用 Rate 和 Depth 調速度與起伏大小。</dd>
+          <dt>Chorus</dt><dd>把短延遲調變的聲音和原音混在一起，長和弦會帶一點音高搖晃。實體 BOSS CE-2W 面板用 Rate 決定搖得多快、Depth 決定晃得多明顯；在 MG 的 MOD 裡選 CT-2 放在 AMP 後，可以用同樣的耳朵分辨這兩件事。<a href="https://www.boss.info/us/products/ce-2w/">BOSS CE-2W</a></dd>
+          <dt>Flanger</dt><dd>更短的變動延遲與原音混合，常有掃過去的梳狀濾波感。MG 可在 AMP 後串 MOD 的 FLANGER，用 F.BACK 加重掃過和弦的金屬感。</dd>
+          <dt>Phaser</dt><dd>調變相位網路，與原音混合後形成移動的頻率凹陷。MG 可在破音前串 PHASER 90，用 SPEED 調整掃動的快慢。</dd>
+          <dt>Tremolo</dt><dd>主要是週期性的音量起伏。MG 在 AMP 後串 MOD 的 TREMOLO，以 RATE 定快慢、DEPTH 定每一下音量退多深。</dd>
         </dl>
       </section>
       <section id="delay" class="section"><h2>停手以後，為什麼有些回聲只剩一下？</h2>
-        <p>聽同一個短和弦兩次。留意第一下回聲，再數數後面還跟了幾下。</p>
+        <p>BOSS DD-8 面板上的 Time 決定回音隔多久出現，Feedback 決定有多少聲音送回去再重複，E.Level 則管回音有多大聲。讀 MG 的 DLY 也可以從這三件事入手。像下面的附點八分音符，回聲能卡進兩下撥弦之間，靠的是時間；加大 Feedback 只會讓後面的回聲繼續排下去。<a href="https://www.boss.info/us/products/dd-8/support/">BOSS DD-8 說明</a></p>
         <div class="echo-audition"><figure class="amp-illustration">
           <img src="${asset("delay-echoes-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手彈著白色 Les Paul，旁邊用逐漸淡去的音符畫出回聲。">
         </figure>
-          ${listeningExercise("delay")}
+          ${listeningExercise()}
         </div>
         <h3>每繞回去一次，就再響一次</h3><p>Delay 把剛才彈的聲音留一小段時間再播出來。把其中一部分送回延遲線，下一輪就會多一聲。這兩段示範的間隔和第一聲回音相同，回送得多的那一版，後面幾聲留得比較久。</p>
         <p><strong>Time</strong> 決定回聲間隔，<strong>Feedback</strong> 決定回送比例，<strong>Mix</strong> 設定原音（Dry）與效果音（Wet）的混合。想把四分音符對到節拍時，120 BPM 的一拍是 500 ms，八分音符則是 250 ms。<a href="https://articles.boss.info/the-delay-pedal-glossary/">BOSS Delay 術語</a></p>
@@ -108,9 +108,15 @@ export function effectsLesson({ previous, next, course, quiz, note, completion, 
           <p id="delay-observation" role="status" class="amp-observation"></p>
           <button type="button" class="secondary" id="delay-reset">重置 Delay</button>
         </div>
+        <h3>一記短促的 Slapback，和會接話的節奏 Delay</h3>
+        <p><strong>Rockabilly 的 Slapback。</strong>乾淨到微破的吉他後面，緊跟著一記短促的回彈，很像小房間裡傳回來的一聲。MG 在 AMP 後串 DIGITAL DELAY，D.TIME 約 100 ms、F.BACK 很低，就能接近這種彈一下、回一下的感覺。</p>
+        <figure class="phrase-strip" id="echo-offbeat"><figcaption><strong>附點八分音符，讓回聲落在兩下撥弦之間</strong></figcaption><ol class="echo-count"><li>0 ms<b>撥</b></li><li>125 ms<b>空</b></li><li>250 ms<b>撥</b></li><li class="echo-return">375 ms<b>回聲</b><img src="${asset("tone-buddy-listen-v001.png")}" width="64" height="64" loading="lazy" alt="角色側耳聽見第一聲回音。"></li><li>500 ms<b>撥</b></li></ol></figure>
+        <figure class="song-scene" id="canyon-echo"><img src="${asset("canyon-echo.webp")}" width="1440" height="576" loading="lazy" decoding="async" alt="她戴著毛帽趴在峽谷邊，一串串金色光點像回音，在對岸的峭壁間接話。"></figure>
+        <p>U2〈Where the Streets Have No Name〉開頭的吉他，能聽見撥弦與回聲交錯的律動。吉他技師 Dallas Schoo 在巡演訪談中拿出一把 1973 年 Fender Stratocaster，指認為 The Edge 彈這首歌的琴。原版錄音究竟用了哪一台 Delay，這份訪談無法確認。<a href="https://www.musicradar.com/news/u2-edge-interview-rig-tour-guitars">吉他技師 Dallas Schoo 訪談</a></p>
+        <p>在 MG-50Li 的 DLY 裡，<strong>DIGITAL DELAY</strong> 適合這種每一下回聲都數得清的節奏。以圖中的 120 BPM 為例，D.TIME 設 375 ms，每隔 250 ms 撥一下，第一聲回音剛好卡在第二、第三下撥弦中間。F.BACK 偏低，後面幾聲才不會把這個節奏填滿。一把琴因此能織出比手上還密的節奏。<a href="https://nux.cherubtechnology.com/download/Manual/Effects/Multi_Effects/MG50Li/NUX_MG50Li_UserManual_English.pdf#page=19">NUX Delay 模型與參數</a> · <a href="https://articles.boss.info/patch-work-where-the-streets-have-no-name-by-u2/">BOSS 的歌曲音色示例</a></p>
       </section>
       <section id="reverb" class="section">
-        <h2>Reverb：先想尾音經過哪些處理</h2><p>Room 常用來加近距離的空間感，Plate 常用來加密集的尾音，Hall 常用來做更大的空間感。<strong>Decay</strong> 影響尾音長短，<strong>Pre-delay</strong> 讓乾音的起音與殘響開始錯開。</p>
+        <h2>Reverb：先想尾音經過哪些處理</h2><p>短和弦停了，身旁像還有牆面回響；抒情曲的長音收掉，後面卻可以留著一整片殘響。兩者差在尾音的密度、長度，以及它隔多久才冒出來。在 MG 的 AMP／IR 後串 ROOM，可保留近距離感；PLATE 適合較密的尾音，HALL 的 PRE.D 則能把起音和大片殘響拉開。<strong>Decay</strong> 影響尾音長短，<strong>Pre-delay</strong> 讓乾音的起音與殘響開始錯開。</p>
         <div class="console" id="reverb-lab">
           <div class="section-head"><h3>移動 Reverb</h3><span class="tag">串聯示意</span></div>
           <label>放置位置 <select id="reverb-placement"><option value="before">AMP 前</option><option value="middle">AMP 後、CAB／IR 前</option><option value="after">CAB／IR 後</option></select></label>
@@ -119,14 +125,10 @@ export function effectsLesson({ previous, next, course, quiz, note, completion, 
         <p>在實體音箱裡，效果迴路通常在前級和後級之間，仍會經過後級與實體喇叭。錄音後製的 Reverb 則可以在收完音之後才加。綜合效果器能移到哪裡，要看它的數位路由和 Block 限制。<a href="https://nuxaudio.com/product/mg50li/">NUX 官方路由與模組規格</a></p>
         <p>串聯通常讓 Block 自己混 Dry／Wet。並聯如果已有獨立乾音路徑，效果分支可從全 Wet 或 Kill Dry 起步，再用分支 Level 調整比例。若兩支線都送出乾音，合流後要留意音量與相位。</p>
       </section>
-      <section id="experiment" class="section"><h2 id="lead-echo">回聲留在空拍，下一句還能清楚進來</h2>
-        <p>把節奏 Preset 另存一份作為 Lead。在 AMP／CAB 後開一顆串聯 Delay，先用低 Mix，彈一句 Solo、空一拍，再接第二句。哪一聲最礙事？</p>
-        <details><summary>第一下回音就和撥弦搶位置</summary><p>固定 Time 和 Feedback，慢慢退 Mix。每次重彈同兩句，找到空拍仍有回聲、第二句的撥弦也清楚的位置。</p></details>
-        <details><summary>第一下剛好，後面好幾聲卻一直疊上來</summary><p>保持 Mix 和 Time，退一點 Feedback 再彈。聽最後一聲能否在第二句開始前淡下去。若第一下仍太響，再另外比較 Mix。</p></details>
-        <p>切一次旁路確認 Delay 留下了你喜歡的空間感，再存回效果器。<a href="../10/index.html#preset-record">記下這個 Lead 的設定</a>，或<a href="#delay">回頭聽兩種回聲怎麼退去</a>。</p>
+      <section class="section" id="experiment"><h2 id="lead-echo">回聲留在空拍，下一句還能清楚進來</h2>
+        <p>兩句 Solo 之間的停頓，剛好容得下一聲回音。第一聲就蓋住撥弦，通常與濕聲比例（Mix）有關；第一聲剛好、後面卻越疊越滿，則和回授（Feedback）讓多少訊號再次繞回 Delay 有關。<a href="#delay">看 Delay 時間軸</a></p>
       </section>
-      <div id="self-check">${quiz}</div>${note}${completion}
-      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 06　Gain Staging 增益結構</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 08　訊號鏈設計實驗室</a></nav>
+      <div id="self-check">${quiz}</div>${note}${pager}
     </article>
   </main>`;
 }

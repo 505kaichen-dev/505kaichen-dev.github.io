@@ -17,13 +17,13 @@ const sections = [
   ]],
   ["訊號鏈與切換", [
     ["chain", "Block 順序與設定", "記下 AMP、CAB／IR、Gain、EQ、Level 和有啟用的效果。", 4],
-    ["clean", "Clean", "記下開關變化、音量或使用段落。"],
-    ["crunch", "Crunch", "例：副歌打開 OD，後端 Level 對齊。"],
-    ["lead", "Lead", "例：獨奏增加少量 Delay，伴奏裡比 Crunch 稍突出。"],
+    ["clean", "Clean", "例：主歌用 JAZZ CLEAN 接 JC120，讓分解和弦保留清楚的起音。"],
+    ["crunch", "Crunch", "例：副歌開啟 BRIT 800 前的 T SCREAMER，重刷多一層破音。"],
+    ["lead", "Lead", "例：IR 後串 DIGITAL DELAY，讓推弦後面多一聲回音，伴奏裡比 Crunch 稍突出。"],
   ]],
   ["A/B 對照與留版", [
     ["baseline", "A｜基準與固定條件", "例：保留 v01，同一段 Riff、Pickup、IR 和監聽。", 2],
-    ["change", "B｜我改了什麼？", "例：只把 AMP Gain 從 48 退到 41，再用後端 Level 補齊響度。", 2],
+    ["change", "B｜我改了什麼？", "例：只降低 BRIT 800 的 GAIN，再用後端 Level 補齊響度。", 2],
     ["result", "哪一拍有差？留下哪一版？", "寫下強弱彈奏、單音、和弦、獨奏與切換時聽到的差異。", 3],
   ]],
 ];
@@ -170,54 +170,37 @@ function workbook() {
   </form>`;
 }
 
-export function presetLesson({ previous, next, course, quiz, note, completion }) {
+export function presetLesson({ quiz, note, pager }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#design">從基準音色開始</a><a href="#scenes">規劃切換</a><a href="#verify">測試與留版</a><a href="#mg-example">MG-50Li 切換範例</a><a href="#preset-record">音色設計紀錄</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#design">從基準音色開始</a><a href="#scenes">規劃切換</a><a href="#verify">測試與留版</a><a href="#mg-example">切回副歌的尾音</a><a href="#preset-record">音色設計紀錄</a><a href="#quiz">自己試五題</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
       <header class="page-head"><p class="eyebrow">第 11 章</p><h1>從零建立完整 Preset</h1>
-        <p class="lede">做一份排練時能直接踩、回家也能重做的 Preset。從真正要彈的段落開始，留下訊號鏈、切換方式和一次 A/B 結果。</p>
+        <p class="lede">一首搖滾抒情曲可以有三種吉他角色：主歌的分解和弦、副歌的厚節奏、間奏的一句長音。它們可以共用同一顆 AMP，只在需要的地方分岔。</p>
       </header>
-      <section class="section" id="design"><h2>先做一個能比較的基準音色</h2>
-        <ol>
-          <li>寫下曲風、用途與監聽路徑。固定吉他、Pickup 和調弦，拿一段有強弱、和弦與停拍的演奏當基準。</li>
-          <li>固定一個熟悉的 CAB／IR，選能達成目標的 AMP。找到合適的 Gain 再固定 AMP，比較一至兩個 CAB／IR。每次用仍有餘裕的後端 Level 對齊聽感音量。</li>
-          <li>先用 EQ 處理已聽到的問題，再逐顆加入需要的效果。每顆都做開關對照，記下它幫到哪個段落。</li>
-        </ol>
+      <section class="section" id="design"><h2>一首歌裡共用的底色</h2><p>節奏和獨奏共用 AMP 與 CAB 時，切換段落還聽得出是同一把琴。副歌需要重刷的粗邊，間奏需要長音多留一點空間，例如 MG 用 BRIT 800 接 M 1960+G12M，兩段共用底色，只在間奏開啟 IR 後面的 DIGITAL DELAY。要是主歌輕撥乾淨、副歌用力一刷才想長出粗邊，另一種安排是用較乾淨的 AMP，把低增益的 BLUES DRV 留給副歌。</p>
       </section>
       <section class="section" id="scenes"><h2>把 Clean、Crunch、Lead 放回曲子裡</h2>
-        <p>用節奏音色當基準。Clean 保留弱彈和分解和弦的輪廓，Crunch 用強刷檢查和弦分離度，Lead 用伴奏測試長音的可辨度和所需的音量提升。用 Scene、Footswitch 或分開的 Preset 實作，以你的設備能穩定切換的方式為準。</p>
-        <p>在 MG-50Li 上照歌的順序實踩一次。聽第一下有沒有被切掉、音量會不會跳太多，以及前一段的 Delay／Reverb 尾音是否蓋過下一句。先只改後端 Level 或效果切換方式其中一項，再踩一次。</p>
+        <p>主歌的分解和弦一顆顆露出來，副歌一刷，幾條弦一起撐起鼓點。等歌手讓出位置，間奏只用一個長音，也要能讓人跟著哼。
+        </p><figure class="amp-illustration"><img src="${asset("verse-chorus-lead.webp")}" width="1440" height="480" loading="lazy" alt="三格舞台漫畫，主角從主歌的凝神、副歌的雀躍，到間奏閉眼沉入長音。"><figcaption class="single-caption">同一首歌，三種表情。主歌聽音粒，副歌聽和弦，間奏聽旋律。</figcaption></figure><p>用副歌的 Crunch 當基準，試試一腳切回 Clean，另一腳叫出 Lead。三段可以用 Scene、腳踏開關或各自的 Preset 切換。</p>
+        
+        <p>副歌進入間奏時，吉他從填滿和弦改成別人要跟著哼的旋律。若長音本已有足夠延音，稍微提高後段 Level，就能改變它在伴奏裡的位置。</p>
       </section>
       <section class="section" id="verify"><h2>留一份能回頭比較的版本</h2>
-        <p>用同一段材料測輕彈、重刷、悶音和停拍，再補一次 Pickup 切換與獨奏。Pickup 出力改變會影響前級工作點，這輪只切 Pickup，記錄音量與破音的變化。</p>
+        <p>兩次副歌之間，如果只是換了拾音器，前級吃到的訊號就可能變強。把原本那個 Preset 留著，下次還能聽出毛邊來自哪裡。</p>
         <figure class="amp-illustration"><img src="${asset("preset-session-notes-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手在暖色錄音角落記筆記，旁邊立著白色 Les Paul Custom。">
           <figcaption class="single-caption">先留下基準，再另存一版比較。回到同一段演奏，才能確認那項改動值不值得保留。</figcaption></figure>
-        <p>把基準存成 v01，複製成 v02，每輪只改一項設定。記下兩版的數值、匹配音量的方法和聽到的差異。比較結果若不穩定，可以先保留 v01，等下次在相同條件重彈。</p>
+        <p>兩個版本若同時換了 Gain、箱體和輸出音量，很難指出是哪一項讓和弦更亮。留一份原音色的用途很單純：耳朵有個熟悉的參照。</p>
       </section>
-      <section class="section" id="mg-example"><h2>MG-50Li 實作 · 從 Crunch 踩到 Lead</h2>
-        <p>白色 Les Paul Custom 接 MG-50Li 的 INPUT，耳機接 PHONES。切到琴橋雙線圈拾音器，保留 AMP 和 CAB／IR。找一段含兩拍悶音、一個和弦、空一拍和獨奏長音的片段。全程固定耳機音量和伴奏。</p>
-        <ol>
-          <li><strong>先存兩個 Preset。</strong>保留原版，另存 Crunch 和 Lead 到可修改的位置。固定 AMP、CAB／IR 和 Gain。Crunch 保持 Delay 旁路，Lead 啟用 Delay，從低 Mix 起步。</li>
-          <li><strong>只比較切換音量。</strong>A 用原本的 Crunch／Lead。B 模仿同一個切換點，只改 Lead 的 Preset Volume。NUX V1.1.1 說明中，Preset 畫面的 Knob 2 可調這個音量。先從相近的聽感音量開始，在伴奏裡判斷要保留多少 Lead 提升。</li>
-          <li><strong>另外測尾音。</strong>保留上一輪的音量設定。先彈 Lead 再切回 Crunch，聽回聲是否蓋過第一拍。若要驗證 Patch Tail，記下原設定，在 Global Settings 只改這個選項、重彈同一段，測完回復原設定。原廠說明適用於切換 Preset；Scene 和單顆 Delay 的旁路行為可另做對照。</li>
-        </ol>
-        <p class="muted">旋鈕和選單名稱以你手上的韌體版本為準。<a href="https://nuxaudio.com/product/mg50li/">NUX V1.1.1 功能說明</a></p>
-        <div class="callout"><h3>一筆填好的 A/B 紀錄</h3>
+      <section class="section" id="mg-example"><h2>獨奏切回副歌，最後一聲回音要留多久？</h2><p>獨奏最後一音剛放開，鼓就打進副歌。讓回聲越過小節線，旋律像還在和下一段接話；若全團約好在重拍前一起收住，留出的空白會讓副歌第一下更有力。</p><figure class="song-scene" id="chorus-cue"><img src="${asset("chorus-cue.webp")}" width="1440" height="480" loading="lazy" decoding="async" alt="吉他手抱著白色 Les Paul 睜開一隻眼，和舉著鼓棒等副歌的鼓手交換眼神。"></figure><p>實體 BOSS DD-8 的 Carryover 決定單塊旁路後，已經產生的回聲能不能繼續衰減。換到 MG-50Li，從開著 DIGITAL DELAY 的 Lead <strong>切換 Preset</strong> 回 Crunch 時，V1.1.1 的 Patch Tail 開啟可保留尾音，關閉則截斷。<a href="https://www.boss.info/us/products/dd-8/support/">BOSS DD-8 說明</a> · <a href="https://nuxaudio.com/product/mg50li/">NUX Patch Tail 說明</a></p></section>
+      <details class="section optional-check"><summary>想留下這個音色？</summary><div id="preset-record"><p>這份紀錄表可分次填寫，草稿存在目前的瀏覽器，也可以匯出 Markdown。機上的 Preset 另存於效果器或編輯器。</p><div class="callout"><h3>一筆填好的 A/B 紀錄</h3>
           <p class="muted">以下數值和結果僅示範如何記錄。</p>
-          <dl class="amp-controls-list"><dt>固定條件</dt><dd>琴橋雙線圈拾音器、耳機、同一段伴奏、AMP → CAB／IR → Delay。Crunch 旁路 Delay，Lead 啟用，兩版的 Delay 設定一致。</dd>
+          <dl class="amp-controls-list"><dt>固定條件</dt><dd>琴橋雙線圈拾音器、耳機、同一段伴奏、BRIT 800 → M 1960+G12M → DIGITAL DELAY。Crunch 旁路 DIGITAL DELAY，Lead 啟用，兩版的 Delay 設定一致。</dd>
           <dt>A · v01</dt><dd>Lead Preset Volume +3 dB，Crunch 維持 0 dB。切到 Lead 的第一下比預期突出。</dd>
           <dt>B · v02</dt><dd>Lead 改成 +1 dB，其餘保留。第一下落差較小，推弦尾端仍能從伴奏中聽清。</dd>
-          <dt>保留版本</dt><dd>先留 v02，回切 v01 再對照一次。若回切 Crunch 時仍有尾音重疊，另外記一輪 Patch Tail 的結果。</dd></dl>
-          <p><a href="#preset-record">用自己的結果填寫紀錄表</a></p>
-        </div>
-      </section>
-      <section class="section" id="preset-record">
-        <h2>叫回剛做好的 Preset，再留一筆紀錄</h2><p>先在效果器上儲存，切到另一個 Preset，再用排練時打算用的腳踏操作切回來。跟著伴奏彈一次節奏進 Solo，確認第一個音的音量和停手後的尾巴。把保留版本的名稱、儲存位置與改動原因記在下面。</p><p>可以分段填。草稿留在目前的瀏覽器，Markdown 可帶走目前填寫的內容。MG-50Li 的 Preset 請在裝置或編輯器儲存。</p>
-        ${workbook()}
-      </section>
-      ${quiz}<details id="notes"><summary>全站共用音色筆記</summary>${note.replace('id="notes"', "")}</details>${completion}
-      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 10　現代金屬音色實驗室</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 12　中階實戰與音色診斷</a></nav>
+          <dt>保留版本</dt><dd>先留 v02，回切 v01 再對照一次。若回切 Crunch 時仍有尾音重疊，另外記一輪 Patch Tail 的結果。</dd></dl></div>
+        ${workbook()}</div></details>
+      ${quiz}<details id="notes"><summary>全站共用音色筆記</summary>${note.replace('id="notes"', "")}</details>${pager}
     </article>
   </main>`;
 }

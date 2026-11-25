@@ -9,7 +9,7 @@ export const rigQuiz = [
 const rigs = {
   rock: {
     label: "Rock Rig",
-    chain: [["od", "Overdrive"], ["amp", "British AMP"], ["cab", "4×12 IR"], ["delay", "Delay"], ["reverb", "Room Reverb"]],
+    chain: [["od", "T SCREAMER"], ["amp", "BRIT 800"], ["cab", "M 1960+G12M"], ["delay", "DIGITAL DELAY"], ["reverb", "ROOM"]],
     scenes: {
       rhythm: ["amp", "cab", "reverb"],
       lead: ["od", "amp", "cab", "delay", "reverb"],
@@ -17,7 +17,7 @@ const rigs = {
   },
   clean: {
     label: "Clean Rig",
-    chain: [["comp", "Compressor"], ["amp", "Clean AMP"], ["cab", "2×12 IR"], ["delay", "Delay"], ["reverb", "Plate Reverb"]],
+    chain: [["comp", "STUDIO COMP"], ["amp", "JAZZ CLEAN"], ["cab", "JC120"], ["delay", "DIGITAL DELAY"], ["reverb", "PLATE"]],
     scenes: {
       rhythm: ["comp", "amp", "cab", "reverb"],
       lead: ["comp", "amp", "cab", "delay", "reverb"],
@@ -70,22 +70,22 @@ export function mountRigPractice(root) {
   recall("試著切換 Scene，看看哪些 Block 的啟用狀態改變。");
 }
 
-export function rigLesson({ previous, next, course, quiz, note, completion }) {
+export function rigLesson({ quiz, note, pager }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#blocks">讀懂 Block</a><a href="#routing">看懂路由</a><a href="#rig">Preset 與 Scene 實驗</a><a href="#controls">腳下的控制</a><a href="#experiment">實機練習</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#blocks">讀懂 Block</a><a href="#routing">看懂路由</a><a href="#rig">Preset 與 Scene 實驗</a><a href="#controls">腳下的控制</a><a href="#experiment">收掉獨奏時，最後一聲回音去哪了？</a><a href="#quiz">自己試五題</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
       <header class="page-head"><p class="eyebrow">第 03 章</p><h1>綜合效果器的內部世界</h1>
-        <p class="lede">節奏彈得正起勁，下一拍就要進 Solo。你可以開一顆 Boost、叫回一組 Scene，或切到另一個 Preset。先弄清每種動作會改變哪一段，台上才知道要踩哪顆。</p>
+        <p class="lede">副歌最後一下和弦很乾，獨奏第一個長音卻多了回聲。兩段若還聽得出同一顆音箱的粗邊，一個 Delay 開關就能做出這種銜接。連破音和音量也要一起換時，才輪到 Scene 或另一個 Preset。</p>
         <p class="muted">讀完應能讀懂一條數位訊號鏈，分辨切換層級，並查出一顆 Footswitch 實際控制什麼。</p>
       </header>
-      <section id="blocks" class="section"><h2>關掉 Delay，剛才的破音還在嗎？</h2><p>想像你正用 Crunch 加一點回聲。只旁路 Delay，原先的 AMP 仍然在工作；叫回另一個 Preset，連 AMP 和箱體都可能一起換掉。若想保留同一套音色、一腳改幾顆效果，可以先看這台設備的 Scene 能記住哪些狀態。</p>
+      <section id="blocks" class="section"><h2>關掉 Delay，剛才的破音還在嗎？</h2><figure class="song-scene" id="gear-arcade"><img src="${new URL("./assets/gear-arcade.webp", import.meta.url).href}" width="1440" height="554" loading="lazy" decoding="async" alt="她背著白琴跨進發亮的效果器螢幕，裡頭是一整條音箱和單塊的商店街。"></figure><p>例如 MG 的 BRIT 800 後串 DIGITAL DELAY，讓 Crunch 和弦在停手後回彈一下。只旁路 Delay，原先的 AMP 仍然在工作；叫回另一個 Preset，連 AMP 和箱體都可能一起換掉。若想保留同一套音色、一腳改幾顆效果，可以先看這台設備的 Scene 能記住哪些狀態。</p>
         <p>數位訊號處理（DSP）依訊號鏈的順序與路由處理 A/D 送來的樣本。處理區塊（Block）是鏈上的一站，像 Overdrive、擴大機（AMP）或延遲效果（Delay）。模型決定這一站用哪種方式處理，參數則決定這個模型怎麼工作。</p>
         <p>旁路（Bypass）通常讓訊號略過該 Block 的處理。它仍可留在原位置，也保留原參數，方便下次再打開。部分效果的尾音能不能繼續響，要看旁路或切換方式與機器設定。</p>
       </section>
       <section id="routing" class="section"><h2>看線，別只看方塊排在哪裡</h2>
         <p>串聯會讓前一顆的輸出進入下一顆。把 Overdrive 放在 AMP 前，可能會把 AMP 推得更容易失真。放到 AMP 後，則先由 AMP 處理，再讓結果進 Overdrive。</p>
-        <p>並聯會讓訊號分到兩條路。讀圖時先找分岔點，再找每條支線進到哪裡、有沒有合流、混合比例如何。例如一條保留原音，另一條只有 Delay 尾音，最後再混回去。若延遲支線仍帶有乾訊號，疊回去的結果也可能變。</p>
+        <p>並聯會讓訊號分到兩條路。讀圖時先找分岔點，再找每條支線進到哪裡、有沒有合流、混合比例如何。例如一條保留原音，另一條放 DLY 的 REVERSE，以 MIX 混入倒放的回聲，最後再混回去。若延遲支線仍帶有乾訊號，疊回去的結果也可能變。</p>
         <a href="#rig">試試不同層級的切換</a>
       </section>
       <section id="rig" class="section">
@@ -103,23 +103,23 @@ export function rigLesson({ previous, next, course, quiz, note, completion }) {
           <ol id="rig-blocks" class="rig-blocks" aria-label="依序排列的效果 Block"></ol>
           <p class="feedback" id="rig-summary" role="status"></p>
         </div>
-        <p>先在 Rock Rig 切到 Lead，確認 Overdrive 與 Delay 同時啟用。再手動把 Delay 旁路，按「重新叫回 Scene」觀察它回來。最後換到 Clean Rig，注意 AMP、IR 和其他 Block 也跟著改變。</p>
+        <p>先在 Rock Rig 切到 Lead，確認 T SCREAMER 與 DIGITAL DELAY 同時啟用。再把 DIGITAL DELAY 旁路，按「重新叫回 Scene」觀察它回來。最後換到 Clean Rig，注意 AMP、IR 和其他 Block 也跟著改變。</p>
+        <p>副歌進 Solo，只多一層回聲，實體效果盤上踩一顆 Delay 就夠。實體效果盤若要一起開 Boost 和 Delay、收掉 Chorus，可用迴路切換器。在 MG-50Li 上，AC BOOST、DIGITAL DELAY、CT-2 分別擔任這三種角色；要切換它們也有兩種思路：指派腳踏開關控制單一效果，或以 Scene 切換預先安排的狀態。<a href="https://nuxaudio.com/product/mg50li/">NUX MG-50Li 說明</a></p>
       </section>
       <section id="controls" class="section"><h2>從腳踏或外部控制來叫回設定</h2>
-        <p>把第 01 章的 Riff 接到一個獨奏長音。先確認腳踏已指派成切 Scene，再跟著兩格各做一次動作。</p>
+        <p>先把腳踏指派成切換 Scene。用節奏音色刷兩下和弦，留一拍空白踩到 Lead，下一拍彈一個長音。</p>
         <div class="scene-strip">
           <figure><img src="${new URL("./assets/footswitch-pause-v002.jpg", import.meta.url).href}" width="1440" height="720" loading="lazy" alt="黑色皮靴停在白色效果器旁。"><figcaption><strong>空拍，踩下去。</strong>讓節奏段最後一個音自然收尾，聽切換時尾音有沒有被截斷。</figcaption></figure>
           <figure><img src="${new URL("./assets/scene-next-beat-v002.webp", import.meta.url).href}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手抱著白色 Les Paul Custom，在練團室準備接進獨奏。"><figcaption><strong>下一拍，進 Solo。</strong>彈一個長音，聽第一下撥弦有沒有清楚冒出來。</figcaption></figure>
         </div>
-        <p>腳踏開關（Footswitch）可被指派成切單顆效果、切整組 Scene 或換 Preset。表情踏板（Expression Pedal）用腳跟到腳尖之間的行程連續改變參數，例如掃動哇音（Wah）的頻率。外部 MIDI 控制則看裝置支援，Program Change 常用來換 Preset，Control Change 可用於指定功能或參數。接線後要確認 MIDI Channel 和功能映射。</p>
+        <p>腳踏開關（Footswitch）可被指派成切單顆效果、切整組 Scene 或換 Preset。表情踏板（Expression Pedal）用腳跟到腳尖之間的行程連續改變參數，例如在 AMP 前串入 WAH 的 V847，踏板掃過不同頻率，單音就會帶出「哇」的開合感。外部 MIDI 控制則看裝置支援，Program Change 常用來換 Preset，Control Change 可用於指定功能或參數。接線後要確認 MIDI Channel 和功能映射。</p>
         <p>全域設定適合影響多個音色的需求，例如硬體輸出或針對共享監聽的 EQ。如果只有一個 Lead Preset 太亮，先從那套音色下手比較容易回復。</p>
-        <div class="callout"><h3>在 MG-50Li 上看</h3><p>NUX 公開的 V1.1.1 更新說明列有 TAP／SCENE、STOMP LATCH 和 Global Settings 的 Patch Tail 開關。看螢幕目前在哪個模式，再比對你的韌體與腳踏指派。練習上方的 Rig 是課程示意。<a href="https://nuxaudio.com/product/mg50li/">NUX 官方版本與操作資料</a></p></div>
+        <div class="callout"><h3>在 MG-50Li 上看</h3><p>NUX 公開的 V1.1.1 更新說明列有 TAP／SCENE、STOMP LATCH 和 Global Settings 的 Patch Tail 開關。看螢幕目前在哪個模式，再比對你的韌體與腳踏指派。上方切換器用同一段節奏比較三種踩法。<a href="https://nuxaudio.com/product/mg50li/">NUX 官方版本與操作資料</a></p></div>
       </section>
-      <section id="experiment" class="section"><h2>踩下去以前，先猜會改什麼</h2>
-        <ol><li>在自己設備叫出一套熟悉的音色，找出 AMP、CAB／IR 和 Delay 的順序。</li><li>只切一次 Delay 旁路，確認 AMP 和音量設定是否保留。若已指派 Scene，再切一次 Scene，看有哪幾顆 Block 一起變。</li><li>彈一個長音，在音符還沒完全消失時切換，聽尾音是保留還是中斷。寫下使用的操作模式和觀察到的結果。</li></ol>
+      <section class="section" id="experiment"><h2>收掉獨奏時，最後一聲回音去哪了？</h2>
+        <p>獨奏結束，腳踩回節奏音色，上一句的回聲可能仍在衰減。能否保留尾音，取決於效果器怎麼處理 Delay 緩衝與切換。就算面板上都寫著 Delay，切整個 Preset 和旁路單一 Block，也可能有不同結果。</p>
       </section>
-      ${quiz}${note}${completion}
-      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 02　電吉他訊號的旅程</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 04　AMP 擴大機建模</a></nav>
+      ${quiz}${note}${pager}
     </article>
   </main>`;
 }

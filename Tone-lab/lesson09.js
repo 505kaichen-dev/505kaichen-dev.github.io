@@ -37,29 +37,29 @@ export function mountMetalPractice(root) {
   paint();
 }
 
-export function metalLesson({ previous, next, course, quiz, note, completion }) {
+export function metalLesson({ quiz, note, pager }) {
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#riff">悶音與起音</a><a href="#boost">前置 Boost 與低頻</a><a href="#metal-gate">Noise Gate 練習</a><a href="#double-tracking">雙軌與混音</a><a href="#experiment">MG-50Li 實作</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#riff">悶音與起音</a><a href="#boost">前置 Boost 與低頻</a><a href="#metal-gate">Noise Gate 練習</a><a href="#double-tracking">雙軌與混音</a><a href="#experiment">悶音的重量和空拍的安靜</a><a href="#quiz">自己試五題</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
       <header class="page-head"><p class="eyebrow">第 10 章</p><h1>現代金屬音色實驗室</h1>
-        <p class="lede">兩下低弦悶音，刷過和弦，再留一拍空白。從這一小段聽出起音有沒有咬勁、低頻收得住嗎，以及停手時還剩下什麼聲音。</p>
+        <p class="lede">「噔、噔、鏘——」最後那一下和弦聽起來特別大。把前面兩下低弦也拉長一點，再在腦中哼一次，整句的重心就換了。</p>
       </header>
-      <section class="section" id="riff"><h2>拿起 Pick，跟著同一個拍子彈</h2>
-        <div class="metal-count"><figure><img src="${asset("pick-detail-v001.webp?rev=count-in-1")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手舉起黑色 Pick，準備彈第一拍。"></figure>
-          <ol><li><strong>低弦悶音</strong>輕、重各一下，聽兩次起音的差別。</li>
-            <li><strong>刷和弦</strong>先彈 Power Chord，再換一個複雜和弦，聽哪些弦還分得開。</li>
-            <li><strong>停一拍</strong>雙手消音，聽剩下的是底噪，還是弦仍在響。</li></ol>
+      <section class="section" id="riff"><h2>低弦一下一下刷，怎麼全黏在一起了？</h2>
+        <div class="scene-strip"><figure><img src="${asset("pick-detail-v001.webp?rev=count-in-1")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手舉起黑色 Pick，準備起拍。"><figcaption>「來，最後一下讓它響！」</figcaption></figure>
+          <p>聽 Metallica〈Master of Puppets〉的主 Riff。低弦悶音一個緊跟一個，每一下撥片咬到弦的聲音卻還是聽得見。等和弦放開來，才發現前面那串低音收得有多短。<a href="https://www.metallica.com/songs/master-of-puppets.html">聽 Metallica 的演出版本</a></p>
         </div>
-        <p>把撥弦手掌外側靠近琴橋輕觸琴弦，逐步調位置和力道。想比較 Preset 時，固定剛找到的手勢，避免把琴弦悶住的多寡當成設備差異。</p>
+        <p>唱片裡還藏著好幾把「一起停手」的吉他。製作人 Flemming Rasmussen 回憶，他們換用 James 和 Kirk 的琴，把同一段節奏錄了好幾遍。Kirk 也提過，這張專輯多處混用了 Boogie 和 Marshall 機頭。想用自己的一把琴抓到那股衝勁，可以先聽清楚其中一件事：每一下低弦從哪裡開始？</p>
+        <p><a href="https://www.mixonline.com/recording/classic-tracks/classic-track-master-of-puppets-metallica">Rasmussen 談這首歌的疊錄</a> · <a href="https://www.guitarworld.com/magazine/prime-cuts-metallicas-james-hetfield-and-kirk-hammett-critique-key-songs-band-s-harsh-noble-history">Hetfield 與 Hammett 談錄音器材</a></p>
       </section>
-      <section class="section" id="boost"><h2>先聽 AMP 怎麼吃低頻</h2>
-        <p>從 AMP → CAB／IR 起步，保留足夠的增益讓單音站得住。若悶音已經鼓成一團，先小幅退 Gain，用還有餘裕的後端 Level 補回聽感音量，再聽 Power Chord 和複雜和弦。</p>
-        <p>仍嫌鬆時，試 AMP 前減一點低頻，或比較帶低頻削減的 OD。先用低 Drive、保守的輸出量比較開關，再單獨提高 OD Level，聽前級是否被推得過頭。後段 EQ 可以修整成品的低頻份量。兩處各改一次，聽起音和尾巴怎麼變。</p>
+      <section class="section" id="boost"><h2>把 Gain 退一點，那兩下低弦呢？</h2>
+        <p>拿 MG-50Li 試試。AMP 在 Deep Image 裡選 <strong>CLAYMORE MKIII CRUSH</strong>，IR 配 <strong>MBOS412+V30</strong>，當作高增益節奏的起點。彈兩下短促的低弦，再刷一個 Power Chord。如果前兩下像一聲拖長的「嗡」，把 AMP Gain 往回轉一點，用後端 Level 補到跟剛才差不多大聲，再彈一次。撥片的起音冒出來了嗎？最後的和弦還有你喜歡的厚度嗎？<a href="https://nux.cherubtechnology.com/download/Manual/Effects/Multi_Effects/MG50Li/NUX_MG50Li_UserManual_English.pdf#page=17">NUX 音箱與 IR 對照表</a></p>
+        <p>如果每一下都聽得見撥片，下面卻拖著一團低頻，高增益節奏常用的做法是在音箱前收一些低頻。帶低頻削減的 OD 能讓低弦少一點能量進入失真級，後面的和弦仍有厚度。MG 可用低 DRIVE 的 T SCREAMER 推 AMP；只想收低頻又喜歡原來的破音顆粒，前置 6-BAND EQ 也能做到。</p>
       </section>
       <section class="section" id="metal-gate">
-        <h2>Gate 關得乾淨，也要讓輕音進來</h2><p>先把閾值拉到最低，再慢慢提高。找出能壓住底噪、又能讓輕手悶音通過的最低值。再往上推，看看哪一下會先消失。</p>
-        <p>拿自己的效果器試，記得每調一次就交替彈「輕悶音、停弦」，最後再留一個長音。若空拍已安靜，長音卻突然斷掉，就回退 Threshold 再聽。把能保住這三個動作的設定存回練習用的 Preset。</p>
+        <h2>停了一拍，怎麼還有聲音？</h2>
+        <div class="lesson-sticker-row"><p>雙手把弦停住，留一拍空白。還有一點「嘶——」嗎？在 MG-50Li 的 NG 選 NOISE GATE，放在 AMP 後、空間效果前，讓它在停手時收掉高增益音箱的底噪。</p><img src="${asset("tone-buddy-metal-stop-v001.png")}" width="357" height="381" loading="lazy" alt="紫髮吉他手比了個噓，等著聽空拍。"></div>
+        <p>接著輕輕撥一下。如果連這個音都消失了，Gate 的門檻就設得太高。下方可以拖動門檻，看輕音在哪裡被擋住。實機用 SENS 調整靈敏度，DECAY 控制收聲速度。</p>
         <div class="console" id="metal-lab">
           <div class="section-head"><h3>閾值比較</h3><span class="tag">固定示意電平 · 無音訊</span></div>
           <div class="gain-sliders"><label for="metal-threshold"><span>Gate 閾值 <output id="metal-threshold-value" for="metal-threshold"></output></span>
@@ -72,14 +72,15 @@ export function metalLesson({ previous, next, course, quiz, note, completion }) 
         <p>示意只比較電平和閾值。實機若提供 Decay 或 Release，還可以調低於閾值後收聲的速度。尾音被切斷時，先分辨弱音有沒有通過，再決定要降低閾值或延長收聲時間。<a href="https://www.boss.info/uk/products/ns-2/downloads/">BOSS Noise Suppressor 控制說明</a></p>
       </section>
       <section class="section" id="double-tracking"><h2>雙軌的寬度來自兩次演奏</h2>
-        <p>同一段 Riff 錄兩次，第一軌偏左，第二軌偏右。先對齊兩次的起音和停拍，再和單軌做同音量比較。若用同一個錄音複製到左右並等量播放，兩邊訊號完全相同，聲像會留在中央。</p>
+        <p>第一次聽回放，吉他在正中央。把這一軌複製一份，兩邊等量分到左右，聲音還是黏在中間。換個做法：把同一段 Riff 再彈錄一遍。</p>
+        <figure style="margin:1rem 0"><img src="${asset("metal-double-track.webp")}" width="1440" height="480" style="display:block;width:100%;height:auto" loading="lazy" alt="兩格漫畫：戴耳機的吉他手起初一臉疑惑，聽到兩次演奏分居左右，眼睛亮了起來。"><figcaption>「欸，這次兩邊都有一把吉他了！」</figcaption></figure>
+        <p>把第一次演奏放左邊，第二次放右邊，調到和單軌差不多大聲再聽。兩遍撥弦的細微差異讓左右分得開；最後一下若能一起收住，整段依然俐落。</p>
         <p>把兩軌放回 Bass 和鼓裡再調低頻。若碰到 Kick 時輪廓就不見了，先降低其中一組軌道的低頻或音量，一次改一處。單獨聽比較薄的設定，回到混音裡仍可能保有重量與清晰度。</p>
       </section>
-      <section class="section" id="experiment"><h2>到 MG-50Li 做三次對照</h2>
-        <ol><li>複製一份節奏 Preset 作比較。固定琴橋拾音器、AMP、CAB／IR 與監聽，用包含輕重悶音、和弦和停拍的同一段 Riff 當素材。</li><li>先只退 AMP Gain，補齊聽感音量，聽複雜和弦是否更清楚。恢復基準，再試前置低 Drive 的 OD 開關，聽低弦起音和重量。</li><li>留下較合適的設定，從低閾值慢慢提高 Gate。輪流彈輕音、重音和停拍，確認空拍穩定而且弱音仍在。</li></ol>
+      <section class="section" id="experiment"><h2>悶音的重量和空拍的安靜</h2>
+        <p>金屬 Riff 的衝擊感常落在聲音突然收住的瞬間。彈奏時，手掌決定弦能振動多久；雙手停弦後，高增益鏈仍可能留下底噪。Gate 的閾值如果高到把弱音也關掉，空拍雖乾淨，下一個輕起音卻可能少一截。</p>
       </section>
-      ${quiz}${note}${completion}
-      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 09　經典搖滾音色實驗室</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 11　從零建立完整 Preset</a></nav>
+      ${quiz}${note}${pager}
     </article>
   </main>`;
 }

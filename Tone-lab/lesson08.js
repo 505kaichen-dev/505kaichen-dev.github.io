@@ -1,4 +1,4 @@
-import { blocks } from "./chain.js";
+import { blocks } from "./chain.js?v=model-guide-1";
 
 export const rockQuiz = [
   ["希望輕彈仍乾淨、重彈才有毛邊，優先找哪種工作點？", ["破音邊緣","乾淨高餘裕區","持續飽和區"], 0, "破音邊緣最適合測力度如何決定起音是否進入失真。"],
@@ -12,31 +12,31 @@ export const recipes = {
   clean: {
     name: "Clean · 起音透明", blocks: ["amp", "cab"],
     cue: "輕重變化都清楚，和弦外側的弦還能分辨。",
-    start: "先選高餘裕 Clean AMP，Gain 偏低。固定一個熟悉的 CAB／IR，試琴頸 Pickup；若太暗，再比較琴橋。",
+    start: "MG 可用 JAZZ CLEAN 接 JC120，保留乾淨和弦的起音，試琴頸 Pickup；若太暗，再比較琴橋。",
     check: "輕彈分解和弦、重掃一次。若強音先髒，降低進前級的電平，再用後端 Level 補響度。",
   },
   edge: {
     name: "Edge of Breakup · 重彈有毛邊", blocks: ["amp", "cab"],
     cue: "輕彈仍乾淨，重彈時才出現少量破音。",
-    start: "沿用上一個 CAB／IR 和 Pickup，小幅增加 AMP Gain。用同一個音釐清開始破音的點。",
+    start: "MG 可用 PLEXI 45 接 M 1960+G12M，保持拾音器不變，小幅增加 AMP 的輸入增益。用同一個音釐清開始破音的點。",
     check: "先輕彈再重彈。兩者都太髒時先退 Gain，直到輕彈回到較乾淨的區域。",
   },
   crunch: {
     name: "British Crunch · 和弦有稜角", blocks: ["amp", "cab"],
     cue: "開放和弦出現粗粒感，低弦依然有短而清楚的起音。",
-    start: "試較早起破音的 British 類 AMP，Gain 先保守。先用同一個 CAB 比，再另外試箱體是否幫到中頻輪廓。",
+    start: "MG 用 PLEXI 100W 接 M 1960+G12M，讓重刷有粗邊。先用同一個 CAB 比，再另外試箱體是否幫到中頻輪廓。",
     check: "彈開放和弦接低弦悶音。若尾巴拖成一團，先降 Gain，或檢查低頻是不是在失真前堆太多。",
   },
   hard: {
     name: "80s Hard Rock · 俐落的 Power Chord", blocks: ["od", "amp", "cab", "eq"],
     cue: "Power Chord 有份量，悶音收得住，和弦保持分離。",
-    start: "先試 Master Volume 類 British AMP 與 4×12 類 CAB。前置 OD 可從低 Drive 起步，聽它有沒有讓低頻更受控。後段 EQ 留作小幅修整。",
+    start: "MG 可排 T SCREAMER → BRIT 800 → M 1960+G12M。T SCREAMER 的 DRIVE 從低處起步，聽它有沒有讓低頻更受控。箱體後可接 6-BAND EQ 修整成品的低中頻。",
     check: "旁路 OD 做同音量對照。若只是變大聲、起音反而變鈍，可以先拿掉它。",
   },
   lead: {
     name: "Slash 類型 Lead · 中頻與延音", blocks: ["amp", "cab", "eq", "delay"],
     cue: "推弦在伴奏中還有輪廓，顫音收尾可辨認，下一句進來時空間尾音不搶位。",
-    start: "先試 British 類 AMP、4×12 類 CAB 與 Humbucker。從有延音但仍聽得出力道的 Gain 起步。後段小幅調中頻，Delay 用低 Mix。",
+    start: "MG-50Li 可選 BRIT 800 搭配 M 1960+G12M，配雙線圈拾音器。Gain 留到推弦能延續、撥弦強弱仍清楚。若想在句尾加空間，再於 IR 後串 DIGITAL DELAY，把 E.LEVEL 壓低。",
     check: "先在伴奏裡彈一個推弦與長音。只在摘掉 Delay 或退 Gain 時更清楚，就記下這個結果，別急著再加一顆 Drive。",
   },
 };
@@ -69,42 +69,42 @@ export function mountRockPractice(root) {
 
 const asset = name => new URL("./assets/" + name, import.meta.url).href;
 
-export function rockLesson({ previous, next, course, quiz, note, completion }) {
+export function rockLesson({ quiz, note, pager }) {
   const builder = new URL("./labs/signal-chain/index.html", import.meta.url).href;
   return `<main class="wrap reading" id="main" tabindex="-1">
     <aside class="contents"><p class="eyebrow">本章目錄</p><nav aria-label="本章目錄">
-      <a href="#goals">從聲音特徵開始</a><a href="#lead">Slash 類型 Lead</a><a href="#rock-practice">五個音色起點</a><a href="#experiment">MG-50Li 實作</a><a href="#quiz">理解測驗</a><a href="#notes">音色筆記</a></nav></aside>
+      <a href="#goals">從聲音特徵開始</a><a href="#lead">Slash 類型 Lead</a><a href="#rock-practice">五個音色起點</a><a href="#experiment">推弦、停住、揉弦：一句旋律的三個瞬間</a><a href="#quiz">自己試五題</a><a href="#notes">音色筆記</a></nav></aside>
     <article class="article">
       <header class="page-head"><p class="eyebrow">第 09 章</p><h1>經典搖滾音色實驗室</h1>
-        <p class="lede">同一把 Les Paul，輕彈可以有空氣感，重刷可以長出粗邊，推弦又能在伴奏上浮起來。這章練習從聽得出來的差異，選擇合適的 AMP、CAB 與效果位置。</p>
+        <p class="lede">同一把 Les Paul，輕彈可以有空氣感，重刷可以長出粗邊，推弦又能在伴奏上浮起來。聽〈Sweet Child O’ Mine〉後段那句長音：音已經推上去了，旋律還靠什麼往前走？</p>
       </header>
       <section id="goals" class="section"><h2>先挑你想保留的那一拍</h2>
         <p>彈一個分解和弦、兩下 Power Chord，再留一個可推弦的長音。想保留每條弦的清楚輪廓，先找 Clean。想讓力道決定有沒有毛邊，往破音邊緣試。要 Crunch 或硬搖滾節奏，就把注意力放在重刷後起音是否還能分辨。</p>
         <p>先固定 Pickup、IR 和監聽，在同一段材料裡比較 AMP 和 Gain。箱體、收音與後段 EQ 可以在下一輪才改。選一項音色目標，比追一串器材名字更容易重做。</p>
       </section>
-      <section id="lead" class="section"><h2>Slash 類型 Lead，先聽中頻與延音</h2>
-        <div class="stage-listen"><p><strong>推一個長音，留一拍空白。</strong>先聽撥弦的音頭和手指的顫音，再聽 Delay 怎麼退到伴奏後面。</p>
+      <section id="lead" class="section"><h2>Slash 的推弦，到了高音以後呢？</h2>
+        <div class="stage-listen"><p><strong>〈Sweet Child O’ Mine〉後段 Solo。</strong>撥片只碰了一下，音高卻一路往上走；推到落點，還聽得見揉弦的起伏。這句旋律最值得聽的是抵達高音以後的那一刻。</p>
           <figure class="amp-illustration">
           <img src="${asset("classic-rock-stage-v001.jpg")}" width="1440" height="720" loading="lazy" decoding="async" alt="紫髮吉他手肩背黑色皮背帶，在暖色小舞台上用白色 Les Paul 演奏 Lead。">
         </figure></div>
-        <p>長音被伴奏蓋住時，先單獨試後段 EQ 的中頻、後段音量，或 Delay 的 Mix。若連推弦前的撥弦聲都變鈍，再試著退一點 Gain。每次改一項，切回原設定聽同一拍。</p>
-        <p>Marshall 的器材回顧提到 Slash 在不同時期用過多種音箱，也記錄過部分現場用 4×12 的配置。Gibson 的資料也能追到他使用 Les Paul 的例子。這裡用 British 類 AMP、4×12 類 CAB 與 Humbucker 當探索方向，實際錄音還包含演奏、麥克風、疊錄和混音。<a href="https://www.marshall.com/ad/en/backstage/guitar-heroes/slash">Marshall 回顧</a> · <a href="https://www.gibson.com/pages/the-slash-collection">Gibson Slash 器材資料</a></p>
+        <p>Slash 回憶錄這張專輯時，他用的是裝 Seymour Duncan 拾音器的手工 Les Paul 仿製琴，搭配租來的 Marshall 機頭。手指決定推弦的落點和揉弦的寬度，破音讓弦音漸弱時，那些細微的起伏仍聽得見。<a href="https://www.slashparadise.com/media/interviews-slash/return-to-the-jungle-guitar-one-june-2002.pdf">Slash 回顧《Appetite for Destruction》錄音</a></p>
+        <p>在 MG-50Li 可用 <strong>BRIT 800 → M 1960+G12M</strong> 對照這種分工：AMP 決定長音的飽和感，IR 則影響推弦音頭的亮邊。Slash 不同時期用過多套設備，這裡借用的是搭配思路。<a href="https://nux.cherubtechnology.com/download/Manual/Effects/Multi_Effects/MG50Li/NUX_MG50Li_UserManual_English.pdf#page=15">NUX 內建 AMP 與 IR 表</a> · <a href="https://www.marshall.com/ad/en/backstage/guitar-heroes/slash">Marshall 的 Slash 器材回顧</a> · <a href="https://www.gibson.com/pages/the-slash-collection">Gibson Slash 系列</a></p>
+        
       </section>
       <section id="rock-practice" class="section">
-        <h2>選一個起點，帶進 Builder</h2><p>先挑想聽到的結果，讀聆聽線索和起手設定。五個選項都是自己設備上的實驗方向。</p>
+        <h2>選一個起點，帶進 Builder</h2><p>想玩副歌的粗邊，還是 Solo 裡浮在伴奏上方的長音？挑一種，帶著它的效果順序去 Builder。</p>
         <div class="console" id="rock-lab">
           <div class="section-head"><h3>經典搖滾音色練習</h3><span class="tag">聆聽假設 · 無音訊</span></div>
           <label>音色目標 <select id="rock-recipe">${Object.entries(recipes).map(([id, recipe]) => `<option value="${id}">${recipe.name}</option>`).join("")}</select></label>
           <div class="amp-observation" id="rock-panel" aria-live="polite"></div>
-          <p class="muted">Builder 只載入 Block 順序。AMP、IR 與旋鈕設定請在實機上依方向調整。</p>
+          <p class="muted">開啟 Builder 會帶入這組 Block 順序。按「播放 Riff」可以比較效果開關與換序；要試上面選的 AMP 和 IR 型號，請在自己的效果器上設定。</p>
           <a id="rock-builder" class="primary" href="${builder}">用這個起點開啟 Builder</a>
         </div>
       </section>
-      <section id="experiment" class="section"><h2>到 MG-50Li 做三次短對照</h2>
-        <ol><li>用乾淨的起點存一份比較用 Preset。固定琴、Pickup、CAB／IR 與監聽，用同一段強弱演奏建立基準。</li><li>同模型小幅增加 Gain，聽重彈是否先進破音。再換較早起破音的 AMP，保持 CAB 和響度作第二次對照。</li><li>做 Lead 時用同一個推弦和停頓，分別驗證中頻與 Delay。成功標準是伴奏中聽得清推弦輪廓，停手後仍留有下一句的位置。</li></ol>
+      <section class="section" id="experiment"><h2>推弦、停住、揉弦：一句旋律的三個瞬間</h2>
+        <p>跟著後段 Solo 哼一句：音高往上滑，是推弦；抵達後那一瞬間的停留，讓耳朵認得目標音；接著音高有規律地起伏，才是揉弦。用同一個音色，把揉弦提早到推弦途中，或等音高落定再開始，唱出來的語氣就不同。</p>
       </section>
-      ${quiz}${note}${completion}
-      <nav class="chapter-pager" aria-label="章節導覽"><a href="${previous}">上一章 · 08　訊號鏈設計實驗室</a><a class="pager-index" href="${course}">回完整目錄</a><a href="${next}">下一章 · 10　現代金屬音色實驗室</a></nav>
+      ${quiz}${note}${pager}
     </article>
   </main>`;
 }

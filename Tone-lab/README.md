@@ -29,10 +29,10 @@ node preview.mjs
 - `lesson10.js` 維護第 11 章教材、音色設計表單、草稿、Markdown 匯出和網站紀錄 JSON 備份。匯入時可先預覽，再套用到表單，按下儲存草稿才寫入瀏覽器。
 - `lesson11.js` 維護第 12 章教材、依 A/B 結果提供下一步的診斷練習，以及無音訊的頻帶探索。
 - `chain.js` 維護訊號鏈 Block、資料驗證與觀察規則。
-- `app.js` 提供版面、教材正文、互動與儲存。練習室位於 `labs/index.html`，集合章內練習，提供內建合成吉他辨聽與本機音檔 A/B。
+- `app.js` 提供版面、教材正文、互動與儲存。練習室位於 `labs/index.html`，集合章內練習，提供 Delay 回聲辨聽與本機音檔 A/B。
 - `style.css` 提供暖白底、銀灰面板、藍色操作與琥珀色啟用狀態，以及響應式排版。
-- `guitar-tone-lab:v1` 儲存章節進度、測驗、筆記與一條已儲存的示意訊號鏈。另開網址或清除網站資料會影響可用紀錄。
+- `guitar-tone-lab:v1` 儲存測驗答案、共用筆記及 Builder 設定。上次閱讀的章節另存於 guitar-tone-lab:last-lesson。另開網址或清除網站資料會影響可用紀錄。
 
 ## 後續
 
-MG-50Li 官方資料與待實機確認項目集中於 [MG50LI_PROFILE.md](MG50LI_PROFILE.md)。訊號鏈教具呈現順序與觀察提示，練習室可播放合成吉他示範或使用者選取的本機錄音。工作範圍與決策見 WORK_LOG.md。
+MG-50Li 官方資料與待實機確認項目集中於 [MG50LI_PROFILE.md](MG50LI_PROFILE.md)。Builder 可播放合成 Riff，比較效果順序、旁路及路由，練習室可播放合成吉他示範或使用者選取的本機錄音。工作範圍與決策見 WORK_LOG.md。

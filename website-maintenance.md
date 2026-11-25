@@ -152,6 +152,7 @@ AI Lab 明文來源是 `X:\index.html` 與其 10 個既有入口，建置工具�
 
 | 日期 | 項目 | 說明 |
 |------|------|------|
+| 2026-11-25 | Guitar Tone Lab 入口封面 | 作品卡 019 與最新發布使用 1200×630 雙角色漫畫封面。 |
 | 2026-11-24 | 首頁連至 MYK Tech | 桌面與手機導覽列的「聯絡 Kai」連到 `https://myktech.com.tw/contact/`，「關於」區塊末尾連到官網首頁。 |
 | 2026-11-24 | 新增 Guitar Tone Lab | Build 卡片 019、練團插畫封面及入口。 |
 | 2026-11-19 | 建立 Kai AI Lab | 將 `X:\index.html` 與其 10 個既有入口按原相對路徑多包在 `/ai-lab/` 下；首頁只新增單一入口。每個原始 HTML 位置輸出解密 wrapper，內容按子資料夾封裝為 PBKDF2-SHA256／AES-256-GCM 密文。Headless Edge 驗證錯誤／正確密碼、只驗證一次、Storage Wiki 多頁、Web Planner 6 張圖片及 NAS HTTP 相容模式通過。 |
